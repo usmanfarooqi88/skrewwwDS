@@ -123,7 +123,7 @@ type SelectTriggerButtonProps = {
   ariaDescribedBy?: string;
   displayLabel: string;
   isPlaceholder: boolean;
-  triggerRef: RefObject<HTMLButtonElement>;
+  triggerRef: RefObject<HTMLButtonElement | null>;
 };
 
 function SelectTriggerButton({
@@ -187,7 +187,7 @@ type SelectListboxProps = {
   resolvedValue: string;
   disabled?: boolean;
   onSelect: (value: string) => void;
-  initialFocusRef: RefObject<HTMLButtonElement>;
+  initialFocusRef: RefObject<HTMLButtonElement | null>;
 };
 
 function SelectListbox({
