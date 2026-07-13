@@ -1,0 +1,167 @@
+/* TEMPORARY — React-first Table foundation; Figma verification pending */
+
+.scrollArea {
+  box-sizing: border-box;
+  /* Shrink correctly in flex/grid parents; own horizontal overflow locally. */
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  border: 1px solid var(--table-border);
+  border-radius: var(--table-radius);
+  color: var(--table-text);
+  -webkit-overflow-scrolling: touch;
+  /* Edge fades reveal more columns without claiming columns are hidden. */
+  background-color: var(--table-surface);
+  background-image:
+    linear-gradient(to inline-end, var(--table-surface), transparent),
+    linear-gradient(to inline-start, var(--table-surface), transparent),
+    linear-gradient(to inline-end, var(--table-scroll-shadow), transparent),
+    linear-gradient(to inline-start, var(--table-scroll-shadow), transparent);
+  background-position:
+    0 0,
+    100% 0,
+    0 0,
+    100% 0;
+  background-repeat: no-repeat;
+  background-size:
+    var(--table-scroll-fade-size) 100%,
+    var(--table-scroll-fade-size) 100%,
+    calc(var(--table-scroll-fade-size) * 0.7) 100%,
+    calc(var(--table-scroll-fade-size) * 0.7) 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+
+.scrollArea:focus {
+  outline: none;
+}
+
+.scrollArea:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background: transparent;
+  color: var(--table-text);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: start;
+}
+
+/* Wide tables opt into overflow via TableScrollArea — do not force page-level scroll. */
+.scrollArea .table {
+  min-width: 36rem;
+}
+
+.layoutFixed {
+  table-layout: fixed;
+}
+
+.caption {
+  caption-side: top;
+  padding-block: var(--table-caption-gap);
+  padding-inline: var(--table-cell-padding-inline);
+  color: var(--table-caption-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: start;
+}
+
+.captionScreenReader {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.header {
+  background: var(--table-header-surface);
+}
+
+.head {
+  padding-block: var(--table-cell-padding-block);
+  padding-inline: var(--table-cell-padding-inline);
+  border-bottom: 1px solid var(--table-header-border);
+  color: var(--table-header-text);
+  font-weight: 600;
+  text-align: start;
+  vertical-align: bottom;
+  overflow-wrap: anywhere;
+}
+
+.header .head {
+  white-space: nowrap;
+}
+
+.body .row:not(:last-child) .cell,
+.body .row:not(:last-child) .head {
+  border-bottom: 1px solid var(--table-row-border);
+}
+
+.cell {
+  padding-block: var(--table-cell-padding-block);
+  padding-inline: var(--table-cell-padding-inline);
+  color: var(--table-text);
+  text-align: start;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.cell[data-table-wrap="nowrap"],
+.head[data-table-wrap="nowrap"] {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.footer {
+  background: var(--table-footer-surface);
+}
+
+.footer .cell,
+.footer .head {
+  border-top: 1px solid var(--table-header-border);
+  font-weight: 600;
+}
+
+.row {
+  background: transparent;
+}
+
+.alignStart {
+  text-align: start;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.alignEnd {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  .scrollArea {
+    overflow: visible;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    border-radius: 0;
+    background-image: none;
+    box-shadow: none;
+  }
+
+  .scrollArea .table {
+    min-width: 0;
+  }
+}

@@ -1,0 +1,145 @@
+.day {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--calendar-day-size);
+  min-width: var(--calendar-day-min-touch);
+  height: var(--calendar-day-size);
+  min-height: var(--calendar-day-min-touch);
+  border: 1px solid transparent;
+  border-radius: var(--calendar-day-radius);
+  background: transparent;
+  color: var(--calendar-day-text);
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.day:hover:not(:disabled) {
+  background: var(--calendar-day-hover-surface);
+}
+
+.day:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: -2px;
+}
+
+.selected {
+  background: var(--calendar-day-selected-surface);
+  color: var(--calendar-day-selected-text);
+  border-color: var(--calendar-day-selected-surface);
+}
+
+.today:not(.selected) {
+  border-color: var(--calendar-day-today-indicator);
+}
+
+.todayIndicator {
+  position: absolute;
+  bottom: 0.25rem;
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: var(--calendar-day-today-indicator);
+}
+
+.selected .todayIndicator {
+  background: var(--calendar-day-selected-text);
+}
+
+.outside {
+  color: var(--calendar-day-muted-text);
+}
+
+.disabled,
+.day:disabled {
+  color: var(--calendar-day-disabled-text);
+  cursor: not-allowed;
+}
+
+.dayNumber {
+  pointer-events: none;
+}
+
+/* Committed range: middle days get a flat connecting fill; start/end flatten
+   the inner corner so the band reads as continuous. A single-day range has
+   both .rangeStart and .rangeEnd, which cancel each other's flattening back
+   to a full pill — see the combined selector below. */
+.rangeMiddle {
+  background: var(--calendar-day-range-middle-surface);
+  border-radius: 0;
+}
+
+.rangeStart {
+  background: var(--calendar-day-selected-surface);
+  color: var(--calendar-day-selected-text);
+  border-color: var(--calendar-day-selected-surface);
+}
+
+.rangeEnd {
+  background: var(--calendar-day-selected-surface);
+  color: var(--calendar-day-selected-text);
+  border-color: var(--calendar-day-selected-surface);
+}
+
+.rangeStart.rangeEnd {
+  border-radius: var(--calendar-day-radius);
+}
+
+/* Provisional (uncommitted) hover/keyboard preview — a lighter, dashed
+   treatment so it reads as distinct from a committed range. */
+.rangePreviewMiddle {
+  background: var(--calendar-day-range-preview-surface);
+  border-radius: 0;
+}
+
+.rangePreviewEnd {
+  background: var(--calendar-day-range-preview-surface);
+  border: 1px dashed var(--calendar-day-range-preview-border);
+}
+
+/* Hover must keep foreground/background paired — generic .day:hover must not
+   override selected/range surfaces with the neutral hover fill. */
+.selected:hover:not(:disabled),
+.rangeStart:hover:not(:disabled),
+.rangeEnd:hover:not(:disabled) {
+  background: var(--calendar-day-selected-hover-surface);
+  color: var(--calendar-day-selected-text);
+  border-color: var(--calendar-day-selected-hover-surface);
+}
+
+.rangeStart.rangeEnd:hover:not(:disabled) {
+  border-radius: var(--calendar-day-radius);
+}
+
+.rangeMiddle:hover:not(:disabled) {
+  background: var(--calendar-day-range-middle-hover-surface);
+  color: var(--calendar-day-text);
+}
+
+.rangePreviewMiddle:hover:not(:disabled),
+.rangePreviewEnd:hover:not(:disabled) {
+  background: var(--calendar-day-range-preview-hover-surface);
+  color: var(--calendar-day-text);
+}
+
+[data-skrewww-shape="pill"] .day {
+  border-radius: min(var(--calendar-day-radius), 9999px);
+}
+
+[data-skrewww-shape="pill"] .rangeStart.rangeEnd {
+  border-radius: min(var(--calendar-day-radius), 9999px);
+}
+
+[data-skrewww-surface="glass"] .day:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--calendar-day-hover-surface) 90%, white);
+}
+
+[data-skrewww-surface="glass"] .selected:hover:not(:disabled),
+[data-skrewww-surface="glass"] .rangeStart:hover:not(:disabled),
+[data-skrewww-surface="glass"] .rangeEnd:hover:not(:disabled) {
+  background: var(--calendar-day-selected-hover-surface);
+}

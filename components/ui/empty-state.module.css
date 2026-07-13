@@ -1,0 +1,59 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: var(--empty-state-max-width);
+  margin-inline: auto;
+  padding: var(--empty-state-padding-y) var(--empty-state-padding-x);
+  text-align: center;
+}
+
+.icon {
+  display: inline-flex;
+  margin-bottom: var(--empty-state-content-gap);
+  color: var(--semantic-icon-muted);
+}
+
+.icon :global(svg) {
+  width: var(--empty-state-icon-size);
+  height: var(--empty-state-icon-size);
+}
+
+.illustration {
+  display: inline-flex;
+  margin-bottom: var(--empty-state-content-gap);
+  max-width: var(--empty-state-illustration-size);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--empty-state-title-text);
+}
+
+.description {
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--empty-state-description-text);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--empty-state-action-gap);
+  margin-top: var(--empty-state-content-gap);
+}
+
+.primaryLink,
+.secondaryLink {
+  display: inline-flex;
+}
+
+[data-skrewww-surface="glass"] .root {
+  background: color-mix(in srgb, var(--semantic-surface-default) 90%, white);
+  border-radius: var(--shape-radius-container);
+}

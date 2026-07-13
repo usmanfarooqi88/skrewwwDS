@@ -1,0 +1,54 @@
+.root {
+  width: 100%;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--breadcrumb-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap);
+  max-width: 100%;
+}
+
+.separator {
+  color: var(--breadcrumb-separator);
+  user-select: none;
+}
+
+.link {
+  max-width: var(--breadcrumb-max-item-width);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.current {
+  color: var(--breadcrumb-current-text);
+  font-size: var(--breadcrumb-font-size);
+  font-weight: 500;
+  max-width: var(--breadcrumb-max-item-width);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.homeIcon {
+  width: var(--breadcrumb-icon-size);
+  height: var(--breadcrumb-icon-size);
+  flex-shrink: 0;
+}
+
+.homeCrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap);
+}

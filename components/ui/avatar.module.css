@@ -1,0 +1,46 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid var(--avatar-border);
+  background: var(--avatar-background);
+  color: var(--avatar-text);
+  border-radius: var(--avatar-radius);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.sm {
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
+  font-size: 0.6875rem;
+}
+
+.md {
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+  font-size: 0.8125rem;
+}
+
+.lg {
+  width: var(--avatar-size-lg);
+  height: var(--avatar-size-lg);
+  font-size: 1rem;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: var(--avatar-image-fit);
+}
+
+.initials {
+  user-select: none;
+}
+
+/* Avatar identity shape stays circular regardless of global shape mode */
+[data-skrewww-shape] .root {
+  border-radius: var(--avatar-radius);
+}

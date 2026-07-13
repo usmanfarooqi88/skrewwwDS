@@ -1,0 +1,118 @@
+.content {
+  box-sizing: border-box;
+  padding: 0;
+  overflow: hidden;
+  width: max-content;
+  min-width: var(--menu-min-width);
+  max-width: min(var(--menu-max-width), calc(100vw - var(--menu-viewport-padding) * 2));
+  background: var(--menu-surface);
+  border: 1px solid var(--menu-border);
+  border-radius: var(--menu-radius);
+  box-shadow: var(--menu-elevation);
+  color: var(--menu-item-text);
+  animation: none;
+}
+
+.body {
+  padding: var(--menu-padding);
+  overflow: hidden;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--menu-item-gap);
+  max-height: var(--menu-max-height);
+  overflow-y: auto;
+  outline: none;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--menu-item-gap);
+}
+
+.label {
+  padding: var(--menu-label-padding);
+  color: var(--menu-label-text);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.separator {
+  height: 1px;
+  margin: var(--menu-separator-margin);
+  background: var(--menu-separator-color);
+  border: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--menu-item-gap);
+  min-height: var(--menu-item-height);
+  padding: var(--menu-item-padding);
+  border: 0;
+  border-radius: var(--menu-item-radius);
+  background: transparent;
+  color: var(--menu-item-text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.item:hover:not(.itemDisabled) {
+  background: var(--menu-item-hover-surface);
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: -2px;
+  background: var(--menu-item-focused-surface);
+}
+
+.itemDisabled {
+  color: var(--menu-item-disabled-text);
+  cursor: not-allowed;
+}
+
+.itemDestructive {
+  color: var(--menu-item-destructive-text);
+}
+
+.itemDestructive:hover:not(.itemDisabled) {
+  background: var(--menu-item-destructive-hover-surface);
+}
+
+.itemIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--menu-item-icon);
+}
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemShortcut {
+  margin-left: auto;
+  padding-left: 1rem;
+  color: var(--menu-shortcut-text);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    transition: none;
+  }
+}

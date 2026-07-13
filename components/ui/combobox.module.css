@@ -1,0 +1,110 @@
+.controlWrap {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.inputWrap {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding-right: 2.25rem;
+}
+
+.caret {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--combobox-icon);
+  pointer-events: none;
+}
+
+.listboxPopover {
+  box-sizing: border-box;
+  padding: 0;
+  overflow: hidden;
+  width: auto;
+  max-width: none;
+  background: var(--combobox-popup-surface);
+  border: 1px solid var(--combobox-popup-border);
+  border-radius: var(--combobox-popup-radius);
+  box-shadow: var(--combobox-popup-elevation);
+  animation: none;
+}
+
+.listboxBody {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--combobox-popup-padding);
+  overflow: hidden;
+}
+
+.listbox {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  max-height: var(--combobox-popup-max-height);
+  overflow-y: auto;
+  outline: none;
+}
+
+.optionItem {
+  width: 100%;
+}
+
+.option {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--combobox-option-height);
+  padding: var(--combobox-option-padding);
+  border-radius: var(--combobox-option-radius);
+  background: transparent;
+  color: var(--combobox-option-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option:hover:not(.optionDisabled) {
+  background: var(--combobox-option-active-surface);
+}
+
+.optionActive {
+  background: var(--combobox-option-active-surface);
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: -2px;
+}
+
+.optionSelected {
+  font-weight: 500;
+  background: var(--combobox-option-selected-surface);
+}
+
+.optionDisabled {
+  color: var(--combobox-option-disabled-text);
+  cursor: not-allowed;
+}
+
+.noResults {
+  padding: var(--combobox-empty-padding);
+  min-height: var(--combobox-empty-min-height);
+  color: var(--combobox-empty-text);
+  font-size: 0.875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option {
+    transition: none;
+  }
+}

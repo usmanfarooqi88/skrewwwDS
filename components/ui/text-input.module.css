@@ -1,0 +1,122 @@
+.controlWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--semantic-border-default);
+  border-radius: var(--shape-radius-control);
+  background: var(--surface-fill-control);
+  color: var(--semantic-text-primary);
+  font-family: inherit;
+  line-height: 1.4;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.input::placeholder {
+  color: var(--semantic-text-disabled);
+}
+
+.input:hover:not(:disabled):not([aria-invalid="true"]) {
+  border-color: var(--semantic-border-strong);
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input:focus-visible {
+  border-color: var(--semantic-focus-ring);
+  box-shadow: 0 0 0 2px var(--semantic-focus-ring);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  color: var(--semantic-text-disabled);
+  border-color: var(--semantic-border-disabled);
+  background: var(--semantic-surface-disabled);
+  opacity: var(--opacity-disabled);
+}
+
+.input:read-only:not(:disabled) {
+  background: var(--semantic-surface-subtle);
+  cursor: default;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--semantic-action-danger);
+}
+
+.input[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 2px var(--semantic-action-danger);
+}
+
+.input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+.sizeSm {
+  min-height: var(--control-height-sm);
+  padding: 0 var(--control-padding-x-sm);
+  font-size: var(--control-font-size-sm);
+}
+
+.sizeMd {
+  min-height: var(--control-height-md);
+  padding: 0 var(--control-padding-x-md);
+  font-size: var(--control-font-size-md);
+}
+
+.sizeLg {
+  min-height: var(--control-height-lg);
+  padding: 0 var(--control-padding-x-lg);
+  font-size: var(--control-font-size-lg);
+}
+
+.withLeading {
+  padding-left: 2.25rem;
+}
+
+.withTrailing {
+  padding-right: 2.25rem;
+}
+
+.leading,
+.trailing {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--semantic-icon-muted);
+  pointer-events: none;
+}
+
+.leading {
+  left: 0.75rem;
+}
+
+.trailing {
+  right: 0.75rem;
+  pointer-events: auto;
+}
+
+.trailingAction {
+  position: absolute;
+  right: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input {
+    transition: none;
+  }
+}

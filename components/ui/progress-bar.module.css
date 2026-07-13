@@ -1,0 +1,100 @@
+.track {
+  width: 100%;
+  height: var(--progress-track-height);
+  overflow: hidden;
+  border: none;
+  border-radius: min(var(--shape-radius-control), 9999px);
+  background: var(--semantic-border-default);
+  appearance: none;
+}
+
+.track::-webkit-progress-bar {
+  background: var(--semantic-border-default);
+  border-radius: inherit;
+}
+
+.track::-webkit-progress-value {
+  background: var(--progress-indicator);
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+
+.track::-moz-progress-bar {
+  background: var(--progress-indicator);
+  border-radius: inherit;
+}
+
+.indeterminate {
+  position: relative;
+  width: 100%;
+  height: var(--progress-track-height);
+  overflow: hidden;
+  border-radius: min(var(--shape-radius-control), 9999px);
+  background: var(--semantic-border-default);
+}
+
+.indeterminateBar {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: var(--progress-indicator);
+  border-radius: inherit;
+  animation: progress-indeterminate var(--progress-animation-duration) ease-in-out infinite;
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--semantic-text-primary);
+}
+
+.valueText {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--semantic-text-secondary);
+}
+
+.default {
+  --progress-indicator: var(--semantic-action-primary);
+}
+
+.success {
+  --progress-indicator: var(--semantic-feedback-success);
+}
+
+.warning {
+  --progress-indicator: var(--semantic-feedback-warning);
+}
+
+.danger {
+  --progress-indicator: var(--semantic-action-danger);
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track::-webkit-progress-value {
+    transition: none;
+  }
+
+  .indeterminateBar {
+    animation: none;
+    width: 100%;
+    opacity: 0.55;
+  }
+}

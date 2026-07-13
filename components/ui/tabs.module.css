@@ -1,0 +1,75 @@
+.root {
+  display: grid;
+  gap: 1rem;
+}
+
+.list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--tab-gap);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--tab-border);
+}
+
+.trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tab-height);
+  padding: 0 var(--tab-padding-x);
+  border: none;
+  background: transparent;
+  color: var(--tab-text);
+  font-size: var(--tab-font-size);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--tab-transition-duration) ease,
+    background-color var(--tab-transition-duration) ease;
+}
+
+.trigger:hover:not(:disabled) {
+  color: var(--tab-active-text);
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+.triggerActive {
+  color: var(--tab-active-text);
+}
+
+.triggerActive::after {
+  content: "";
+  position: absolute;
+  right: var(--tab-padding-x);
+  bottom: 0;
+  left: var(--tab-padding-x);
+  height: var(--tab-indicator-thickness);
+  background: var(--tab-active-indicator);
+  border-radius: 9999px;
+}
+
+.trigger:disabled {
+  color: var(--semantic-text-disabled);
+  cursor: not-allowed;
+}
+
+.panel {
+  padding-top: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger {
+    transition: none;
+  }
+}
+
+[data-skrewww-surface="glass"] .list {
+  background: color-mix(in srgb, var(--semantic-surface-default) 88%, white);
+  backdrop-filter: blur(8px);
+}

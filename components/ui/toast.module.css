@@ -1,0 +1,22 @@
+.viewport {
+  position: fixed;
+  right: var(--toast-viewport-offset);
+  bottom: var(--toast-viewport-offset);
+  z-index: 50;
+  display: flex;
+  width: min(var(--toast-max-width), calc(100vw - 2rem));
+  flex-direction: column-reverse;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  box-shadow: var(--surface-shadow-elevated);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: none;
+  }
+}

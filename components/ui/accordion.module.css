@@ -1,0 +1,80 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--accordion-item-border);
+  border-radius: var(--accordion-radius);
+  overflow: hidden;
+  background: var(--accordion-item-surface);
+}
+
+.item + .item {
+  border-top: 1px solid var(--accordion-item-border);
+}
+
+.heading {
+  margin: 0;
+}
+
+.trigger {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--accordion-trigger-gap);
+  min-height: var(--accordion-trigger-height);
+  padding: var(--accordion-trigger-padding);
+  border: 0;
+  background: transparent;
+  color: var(--accordion-trigger-text);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: -2px;
+}
+
+.triggerLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--semantic-icon-muted);
+  transition: transform var(--accordion-motion-duration) var(--accordion-motion-easing);
+}
+
+.iconOpen {
+  transform: rotate(180deg);
+}
+
+.panel {
+  color: var(--accordion-panel-text);
+}
+
+.panelInner {
+  padding: var(--accordion-panel-padding);
+  padding-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    transition: none;
+  }
+}
+
+[data-skrewww-shape="pill"] .root {
+  border-radius: min(var(--accordion-radius), 1.25rem);
+}
+
+[data-skrewww-surface="glass"] .root {
+  background: color-mix(in srgb, var(--accordion-item-surface) 92%, white);
+  backdrop-filter: blur(12px);
+}

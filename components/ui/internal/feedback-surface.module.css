@@ -1,0 +1,107 @@
+.feedback {
+  display: flex;
+  gap: var(--feedback-content-gap);
+  align-items: flex-start;
+  padding: var(--feedback-padding);
+  border: 1px solid var(--feedback-border);
+  border-radius: var(--feedback-radius);
+  background: var(--feedback-surface);
+  color: var(--feedback-text);
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--feedback-title);
+}
+
+.description {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--feedback-text);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.dismiss {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: none;
+  border-radius: var(--shape-radius-control);
+  background: transparent;
+  color: var(--feedback-icon);
+  cursor: pointer;
+}
+
+.dismiss:hover {
+  background: rgb(19 19 22 / 0.06);
+}
+
+.dismiss:focus {
+  outline: none;
+}
+
+.dismiss:focus-visible {
+  box-shadow: 0 0 0 2px var(--semantic-focus-ring);
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--feedback-icon);
+}
+
+.info {
+  --feedback-surface: var(--feedback-info-surface);
+  --feedback-border: var(--feedback-info-border);
+  --feedback-text: var(--feedback-info-text);
+  --feedback-title: var(--feedback-info-title);
+  --feedback-icon: var(--semantic-feedback-info);
+}
+
+.success {
+  --feedback-surface: var(--feedback-success-surface);
+  --feedback-border: var(--feedback-success-border);
+  --feedback-text: var(--feedback-success-text);
+  --feedback-title: var(--feedback-success-title);
+  --feedback-icon: var(--semantic-feedback-success);
+}
+
+.warning {
+  --feedback-surface: var(--feedback-warning-surface);
+  --feedback-border: var(--feedback-warning-border);
+  --feedback-text: var(--feedback-warning-text);
+  --feedback-title: var(--feedback-warning-title);
+  --feedback-icon: var(--semantic-feedback-warning);
+}
+
+.error {
+  --feedback-surface: var(--feedback-error-surface);
+  --feedback-border: var(--feedback-error-border);
+  --feedback-text: var(--feedback-error-text);
+  --feedback-title: var(--feedback-error-title);
+  --feedback-icon: var(--semantic-action-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dismiss {
+    transition: none;
+  }
+}

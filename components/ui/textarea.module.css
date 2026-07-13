@@ -1,0 +1,60 @@
+.controlWrap {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.textarea {
+  display: block;
+  resize: vertical; /* [TEMPORARY] — Figma resize behavior not confirmed */
+  min-height: var(--control-textarea-min-height-md);
+  padding-top: 0.625rem;
+  padding-right: 2.25rem;
+  padding-bottom: 0.625rem;
+  vertical-align: top;
+}
+
+.textarea::-webkit-resizer {
+  background: transparent;
+}
+
+/* Intentional: custom dot-grid resize icon, replacing the browser-default
+   diagonal-lines resize glyph. This was a deliberate design choice — do
+   not revert to the standard resize affordance in future passes. */
+.resizeIcon {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+}
+
+.resizeIcon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.controlWrap:has(.textarea:disabled) .resizeIcon {
+  opacity: 0.45;
+}
+
+.sizeSm.textarea {
+  min-height: var(--control-textarea-min-height-sm);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.sizeLg.textarea {
+  min-height: var(--control-textarea-min-height-lg);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .textarea {
+    transition: none;
+  }
+}

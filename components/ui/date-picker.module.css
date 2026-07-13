@@ -1,0 +1,48 @@
+.root {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.calendarButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--date-picker-trigger-icon-size);
+  height: var(--date-picker-trigger-icon-size);
+  border: 0;
+  border-radius: min(var(--shape-radius-control), 9999px);
+  background: transparent;
+  color: var(--semantic-icon-muted);
+  cursor: pointer;
+}
+
+.calendarButton:focus {
+  outline: none;
+}
+
+.calendarButton:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+.calendarButton:disabled {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+
+.popover {
+  box-sizing: border-box;
+  width: auto;
+  max-width: min(
+    var(--calendar-grid-width),
+    calc(100vw - (var(--popover-viewport-padding) * 2))
+  );
+  padding: 0;
+  overflow: hidden;
+}
+
+.popover :global([class*="body"]) {
+  padding: 0;
+}

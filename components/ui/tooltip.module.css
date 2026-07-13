@@ -1,0 +1,44 @@
+.tooltip {
+  position: fixed;
+  z-index: var(--tooltip-z-index);
+  max-width: var(--tooltip-max-width);
+  padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
+  border-radius: var(--tooltip-radius);
+  background: var(--tooltip-surface);
+  color: var(--tooltip-text);
+  box-shadow: var(--tooltip-shadow);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  pointer-events: auto;
+  animation: tooltip-enter var(--tooltip-motion-duration) ease;
+}
+
+.top,
+.bottom,
+.left,
+.right {
+  transform: none;
+}
+
+@keyframes tooltip-enter {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    animation: none;
+  }
+}
+
+[data-skrewww-surface="glass"] .tooltip {
+  background: color-mix(in srgb, var(--tooltip-surface) 92%, white);
+  backdrop-filter: blur(10px);
+}

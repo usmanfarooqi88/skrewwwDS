@@ -1,0 +1,173 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+import {
+  getImplementedComponentCount,
+  getImplementedRegistryEntries,
+} from "@/lib/component-registry";
+import { compareReadmeInventory, parseReadmeImplementedTable } from "@/lib/readme-inventory";
+import { getProjectStatusFacts } from "@/lib/project-status-facts";
+import { REDIRECTED_COMPONENT_SLUGS } from "@/lib/routes";
+import tailwindConfig from "../tailwind.config";
+
+const root = process.cwd();
+
+function readRootFile(relativePath: string): string {
+  return readFileSync(join(root, relativePath), "utf8");
+}
+
+describe("project configuration", () => {
+  it("keeps package.json and package-lock root metadata aligned", () => {
+    const pkg = JSON.parse(readRootFile("package.json"));
+    const lock = JSON.parse(readRootFile("package-lock.json"));
+    const rootLock = lock.packages?.[""];
+    expect(rootLock?.name).toBe(pkg.name);
+    expect(rootLock?.version).toBe(pkg.version);
+  });
+
+  it("declares a Node runtime policy", () => {
+    const pkg = JSON.parse(readRootFile("package.json"));
+    expect(pkg.engines?.node).toBe(">=20.19.0");
+    expect(readRootFile(".nvmrc").trim()).toBe("20.19.0");
+    expect(readRootFile(".node-version").trim()).toBe("20.19.0");
+  });
+
+  it("keeps README inventory synchronized with the registry", () => {
+    const readme = readRootFile("README.md");
+    const errors = compareReadmeInventory(parseReadmeImplementedTable(readme));
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
+  it("derives implemented component count from the registry", () => {
+    const facts = getProjectStatusFacts();
+    expect(facts.implementedComponentCount).toBe(getImplementedComponentCount());
+    expect(getImplementedRegistryEntries()).toHaveLength(facts.implementedComponentCount);
+  });
+
+  it("includes Menu and Combobox in implemented inventory", () => {
+    const names = getImplementedRegistryEntries().map((entry) => entry.name);
+    expect(names).toContain("Menu");
+    expect(names).toContain("Combobox");
+  });
+
+  it("preserves redirect aliases", () => {
+    expect([...REDIRECTED_COMPONENT_SLUGS]).toEqual(["form-field-wrapper", "accordion-item"]);
+    const nextConfig = readRootFile("next.config.js");
+    expect(nextConfig).toContain("/components/form-field-wrapper");
+    expect(nextConfig).toContain("/components/accordion-item");
+  });
+
+  it("isolates Playwright build output from dev .next", () => {
+    const pkg = JSON.parse(readRootFile("package.json"));
+    expect(pkg.scripts["build:e2e"]).toContain(".next-playwright");
+    expect(pkg.scripts["start:e2e"]).toContain(".next-playwright");
+    expect(pkg.scripts["clean:e2e"]).toContain(".next-playwright");
+    expect(readRootFile("next.config.js")).toContain("NEXT_DIST_DIR");
+    expect(readRootFile("playwright.config.ts")).toContain("build:e2e");
+    expect(readRootFile("playwright.config.ts")).toContain("PLAYWRIGHT_REUSE_SERVER");
+    expect(readRootFile(".gitignore")).toContain(".next-playwright/");
+  });
+
+  it("uses default .next for production build scripts", () => {
+    const pkg = JSON.parse(readRootFile("package.json"));
+    expect(pkg.scripts.build).toBe("next build");
+    expect(pkg.scripts["build:e2e"]).not.toContain("npm run build");
+  });
+
+  it("does not treat tsbuildinfo as source", () => {
+    expect(readRootFile(".gitignore")).toContain("*.tsbuildinfo");
+    expect(readRootFile("README.md")).toContain("*.tsbuildinfo");
+    expect(readRootFile("tsconfig.json")).not.toContain("tsconfig.tsbuildinfo");
+  });
+
+  it("documents token source policy", () => {
+    expect(existsSync(join(root, "docs/architecture/token-source-of-truth.md"))).toBe(true);
+    expect(existsSync(join(root, "docs/architecture/file-upload-discovery.md"))).toBe(true);
+    expect(existsSync(join(root, "docs/architecture/data-table-discovery.md"))).toBe(true);
+    expect(existsSync(join(root, "docs/architecture/table-foundation.md"))).toBe(true);
+  });
+
+  it("guards Tailwind brand-500 against tokens.css drift", () => {
+    const tokens = readRootFile("styles/tokens.css");
+    const match = tokens.match(/--primitive-color-brand-500:\s*(#[0-9a-fA-F]{6})/);
+    expect(match?.[1]).toBeDefined();
+    const tokenHex = match![1].toLowerCase();
+    const tailwindHex = (
+      tailwindConfig.theme?.extend?.colors as { brand?: { 500?: string } }
+    )?.brand?.[500]?.toLowerCase();
+    expect(tailwindHex).toBe(tokenHex);
+  });
+
+  it("keeps standing instructions free of stale Calendar/docs-site claims", () => {
+    const claude = readRootFile("skrewww-claude-project-instructions.md");
+    const figma = readRootFile("skrewww-figma-practices-instructions.md");
+    const rules = readRootFile("skrewww-component-build-rules.md");
+    const standing = [claude, figma, rules].join("\n").toLowerCase();
+
+    expect(standing).not.toMatch(/calendar is (still )?missing/);
+    expect(standing).not.toMatch(/only (a )?date picker input exists/);
+    expect(standing).not.toMatch(/calendar only has a date picker input/);
+    expect(standing).not.toMatch(/no documentation site (has been|is) built/);
+    expect(standing).not.toMatch(/most component pages are empty/);
+    expect(standing).not.toMatch(/data (grid|table) is implemented/);
+    expect(standing).not.toMatch(/table uses role=["']?grid/);
+    expect(standing).not.toMatch(/table and data (grid|table) are (the same|interchangeable)/);
+    // Forbid asserting the docs site is still future work (allow instructional "do not claim …").
+    expect(standing).not.toMatch(
+      /(?<!do not claim that the )documentation (website|site) is still a future/,
+    );
+
+    // Unqualified historical Figma totals must not be presented as current.
+    expect(figma.toLowerCase()).not.toMatch(
+      /(?<!historical snapshot[\s\S]{0,800})119 variables across four collections/,
+    );
+    expect(figma).toMatch(/Historical snapshot/i);
+    expect(figma).toMatch(/verification pending/i);
+    expect(figma).toContain("docs/project-status.md");
+    expect(claude).toContain("docs/project-status.md");
+    expect(rules).toContain("docs/project-status.md");
+    expect(rules.toLowerCase()).toMatch(/figma parity pending/);
+  });
+
+  it("keeps standing instructions consistent on Table, Data Table, and docs site", () => {
+    const claude = readRootFile("skrewww-claude-project-instructions.md");
+    const figma = readRootFile("skrewww-figma-practices-instructions.md");
+
+    expect(claude).toMatch(/Calendar Day/);
+    expect(claude).toMatch(/Calendar Grid/);
+    expect(claude).toMatch(/Date Picker/);
+    expect(claude).toMatch(/Table/);
+    expect(claude).toMatch(/native HTML/);
+    expect(claude).toMatch(/Does \*\*not\*\* use `role="grid"`|does \*\*not\*\* use `role="grid"`/i);
+    expect(claude.toLowerCase()).toMatch(/data table[\s\S]{0,200}not implemented|not implemented[\s\S]{0,80}data table/);
+    expect(claude.toLowerCase()).toMatch(/compose table/);
+    expect(claude.toLowerCase()).toMatch(/documentation repository is already implemented/);
+    expect(claude.toLowerCase()).toMatch(/do \*\*not\*\* list calendar as a current react implementation gap|do not list calendar as a current react implementation gap/);
+    // Canonical naming decision (2026-07-13): Data Table, deliberately not Data Grid.
+    expect(claude).toMatch(/Canonical name \*\*Data Table\*\*/);
+    expect(claude.toLowerCase()).toMatch(/not "data grid"/);
+
+    expect(figma.toLowerCase()).toMatch(/page existence is confirmed/);
+    expect(figma.toLowerCase()).toMatch(/mcp is currently \*\*unavailable\*\*|figma mcp is currently \*\*unavailable\*\*/);
+    expect(figma.toLowerCase()).toMatch(/skrewww\.com[\s\S]{0,80}reserved/);
+    expect(figma.toLowerCase()).toMatch(/documentation repository is \*\*built\*\*|react\/next\.js documentation repository is \*\*built\*\*/);
+    expect(figma.toLowerCase()).toMatch(/data table[\s\S]{0,120}not implemented/);
+    expect(figma.toLowerCase()).toMatch(/compose table/);
+  });
+
+  it("documents domain policy without conflating reserved and deployed domains", () => {
+    const readme = readRootFile("README.md");
+    const sourceOfTruth = readRootFile("docs/architecture/source-of-truth.md");
+    expect(readme).toContain("skrewww.com");
+    expect(readme).toContain("skrewww.dev");
+    expect(readme).toContain("NEXT_PUBLIC_SITE_URL");
+    expect(sourceOfTruth).toContain("NEXT_PUBLIC_SITE_URL");
+  });
+
+  it("resolves site origin from NEXT_PUBLIC_SITE_URL in production", () => {
+    const siteConfigSource = readRootFile("lib/site-config.ts");
+    expect(siteConfigSource).toContain("NEXT_PUBLIC_SITE_URL");
+    expect(siteConfigSource).toContain("PRODUCTION_FALLBACK_ORIGIN");
+    expect(siteConfigSource).toContain("https://skrewww.dev");
+  });
+});

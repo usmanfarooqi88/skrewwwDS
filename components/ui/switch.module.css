@@ -1,0 +1,80 @@
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  color: var(--semantic-text-primary);
+}
+
+.controlDisabled {
+  cursor: not-allowed;
+}
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--control-switch-track-width);
+  height: var(--control-switch-track-height);
+  padding: 0;
+  border: 1px solid var(--semantic-border-strong);
+  border-radius: min(var(--shape-radius-control), 9999px);
+  background: var(--semantic-surface-subtle);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.switch:focus {
+  outline: none;
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+.switchOn {
+  background: var(--semantic-action-primary);
+  border-color: var(--semantic-action-primary);
+}
+
+.switchDisabled {
+  pointer-events: none;
+  opacity: var(--opacity-disabled);
+  background: var(--semantic-surface-disabled);
+  border-color: var(--semantic-border-disabled);
+}
+
+.thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--control-switch-thumb-offset);
+  width: var(--control-switch-thumb-size);
+  height: var(--control-switch-thumb-size);
+  border-radius: 50%;
+  background: var(--semantic-surface-default);
+  box-shadow: 0 1px 2px rgb(19 19 22 / 0.12);
+  transform: translateY(-50%);
+  transition: left 0.15s ease;
+}
+
+.thumbOn {
+  left: calc(
+    var(--control-switch-track-width) - var(--control-switch-thumb-size) -
+      var(--control-switch-thumb-offset)
+  );
+}
+
+.labelText {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch,
+  .thumb {
+    transition: none;
+  }
+}

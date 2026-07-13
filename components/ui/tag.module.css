@@ -1,0 +1,50 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tag-gap);
+  max-width: 100%;
+  min-height: var(--tag-min-height);
+  padding: 0 var(--tag-padding-x);
+  border: 1px solid var(--tag-border);
+  border-radius: var(--tag-radius);
+  background: var(--tag-surface);
+  color: var(--tag-text);
+  font-size: 0.8125rem;
+  line-height: 1.2;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leadingIcon {
+  display: inline-flex;
+  color: var(--semantic-icon-muted);
+}
+
+.leadingIcon :global(svg) {
+  width: var(--tag-icon-size);
+  height: var(--tag-icon-size);
+}
+
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tag-remove-size);
+  height: var(--tag-remove-size);
+  margin-right: calc(var(--tag-padding-x) * -0.35);
+  border: 0;
+  border-radius: min(var(--shape-radius-control), 9999px);
+  background: transparent;
+  color: var(--semantic-icon-muted);
+  cursor: pointer;
+}
+
+.remove:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: 1px;
+}

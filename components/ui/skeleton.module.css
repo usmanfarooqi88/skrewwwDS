@@ -1,0 +1,61 @@
+.skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--skeleton-base-surface);
+  border-radius: var(--skeleton-radius);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-highlight-surface) 50%,
+    transparent 100%
+  );
+  animation: skeleton-shimmer var(--skeleton-animation-duration) ease-in-out infinite;
+}
+
+.text {
+  width: var(--skeleton-text-width);
+  height: var(--skeleton-line-height);
+}
+
+.circle {
+  width: var(--skeleton-circle-size);
+  height: var(--skeleton-circle-size);
+  border-radius: 9999px;
+}
+
+.rectangle {
+  width: 100%;
+  height: var(--skeleton-rectangle-height);
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+    transform: none;
+    opacity: 0.35;
+  }
+}
+
+[data-skrewww-surface="gradient"] .skeleton,
+[data-skrewww-surface="glass"] .skeleton {
+  background: color-mix(in srgb, var(--skeleton-base-surface) 85%, white);
+}
+
+[data-skrewww-shape="pill"] .text,
+[data-skrewww-shape="pill"] .rectangle {
+  border-radius: min(var(--skeleton-radius), 9999px);
+}

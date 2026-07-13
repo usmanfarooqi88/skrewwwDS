@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+.next-playwright/
+out/
+
+# Production
+build/
+dist/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Environment
+.env
+.env*.local
+
+# Debug / OS
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+*.pem
+
+# Vercel
+.vercel
+
+# IDE / local agent settings
+.idea/
+.vscode/
+.claude/
+
+# Misc caches
+.turbo/
+coverage/

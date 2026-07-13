@@ -1,0 +1,539 @@
+/*
+ * Skrewww design tokens — CSS custom properties
+ * Layers: Primitive → Semantic → Component → Brand → Shape → Surface
+ *
+ * Token classification key (in comments):
+ *   [VERIFIED]     — confirmed against Figma Primitive/Semantic collections
+ *   [ALIASED]      — references another verified token
+ *   [TEMPORARY]    — implementation placeholder pending Figma confirmation
+ *   [UNRESOLVED]   — known gap, do not treat as final
+ *   [EXPERIMENTAL] — mode or value not production-ready
+ */
+
+:root {
+  /* ── Primitive: color / brand [VERIFIED] ── */
+  --primitive-color-brand-500: #6c4cf2; /* color/brand/500 */
+  --primitive-color-brand-600: #5738c7; /* color/brand/600 */
+  --primitive-color-brand-700: #42299c; /* color/brand/700 */
+
+  /* ── Primitive: color / neutral [VERIFIED] ── */
+  --primitive-color-neutral-0: #ffffff;
+  --primitive-color-neutral-50: #f7f7f8;
+  --primitive-color-neutral-100: #ededf0;
+  --primitive-color-neutral-200: #dfe0e4;
+  --primitive-color-neutral-300: #c5c6cc;
+  --primitive-color-neutral-400: #a0a2ac;
+  --primitive-color-neutral-500: #71737c;
+  --primitive-color-neutral-600: #52545c;
+  --primitive-color-neutral-900: #131316;
+
+  /* ── Primitive: opacity [VERIFIED] ── */
+  --primitive-opacity-disabled: 0.4; /* opacity/disabled */
+
+  /* ── Primitive: shadow [TEMPORARY] — blur/color values pending Figma confirmation ── */
+  --primitive-shadow-blur-3: 8px; /* shadow-blur/3 — TODO: confirm px value */
+  --primitive-shadow-blur-5: 16px; /* shadow-blur/5 — TODO: confirm px value */
+  --primitive-shadow-color-3: rgb(19 19 22 / 0.08); /* shadow-color/3 — TODO: confirm alpha */
+  --primitive-shadow-color-5: rgb(19 19 22 / 0.12); /* shadow-color/5 — TODO: confirm alpha */
+
+  /* ── Semantic (Light) [VERIFIED / ALIASED] ── */
+  --semantic-action-primary: var(--primitive-color-brand-500); /* [ALIASED] */
+  --semantic-action-primary-hover: var(--primitive-color-brand-600); /* [ALIASED] */
+  --semantic-action-primary-pressed: var(--primitive-color-brand-700); /* [ALIASED] */
+  --semantic-action-danger: #d92d3e; /* [VERIFIED] semantic/action/danger */
+  --semantic-action-danger-hover: #b82433; /* [TEMPORARY] — hover step not documented */
+  --semantic-action-danger-pressed: #961d29; /* [TEMPORARY] — pressed step not documented */
+  --semantic-text-primary: var(--primitive-color-neutral-900); /* [ALIASED] */
+  --semantic-text-secondary: var(--primitive-color-neutral-600); /* [ALIASED] */
+  --semantic-text-inverse: var(--primitive-color-neutral-0); /* [ALIASED] */
+  --semantic-text-disabled: var(--primitive-color-neutral-400); /* [ALIASED] */
+  --semantic-surface-default: var(--primitive-color-neutral-0); /* [ALIASED] */
+  --semantic-surface-elevated: var(--primitive-color-neutral-50); /* [ALIASED] */
+  --semantic-surface-subtle: var(--primitive-color-neutral-50); /* [ALIASED] */
+  --semantic-surface-disabled: var(--primitive-color-neutral-100); /* [TEMPORARY] disabled fill */
+  --semantic-border-default: var(--primitive-color-neutral-200); /* [ALIASED] */
+  --semantic-border-strong: var(--primitive-color-neutral-300); /* [ALIASED] */
+  --semantic-border-disabled: var(--primitive-color-neutral-200); /* [TEMPORARY] */
+  --semantic-focus-ring: var(--primitive-color-brand-500); /* [ALIASED] semantic/focus-ring */
+  --semantic-icon-muted: var(--primitive-color-neutral-400); /* [ALIASED] */
+  --semantic-feedback-success: #1a8b4c; /* [VERIFIED] */
+  --semantic-feedback-warning: #b36a00; /* [VERIFIED] */
+  --semantic-feedback-info: #2563c7; /* [VERIFIED] */
+
+  /* ── Component [TEMPORARY] — radius values pending Shape collection confirmation ── */
+  --component-radius-control: 6px; /* component/radius/control — Rounded mode default */
+  --component-radius-container: 12px; /* component/radius/container — Rounded mode default */
+
+  /* ── Brand [ALIASED] ── */
+  --brand-action-primary: var(--semantic-action-primary);
+
+  /* ── Shape (default: Rounded) [ALIASED] ── */
+  --shape-radius-control: var(--component-radius-control);
+  --shape-radius-container: var(--component-radius-container);
+
+  /* ── Surface (default: Flat) [ALIASED] ── */
+  --surface-fill-default: var(--semantic-surface-default);
+  --surface-fill-control: var(--semantic-surface-default);
+  --surface-border-default: var(--semantic-border-default);
+  /* [TEMPORARY] raised Card shadow — offset/spread pending Figma shadow tokens */
+  --surface-shadow-raised: 0 var(--primitive-shadow-blur-3) var(--primitive-shadow-blur-3)
+    var(--primitive-shadow-color-3);
+  --surface-shadow-elevated: 0 var(--primitive-shadow-blur-5) var(--primitive-shadow-blur-5)
+    var(--primitive-shadow-color-5);
+
+  /* ── Control sizing [TEMPORARY] — exact Figma Small/Medium/Large dimensions unresolved ── */
+  --control-height-sm: 2rem;
+  --control-height-md: 2.5rem;
+  --control-height-lg: 3rem;
+  --control-padding-x-sm: 0.75rem;
+  --control-padding-x-md: 1rem;
+  --control-padding-x-lg: 1.25rem;
+  --control-font-size-sm: 0.875rem;
+  --control-font-size-md: 0.875rem;
+  --control-font-size-lg: 1rem;
+  --control-gap: 0.5rem;
+
+  --opacity-disabled: var(--primitive-opacity-disabled);
+
+  /* ── Form control geometry [TEMPORARY] ── */
+  --control-checkbox-size: 1rem;
+  --control-checkbox-radius-max: 4px;
+  --control-radio-size: 1rem;
+  --control-switch-track-width: 2.5rem;
+  --control-switch-track-height: 1.5rem;
+  --control-switch-thumb-size: 1.125rem;
+  --control-switch-thumb-offset: 0.125rem;
+  /* [TEMPORARY] Textarea min-heights — Figma has no numeric height property */
+  --control-textarea-min-height-sm: 5rem;
+  --control-textarea-min-height-md: 6.5rem;
+  --control-textarea-min-height-lg: 8rem;
+
+  /* ── Feedback component geometry [TEMPORARY] ── */
+  --feedback-padding: 1rem;
+  --feedback-content-gap: 0.75rem;
+  --feedback-radius: var(--shape-radius-container);
+  --feedback-info-surface: rgb(37 99 199 / 0.08);
+  --feedback-info-border: rgb(37 99 199 / 0.24);
+  --feedback-info-text: var(--semantic-text-primary);
+  --feedback-info-title: #1e4f9c;
+  --feedback-success-surface: rgb(26 139 76 / 0.08);
+  --feedback-success-border: rgb(26 139 76 / 0.24);
+  --feedback-success-text: var(--semantic-text-primary);
+  --feedback-success-title: #156b3f;
+  --feedback-warning-surface: rgb(179 106 0 / 0.1);
+  --feedback-warning-border: rgb(179 106 0 / 0.28);
+  --feedback-warning-text: var(--semantic-text-primary);
+  --feedback-warning-title: #8a4f00;
+  --feedback-error-surface: rgb(217 45 62 / 0.08);
+  --feedback-error-border: rgb(217 45 62 / 0.24);
+  --feedback-error-text: var(--semantic-text-primary);
+  --feedback-error-title: #9f1f2d;
+  --toast-max-width: 24rem;
+  --toast-viewport-offset: 1rem;
+  --progress-track-height: 0.5rem;
+  --progress-animation-duration: 1.4s;
+  --spinner-size-sm: 1rem;
+  --spinner-size-md: 1.25rem;
+  --spinner-size-lg: 1.5rem;
+  --spinner-animation-duration: 0.8s;
+
+  /* ── Badge geometry [TEMPORARY] ── */
+  --badge-gap: 0.25rem;
+  --badge-min-height-sm: 1.25rem;
+  --badge-min-height-md: 1.5rem;
+  --badge-min-height-lg: 1.75rem;
+  --badge-padding-x-sm: 0.375rem;
+  --badge-padding-x-md: 0.5rem;
+  --badge-padding-x-lg: 0.625rem;
+  --badge-padding-y-sm: 0.125rem;
+  --badge-padding-y-md: 0.1875rem;
+  --badge-padding-y-lg: 0.25rem;
+  --badge-font-size-sm: 0.6875rem;
+  --badge-font-size-md: 0.75rem;
+  --badge-font-size-lg: 0.8125rem;
+  --badge-icon-size-sm: 0.75rem;
+  --badge-icon-size-md: 0.875rem;
+  --badge-icon-size-lg: 1rem;
+  --badge-radius: min(var(--shape-radius-control), 9999px);
+  --badge-neutral-surface: var(--semantic-surface-elevated, #f3f4f6);
+  --badge-neutral-border: var(--semantic-border-default);
+  --badge-neutral-text: var(--semantic-text-primary);
+  --badge-info-surface: rgb(37 99 199 / 0.1);
+  --badge-info-border: rgb(37 99 199 / 0.24);
+  --badge-info-text: #1e4f9c;
+  --badge-success-surface: rgb(26 139 76 / 0.1);
+  --badge-success-border: rgb(26 139 76 / 0.24);
+  --badge-success-text: #156b3f;
+  --badge-warning-surface: rgb(179 106 0 / 0.12);
+  --badge-warning-border: rgb(179 106 0 / 0.28);
+  --badge-warning-text: #8a4f00;
+  --badge-error-surface: rgb(217 45 62 / 0.1);
+  --badge-error-border: rgb(217 45 62 / 0.24);
+  --badge-error-text: #9f1f2d;
+
+  /* ── Tooltip geometry [TEMPORARY] ── */
+  --tooltip-surface: var(--color-neutral-900, #131316);
+  --tooltip-text: #ffffff;
+  --tooltip-max-width: 16rem;
+  --tooltip-padding-x: 0.625rem;
+  --tooltip-padding-y: 0.375rem;
+  --tooltip-radius: var(--shape-radius-container);
+  --tooltip-offset: 0.5rem;
+  --tooltip-open-delay: 300ms;
+  --tooltip-close-delay: 100ms;
+  --tooltip-motion-duration: 120ms;
+  --tooltip-z-index: 60;
+  --tooltip-shadow: 0 8px 24px rgb(19 19 22 / 0.18);
+
+  /* ── Skeleton geometry [TEMPORARY] ── */
+  --skeleton-base-surface: var(--semantic-border-default);
+  --skeleton-highlight-surface: rgb(255 255 255 / 0.45);
+  --skeleton-radius: min(var(--shape-radius-control), 0.375rem);
+  --skeleton-animation-duration: 1.4s;
+  --skeleton-line-height: 0.875rem;
+  --skeleton-text-width: 100%;
+  --skeleton-circle-size: 2.5rem;
+  --skeleton-rectangle-height: 5rem;
+
+  /* ── Link geometry [TEMPORARY] ── */
+  --link-text-default: var(--semantic-action-primary);
+  --link-text-hover: var(--semantic-action-primary-hover);
+  --link-font-size-sm: 0.8125rem;
+  --link-font-size-md: 0.875rem;
+  --link-font-size-lg: 1rem;
+  --link-icon-gap: 0.25rem;
+  --link-underline-thickness: 1px;
+  --link-underline-offset: 0.15em;
+
+  /* ── Breadcrumb geometry [TEMPORARY] ── */
+  --breadcrumb-font-size: 0.75rem;
+  --breadcrumb-gap: 0.375rem;
+  --breadcrumb-separator: var(--semantic-text-secondary);
+  --breadcrumb-current-text: var(--semantic-text-primary);
+  --breadcrumb-icon-size: 0.875rem;
+  --breadcrumb-max-item-width: 16rem;
+
+  /* ── Tabs geometry [TEMPORARY] ── */
+  --tab-height: 2.5rem;
+  --tab-padding-x: 0.75rem;
+  --tab-gap: 0.25rem;
+  --tab-font-size: 0.875rem;
+  --tab-text: var(--semantic-text-secondary);
+  --tab-active-text: var(--semantic-text-primary);
+  --tab-active-indicator: var(--semantic-action-primary);
+  --tab-border: var(--semantic-border-default);
+  --tab-indicator-thickness: 2px;
+  --tab-transition-duration: 150ms;
+
+  /* ── Pagination geometry [TEMPORARY] ── */
+  --pagination-control-size: 2.25rem;
+  --pagination-gap: 0.375rem;
+  --pagination-font-size: 0.875rem;
+  --pagination-text: var(--semantic-text-secondary);
+  --pagination-current-surface: var(--semantic-surface-elevated);
+  --pagination-current-text: var(--semantic-text-primary);
+  --pagination-border: var(--semantic-border-default);
+  --pagination-disabled-text: var(--semantic-text-disabled);
+  --pagination-ellipsis-width: 2rem;
+
+  /* ── Dialog geometry [TEMPORARY] ── */
+  --dialog-overlay-background: rgb(19 19 22 / 0.56);
+  --dialog-overlay-background-opaque: rgb(19 19 22 / 0.88);
+  --dialog-surface: var(--semantic-surface-default);
+  --dialog-text: var(--semantic-text-primary);
+  --dialog-border: var(--semantic-border-default);
+  --dialog-radius: var(--shape-radius-container);
+  --dialog-elevation: 0 var(--primitive-shadow-blur-5) var(--primitive-shadow-blur-5)
+    var(--primitive-shadow-color-5);
+  --dialog-width: 32rem;
+  --dialog-max-height: 85vh;
+  --dialog-padding: 1.25rem;
+  --dialog-viewport-padding: 1rem;
+  --dialog-header-gap: 0.75rem;
+  --dialog-body-gap: 0.5rem;
+  --dialog-close-size: 2rem;
+  --dialog-z-index: 70;
+  --dialog-open-duration: 180ms;
+  --dialog-close-duration: 150ms;
+  --dialog-motion-easing: ease;
+
+  /* ── Popover geometry [TEMPORARY] ── */
+  --popover-surface: var(--semantic-surface-default);
+  --popover-surface-opaque: var(--semantic-surface-default);
+  --popover-text: var(--semantic-text-primary);
+  --popover-border: var(--semantic-border-default);
+  --popover-radius: var(--shape-radius-container);
+  --popover-elevation: 0 var(--primitive-shadow-blur-4) var(--primitive-shadow-blur-4)
+    var(--primitive-shadow-color-4);
+  --popover-padding: 1rem;
+  --popover-max-width: 20rem;
+  --popover-offset: 0.5rem;
+  --popover-viewport-padding: 0.5rem;
+  --popover-body-gap: 0.5rem;
+  --popover-arrow-size: 0.625rem;
+  --popover-z-index: 65;
+  --popover-open-duration: 150ms;
+  --popover-close-duration: 120ms;
+  --popover-motion-easing: ease;
+
+  /* ── Menu geometry [TEMPORARY — aliases Popover + semantic tokens] ── */
+  --menu-surface: var(--popover-surface);
+  --menu-border: var(--popover-border);
+  --menu-elevation: var(--popover-elevation);
+  --menu-radius: var(--popover-radius);
+  --menu-padding: 0.25rem;
+  --menu-min-width: 10rem;
+  --menu-max-width: 18rem;
+  --menu-max-height: min(24rem, calc(100vh - var(--menu-viewport-padding) * 2));
+  --menu-item-height: 2.25rem;
+  --menu-item-padding: 0.5rem 0.625rem;
+  --menu-item-gap: 0.125rem;
+  --menu-item-radius: var(--shape-radius-control);
+  --menu-item-text: var(--semantic-text-primary);
+  --menu-item-icon: var(--semantic-icon-muted);
+  --menu-item-hover-surface: var(--semantic-surface-elevated);
+  --menu-item-focused-surface: var(--semantic-surface-subtle);
+  --menu-item-disabled-text: var(--semantic-text-disabled);
+  --menu-item-destructive-text: var(--semantic-action-danger);
+  --menu-item-destructive-hover-surface: var(--semantic-surface-subtle);
+  --menu-label-text: var(--semantic-text-secondary);
+  --menu-label-padding: 0.375rem 0.625rem 0.25rem;
+  --menu-separator-color: var(--semantic-border-default);
+  --menu-separator-margin: 0.25rem 0;
+  --menu-shortcut-text: var(--semantic-text-secondary);
+  --menu-viewport-padding: var(--popover-viewport-padding);
+  --menu-z-index: var(--popover-z-index);
+  --menu-open-duration: var(--popover-open-duration);
+  --menu-close-duration: var(--popover-close-duration);
+  --menu-motion-easing: var(--popover-motion-easing);
+
+  /* ── Combobox geometry [TEMPORARY — aliases Select/Popover/form tokens] ── */
+  --combobox-icon: var(--semantic-icon-muted);
+  --combobox-popup-surface: var(--popover-surface);
+  --combobox-popup-border: var(--popover-border);
+  --combobox-popup-elevation: var(--popover-elevation);
+  --combobox-popup-radius: var(--popover-radius);
+  --combobox-popup-padding: 0.25rem;
+  --combobox-popup-max-height: min(16rem, calc(100vh - var(--popover-viewport-padding) * 2));
+  --combobox-option-height: 2.25rem;
+  --combobox-option-padding: 0.5rem 0.625rem;
+  --combobox-option-radius: var(--shape-radius-control);
+  --combobox-option-text: var(--semantic-text-primary);
+  --combobox-option-active-surface: var(--semantic-surface-elevated);
+  --combobox-option-selected-surface: var(--semantic-surface-subtle);
+  --combobox-option-disabled-text: var(--semantic-text-disabled);
+  --combobox-empty-padding: 0.625rem;
+  --combobox-empty-min-height: 2.25rem;
+  --combobox-empty-text: var(--semantic-text-secondary);
+
+  /* ── File Upload [TEMPORARY — Figma MCP verification pending] ── */
+  --file-upload-surface: var(--semantic-surface-default);
+  --file-upload-border: var(--semantic-border-default);
+  --file-upload-border-style: dashed;
+  --file-upload-border-dragging: var(--semantic-action-primary);
+  --file-upload-border-error: var(--semantic-action-danger);
+  --file-upload-radius: var(--shape-radius-container);
+  --file-upload-padding: 1.25rem;
+  --file-upload-min-height: 8rem;
+  --file-upload-icon-size: 1.75rem;
+  --file-upload-icon: var(--semantic-icon-muted);
+  --file-upload-title-text: var(--semantic-text-primary);
+  --file-upload-description-text: var(--semantic-text-secondary);
+  --file-upload-list-gap: 0.5rem;
+  --file-upload-item-surface: var(--semantic-surface-elevated);
+  --file-upload-item-border: var(--semantic-border-default);
+  --file-upload-item-radius: var(--shape-radius-control);
+  --file-upload-item-padding: 0.625rem 0.75rem;
+  --file-upload-file-name-text: var(--semantic-text-primary);
+  --file-upload-metadata-text: var(--semantic-text-secondary);
+  --file-upload-remove-size: 2rem;
+
+  /* ── Table [TEMPORARY — React-first foundation; Figma MCP verification pending] ── */
+  --table-surface: var(--semantic-surface-default); /* [ALIASED] */
+  --table-border: var(--semantic-border-default); /* [ALIASED] */
+  --table-radius: var(--shape-radius-container); /* [ALIASED] container-capped for Pill */
+  --table-text: var(--semantic-text-primary); /* [ALIASED] */
+  --table-muted-text: var(--semantic-text-secondary); /* [ALIASED] */
+  --table-header-surface: var(--semantic-surface-elevated); /* [ALIASED] */
+  --table-header-text: var(--semantic-text-primary); /* [ALIASED] */
+  --table-header-border: var(--semantic-border-default); /* [ALIASED] */
+  --table-row-border: var(--semantic-border-default); /* [ALIASED] */
+  --table-cell-padding-inline: 0.75rem; /* TEMPORARY — React-first Table foundation; Figma verification pending */
+  --table-cell-padding-block: 0.625rem; /* TEMPORARY — React-first Table foundation; Figma verification pending */
+  --table-caption-text: var(--semantic-text-secondary); /* [ALIASED] */
+  --table-caption-gap: 0.5rem; /* TEMPORARY — React-first Table foundation; Figma verification pending */
+  --table-footer-surface: var(--semantic-surface-subtle); /* [ALIASED] */
+  /* TEMPORARY — React-first Table foundation; Figma verification pending */
+  --table-scroll-shadow: var(--primitive-shadow-color-5);
+  --table-scroll-fade-size: 1.25rem;
+
+  /* ── Drawer geometry [TEMPORARY] ── */
+  --drawer-overlay-background: var(--dialog-overlay-background);
+  --drawer-overlay-background-opaque: var(--dialog-overlay-background-opaque);
+  --drawer-surface: var(--dialog-surface);
+  --drawer-text: var(--dialog-text);
+  --drawer-border: var(--dialog-border);
+  --drawer-radius: var(--dialog-radius);
+  --drawer-elevation: var(--dialog-elevation);
+  --drawer-width: 24rem;
+  --drawer-max-width: min(24rem, 92vw);
+  --drawer-padding: var(--dialog-padding);
+  --drawer-header-gap: var(--dialog-header-gap);
+  --drawer-body-gap: var(--dialog-body-gap);
+  --drawer-close-size: var(--dialog-close-size);
+  --drawer-z-index: 75;
+  --drawer-open-duration: var(--dialog-open-duration);
+  --drawer-close-duration: var(--dialog-close-duration);
+  --drawer-motion-easing: var(--dialog-motion-easing);
+
+  /* ── Accordion geometry [TEMPORARY] ── */
+  --accordion-item-border: var(--semantic-border-default);
+  --accordion-item-surface: var(--semantic-surface-default);
+  --accordion-radius: var(--shape-radius-container);
+  --accordion-trigger-height: 3rem;
+  --accordion-trigger-padding: 0.875rem 1rem;
+  --accordion-trigger-gap: 0.75rem;
+  --accordion-trigger-text: var(--semantic-text-primary);
+  --accordion-panel-padding: 1rem;
+  --accordion-panel-text: var(--semantic-text-secondary);
+  --accordion-motion-duration: 180ms;
+  --accordion-motion-easing: ease;
+
+  /* ── Tag geometry [TEMPORARY] ── */
+  --tag-min-height: 1.75rem;
+  --tag-padding-x: 0.625rem;
+  --tag-gap: 0.375rem;
+  --tag-text: var(--semantic-text-primary);
+  --tag-surface: var(--semantic-surface-elevated);
+  --tag-border: var(--semantic-border-default);
+  --tag-radius: var(--radius-full); /* [VERIFIED] Pill label from Figma */
+  --tag-icon-size: 0.875rem;
+  --tag-remove-size: 1.25rem;
+
+  /* ── Avatar geometry [VERIFIED + TEMPORARY] ── */
+  --avatar-size-sm: 1.75rem;
+  --avatar-size-md: 2.5rem;
+  --avatar-size-lg: 3rem;
+  --avatar-background: var(--semantic-action-primary);
+  --avatar-text: var(--semantic-text-inverse);
+  --avatar-border: var(--semantic-border-default);
+  --avatar-radius: var(--radius-full); /* [VERIFIED] Always circular */
+  --avatar-image-fit: cover;
+
+  /* ── Divider geometry [VERIFIED] ── */
+  --divider-thickness: 1px;
+  --divider-color: var(--semantic-border-default);
+  --divider-spacing-y: 1rem;
+  --divider-spacing-x: 0.75rem;
+  --divider-vertical-min-height: 2rem;
+
+  /* ── List Item geometry [TEMPORARY] ── */
+  --list-item-min-height: 3.5rem;
+  --list-item-padding-x: 0.875rem;
+  --list-item-padding-y: 0.625rem;
+  --list-item-gap: 0.75rem;
+  --list-item-leading-size: 2.5rem;
+  --list-item-surface: var(--semantic-surface-elevated);
+  --list-item-hover-surface: color-mix(in srgb, var(--semantic-surface-elevated) 88%, var(--semantic-border-default));
+  --list-item-title-text: var(--semantic-text-primary);
+  --list-item-description-text: var(--semantic-text-secondary);
+  --list-item-metadata-text: var(--semantic-text-secondary);
+  --list-item-radius: var(--shape-radius-control);
+
+  /* ── Empty State geometry [TEMPORARY] ── */
+  --empty-state-max-width: 28rem;
+  --empty-state-padding-x: 1rem;
+  --empty-state-padding-y: 2rem;
+  --empty-state-content-gap: 1rem;
+  --empty-state-action-gap: 0.75rem;
+  --empty-state-icon-size: 2.5rem;
+  --empty-state-illustration-size: 12rem;
+  --empty-state-title-text: var(--semantic-text-primary);
+  --empty-state-description-text: var(--semantic-text-secondary);
+
+  /* ── Calendar Day geometry [TEMPORARY] ── */
+  --calendar-day-size: 2.5rem;
+  --calendar-day-min-touch: 2.5rem;
+  --calendar-day-text: var(--semantic-text-primary);
+  --calendar-day-muted-text: var(--semantic-text-secondary);
+  --calendar-day-hover-surface: var(--semantic-surface-elevated);
+  --calendar-day-selected-surface: var(--semantic-action-primary);
+  --calendar-day-selected-hover-surface: var(--semantic-action-primary-hover);
+  --calendar-day-selected-text: var(--semantic-text-inverse);
+  --calendar-day-today-indicator: var(--semantic-action-primary);
+  --calendar-day-disabled-text: var(--semantic-text-disabled);
+  --calendar-day-radius: var(--shape-radius-control);
+  --calendar-day-range-middle-surface: color-mix(in srgb, var(--calendar-day-selected-surface) 16%, transparent);
+  --calendar-day-range-middle-hover-surface: color-mix(in srgb, var(--calendar-day-selected-surface) 24%, transparent);
+  --calendar-day-range-preview-surface: color-mix(in srgb, var(--calendar-day-selected-surface) 8%, transparent);
+  --calendar-day-range-preview-hover-surface: color-mix(in srgb, var(--calendar-day-selected-surface) 14%, transparent);
+  --calendar-day-range-preview-border: color-mix(in srgb, var(--calendar-day-selected-surface) 50%, transparent);
+
+  /* ── Calendar Grid geometry [TEMPORARY] ── */
+  --calendar-grid-width: 18.5rem;
+  --calendar-grid-padding: 0.75rem;
+  --calendar-grid-week-gap: 0.375rem;
+  --calendar-grid-day-gap: 0.125rem;
+  --calendar-grid-header-gap: 0.5rem;
+  --calendar-grid-weekday-text: var(--semantic-text-secondary);
+  --calendar-grid-month-text: var(--semantic-text-primary);
+  --calendar-grid-surface: var(--semantic-surface-default);
+  --calendar-grid-border: var(--semantic-border-default);
+  --calendar-grid-radius: var(--shape-radius-container);
+
+  /* ── Date Picker geometry [TEMPORARY] ── */
+  --date-picker-trigger-icon-size: 2rem;
+}
+
+/* ── Shape modes ── */
+[data-skrewww-shape="sharp"] {
+  --shape-radius-control: 0px; /* [VERIFIED] Sharp mode intent */
+  --shape-radius-container: 0px; /* [VERIFIED] Sharp mode intent */
+}
+
+[data-skrewww-shape="rounded"] {
+  --shape-radius-control: 6px; /* [TEMPORARY] */
+  --shape-radius-container: 12px; /* [TEMPORARY] */
+}
+
+[data-skrewww-shape="pill"] {
+  --shape-radius-control: 9999px; /* [VERIFIED] Pill control intent */
+  /* [EXPERIMENTAL] Container stays capped — full pill geometry is inappropriate for Card */
+  --shape-radius-container: 16px; /* [TEMPORARY] capped container radius for Card */
+}
+
+[data-skrewww-shape="squircle"] {
+  /* [EXPERIMENTAL] Approximate border-radius only — not true squircle geometry */
+  --shape-radius-control: 8px; /* [UNRESOLVED] */
+  --shape-radius-container: 16px; /* [UNRESOLVED] */
+}
+
+/* ── Surface modes ── */
+[data-skrewww-surface="flat"] {
+  --surface-fill-default: var(--semantic-surface-default);
+  --surface-fill-control: var(--semantic-surface-default);
+}
+
+[data-skrewww-surface="gradient"] {
+  /* [EXPERIMENTAL] Gradient stops pending Figma Surface collection */
+  --surface-fill-default: linear-gradient(
+    180deg,
+    var(--semantic-surface-default) 0%,
+    var(--semantic-surface-elevated) 100%
+  );
+  --surface-fill-control: var(--semantic-surface-default);
+}
+
+[data-skrewww-surface="glass"] {
+  /* [EXPERIMENTAL] Blur/opacity pending Figma Surface collection */
+  --surface-fill-default: rgb(255 255 255 / 0.72);
+  --surface-fill-control: rgb(255 255 255 / 0.85);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [data-skrewww-surface="glass"] {
+    /* Safe opaque fallback when transparency is reduced */
+    --surface-fill-default: var(--semantic-surface-default);
+    --surface-fill-control: var(--semantic-surface-default);
+  }
+}
