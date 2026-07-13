@@ -95,7 +95,7 @@ export function Tooltip({
   const trigger = cloneElement(child, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      const childRef = (child as React.ReactElement & { ref?: React.Ref<HTMLElement> }).ref;
+      const childRef = child.props.ref;
       if (typeof childRef === "function") childRef(node);
       else if (childRef && typeof childRef === "object") {
         (childRef as React.MutableRefObject<HTMLElement | null>).current = node;

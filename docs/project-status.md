@@ -42,17 +42,28 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 
 ## Quality-gate status
 
-**Last verified: 2026-07-13**
+**Last verified: 2026-07-13** (post Next.js 16 upgrade, branch `upgrade/next-16`)
 
 | Gate | Result |
 |------|--------|
 | `npm run verify:node` | Pass (Node 24.14.0, requires >=20.19.0) |
 | `npm run verify:package` | Pass (`skrewww-docs@0.2.0-beta` lockfile aligned) |
-| ESLint | Pass |
+| ESLint | Pass — 26 problems (0 errors, 26 warnings), `--max-warnings 26` |
 | TypeScript | Pass |
-| Vitest | **495 tests** across **64 files** |
-| Playwright | **125 tests** (isolated `.next-playwright` on port 3100) |
-| Production build | Pass (`.next`) |
+| Vitest | **495 tests** across **64 files** (unchanged from pre-upgrade baseline) |
+| Playwright | **125 tests** (isolated `.next-playwright` on port 3100, unchanged) |
+| Production build | Pass — Turbopack (default bundler), 70/70 pages, no webpack fallback needed |
+| `npm audit` | 1 moderate remaining (PostCSS XSS, vendored inside Next's own `postcss@8.4.31`, unresolved upstream even in 16.2.10) — down from 5 (1 moderate, 4 high) pre-upgrade; see resolved note below |
+
+**Next.js major upgrade — resolved 2026-07-13**: Upgraded 14.2.35 → **16.2.10**
+(React 18 → **19.2.7**, ESLint 8 → **9.39.5** with flat config). Closes the
+"requires jumping to Next 16.x" note in
+[`components/README.md`](../components/README.md). Async params/searchParams
+migration applied to both dynamic routes (`app/components/[slug]`,
+`app/components/category/[categorySlug]`); 5 React 19 `element.ref`
+deprecation call sites fixed (Popover ×2, Dialog, Drawer, Tooltip); one
+genuine Turbopack CSS build failure fixed (`@import` reordered before
+`@tailwind` directives in `app/globals.css`, see `app/globals.css`).
 
 ## Recently shipped
 
