@@ -52,7 +52,7 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 | TypeScript | Pass |
 | Vitest | **495 tests** across **64 files** (unchanged from pre-upgrade baseline) |
 | Playwright | **125 tests** (isolated `.next-playwright` on port 3100, unchanged) |
-| Production build | Pass — Turbopack (default bundler), 70/70 pages, no webpack fallback needed |
+| Production build | Pass — Turbopack (default bundler), **70/70 pages** (was 71/71 pre-upgrade; see note below), no webpack fallback needed |
 | `npm audit` | 1 moderate remaining (PostCSS XSS, vendored inside Next's own `postcss@8.4.31`, unresolved upstream even in 16.2.10) — down from 5 (1 moderate, 4 high) pre-upgrade; see resolved note below |
 
 **Next.js major upgrade — resolved 2026-07-13**: Upgraded 14.2.35 → **16.2.10**
@@ -64,6 +64,36 @@ migration applied to both dynamic routes (`app/components/[slug]`,
 deprecation call sites fixed (Popover ×2, Dialog, Drawer, Tooltip); one
 genuine Turbopack CSS build failure fixed (`@import` reordered before
 `@tailwind` directives in `app/globals.css`, see `app/globals.css`).
+
+**Build page count 71 → 70 — root cause confirmed (2026-07-14)**: `npm run
+build`'s summary line dropped from `71/71` (Next 14.2.35) to `70/70` (Next
+16.2.10). **No route or content page was lost** — confirmed by instrumenting
+both versions' bundled `next/dist/export/index.js` to dump the exact raw path
+array each version iterates to produce its "Generating static pages (X/X)"
+count (not the printed `Route (app)` table, the actual internal list):
+
+- **Next 14** counts **71** paths, and that raw list explicitly includes
+  `/404` and `/500` as two individually-enumerated, separately-counted export
+  paths, alongside `/_not-found` (68 shared content/static routes + `/_not-found`
+  + `/404` + `/500` = 71).
+- **Next 16** counts **70** paths. Its raw list has no `/404` or `/500` entries
+  at all — instead it has `/_global-error` (a new App Router global-error-boundary
+  route) alongside `/_not-found` (68 + `/_not-found` + `/_global-error` = 70).
+  Next 16's `build/index.js` (`moveExportedPage("/_error", "/404", "/404", ...)`
+  and the equivalent for `/500`) still writes `pages/404.html` and
+  `pages/500.html` to disk — confirmed present in both versions' output — but
+  does so as a cheap post-build **copy** from the already-rendered `/_error`
+  output rather than running them through the enumerated, individually-counted
+  static-generation worker loop that Next 14 used.
+
+Net effect: Next 14 individually counted 3 framework-level fallback routes
+(`/_not-found`, `/404`, `/500`); Next 16 counts 2 (`/_not-found`,
+`/_global-error`), folding the legacy pages-router-style `/404`/`/500`
+generation into an uncounted copy step. That's exactly the -1 delta (71→70),
+fully independent of the redirect aliases (`form-field-wrapper`,
+`accordion-item`; those are handled entirely by `next.config.js`'s
+`redirects()` and were never counted as generated pages in either version).
+**70/70 is the correct, current number** and requires no further action.
 
 ## Recently shipped
 
