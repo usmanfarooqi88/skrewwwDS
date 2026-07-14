@@ -5,6 +5,12 @@ type OverlayRegistration = {
   modal: boolean;
 };
 
+export type OverlayHandle = {
+  /** Monotonically increasing registration order — later-registered overlays get higher values. */
+  order: number;
+  unregister: () => void;
+};
+
 let orderCounter = 0;
 const overlayStack: OverlayRegistration[] = [];
 let escapeListenerBound = false;
@@ -27,7 +33,7 @@ function ensureEscapeListener() {
 export function registerOverlay(
   onEscape: () => void,
   options?: { modal?: boolean },
-): () => void {
+): OverlayHandle {
   ensureEscapeListener();
 
   const registration: OverlayRegistration = {
@@ -40,9 +46,12 @@ export function registerOverlay(
   overlayStack.push(registration);
   overlayStack.sort((left, right) => left.order - right.order);
 
-  return () => {
-    const index = overlayStack.findIndex((entry) => entry.id === registration.id);
-    if (index >= 0) overlayStack.splice(index, 1);
+  return {
+    order: registration.order,
+    unregister: () => {
+      const index = overlayStack.findIndex((entry) => entry.id === registration.id);
+      if (index >= 0) overlayStack.splice(index, 1);
+    },
   };
 }
 

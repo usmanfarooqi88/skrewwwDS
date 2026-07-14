@@ -31,11 +31,13 @@ export function generateStaticParams() {
     .map((component) => ({ slug: component.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   return getComponentPageMetadata(params.slug);
 }
 
-export default function ComponentDetailPage({ params }: { params: { slug: string } }) {
+export default async function ComponentDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const canonicalSlug = getCanonicalComponentSlug(params.slug);
   const component = getComponentBySlug(params.slug);
   const registry = getRegistryEntry(canonicalSlug);

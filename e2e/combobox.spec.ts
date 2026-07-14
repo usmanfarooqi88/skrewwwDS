@@ -101,19 +101,41 @@ test.describe("Combobox keyboard model", () => {
     const dialog = page.getByRole("dialog", { name: "Nested overlays" });
     await page.getByRole("button", { name: "Open dialog with combobox" }).click();
     await expect(dialog).toBeVisible();
-    await dialog.getByRole("combobox", { name: "Country" }).click();
-    await expect(page.getByRole("listbox", { name: "Country" })).toBeVisible();
+    const input = dialog.getByRole("combobox", { name: "Country" });
+    await input.click();
+    const listbox = page.getByRole("listbox", { name: "Country" });
+    await expect(listbox).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("listbox")).toHaveCount(0);
     await expect(dialog).toBeVisible();
+
+    // toBeVisible() alone only checks layout (non-zero box, not display:none/visibility:hidden)
+    // — it does NOT catch the listbox being painted *behind* the dialog panel by a stale
+    // z-index stacking order. Reopen (input is already focused after Escape, so ArrowDown
+    // reopens it without needing a fresh focus event) and perform a real click on an option:
+    // this exercises Playwright's actionability/interception check, which fails if another
+    // element (the dialog panel) intercepts the pointer event at that point on screen. This is
+    // the assertion that actually catches the stacking regression this test now guards against
+    // (see components/ui/internal/useOverlayEscape.ts).
+    await page.keyboard.press("ArrowDown");
+    await expect(listbox).toBeVisible();
+    await listbox.getByRole("option", { name: "United States" }).click();
+    await expect(input).toHaveValue("United States");
   });
 
   test("works inside drawer overlay scope", async ({ page }) => {
     await page.getByRole("button", { name: "Open drawer with combobox" }).click();
     const drawer = page.getByRole("dialog", { name: "Drawer filters" });
     await expect(drawer).toBeVisible();
-    await drawer.getByRole("combobox", { name: "Country" }).click();
-    await expect(page.getByRole("listbox", { name: "Country" })).toBeVisible();
+    const input = drawer.getByRole("combobox", { name: "Country" });
+    await input.click();
+    const listbox = page.getByRole("listbox", { name: "Country" });
+    await expect(listbox).toBeVisible();
+
+    // Same stacking-order regression coverage as the dialog case above — a real click exercises
+    // Playwright's interception check, unlike toBeVisible() alone.
+    await listbox.getByRole("option", { name: "United States" }).click();
+    await expect(input).toHaveValue("United States");
   });
 
   test("clears aria-activedescendant when closed", async ({ page }) => {

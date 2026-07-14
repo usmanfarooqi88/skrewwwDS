@@ -173,7 +173,7 @@ export function PopoverAnchor({
   return cloneElement(child, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      const childRef = (child as React.ReactElement & { ref?: React.Ref<HTMLElement> }).ref;
+      const childRef = child.props.ref;
       if (typeof childRef === "function") childRef(node);
       else if (childRef && typeof childRef === "object") {
         (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
@@ -193,7 +193,7 @@ export function PopoverTrigger({ children }: PopoverTriggerProps) {
   return cloneElement(child, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      const childRef = (child as React.ReactElement & { ref?: React.Ref<HTMLElement> }).ref;
+      const childRef = child.props.ref;
       if (typeof childRef === "function") childRef(node);
       else if (childRef && typeof childRef === "object") {
         (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
@@ -264,7 +264,9 @@ export function PopoverContent({
     setContentNode(node);
   }, []);
 
-  useOverlayEscape(open, () => requestClose({ restoreFocus: true }), { modal: false });
+  const stackZIndex = useOverlayEscape(open, () => requestClose({ restoreFocus: true }), {
+    modal: false,
+  });
   useOutsidePointer({
     active: open,
     onOutsidePointer: () => requestClose({ restoreFocus: false }),
@@ -371,7 +373,7 @@ export function PopoverContent({
         data-skrewww-popover-interactive={focusMode === "content" ? "true" : undefined}
         data-skrewww-popover-fit={matchTriggerWidth ? "trigger" : undefined}
         className={cn(styles.popover, styles[resolvedPlacement], className)}
-        style={{ top: coords.top, left: coords.left, ...style }}
+        style={{ top: coords.top, left: coords.left, zIndex: stackZIndex, ...style }}
         tabIndex={focusMode === "content" && !hasAccessibleName ? -1 : undefined}
         onMouseDown={(event) => event.stopPropagation()}
       >

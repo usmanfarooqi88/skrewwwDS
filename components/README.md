@@ -33,6 +33,17 @@ to Next 16.x, a breaking major-version change I did not apply silently.
 That's a separate, bigger decision — worth scheduling deliberately, not
 bundled into this patch.
 
+**Resolved 2026-07-13**: Next.js was upgraded to 16.2.10 (React 19.2.7,
+ESLint 9 flat config) on branch `upgrade/next-16`. `npm audit` now shows
+only 1 moderate finding (PostCSS XSS, GHSA-qx2v-qp2m-jg93), vendored
+inside Next's own bundled `postcss@8.4.31` — still unresolved upstream
+even in 16.2.10, and outside our control until Next.js updates its
+internal copy. All previously-tracked high-severity findings (the
+Next.js CVE cluster and the `glob` command-injection pulled in via the
+old `eslint-config-next`) are gone. See
+[`docs/project-status.md`](../docs/project-status.md#quality-gate-status)
+for current gate numbers.
+
 ## 2. Calendar phase two: min/max dates + disabled-date rules
 
 Closes the first item on the Calendar phase-two roadmap. `CalendarGrid`

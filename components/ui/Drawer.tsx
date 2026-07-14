@@ -175,7 +175,7 @@ export function DrawerTrigger({ children }: DrawerTriggerProps) {
   return cloneElement(child, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      const childRef = (child as React.ReactElement & { ref?: React.Ref<HTMLElement> }).ref;
+      const childRef = child.props.ref;
       if (typeof childRef === "function") childRef(node);
       else if (childRef && typeof childRef === "object") {
         (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
@@ -236,7 +236,7 @@ export function DrawerContent({
 
   useBodyScrollLock(open);
   useBackgroundInert(open, viewportNode);
-  useOverlayEscape(open, () => requestClose("escape-key"), { modal: true });
+  const stackZIndex = useOverlayEscape(open, () => requestClose("escape-key"), { modal: true });
   useFocusTrap(open, contentNode, { initialFocusRef, overlayScopeId });
 
   useEffect(() => {
@@ -266,6 +266,7 @@ export function DrawerContent({
         ref={setViewportRef}
         className={styles.drawerViewport}
         data-skrewww-drawer-placement={placement}
+        style={{ zIndex: stackZIndex }}
         onMouseDown={(event) => {
           if (!closeOnOverlayClick) return;
           if (event.target === event.currentTarget) {

@@ -229,6 +229,40 @@ describe("Dialog", () => {
     vi.unstubAllEnvs();
   });
 
+  // Regression guard: DialogTrigger composes a caller-supplied ref with its
+  // own via cloneElement. Reading element.ref directly (instead of
+  // child.props.ref) is the exact API React 19 deprecated — but React only
+  // installs the warning getter on an element when it actually carries a
+  // ref, so the trigger's child must supply one (matching real composed-ref
+  // usage) or this test would pass regardless of the bug. React also warns
+  // only once per element-type name for the module's life, so this uses a
+  // bare native <button> — every other trigger in this file wraps its child
+  // in the shared <Button> component, so "button" is guaranteed untouched
+  // here; reusing an already-warned type would silently mask a regression.
+  it("does not access the deprecated element.ref API when opened", async () => {
+    const user = userEvent.setup();
+    const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const callerRef = createRef<HTMLButtonElement>();
+    render(
+      <Dialog>
+        <DialogTrigger>
+          <button type="button" ref={callerRef}>
+            Open dialog
+          </button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogBody>Content</DialogBody>
+        </DialogContent>
+      </Dialog>,
+    );
+    await user.click(screen.getByRole("button", { name: "Open dialog" }));
+    expect(callerRef.current).toBeInstanceOf(HTMLButtonElement);
+    expect(
+      error.mock.calls.some((call) => String(call[0]).includes("element.ref")),
+    ).toBe(false);
+    error.mockRestore();
+  });
+
   it("does not export internal overlay utilities", () => {
     expect(Object.keys(PublicUi)).not.toContain("Portal");
     expect(Object.keys(PublicUi)).not.toContain("useBackgroundInert");

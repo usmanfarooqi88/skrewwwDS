@@ -19,11 +19,12 @@ export function generateStaticParams() {
   return Object.values(categorySlugMap).map((categorySlug) => ({ categorySlug }));
 }
 
-export function generateMetadata({
-  params,
-}: {
-  params: { categorySlug: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ categorySlug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const category = getCategoryNameFromSlug(params.categorySlug);
   if (!category) return { title: "Category not found — Skrewww" };
 
@@ -40,11 +41,12 @@ export function generateMetadata({
   };
 }
 
-export default function ComponentCategoryPage({
-  params,
-}: {
-  params: { categorySlug: string };
-}) {
+export default async function ComponentCategoryPage(
+  props: {
+    params: Promise<{ categorySlug: string }>;
+  }
+) {
+  const params = await props.params;
   const category = getCategoryNameFromSlug(params.categorySlug);
   if (!category) notFound();
 

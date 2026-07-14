@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createRef } from "react";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { Tooltip } from "@/components/ui/Tooltip";
 
@@ -133,6 +134,38 @@ describe("Tooltip", () => {
     );
 
     expect(screen.getByRole("button", { name: "Copy code example" })).toBeInTheDocument();
+  });
+
+  // Regression guard: Tooltip composes a caller-supplied ref with its own via
+  // cloneElement. Reading element.ref directly (instead of child.props.ref)
+  // is the exact API React 19 deprecated — but React only installs the
+  // warning getter on an element when it actually carries a ref, so the
+  // trigger child must supply one (matching real composed-ref usage) or this
+  // test would pass regardless of the bug. No other test in this file
+  // attaches an explicit ref to its trigger child, so the warning (which
+  // fires once per element-type name for the module's life) can't have been
+  // pre-consumed here.
+  it("does not access the deprecated element.ref API when triggered", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const callerRef = createRef<HTMLButtonElement>();
+    render(
+      <Tooltip content="Save changes">
+        <button type="button" ref={callerRef}>
+          Save
+        </button>
+      </Tooltip>,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Save" });
+    act(() => {
+      fireEvent.focus(trigger);
+    });
+
+    expect(callerRef.current).toBeInstanceOf(HTMLButtonElement);
+    expect(
+      error.mock.calls.some((call) => String(call[0]).includes("element.ref")),
+    ).toBe(false);
+    error.mockRestore();
   });
 });
 

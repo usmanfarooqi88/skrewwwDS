@@ -79,7 +79,7 @@ export function Tooltip({
     setResolvedPlacement(next.placement);
   }, [open, placement, content]);
 
-  useOverlayEscape(open, closeImmediately);
+  const stackZIndex = useOverlayEscape(open, closeImmediately);
 
   if (!isValidElement(children)) {
     return children;
@@ -95,7 +95,7 @@ export function Tooltip({
   const trigger = cloneElement(child, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      const childRef = (child as React.ReactElement & { ref?: React.Ref<HTMLElement> }).ref;
+      const childRef = child.props.ref;
       if (typeof childRef === "function") childRef(node);
       else if (childRef && typeof childRef === "object") {
         (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
@@ -127,7 +127,7 @@ export function Tooltip({
         id={tooltipId}
         role="tooltip"
         className={cn(styles.tooltip, styles[resolvedPlacement], className)}
-        style={{ top: coords.top, left: coords.left }}
+        style={{ top: coords.top, left: coords.left, zIndex: stackZIndex }}
         onMouseEnter={openImmediately}
         onMouseLeave={scheduleClose}
       >
