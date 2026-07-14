@@ -1,6 +1,29 @@
 # File Upload — discovery and implementation gate
 
-Last updated: **2026-07-13**
+Last updated: **2026-07-15** (Figma live inspection confirms single-file anatomy; multi-file list anatomy confirmed absent — see note below)
+
+> **Figma live inspection results (2026-07-15).** The Forms/File Upload
+> component set (node `2024:2649`) has been directly inspected: **5 state
+> variants** — Empty, Dragging, Error, Disabled, Filled — and one text
+> property, **File Name**. The Filled variant's anatomy is exactly one row:
+> **File Icon + File Name text + Remove Icon**. There is no list container,
+> no repeated-row structure, and no way to represent more than one attached
+> file anywhere in the Figma file. This is a confirmed absence, not an
+> unaudited gap (see `lib/file-upload-figma-metadata.ts`,
+> `FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-absent"`).
+>
+> Net effect on parity, precisely: the **single-file trigger/state anatomy**
+> (Empty/Dragging/Error/Disabled/Filled, File Name property) is now
+> **Figma-confirmed**. The **multi-file list** — React's `multiple` prop,
+> `maxFiles` cap, and independently-removable file-list items (all present
+> and working in `components/ui/FileUpload.tsx` today) — has **no Figma
+> reference to match**. That capability is **React-first with Figma parity
+> pending**, specifically for the list anatomy — not a gap in the component
+> as a whole, and not something to redesign or remove from the React
+> implementation. Everything else below this note is the original
+> pre-implementation discovery record and is left as written for audit
+> traceability; see `docs/project-status.md` for current registry/test
+> counts.
 
 ## Final decision
 
