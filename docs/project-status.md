@@ -53,7 +53,7 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 | Vitest | **515 tests** across **66 files** (501 prior baseline + 14 new: `useDataTableSort` hook + `DataTableSortHeader` component) |
 | Playwright | **131 tests** (isolated `.next-playwright` on port 3100; 125 prior baseline + 6 new `e2e/data-table.spec.ts`) |
 | Production build | Pass — Turbopack (default bundler), **71/71 pages** (70/70 prior baseline + 1 new `/components/data-table` page), no webpack fallback needed |
-| `npm audit` | 1 moderate remaining (PostCSS XSS, vendored inside Next's own `postcss@8.4.31`, unresolved upstream even in 16.2.10) — down from 5 (1 moderate, 4 high) pre-upgrade; see resolved note below |
+| `npm audit` | **0 vulnerabilities** — resolved 2026-07-15 via a `postcss` override; see resolved note below |
 
 **Next.js major upgrade — resolved 2026-07-13**: Upgraded 14.2.35 → **16.2.10**
 (React 18 → **19.2.7**, ESLint 8 → **9.39.5** with flat config). Closes the
@@ -118,6 +118,25 @@ different column always resets it to ascending. `figmaAvailability:
 count moved 39 → 40, Figma-documented count 55 → 56 (new `content/content-data.ts`
 entry, required for `/components/data-table` to resolve rather than 404),
 indexable slugs 54 → 55.
+
+**npm audit — 2 moderate findings resolved via override (2026-07-15)**: The
+PostCSS XSS advisory ([GHSA-qx2v-qp2m-jg93](https://github.com/advisories/GHSA-qx2v-qp2m-jg93))
+previously reported twice by `npm audit` (once as a direct finding, once via
+`next`'s dependency on it) was vendored inside Next 16.2.10's own nested
+`node_modules/next/node_modules/postcss@8.4.31` copy — an upstream Next.js
+packaging issue, not a problem with this repo's own dependency choices.
+Added a root `"overrides": { "postcss": "^8.5.10" }` in `package.json` and
+bumped the direct `postcss` devDependency to the same range (npm's
+`assertRootOverrides` check rejects an override whose range doesn't match a
+package that's also a direct dependency — this is the standard, documented
+resolution, not a workaround). `npm install` then fully deduplicated the
+tree: `node_modules/next/node_modules/postcss` no longer exists at all: a
+single shared `postcss@8.5.19` resolves everywhere, confirmed by direct
+inspection of `node_modules/`, not just trusting the audit output.
+**`npm audit` now reports 0 vulnerabilities.** All gates (lint, typecheck,
+515 Vitest tests, 131 Playwright tests, 71/71-page Turbopack build)
+re-verified clean afterward — the version bump didn't disturb Tailwind's
+PostCSS pipeline.
 
 ## Recently shipped
 
