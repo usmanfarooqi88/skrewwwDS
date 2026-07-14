@@ -1,6 +1,6 @@
 # Project status
 
-Last verified: **2026-07-13** (derived from repository registry, tests, and build configuration — not manually maintained counts)
+Last verified: **2026-07-14** (derived from repository registry, tests, and build configuration — not manually maintained counts)
 
 See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.md)
 
@@ -42,7 +42,7 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 
 ## Quality-gate status
 
-**Last verified: 2026-07-13** (post Next.js 16 upgrade, branch `upgrade/next-16`)
+**Last verified: 2026-07-14** (post Next.js 16 upgrade, merged to `main`)
 
 | Gate | Result |
 |------|--------|
@@ -50,7 +50,7 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 | `npm run verify:package` | Pass (`skrewww-docs@0.2.0-beta` lockfile aligned) |
 | ESLint | Pass — 26 problems (0 errors, 26 warnings), `--max-warnings 26` |
 | TypeScript | Pass |
-| Vitest | **495 tests** across **64 files** (unchanged from pre-upgrade baseline) |
+| Vitest | **501 tests** across **64 files** (495 pre-upgrade baseline + 1 overlay-stack test from the z-index fix + 5 element.ref regression guards added 2026-07-14) |
 | Playwright | **125 tests** (isolated `.next-playwright` on port 3100, unchanged) |
 | Production build | Pass — Turbopack (default bundler), **70/70 pages** (was 71/71 pre-upgrade; see note below), no webpack fallback needed |
 | `npm audit` | 1 moderate remaining (PostCSS XSS, vendored inside Next's own `postcss@8.4.31`, unresolved upstream even in 16.2.10) — down from 5 (1 moderate, 4 high) pre-upgrade; see resolved note below |
