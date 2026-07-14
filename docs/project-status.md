@@ -1,6 +1,6 @@
 # Project status
 
-Last verified: **2026-07-14** (derived from repository registry, tests, and build configuration — not manually maintained counts)
+Last verified: **2026-07-15** (derived from repository registry, tests, and build configuration — not manually maintained counts)
 
 See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.md)
 
@@ -10,11 +10,11 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 
 | Metric | Value | Source |
 |--------|------:|--------|
-| Implemented Beta components | 39 | `getImplementedComponentCount()` / `lib/component-registry.ts` |
-| Registry entries with React | 39 | `hasImplementation: true` |
-| Figma-documented components | 55 | `content/` inventory (`lib/data.ts`) |
+| Implemented Beta components | 40 | `getImplementedComponentCount()` / `lib/component-registry.ts` |
+| Registry entries with React | 40 | `hasImplementation: true` |
+| Figma-documented components | 56 | `content/` inventory (`lib/data.ts`) |
 | Documentation-only (no React) | 16 | Figma docs not in implemented registry set |
-| Indexable documentation slugs | 54 | `getIndexableComponentSlugs()` |
+| Indexable documentation slugs | 55 | `getIndexableComponentSlugs()` |
 | Redirect aliases | 2 | `form-field-wrapper`, `accordion-item` |
 
 ### Implemented inventory by category
@@ -23,7 +23,7 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 |----------|------------|
 | Actions | Button, Link |
 | Containers & Overlays | Accordion, Card, Dialog, Drawer, Popover |
-| Content & Data | Avatar, Calendar Day, Calendar Grid, Divider, Empty State, List Item, Table, Tag |
+| Content & Data | Avatar, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, List Item, Table, Tag |
 | Forms | Checkbox, Combobox, Date Picker, File Upload, Form Field, Radio, Radio Group, Search Field, Select, Switch, Text Input, Textarea, Validation Message |
 | Feedback | Alert, Badge, Progress Bar, Skeleton, Spinner, Toast, Tooltip |
 | Navigation | Breadcrumb, Menu, Pagination, Tabs |
@@ -35,14 +35,14 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 - Starting node from brief: `2002:2365`
 - Combobox component-set node ID: **`2024:2480`** ("Forms/Combobox", section `2024:2501`) — confirmed via Figma MCP on 2026-07-13, after resolving a competing Desktop Bridge instance on port 9224 that had caused the prior timeout (see [`combobox-parity.md`](architecture/combobox-parity.md))
 - File Upload component-set node ID: unresolved — **React Beta implemented; live Figma verification pending** (see [`file-upload-discovery.md`](architecture/file-upload-discovery.md))
-- Data Table component-set node ID: unresolved — Figma verification still pending, but **not blocking**: naming/scope (sorting-only MVP, external Pagination) was approved 2026-07-13 as a React-first product decision, same precedent as Table (see [`table-foundation.md`](architecture/table-foundation.md), [`data-table-discovery.md`](architecture/data-table-discovery.md))
+- Data Table component-set node ID: unresolved — Figma verification still pending, but **not blocking**: the sorting-only MVP (external Pagination composition) approved 2026-07-13 was implemented 2026-07-15 as a React-first product, same precedent as Table (see [`table-foundation.md`](architecture/table-foundation.md), [`data-table-discovery.md`](architecture/data-table-discovery.md))
 - Variable collection counts, page inventory, and current component-set totals: **not verified in this pass**
 
 Historical Figma snapshots must not be treated as current state. See [`skrewww-figma-practices-instructions.md`](../skrewww-figma-practices-instructions.md).
 
 ## Quality-gate status
 
-**Last verified: 2026-07-14** (post Next.js 16 upgrade, merged to `main`)
+**Last verified: 2026-07-15** (Data Table MVP implemented; see note below)
 
 | Gate | Result |
 |------|--------|
@@ -50,9 +50,9 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 | `npm run verify:package` | Pass (`skrewww-docs@0.2.0-beta` lockfile aligned) |
 | ESLint | Pass — 26 problems (0 errors, 26 warnings), `--max-warnings 26` |
 | TypeScript | Pass |
-| Vitest | **501 tests** across **64 files** (495 pre-upgrade baseline + 1 overlay-stack test from the z-index fix + 5 element.ref regression guards added 2026-07-14) |
-| Playwright | **125 tests** (isolated `.next-playwright` on port 3100, unchanged) |
-| Production build | Pass — Turbopack (default bundler), **70/70 pages** (was 71/71 pre-upgrade; see note below), no webpack fallback needed |
+| Vitest | **515 tests** across **66 files** (501 prior baseline + 14 new: `useDataTableSort` hook + `DataTableSortHeader` component) |
+| Playwright | **131 tests** (isolated `.next-playwright` on port 3100; 125 prior baseline + 6 new `e2e/data-table.spec.ts`) |
+| Production build | Pass — Turbopack (default bundler), **71/71 pages** (70/70 prior baseline + 1 new `/components/data-table` page), no webpack fallback needed |
 | `npm audit` | 1 moderate remaining (PostCSS XSS, vendored inside Next's own `postcss@8.4.31`, unresolved upstream even in 16.2.10) — down from 5 (1 moderate, 4 high) pre-upgrade; see resolved note below |
 
 **Next.js major upgrade — resolved 2026-07-13**: Upgraded 14.2.35 → **16.2.10**
@@ -101,18 +101,38 @@ fully independent of the redirect aliases (`form-field-wrapper`,
 `redirects()` and were never counted as generated pages in either version).
 **70/70 is the correct, current number** and requires no further action.
 
+**Data Table MVP implemented (2026-07-15)**: The narrow scope approved
+2026-07-13 in [`data-table-discovery.md`](architecture/data-table-discovery.md)
+(sorting only, external Pagination composition) is now built — no columns/rows
+prop API; the consumer still writes real `Table`/`TableHead`/`TableBody`
+markup and drops in `DataTableSortHeader` for sortable columns.
+`useDataTableSort` is a dual controlled/uncontrolled sort-state hook using
+`lib/use-controllable.ts` (same pattern as Accordion/Dialog/Drawer/CalendarGrid
+range mode) — chosen over a component-prop-only API because it keeps
+`DataTableSortHeader` a purely presentational, stateless component (resolved
+direction + click handler in, nothing else), pushing all controlled/
+uncontrolled complexity into one hook rather than every header cell. Sort
+cycle per column: none → ascending → descending → none; activating a
+different column always resets it to ascending. `figmaAvailability:
+"unavailable"` — no Figma component set exists yet for Data Table. Registry
+count moved 39 → 40, Figma-documented count 55 → 56 (new `content/content-data.ts`
+entry, required for `/components/data-table` to resolve rather than 404),
+indexable slugs 54 → 55.
+
 ## Recently shipped
 
 **Verified from code / documented architecture** — see [`calendar-foundation.md`](architecture/calendar-foundation.md)
 
 - **Calendar Grid month/year drill-up subviews** (2026-07-12) — three internal drill levels (day/month/year) with dedicated `CalendarMonthCell`/`CalendarYearCell` components, focus restoration on drill transitions, and range enforcement via `isMonthFullyDisabled`/`isYearFullyDisabled`
 - **Calendar Grid date-range selection** (2026-07-12) — opt-in `mode="range"` with `rangeValue`/`defaultRangeValue`/`onRangeValueChange`, live keyboard+hover provisional preview, chronological auto-swap on a backwards second click, and disabled-dates-in-the-middle handling
+- **Data Table MVP** (2026-07-15) — the narrow scope approved 2026-07-13 (sorting only + external Pagination) is now implemented at `/components/data-table`: `DataTableSortHeader` composes `TableHead` with a real button, `aria-sort`, and a direction indicator; `useDataTableSort` is a dual controlled/uncontrolled sort-state hook (`lib/use-controllable.ts` pattern) with a none → ascending → descending → none cycle per column. No `columns`/`rows` prop API — the consumer still writes real `Table`/`TableHead`/`TableBody` markup. Row selection, sticky headers, density, and virtualization remain deferred; see [`data-table-discovery.md`](architecture/data-table-discovery.md)
 
 ## Major parity gaps
 
 **Verified from code / documented architecture**
 
 - Figma MCP verification for File Upload component-set node and temporary tokens
+- Figma MCP verification for Data Table — no component set exists yet; not blocking (React-first, same precedent as Table)
 - Combobox option-list/listbox anatomy (option icons, descriptions, selected indicator) and a clear-all control have no Figma spec yet — confirmed absent, not unaudited (see [`combobox-parity.md`](architecture/combobox-parity.md#option-anatomy)); React's current option list is React-first pending a Figma reference frame
 - File Upload progress UI, preview thumbnails, controlled files, and retry semantics
 - Multi-select Combobox — Figma confirms the `Multi-select` property and chip-removal icon, but its own component description flags a known limitation (Value text doesn't auto-hide) that any build needs to work around (see [`combobox-parity.md`](architecture/combobox-parity.md#multi-select-known-limitation))
@@ -123,9 +143,9 @@ fully independent of the redirect aliases (`form-field-wrapper`,
 
 ## Active roadmap
 
-1. **Data Table MVP (approved scope, 2026-07-13)** — canonical name **Data Table** (`data-table`), deliberately not "Data Grid" since `role="grid"`, cell editing, and spreadsheet-style arrow-key cell navigation are out of scope. Approved narrow scope: **sorting only** (header sort control + `aria-sort`; row selection deferred to a later pass), composes `Table`/`TableScrollArea`, **external `Pagination` composition** (no embedded/compound pagination API). No cell editing, virtualization, sticky headers, or density variants in v1. Decision recorded in [`data-table-discovery.md`](architecture/data-table-discovery.md); implementation itself has not started — a deliberate, separate next pass.
-2. **File Upload Figma parity** — MCP re-audit for component-set node, variants, and token bindings
-3. **Combobox polish** — request a Figma reference frame for option-list anatomy (confirmed absent today); a clear-all control is confirmed absent from Figma too, so building one would be a new design addition, not a parity fix
+1. **File Upload Figma parity** — MCP re-audit for component-set node, variants, and token bindings
+2. **Combobox polish** — request a Figma reference frame for option-list anatomy (confirmed absent today); a clear-all control is confirmed absent from Figma too, so building one would be a new design addition, not a parity fix
+3. **Data Table Figma parity** — MCP audit for a component-set node once available; not blocking (see [`data-table-discovery.md`](architecture/data-table-discovery.md))
 4. Infrastructure and source-of-truth maintenance — ongoing
 
 ## Source-of-truth rules

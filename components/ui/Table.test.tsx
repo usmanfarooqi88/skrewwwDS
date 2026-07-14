@@ -386,17 +386,22 @@ describe("Table interactive content and composition", () => {
 });
 
 describe("Table architecture and registry", () => {
-  it("registers Table without Data Table or subcomponent registry entries", () => {
+  it("registers Table and Data Table without a data-grid or subcomponent registry entry", () => {
     const entry = getRegistryEntry("table");
     expect(entry?.hasImplementation).toBe(true);
     expect(entry?.figmaAvailability).toBe("unavailable");
     expect(entry?.summary).toMatch(/not the interactive data table pattern/i);
     expect(entry?.keyboardBehavior).toMatch(/tabIndex is consumer-controlled/i);
+
+    const dataTableEntry = getRegistryEntry("data-table");
+    expect(dataTableEntry?.hasImplementation).toBe(true);
+    expect(dataTableEntry?.figmaAvailability).toBe("unavailable");
+    expect(dataTableEntry?.summary).toMatch(/no columns-config prop/i);
+
     expect(getRegistryEntry("data-grid")).toBeUndefined();
-    expect(getRegistryEntry("data-table")).toBeUndefined();
     expect(getRegistryEntry("table-row")).toBeUndefined();
-    expect(getImplementedComponentCount()).toBe(39);
-    expect(DATA_TABLE_IMPLEMENTATION_GATE).toBe("approved-narrow-mvp");
+    expect(getImplementedComponentCount()).toBe(40);
+    expect(DATA_TABLE_IMPLEMENTATION_GATE).toBe("implemented-react-first");
     expect(TABLE_IMPLEMENTATION_ORIGIN).toBe("react-first");
     expect(TABLE_FIGMA_VERIFICATION).toBe("pending");
     expect(TABLE_FIGMA_COMPONENT_SET_NODE_ID).toBeNull();
@@ -410,13 +415,12 @@ describe("Table architecture and registry", () => {
     expect(within(table).queryByRole("checkbox")).not.toBeInTheDocument();
   });
 
-  it("documents Table audit details in LLM indexes", () => {
+  it("documents Table and Data Table audit details in LLM indexes", () => {
     const index = buildLlmsTxt();
     const full = buildLlmsFullTxt();
     expect(index).toMatch(/Table is the native HTML tabular foundation/);
     expect(full).toMatch(/Data Table composes Table/);
-    expect(full).toMatch(/approved for a narrow MVP scope/);
-    expect(full).not.toMatch(/Data Table is implemented/);
+    expect(full).toMatch(/Data Table is implemented/);
     expect(full).not.toMatch(/Data Grid/);
   });
 });

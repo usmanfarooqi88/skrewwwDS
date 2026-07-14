@@ -4,6 +4,10 @@ import {
   TABLE_FIGMA_COMPONENT_SET_NODE_ID,
   TABLE_FIGMA_SOURCE_URL,
 } from "@/lib/table-figma-metadata";
+import {
+  DATA_TABLE_FIGMA_COMPONENT_SET_NODE_ID,
+  DATA_TABLE_FIGMA_FILE_URL,
+} from "@/lib/data-table-figma-metadata";
 
 const sharedConcepts = {
   shape: {
@@ -484,6 +488,184 @@ export function Example() {
         </TableBody>
       </Table>
     </TableScrollArea>
+  );
+}`,
+  },
+  {
+    slug: "data-table",
+    name: "Data Table",
+    category: "Content & Data",
+    summary:
+      "Interactive data-table pattern composing Table with header sorting and external Pagination — no columns-config prop; the consumer writes their own Table/TableHead/TableBody markup and drops in DataTableSortHeader for sortable columns.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-07-15",
+    reactLastUpdated: "2026-07-15",
+    figmaReference: "React-first Data Table MVP — no Figma component set exists yet; MCP audit pending",
+    figmaSourceUrl: DATA_TABLE_FIGMA_FILE_URL,
+    figmaNodeId: DATA_TABLE_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
+    documentationUrl: getComponentDocumentationUrl("data-table"),
+    supportedVariants: ["sortable-header"],
+    supportedSizes: [],
+    tokensUsed: [
+      "semantic/surface/default",
+      "semantic/surface/elevated",
+      "semantic/border/default",
+      "semantic/text/primary",
+      "semantic/icon/muted",
+      "semantic/focus-ring",
+      "table-header-text",
+    ],
+    relatedComponents: [
+      { label: "Table — presentational foundation Data Table composes", href: "/components/table" },
+      { label: "Pagination — external composition for paged data", href: "/components/pagination" },
+      { label: "Menu — row actions inside cells", href: "/components/menu" },
+      { label: "Checkbox — selection controls inside cells (composition only, not a Data Table API)", href: "/components/checkbox" },
+    ],
+    relatedTokens: [
+      { label: "semantic/focus-ring", href: "/foundations" },
+      { label: "semantic/icon/muted", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "No Figma component set exists for Data Table yet — sort-header anatomy and token bindings are React-first, same precedent as Table.",
+      "Row selection (Checkbox column), sticky headers, density variants, and virtualization remain deferred to a later pass — not in this MVP.",
+      "Row-actions conventions beyond composing Menu in a cell are still open.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "Data Table is a pattern, not a wrapper component: compose Table/TableScrollArea/TableCaption/TableHeader/TableBody as usual, and use DataTableSortHeader in place of TableHead for sortable columns. useDataTableSort manages which column is sorted and in which direction. Pagination composes alongside, outside Table, with no embedded page API.",
+    keyboardBehavior:
+      "DataTableSortHeader renders a real button — Tab reaches it as a normal focusable control, Enter and Space activate it like any button. No composite/grid keyboard model; arrow keys are not captured. Table's own keyboard rules (no role=\"grid\", tabIndex on TableScrollArea consumer-controlled) are unchanged.",
+    focusBehavior:
+      "Clicking or activating a sort header does not move focus elsewhere — focus stays on the button that was activated, so repeated Enter/Space presses can cycle through sort states without hunting for focus.",
+    announcementBehavior:
+      "aria-sort on the th communicates the current sort state to assistive technology per column (\"ascending\"/\"descending\"/\"none\"). Data Table does not add a live region announcing sort changes — the aria-sort update itself is the accessible signal.",
+    comparisons: [
+      {
+        title: "What is the difference between Table and Data Table?",
+        body: "Table is the presentational foundation — captions, headers, rows, cells, overflow. Data Table is the interaction pattern: it composes Table and adds a sortable header building block (DataTableSortHeader) plus a sort-state hook (useDataTableSort). Data Table does not fork Table's markup or add its own role.",
+      },
+      {
+        title: "Why doesn't Data Table take a columns prop?",
+        body: "Data Table deliberately has no columns-config API. The consumer still writes real Table/TableHead/TableBody markup — Data Table only supplies the sortable header building block and the sort-state hook on top of markup the consumer already owns, keeping Table's audited semantics (native scope, RTL, TableScrollArea) as the single source of truth.",
+      },
+      {
+        title: "Is Data Table's sort state controlled or uncontrolled?",
+        body: "Both — useDataTableSort uses the same useControllableState hook as Accordion, Dialog, Drawer, and CalendarGrid's range mode. Pass sortState + onSortStateChange for controlled usage, or defaultSortState for uncontrolled usage; omit both for a fully internal default.",
+      },
+      {
+        title: "What is the sort cycle?",
+        body: "Per column: none -> ascending -> descending -> none. Activating a different column always resets it to ascending and clears the previous column's sort — only one column sorts at a time in this MVP.",
+      },
+      {
+        title: "Does Data Table support row selection?",
+        body: "Not in v1 — explicitly deferred. Consumers may still compose Checkbox inside a TableCell manually, the same way they can with plain Table, but Data Table has no selection API of its own.",
+      },
+      {
+        title: "How does pagination work with Data Table?",
+        body: "External composition only — render the existing Pagination component alongside your Table, driving it from your own current-page state. Data Table has no embedded or compound pagination API.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "DataTableSortHeader.sortDirection",
+        type: '"ascending" | "descending" | "none"',
+        description: "This column's current sort state — typically from useDataTableSort's getSortDirection(column).",
+      },
+      {
+        name: "DataTableSortHeader.onSort",
+        type: "() => void",
+        description: "Called when the header is activated. Typically calls useDataTableSort's toggleSort(column).",
+      },
+      {
+        name: "DataTableSortHeader.disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disables the sort button for this column.",
+      },
+      {
+        name: "useDataTableSort(options)",
+        type: "{ sortState?, defaultSortState?, onSortStateChange? }",
+        description: "Dual controlled/uncontrolled sort-state hook. Returns { sortState, getSortDirection, toggleSort }.",
+      },
+    ],
+    reactExample: `import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHeader,
+  TableRow,
+  TableScrollArea,
+  DataTableSortHeader,
+} from "@/components/ui";
+import { useDataTableSort } from "@/lib/use-data-table-sort";
+import { Pagination, buildPaginationItems } from "@/components/ui";
+
+const projects = [
+  { id: "atlas", name: "Atlas", budget: 24000 },
+  { id: "north-star", name: "North Star", budget: 18500 },
+  { id: "harbor", name: "Harbor Analytics", budget: 9250 },
+];
+
+export function Example() {
+  const { sortState, getSortDirection, toggleSort } = useDataTableSort<"name" | "budget">();
+  const [page, setPage] = useState(1);
+
+  const sorted = [...projects].sort((a, b) => {
+    if (!sortState.column) return 0;
+    const factor = sortState.direction === "ascending" ? 1 : -1;
+    return a[sortState.column] > b[sortState.column] ? factor : -factor;
+  });
+
+  return (
+    <>
+      <TableScrollArea accessibleLabel="Scrollable projects table">
+        <Table>
+          <TableCaption>Projects</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <DataTableSortHeader
+                scope="col"
+                sortDirection={getSortDirection("name")}
+                onSort={() => toggleSort("name")}
+              >
+                Project
+              </DataTableSortHeader>
+              <DataTableSortHeader
+                scope="col"
+                align="end"
+                sortDirection={getSortDirection("budget")}
+                onSort={() => toggleSort("budget")}
+              >
+                Budget
+              </DataTableSortHeader>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sorted.map((project) => (
+              <TableRow key={project.id}>
+                <TableCell>{project.name}</TableCell>
+                <TableCell align="end">\${project.budget.toLocaleString()}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableScrollArea>
+      <Pagination
+        items={buildPaginationItems({ currentPage: page, totalPages: 3 })}
+        onPageChange={setPage}
+      />
+    </>
   );
 }`,
   },

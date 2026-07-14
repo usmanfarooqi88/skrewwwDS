@@ -36,6 +36,7 @@ import { MenuPreview } from "@/components/previews/MenuPreview";
 import { ComboboxPreview } from "@/components/previews/ComboboxPreview";
 import { FileUploadPreview } from "@/components/previews/FileUploadPreview";
 import { TablePreview } from "@/components/previews/TablePreview";
+import { DataTablePreview } from "@/components/previews/DataTablePreview";
 import { SelectPreview } from "@/components/previews/SelectPreview";
 import { TextareaPreview } from "@/components/previews/TextareaPreview";
 
@@ -48,6 +49,7 @@ const previewMap: Record<string, ComponentType> = {
   "empty-state": EmptyStatePreview,
   "list-item": ListItemPreview,
   table: TablePreview,
+  "data-table": DataTablePreview,
   accordion: AccordionPreview,
   avatar: AvatarPreview,
   divider: DividerPreview,

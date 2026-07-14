@@ -64,7 +64,7 @@ export const contentDataComponents: ComponentDoc[] = [
     whenToUse:
       "Tabular data with aligned columns — statuses, budgets, inventories, comparison matrices — when List Item cannot express the structure.",
     whenNotToUse:
-      "Single-column activity feeds or contact lists — use List Item. Interactive data orchestration (selection, pagination ownership, spreadsheet navigation) is out of scope for Table — sorting is approved for a Data Table MVP that composes Table, not yet implemented.",
+      "Single-column activity feeds or contact lists — use List Item. Table itself still does not orchestrate selection, pagination ownership, or spreadsheet navigation — sorting now ships as the Data Table pattern (DataTableSortHeader + useDataTableSort), which composes Table rather than replacing it.",
     accessibility:
       "Uses native <table>, <caption>, <thead>, <tbody>, <tfoot>, <tr>, <th>, and <td>. Do not add role=\"grid\". Consumer supplies scope on TableHead. Captions name the table; scroll regions use a distinct accessibleLabel when labelled. Interactive cell content must remain real links/buttons/checkboxes. tabIndex on TableScrollArea is consumer-controlled — recommend tabIndex={0} only for known horizontal overflow.",
     commonMistakes:
@@ -80,7 +80,35 @@ export const contentDataComponents: ComponentDoc[] = [
     properties:
       "Compound API: Table, TableCaption, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableScrollArea. layout auto|fixed. Caption visibility visible|screen-reader. Cell/head align start|center|end. data-table-wrap=nowrap for action cells. Empty/loading/error via composition only.",
     knownLimitation:
-      "React-first foundation audited 2026-07-13. Live Figma verification pending — no component-set node ID. Sorting, selection, sticky headers, density, and striped rows remain deferred. See docs/architecture/table-foundation.md.",
+      "React-first foundation audited 2026-07-13. Live Figma verification pending — no component-set node ID. Selection, sticky headers, density, and striped rows remain deferred (sorting is now available via the Data Table pattern). See docs/architecture/table-foundation.md.",
+  },
+  {
+    slug: "data-table",
+    name: "Data Table",
+    category: "Content & Data",
+    variants: "Sortable header building block — no density/selection/sticky variants in Beta",
+    purpose:
+      "The interactive data-table pattern: composes Table with a sortable column-header building block (DataTableSortHeader) and a sort-state hook (useDataTableSort), plus external Pagination composition — sorting only, no columns-config prop.",
+    whenToUse:
+      "Tabular data that needs single-column sorting on top of Table's presentational foundation — the consumer still writes real Table/TableHead/TableBody markup and drops DataTableSortHeader in for sortable columns.",
+    whenNotToUse:
+      "Read-only tabular data with no sort interaction — use plain Table. Row selection, spreadsheet-style cell editing, or arrow-key cell navigation — all explicitly out of scope; Data Table deliberately avoids role=\"grid\".",
+    accessibility:
+      "DataTableSortHeader renders a real <button> inside <th> with aria-sort set to \"ascending\", \"descending\", or \"none\". Native button semantics give Enter/Space activation and normal Tab focus for free — no custom keyboard handling. Table's own accessibility rules (native semantics, no role=\"grid\", consumer-supplied scope) are unchanged.",
+    commonMistakes:
+      "Expecting a columns/rows prop that generates markup — Data Table has none, by design; building row selection, sticky headers, density variants, or virtualization into this MVP — all explicitly deferred; embedding pagination inside Data Table instead of composing the separate Pagination component; using a non-button element as the sort trigger.",
+    tokensUsed: [
+      "semantic/surface/default",
+      "semantic/surface/elevated",
+      "semantic/border/default",
+      "semantic/text/primary",
+      "semantic/icon/muted",
+      "semantic/focus-ring",
+    ],
+    properties:
+      "DataTableSortHeader: sortDirection (\"ascending\"|\"descending\"|\"none\"), onSort, disabled, plus all TableHead props (scope, align, etc.). useDataTableSort(options): sortState/defaultSortState/onSortStateChange (dual controlled/uncontrolled), returns { sortState, getSortDirection, toggleSort }. Sort cycle per column: none -> ascending -> descending -> none; a different column always resets to ascending.",
+    knownLimitation:
+      "React-first MVP implemented 2026-07-15 — no Figma component set exists yet for Data Table specifically. Row selection, sticky headers, density variants, and virtualization remain deferred to a later pass. See docs/architecture/data-table-discovery.md.",
   },
   {
     slug: "empty-state",

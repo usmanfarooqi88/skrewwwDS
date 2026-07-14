@@ -131,7 +131,7 @@ Known React-first / pending-parity examples (details in `docs/project-status.md`
 - Calendar Day, Calendar Grid, Date Picker, Menu, Combobox — React implemented; Figma maturity MCP-pending
 - File Upload — React Beta implemented; Figma verification pending
 - Table — React-first native HTML foundation; Figma verification pending
-- Data Table (named "Data Grid" during discovery; canonical name finalized as "Data Table" on 2026-07-13) — **not implemented**; MVP scope approved (sorting only + external Pagination); must compose Table
+- Data Table (named "Data Grid" during discovery; canonical name finalized as "Data Table" on 2026-07-13) — **implemented** (2026-07-15) at the approved narrow MVP scope (sorting only via DataTableSortHeader + useDataTableSort, external Pagination composition); must compose Table; Figma verification pending — no Figma component set exists yet for Data Table
 
 ---
 

@@ -139,7 +139,9 @@ describe("project configuration", () => {
     expect(claude).toMatch(/Table/);
     expect(claude).toMatch(/native HTML/);
     expect(claude).toMatch(/Does \*\*not\*\* use `role="grid"`|does \*\*not\*\* use `role="grid"`/i);
-    expect(claude.toLowerCase()).toMatch(/data table[\s\S]{0,200}not implemented|not implemented[\s\S]{0,80}data table/);
+    // Data Table implementation landed 2026-07-15 (DataTableSortHeader + useDataTableSort).
+    expect(claude.toLowerCase()).toMatch(/data table[\s\S]{0,200}\*\*implemented\*\*|\*\*implemented\*\*[\s\S]{0,80}data table/);
+    expect(claude.toLowerCase()).toMatch(/usedatatablesort/);
     expect(claude.toLowerCase()).toMatch(/compose table/);
     expect(claude.toLowerCase()).toMatch(/documentation repository is already implemented/);
     expect(claude.toLowerCase()).toMatch(/do \*\*not\*\* list calendar as a current react implementation gap|do not list calendar as a current react implementation gap/);
@@ -151,7 +153,7 @@ describe("project configuration", () => {
     expect(figma.toLowerCase()).toMatch(/mcp is currently \*\*unavailable\*\*|figma mcp is currently \*\*unavailable\*\*/);
     expect(figma.toLowerCase()).toMatch(/skrewww\.com[\s\S]{0,80}reserved/);
     expect(figma.toLowerCase()).toMatch(/documentation repository is \*\*built\*\*|react\/next\.js documentation repository is \*\*built\*\*/);
-    expect(figma.toLowerCase()).toMatch(/data table[\s\S]{0,120}not implemented/);
+    expect(figma.toLowerCase()).toMatch(/data table[\s\S]{0,120}\*\*implemented\*\*/);
     expect(figma.toLowerCase()).toMatch(/compose table/);
   });
 

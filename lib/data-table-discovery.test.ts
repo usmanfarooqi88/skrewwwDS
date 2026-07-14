@@ -14,15 +14,15 @@ import {
 } from "@/lib/data-table-figma-metadata";
 
 describe("Data Table discovery gate", () => {
-  it("keeps Data Table out of the implemented registry while Table may exist — implementation is a separate pass", () => {
+  it("registers Data Table in the implemented registry alongside Table — implementation landed 2026-07-15", () => {
     const slugs = getImplementedRegistryEntries().map((entry) => entry.slug);
     expect(slugs).not.toContain("data-grid");
-    expect(slugs).not.toContain(DATA_TABLE_CANONICAL_SLUG);
+    expect(slugs).toContain(DATA_TABLE_CANONICAL_SLUG);
     expect(slugs).toContain("table");
   });
 
-  it("records the approved narrow-MVP gate and the decided naming/scope facts", () => {
-    expect(DATA_TABLE_IMPLEMENTATION_GATE).toBe("approved-narrow-mvp");
+  it("records the implemented gate and the decided naming/scope facts", () => {
+    expect(DATA_TABLE_IMPLEMENTATION_GATE).toBe("implemented-react-first");
     expect(DATA_TABLE_CANONICAL_NAME).toBe("Data Table");
     expect(DATA_TABLE_CANONICAL_SLUG).toBe("data-table");
     expect(DATA_TABLE_MVP_INTERACTIVE_PILLAR).toBe("sorting-only");

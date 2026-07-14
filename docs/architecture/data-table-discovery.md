@@ -1,8 +1,10 @@
 # Data Table — discovery and implementation gate
 
-Last updated: **2026-07-13** (naming, interactive pillar, and pagination approach approved)
+Last updated: **2026-07-15** (approved MVP implemented — see **Implementation status** below)
 
-> Historical naming note: this document and its gate were tracked under the working name **"Data Grid"** from initial discovery through the 2026-07-13 Table audit. The canonical name was finalized as **"Data Table"** on 2026-07-13 (this pass). File renamed from `data-grid-discovery.md` accordingly. Sections below that describe past discovery/audit state keep the "Data Grid" name where that is what was actually written or decided at the time — see the **Final decision** section for what changed and when.
+> **Implementation status (2026-07-15): DONE.** The approved narrow MVP scope below is now built: `DataTableSortHeader` (a sortable column-header building block composing `TableHead`) and `useDataTableSort` (a dual controlled/uncontrolled sort-state hook using `lib/use-controllable.ts`, same pattern as Accordion/Dialog/Drawer/CalendarGrid range mode). Data Table has no `columns`/`rows` prop API — the consumer still writes real `Table`/`TableHead`/`TableBody` markup and drops `DataTableSortHeader` in for sortable columns. Sort cycle per column: none → ascending → descending → none. Registered at `/components/data-table`, `figmaAvailability: "unavailable"` (no Figma component set exists for Data Table). Everything below this note is the original discovery/decision record and is left as written — see docs/project-status.md for current registry/test counts.
+
+> Historical naming note: this document and its gate were tracked under the working name **"Data Grid"** from initial discovery through the 2026-07-13 Table audit. The canonical name was finalized as **"Data Table"** on 2026-07-13. File renamed from `data-grid-discovery.md` accordingly. Sections below that describe past discovery/audit state keep the "Data Grid" name where that is what was actually written or decided at the time — see the **Final decision** section for what changed and when.
 
 ## Final decision
 

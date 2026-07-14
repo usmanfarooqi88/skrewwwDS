@@ -76,6 +76,7 @@ These are implemented in React (Beta). Verify in the registry before claiming el
 - Combobox
 - File Upload
 - Table
+- Data Table
 - Core form controls, Select, Search Field, overlays (Dialog, Drawer, Popover), and other registry entries marked `hasImplementation: true`
 
 ### Table
@@ -88,10 +89,13 @@ These are implemented in React (Beta). Verify in the registry before claiming el
 
 ### Data Table
 
-- **Not implemented** — MVP scope **approved** 2026-07-13 (sorting only + external Pagination composition); implementation is a separate, deliberate pass
-- Architecture gate: **approved — narrow MVP scope** (`docs/architecture/data-table-discovery.md`)
-- Must **compose Table**
+- **Implemented** (2026-07-15) — the narrow MVP scope **approved** 2026-07-13 (sorting only + external Pagination composition) is now built at `/components/data-table`
+- Architecture gate: **implemented-react-first** (`docs/architecture/data-table-discovery.md`)
+- Must **compose Table** — no forked markup, no `columns`/`rows` prop API; the consumer writes real `Table`/`TableHead`/`TableBody` markup and drops in `DataTableSortHeader` for sortable columns
+- `useDataTableSort` is the dual controlled/uncontrolled sort-state hook (same `lib/use-controllable.ts` pattern as Accordion/Dialog/Drawer/CalendarGrid range mode); sort cycle per column is none → ascending → descending → none
 - Canonical name **Data Table** (not "Data Grid" — scope deliberately excludes `role="grid"`, cell editing, and spreadsheet-style arrow-key cell navigation) and slug `data-table` are decided, final
+- Figma parity **pending** — no Figma component set exists yet for Data Table
+- Row selection, sticky headers, density variants, and virtualization remain **deferred** — not part of this MVP
 
 Do **not** treat Table and Data Table as interchangeable.
 
@@ -99,7 +103,6 @@ Do **not** treat Table and Data Table as interchangeable.
 
 ## Layer 2 — current major React gaps
 
-- Data Table (MVP scope approved 2026-07-13; not yet implemented)
 - Tree View
 - Charts
 - Timeline

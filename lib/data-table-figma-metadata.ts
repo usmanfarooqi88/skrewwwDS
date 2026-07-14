@@ -23,11 +23,13 @@ export const DATA_TABLE_FIGMA_AUDIT_STATUS = "unresolved-mcp" as const;
 
 /**
  * Implementation gate for the Data Table component.
- * approved-narrow-mvp — naming, MVP interactive pillar (sorting only), and
- * pagination approach (external Pagination composition) approved 2026-07-13.
- * Implementation itself has not started — that is a separate, deliberate pass.
+ * approved-narrow-mvp (2026-07-13) approved naming, MVP interactive pillar
+ * (sorting only), and pagination approach (external Pagination composition).
+ * implemented-react-first (2026-07-15) — the approved MVP is now built:
+ * DataTableSortHeader + useDataTableSort compose Table, no Figma component
+ * set exists yet for Data Table.
  */
-export const DATA_TABLE_IMPLEMENTATION_GATE = "approved-narrow-mvp" as const;
+export const DATA_TABLE_IMPLEMENTATION_GATE = "implemented-react-first" as const;
 
 /**
  * Canonical product naming — decided 2026-07-13 (final, not provisional).
