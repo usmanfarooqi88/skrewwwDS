@@ -79,7 +79,7 @@ export function Tooltip({
     setResolvedPlacement(next.placement);
   }, [open, placement, content]);
 
-  useOverlayEscape(open, closeImmediately);
+  const stackZIndex = useOverlayEscape(open, closeImmediately);
 
   if (!isValidElement(children)) {
     return children;
@@ -127,7 +127,7 @@ export function Tooltip({
         id={tooltipId}
         role="tooltip"
         className={cn(styles.tooltip, styles[resolvedPlacement], className)}
-        style={{ top: coords.top, left: coords.left }}
+        style={{ top: coords.top, left: coords.left, zIndex: stackZIndex }}
         onMouseEnter={openImmediately}
         onMouseLeave={scheduleClose}
       >

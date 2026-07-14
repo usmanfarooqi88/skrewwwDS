@@ -236,7 +236,7 @@ export function DrawerContent({
 
   useBodyScrollLock(open);
   useBackgroundInert(open, viewportNode);
-  useOverlayEscape(open, () => requestClose("escape-key"), { modal: true });
+  const stackZIndex = useOverlayEscape(open, () => requestClose("escape-key"), { modal: true });
   useFocusTrap(open, contentNode, { initialFocusRef, overlayScopeId });
 
   useEffect(() => {
@@ -266,6 +266,7 @@ export function DrawerContent({
         ref={setViewportRef}
         className={styles.drawerViewport}
         data-skrewww-drawer-placement={placement}
+        style={{ zIndex: stackZIndex }}
         onMouseDown={(event) => {
           if (!closeOnOverlayClick) return;
           if (event.target === event.currentTarget) {

@@ -264,7 +264,9 @@ export function PopoverContent({
     setContentNode(node);
   }, []);
 
-  useOverlayEscape(open, () => requestClose({ restoreFocus: true }), { modal: false });
+  const stackZIndex = useOverlayEscape(open, () => requestClose({ restoreFocus: true }), {
+    modal: false,
+  });
   useOutsidePointer({
     active: open,
     onOutsidePointer: () => requestClose({ restoreFocus: false }),
@@ -371,7 +373,7 @@ export function PopoverContent({
         data-skrewww-popover-interactive={focusMode === "content" ? "true" : undefined}
         data-skrewww-popover-fit={matchTriggerWidth ? "trigger" : undefined}
         className={cn(styles.popover, styles[resolvedPlacement], className)}
-        style={{ top: coords.top, left: coords.left, ...style }}
+        style={{ top: coords.top, left: coords.left, zIndex: stackZIndex, ...style }}
         tabIndex={focusMode === "content" && !hasAccessibleName ? -1 : undefined}
         onMouseDown={(event) => event.stopPropagation()}
       >

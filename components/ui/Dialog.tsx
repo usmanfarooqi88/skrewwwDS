@@ -230,7 +230,7 @@ export function DialogContent({
 
   useBodyScrollLock(open);
   useBackgroundInert(open, viewportNode);
-  useOverlayEscape(open, () => requestClose("escape-key"), { modal: true });
+  const stackZIndex = useOverlayEscape(open, () => requestClose("escape-key"), { modal: true });
   useFocusTrap(open, contentNode, { initialFocusRef, overlayScopeId });
 
   useEffect(() => {
@@ -259,6 +259,7 @@ export function DialogContent({
       <div
         ref={setViewportRef}
         className={styles.viewport}
+        style={{ zIndex: stackZIndex }}
         onMouseDown={(event) => {
           if (!closeOnOverlayClick) return;
           if (event.target === event.currentTarget) {
