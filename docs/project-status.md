@@ -64,9 +64,12 @@ migration applied to both dynamic routes (`app/components/[slug]`,
 deprecation call sites fixed (Popover ×2, Dialog, Drawer, Tooltip); one
 genuine Turbopack CSS build failure fixed (`@import` reordered before
 `@tailwind` directives in `app/globals.css`, see `app/globals.css`). A
-regression here has a dedicated tripwire: each trigger's `*.test.tsx` has a
-"does not access the deprecated element.ref API" test that spies on
-`console.error` with an explicit caller ref attached (2026-07-14).
+regression here has a dedicated tripwire covering all 5 call sites:
+`Popover.test.tsx` has one "does not access the deprecated element.ref API"
+test for `PopoverTrigger` and one for `PopoverAnchor` (the one Combobox
+composes), and `Dialog.test.tsx`/`Drawer.test.tsx`/`Tooltip.test.tsx` each
+have one — every test spies on `console.error` with an explicit caller ref
+attached (2026-07-14).
 
 **Build page count 71 → 70 — root cause confirmed (2026-07-14)**: `npm run
 build`'s summary line dropped from `71/71` (Next 14.2.35) to `70/70` (Next

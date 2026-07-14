@@ -210,6 +210,39 @@ describe("PopoverAnchor", () => {
     await user.click(input);
     expect(onOpenChange).not.toHaveBeenCalled();
   });
+
+  // Regression guard: PopoverAnchor composes a caller-supplied ref with its
+  // own via cloneElement — the second of Popover.tsx's two original
+  // element.ref call sites, and specifically what Combobox composes. Reading
+  // element.ref directly (instead of child.props.ref) is the exact API
+  // React 19 deprecated — but React only installs the warning getter on an
+  // element when it actually carries a ref, so the anchor's child must
+  // supply one (matching real composed-ref usage) or this test would pass
+  // regardless of the bug. React also warns only once per element-type name
+  // for the module's life: the "Popover" describe block's regression guard
+  // above already consumes the warning for a ref-bearing native "button", so
+  // this uses a ref-bearing native <input> instead — untouched by any ref
+  // anywhere else in this file.
+  it("does not access the deprecated element.ref API when registering the anchor", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const callerRef = createRef<HTMLInputElement>();
+    render(
+      <Popover open={false}>
+        <PopoverAnchor>
+          <input aria-label="Country" ref={callerRef} />
+        </PopoverAnchor>
+        <PopoverContent aria-label="Options">
+          <PopoverBody>Results</PopoverBody>
+        </PopoverContent>
+      </Popover>,
+    );
+
+    expect(callerRef.current).toBeInstanceOf(HTMLInputElement);
+    expect(
+      error.mock.calls.some((call) => String(call[0]).includes("element.ref")),
+    ).toBe(false);
+    error.mockRestore();
+  });
 });
 
 describe("Popover pointer containment", () => {
