@@ -63,7 +63,10 @@ migration applied to both dynamic routes (`app/components/[slug]`,
 `app/components/category/[categorySlug]`); 5 React 19 `element.ref`
 deprecation call sites fixed (Popover ×2, Dialog, Drawer, Tooltip); one
 genuine Turbopack CSS build failure fixed (`@import` reordered before
-`@tailwind` directives in `app/globals.css`, see `app/globals.css`).
+`@tailwind` directives in `app/globals.css`, see `app/globals.css`). A
+regression here has a dedicated tripwire: each trigger's `*.test.tsx` has a
+"does not access the deprecated element.ref API" test that spies on
+`console.error` with an explicit caller ref attached (2026-07-14).
 
 **Build page count 71 → 70 — root cause confirmed (2026-07-14)**: `npm run
 build`'s summary line dropped from `71/71` (Next 14.2.35) to `70/70` (Next
