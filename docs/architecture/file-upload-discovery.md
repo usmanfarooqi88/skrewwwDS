@@ -1,29 +1,50 @@
 # File Upload — discovery and implementation gate
 
-Last updated: **2026-07-15** (Figma live inspection confirms single-file anatomy; multi-file list anatomy confirmed absent — see note below)
+Last updated: **2026-07-15** (corrected same-day, later pass — see note below)
 
-> **Figma live inspection results (2026-07-15).** The Forms/File Upload
-> component set (node `2024:2649`) has been directly inspected: **5 state
-> variants** — Empty, Dragging, Error, Disabled, Filled — and one text
-> property, **File Name**. The Filled variant's anatomy is exactly one row:
-> **File Icon + File Name text + Remove Icon**. There is no list container,
-> no repeated-row structure, and no way to represent more than one attached
-> file anywhere in the Figma file. This is a confirmed absence, not an
-> unaudited gap (see `lib/file-upload-figma-metadata.ts`,
-> `FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-absent"`).
+> **Figma live inspection results (2026-07-15) — corrected same day, later
+> pass.** An earlier note on this same date reported the Filled variant as a
+> single fixed row with no way to represent more than one attached file, and
+> recorded `FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-absent"`. That
+> was accurate for the anatomy that existed at the time it was written, but
+> it went stale within the same session: the multi-file list anatomy was
+> designed and built in Figma immediately after. This note replaces the
+> earlier one rather than sitting alongside it — the facts below are the
+> current, correct state.
 >
-> Net effect on parity, precisely: the **single-file trigger/state anatomy**
-> (Empty/Dragging/Error/Disabled/Filled, File Name property) is now
-> **Figma-confirmed**. The **multi-file list** — React's `multiple` prop,
-> `maxFiles` cap, and independently-removable file-list items (all present
-> and working in `components/ui/FileUpload.tsx` today) — has **no Figma
-> reference to match**. That capability is **React-first with Figma parity
-> pending**, specifically for the list anatomy — not a gap in the component
-> as a whole, and not something to redesign or remove from the React
-> implementation. Everything else below this note is the original
-> pre-implementation discovery record and is left as written for audit
-> traceability; see `docs/project-status.md` for current registry/test
-> counts.
+> The Forms/File Upload component set (node `2024:2649`) has **5 state
+> variants** — Empty, Dragging, Error, Disabled, Filled — and one text
+> property, **File Name**. The **Filled variant (node `2024:2648`)** was
+> restructured from a single hardcoded row into a **vertical list
+> container**: `layoutMode` VERTICAL, hugs height, fixed 320px width, clips
+> content to its existing 12px radius, retains its original white fill +
+> border token. It contains one or more **File Row** frames (first one: node
+> `2107:10`) — each File Row is HORIZONTAL, FILL width / HUG height,
+> containing File Icon (instance) + File Name (text) + Remove Icon
+> (instance), with a bottom-only divider stroke bound to
+> `semantic/border/default`.
+>
+> The base Filled variant shows exactly **one** File Row — this is the
+> single-file case represented **as a list of one**, not a separate
+> simplified layout. This was a deliberate architectural decision:
+> single-file and multi-file share identical anatomy. A new demo frame in
+> the same section, **"File Upload (example — multiple files)"** (node
+> `2108:21`, 320×132px), was built by instancing the Filled variant,
+> detaching it, and duplicating File Row twice more with distinct filenames
+> (`design-tokens.pdf`, `brand-guidelines.docx`, `logo-export.svg`) — three
+> rows stacked with zero gap/overlap. The component set's own Figma
+> description was rewritten to state this architecture explicitly.
+>
+> Net effect on parity: **both single-file and multi-file anatomy are now
+> Figma-confirmed** — they are the same File-Row-list structure, just with a
+> different row count. Nothing about `components/ui/FileUpload.tsx`'s
+> existing `multiple` prop, `maxFiles` cap, or independently-removable
+> file-list items needs to change; the Figma side caught up to match. See
+> `lib/file-upload-figma-metadata.ts`
+> (`FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-present"`) and
+> `docs/project-status.md` for current registry/test counts. Everything
+> below this note is the original pre-implementation discovery record and is
+> left as written for audit traceability.
 
 ## Final decision
 

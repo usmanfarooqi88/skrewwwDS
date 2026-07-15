@@ -23,16 +23,51 @@ export const FILE_UPLOAD_FIGMA_COMPONENT_PROPERTIES = {
 } as const;
 
 /**
- * Filled-variant anatomy, confirmed via Figma MCP on 2026-07-15: exactly one
- * row — File Icon + File Name text + Remove Icon. No list container, no
- * repeated-row structure, no way to represent more than one attached file
- * anywhere in the Filled variant.
+ * Filled variant (node 2024:2648), confirmed via direct Figma property
+ * inspection on 2026-07-15 (later same-day correction — see
+ * FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS below). Restructured from a single
+ * hardcoded row into a vertical list container: layoutMode VERTICAL, hugs
+ * height, fixed 320px width, clips content to its existing 12px radius,
+ * retains its original white fill + border token. It contains one or more
+ * File Row frames — the base Filled variant shows exactly one, representing
+ * the single-file case AS a list of one rather than a separate layout.
  */
-export const FILE_UPLOAD_FIGMA_FILLED_ANATOMY = [
-  "File Icon",
-  "File Name (text property)",
-  "Remove Icon",
+export const FILE_UPLOAD_FIGMA_FILLED_VARIANT_NODE_ID = "2024:2648";
+
+export const FILE_UPLOAD_FIGMA_FILLED_CONTAINER_ANATOMY = {
+  layoutMode: "VERTICAL",
+  sizing: "hugs height, fixed 320px width",
+  clipsContent: true,
+  cornerRadius: "12px (original)",
+  fill: "white (original)",
+  border: "original border token",
+} as const;
+
+/**
+ * First File Row frame (node 2107:10), confirmed via direct Figma property
+ * inspection on 2026-07-15. Each File Row: HORIZONTAL, FILL width / HUG
+ * height, containing File Icon (instance) + File Name (text) + Remove Icon
+ * (instance), with a bottom-only divider stroke bound to
+ * semantic/border/default.
+ */
+export const FILE_UPLOAD_FIGMA_FILE_ROW_NODE_ID = "2107:10";
+
+export const FILE_UPLOAD_FIGMA_FILE_ROW_ANATOMY = [
+  "File Icon (instance)",
+  "File Name (text)",
+  "Remove Icon (instance)",
 ] as const;
+
+/**
+ * Multi-file example frame "File Upload (example — multiple files)" (node
+ * 2108:21), 320x132px, confirmed via direct Figma property inspection on
+ * 2026-07-15. Built by instancing the Filled variant, detaching it, and
+ * duplicating File Row twice more with distinct filenames
+ * (design-tokens.pdf, brand-guidelines.docx, logo-export.svg) — three rows
+ * stacked with zero gap/overlap. The component set's own Figma description
+ * was rewritten to state this architecture explicitly.
+ */
+export const FILE_UPLOAD_FIGMA_MULTI_FILE_EXAMPLE_NODE_ID = "2108:21";
 
 /** Related building-block node IDs — unresolved beyond the confirmed component set. */
 export const FILE_UPLOAD_FIGMA_RELATED_NODE_IDS = {
@@ -44,15 +79,18 @@ export const FILE_UPLOAD_FIGMA_RELATED_NODE_IDS = {
 } as const;
 
 /**
- * Confirmed gap (2026-07-15) — not merely unaudited. The Filled variant's
- * anatomy is a single row (File Icon + File Name + Remove Icon); there is no
- * list structure anywhere in the Figma file that could represent more than
- * one attached file. React's `multiple` / `maxFiles` / independently-
- * removable file list is therefore React-first with Figma parity pending for
- * that specific capability — the single-file trigger/state anatomy above is
- * fully confirmed; only the multi-file list has no Figma reference to match.
+ * Corrected 2026-07-15 (same-day, later pass) — this was recorded as
+ * "confirmed-absent" earlier the same day, which was accurate for the
+ * anatomy that existed at that time but went stale within the session: the
+ * multi-file list anatomy was designed and built in Figma immediately after,
+ * per an explicit decision that single-file and multi-file share identical
+ * File-Row-list anatomy rather than separate layouts (see
+ * FILE_UPLOAD_FIGMA_FILLED_VARIANT_NODE_ID and
+ * FILE_UPLOAD_FIGMA_MULTI_FILE_EXAMPLE_NODE_ID above). Multi-file list
+ * anatomy is now Figma-confirmed, same as the single-file case — both are
+ * the same File-Row-list structure, just with a different row count.
  */
-export const FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-absent" as const;
+export const FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-present" as const;
 
 export const FILE_UPLOAD_FIGMA_AUDIT_STATUS = "verified-2026-07-15" as const;
 
