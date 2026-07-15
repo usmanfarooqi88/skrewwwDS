@@ -20,10 +20,16 @@ export const COMBOBOX_FIGMA_VARIANTS = [
   "Disabled",
 ] as const;
 
-/** Component properties, confirmed via Figma MCP on 2026-07-13. */
+/**
+ * Component properties. `multiSelect` was removed from the Figma component
+ * on 2026-07-15 (see COMBOBOX_FIGMA_OPTION_LIST_ANATOMY_STATUS below) —
+ * confirmed no corresponding capability ever existed in Combobox.tsx (single
+ * string `value`, no array, no `multiple` prop). The Figma property was
+ * documenting a capability that was never built; this brings Figma in line
+ * with the registry, which already describes Combobox as single-select.
+ */
 export const COMBOBOX_FIGMA_COMPONENT_PROPERTIES = {
   value: { type: "TEXT", default: "Select options" },
-  multiSelect: { type: "BOOLEAN", default: false },
 } as const;
 
 /**
@@ -46,26 +52,56 @@ export const COMBOBOX_FIGMA_TOKEN_BINDINGS = {
 } as const;
 
 /**
- * Known Figma-side limitation, sourced from the component's own description
- * (not a code defect): enabling the Multi-select boolean shows the Chips row
- * but does not automatically hide the plain Value text underneath. Figma's
- * boolean-property model requires a manual per-instance override for this —
- * both design and code need to work around it, not "fix" it in React.
+ * Demo frame "Combobox (example — open)", confirmed via direct Figma
+ * property inspection on 2026-07-15: a trigger (Focused state) + listbox
+ * panel (COMBOBOX_FIGMA_LISTBOX_NODE_ID) with 5 option rows demonstrating
+ * default / active-hover / selected / default / disabled states.
  */
-export const COMBOBOX_FIGMA_MULTISELECT_KNOWN_LIMITATION =
-  "Enabling Multi-select does not auto-hide the Value text underneath; requires a manual per-instance override (Figma boolean-property constraint, not a code bug).";
+export const COMBOBOX_FIGMA_OPEN_EXAMPLE_NODE_ID = "2113:2";
 
-/** Icon component used for per-chip removal in the Multi-select anatomy. No "clear all" control exists anywhere in the trigger anatomy. */
-export const COMBOBOX_FIGMA_CHIP_REMOVE_ICON = "Icon/XCircle" as const;
+/** Listbox panel inside the open-example demo frame, confirmed 2026-07-15. */
+export const COMBOBOX_FIGMA_LISTBOX_NODE_ID = "2113:10";
 
 /**
- * Confirmed gap (2026-07-13): no open/expanded example frame exists anywhere
- * in the Figma file showing option-list/listbox anatomy (option icons,
- * descriptions, selected indicator, clear-all control). Figma specs only the
- * five closed-trigger states above — never the dropdown panel content. Do
- * not infer or invent option-list anatomy from this file; it does not exist
- * in Figma yet.
+ * The 5 option rows inside the listbox panel, confirmed 2026-07-15, in
+ * order: default, active-hover, selected, default, disabled. Anatomy is
+ * genuinely minimal — plain label text only, no icon, no description —
+ * matching ComboboxOption's real type ({ value, label, disabled? }) exactly.
  */
-export const COMBOBOX_FIGMA_OPTION_LIST_ANATOMY_STATUS = "not-specified-in-figma" as const;
+export const COMBOBOX_FIGMA_OPTION_ROW_NODE_IDS = [
+  "2113:1149",
+  "2113:1151",
+  "2113:1153",
+  "2113:1155",
+  "2113:1157",
+] as const;
 
-export const COMBOBOX_FIGMA_AUDIT_STATUS = "verified-2026-07-13" as const;
+/**
+ * Confirmed present (2026-07-15) — corrects the 2026-07-13 "not specified"
+ * finding. A new demo frame (COMBOBOX_FIGMA_OPEN_EXAMPLE_NODE_ID) now shows
+ * option-list/listbox anatomy directly, matching combobox.module.css's real
+ * CSS: .option (transparent, semantic/text/primary), .optionActive
+ * (semantic/surface/elevated background + 2px inset outline using
+ * semantic/focus-ring), .optionSelected (font-weight 500 — see
+ * COMBOBOX_FIGMA_SELECTED_SURFACE_TOKEN_GAP below for the background),
+ * .optionDisabled (semantic/text/disabled). The clear-all control remains
+ * absent from the trigger anatomy — that finding is unchanged.
+ */
+export const COMBOBOX_FIGMA_OPTION_LIST_ANATOMY_STATUS = "confirmed-present" as const;
+
+/**
+ * Gap found 2026-07-15, not fixed — a separate decision for later, not part
+ * of this sync. Code's .optionSelected rule references
+ * --combobox-option-selected-surface: var(--semantic-surface-subtle), but
+ * semantic/surface/subtle does not exist in Figma's variable set (confirmed
+ * via full search — only semantic/surface/default, /elevated, /glass exist
+ * there). The open-example demo's "selected" row therefore has no
+ * background fill; the font-weight-500 distinction (which does exist in
+ * code) is the only visual signal in the Figma reference. Resolve later by
+ * either adding the missing Figma variable or renaming the CSS custom
+ * property to an existing token — do not silently pick one here.
+ */
+export const COMBOBOX_FIGMA_SELECTED_SURFACE_TOKEN_GAP =
+  "semantic/surface/subtle (used by --combobox-option-selected-surface in combobox.module.css) has no corresponding Figma variable — confirmed via full search 2026-07-15.";
+
+export const COMBOBOX_FIGMA_AUDIT_STATUS = "verified-2026-07-15" as const;

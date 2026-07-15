@@ -30,10 +30,10 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 
 ## Figma status
 
-**Partially resolved** — Combobox confirmed 2026-07-13; File Upload confirmed 2026-07-15 (single-file and multi-file anatomy both Figma-confirmed); Data Table MCP verification still required
+**Partially resolved** — Combobox confirmed 2026-07-13, updated 2026-07-15 (Multi-select removed from Figma, option-list anatomy now confirmed present); File Upload confirmed 2026-07-15 (single-file and multi-file anatomy both Figma-confirmed); Data Table MCP verification still required
 
 - Starting node from brief: `2002:2365`
-- Combobox component-set node ID: **`2024:2480`** ("Forms/Combobox", section `2024:2501`) — confirmed via Figma MCP on 2026-07-13, after resolving a competing Desktop Bridge instance on port 9224 that had caused the prior timeout (see [`combobox-parity.md`](architecture/combobox-parity.md))
+- Combobox component-set node ID: **`2024:2480`** ("Forms/Combobox", section `2024:2501`) — confirmed via Figma MCP on 2026-07-13, after resolving a competing Desktop Bridge instance on port 9224 that had caused the prior timeout. **Updated 2026-07-15**: the `Multi-select` boolean property and its Chips frame were removed from Figma entirely (no corresponding code capability ever existed); a new demo frame ("Combobox (example — open)", node `2113:2`) now confirms option-list/listbox anatomy directly — plain label text only, no icon, no description, matching `ComboboxOption`'s real type. A token gap was found (not fixed): `semantic/surface/subtle`, used by the selected-option background, has no Figma variable (see [`combobox-parity.md`](architecture/combobox-parity.md))
 - File Upload component-set node ID: **`2024:2649`** ("Forms/File Upload") — confirmed via direct Figma property inspection on 2026-07-15: 5 state variants (Empty/Dragging/Error/Disabled/Filled) + File Name text property. **Both single-file and multi-file anatomy are Figma-confirmed.** The Filled variant (node `2024:2648`) is a vertical list container holding one or more File Row frames (first: node `2107:10`, File Icon + File Name + Remove Icon); the base variant shows one row (single-file as a list of one), and a multi-file example frame (node `2108:21`) shows three. React's existing `multiple`/`maxFiles`/independently-removable file list already matches this structure — nothing to change (see [`file-upload-discovery.md`](architecture/file-upload-discovery.md), `FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-present"` in `lib/file-upload-figma-metadata.ts`)
 - Data Table component-set node ID: unresolved — Figma verification still pending, but **not blocking**: the sorting-only MVP (external Pagination composition) approved 2026-07-13 was implemented 2026-07-15 as a React-first product, same precedent as Table (see [`table-foundation.md`](architecture/table-foundation.md), [`data-table-discovery.md`](architecture/data-table-discovery.md))
 - Variable collection counts, page inventory, and current component-set totals: **not verified in this pass**
@@ -152,9 +152,7 @@ PostCSS pipeline.
 
 - Figma MCP verification for File Upload's temporary tokens (component-set node, variants, and File Name property confirmed 2026-07-15 — see below)
 - Figma MCP verification for Data Table — no component set exists yet; not blocking (React-first, same precedent as Table)
-- Combobox option-list/listbox anatomy (option icons, descriptions, selected indicator) and a clear-all control have no Figma spec yet — confirmed absent, not unaudited (see [`combobox-parity.md`](architecture/combobox-parity.md#option-anatomy)); React's current option list is React-first pending a Figma reference frame
 - File Upload progress UI, preview thumbnails, controlled files, and retry semantics
-- Multi-select Combobox — Figma confirms the `Multi-select` property and chip-removal icon, but its own component description flags a known limitation (Value text doesn't auto-hide) that any build needs to work around (see [`combobox-parity.md`](architecture/combobox-parity.md#multi-select-known-limitation))
 - Calendar Grid composed range-picker input (two independently-typable start/end text fields + shared calendar, analogous to Date Picker) — judged non-trivial in scope (comparable to rebuilding Date Picker), not built; see [`calendar-foundation.md`](architecture/calendar-foundation.md#composed-range-picker-input--explicitly-out-of-scope)
 - Tree View, Charts, Timeline
 - Advanced overlay patterns beyond current Dialog/Drawer/Popover/Menu stack
@@ -162,9 +160,9 @@ PostCSS pipeline.
 
 ## Active roadmap
 
-1. **Combobox polish** — request a Figma reference frame for option-list anatomy (confirmed absent today); a clear-all control is confirmed absent from Figma too, so building one would be a new design addition, not a parity fix
-2. **File Upload token verification** — diff the Filled/Empty/Dragging/Error/Disabled variants' token bindings against `file-upload.module.css`'s Temporary aliases now that the component set (`2024:2649`) and both single-file and multi-file anatomy are confirmed
-3. **Data Table Figma parity** — MCP audit for a component-set node once available; not blocking (see [`data-table-discovery.md`](architecture/data-table-discovery.md))
+1. **File Upload token verification** — diff the Filled/Empty/Dragging/Error/Disabled variants' token bindings against `file-upload.module.css`'s Temporary aliases now that the component set (`2024:2649`) and both single-file and multi-file anatomy are confirmed
+2. **Data Table Figma parity** — MCP audit for a component-set node once available; not blocking (see [`data-table-discovery.md`](architecture/data-table-discovery.md))
+3. **Combobox selected-option token gap** (low priority) — `semantic/surface/subtle` (used by `--combobox-option-selected-surface`) has no Figma variable; either add the missing variable or rename the CSS token to an existing one — a separate, deliberate decision, not urgent (see [`combobox-parity.md`](architecture/combobox-parity.md#selected-surface-token-gap))
 4. Infrastructure and source-of-truth maintenance — ongoing
 
 ## Source-of-truth rules

@@ -1,6 +1,6 @@
 # Combobox Figma parity
 
-Last updated: 2026-07-13
+Last updated: 2026-07-15
 
 ## Figma source
 
@@ -8,13 +8,14 @@ Last updated: 2026-07-13
 - **Starting node:** `2002:2365`
 - **Component-set node ID:** `2024:2480` — **"Forms/Combobox"**, in section `2024:2501`. Confirmed via Figma MCP on 2026-07-13 (see `lib/combobox-figma-metadata.ts`).
 - **State property variants (confirmed):** Default, Hover, Focused, Error, Disabled
-- **Component properties (confirmed):** `Value` (TEXT, default `"Select options"`), `Multi-select` (BOOLEAN, default `false`)
+- **Component properties (confirmed):** `Value` (TEXT, default `"Select options"`)
+- **`Multi-select` (BOOLEAN) property removed 2026-07-15** — see **Multi-select removed** below; it no longer exists on the component set.
 
 ## MCP connection result
 
-**Resolved 2026-07-13.** The prior timeout was caused by a competing Desktop Bridge instance on port 9224; with that resolved, the Figma MCP check succeeded against the live file. The trigger control's variants, properties, and Default-variant token bindings below are now confirmed directly from Figma, not carried over from the original task brief.
+**Resolved 2026-07-13.** The prior timeout was caused by a competing Desktop Bridge instance on port 9224; with that resolved, the Figma MCP check succeeded against the live file. The trigger control's variants, properties, and Default-variant token bindings below are confirmed directly from Figma, not carried over from the original task brief.
 
-This pass **only** confirms the five closed-trigger states. It does **not** confirm the open/expanded option-list anatomy — see **Option anatomy** below. Do not read "MCP succeeded" as covering the listbox panel.
+The 2026-07-13 pass confirmed only the five closed-trigger states — it did not confirm the open/expanded option-list anatomy, because no such reference frame existed yet. **That changed 2026-07-15**: a new demo frame now shows the listbox panel directly — see **Option anatomy** below, which supersedes the prior "not specified" finding.
 
 ## Parity table
 
@@ -23,7 +24,7 @@ This pass **only** confirms the five closed-trigger states. It does **not** conf
 | Canonical name | Combobox (Forms) | `Combobox` | Matched | Keep slug `combobox` |
 | Component-set node | Confirmed — `2024:2480` ("Forms/Combobox", section `2024:2501`) | Metadata stores `2024:2480` | Matched | — |
 | Single-select | Confirmed (`Value` TEXT property, default `"Select options"`) | `value` + hidden input | Matched | — |
-| Multi-select chips | Confirmed (`Multi-select` BOOLEAN property) — Figma's own description flags a known limitation, see **Multi-select known limitation** below | Not implemented | Deferred | Future batch — plan around the Figma-side Value-text limitation, not just the chips UI |
+| Multi-select chips | **Removed 2026-07-15** — the boolean property and Chips frame were deleted from all 5 state variants; see **Multi-select removed** below | Not implemented | Matched (both sides now single-select only) | None — no corresponding code capability ever existed; the Figma property was documenting a capability that was never built |
 | Editable input | Implied hybrid Select/search | Native `<input type="text">` | Matched | — |
 | Filter while typing | Implied | `prefix` / `substring` local filter | React extension | Document filter modes |
 | Free-form values | Not confirmed | Blur reverts unmatched text | React extension | Document blur policy |
@@ -38,14 +39,14 @@ This pass **only** confirms the five closed-trigger states. It does **not** conf
 | Active option | Unresolved | `aria-activedescendant` + active surface | React extension | ARIA editable combobox pattern |
 | No-results row | Unresolved | Non-option row, visually hidden from AT on row itself | Matched | Status region announces |
 | No-results announcement | Unresolved | Polite `role="status"` region | React extension | See announcement policy |
-| Clear control | **Confirmed absent** — no "clear all" control anywhere in the trigger anatomy; chips use `Icon/XCircle` for per-chip removal only | Not implemented | Deferred | No longer a Figma gap to "confirm" — it's confirmed not to exist; a clear-all control would be a net-new design addition, not a parity fix |
+| Clear control | **Confirmed absent** — no "clear all" control anywhere in the trigger anatomy. (Chips/`Icon/XCircle` no longer apply — Multi-select was removed 2026-07-15, see below) | Not implemented | Deferred | No longer a Figma gap to "confirm" — it's confirmed not to exist; a clear-all control would be a net-new design addition, not a parity fix |
 | Leading field icon | Unresolved | CaretDown only (decorative) | Temporary | MCP audit |
-| Option leading icon | **Confirmed no Figma reference** — no open/expanded frame exists (see **Option anatomy**) | Label text only | React-first | Do not invent from this pass — needs a Figma reference frame first |
-| Option description | **Confirmed no Figma reference** — no open/expanded frame exists (see **Option anatomy**) | Not implemented | React-first | Do not invent from this pass — needs a Figma reference frame first |
-| Selected indicator (in list) | **Confirmed no Figma reference** — no open/expanded frame exists (see **Option anatomy**) | Font-weight + selected surface | React-first | Do not invent from this pass — needs a Figma reference frame first |
-| Popup width | **Confirmed no Figma reference** (see **Option anatomy**) | `matchTriggerWidth` (min = field width) | React-first | Needs a Figma reference frame first |
-| Popup max height | **Confirmed no Figma reference** (see **Option anatomy**) | `--combobox-popup-max-height` | React-first | Needs a Figma reference frame first |
-| Option height / padding | **Confirmed no Figma reference** (see **Option anatomy**) | `--combobox-option-*` tokens | React-first | Needs a Figma reference frame first |
+| Option leading icon | **Confirmed absent from Figma** — the open-example reference frame (`2113:2`, see **Option anatomy**) shows label-text-only rows, no icon | Label text only | Matched | — |
+| Option description | **Confirmed absent from Figma** — the open-example reference frame shows no description slot (see **Option anatomy**) | Not implemented | Matched | — |
+| Selected indicator (in list) | **Confirmed via reference frame** — font-weight 500 distinction only; the row has no visible background fill because `semantic/surface/subtle` has no Figma variable (see **Selected-surface token gap**) | Font-weight 500 + `--combobox-option-selected-surface` token | Matched (font-weight); token-mapping gap tracked separately | See **Selected-surface token gap** |
+| Popup width | Reference frame (`2113:2`) now exists, but exact popup width/sizing was not itemized in this pass | `matchTriggerWidth` (min = field width) | React-first (dimension undiffed) | Diff exact popup width against the reference frame in a follow-up pass |
+| Popup max height | Reference frame now exists, but exact max-height was not itemized in this pass | `--combobox-popup-max-height` | React-first (dimension undiffed) | Diff against the reference frame in a follow-up pass |
+| Option height / padding | Reference frame now exists, but exact row height/padding was not itemized in this pass | `--combobox-option-*` tokens | React-first (dimension undiffed) | Diff against the reference frame in a follow-up pass |
 | Field height / padding | Text Input component; trigger's own cornerRadius/padding/fill/stroke/itemSpacing confirmed bound to Figma variables 2026-07-13 (no hardcoded values) — see `lib/combobox-figma-metadata.ts` | Reuses Text Input module | Alias | Map specific variable IDs to React token aliases in a follow-up pass |
 | Popup offset | Popover tokens | `--popover-offset` via Popover | Alias | — |
 | Elevation | Unresolved | `--combobox-popup-elevation` → Popover | Alias | — |
@@ -82,19 +83,31 @@ This pass **only** confirms the five closed-trigger states. It does **not** conf
 - Source array never mutated; order preserved
 - Filtering alone never commits a value
 
-## Multi-select known limitation
+## Multi-select removed
 
-**Source: Figma's own component description** (confirmed 2026-07-13, not a code defect). Enabling the `Multi-select` boolean property shows the Chips row but does **not** automatically hide the plain `Value` text underneath it — Figma's boolean-property model requires a manual instance override to hide the Value text when Multi-select is on. This is a constraint of how the Figma component itself is built, not a gap in the React implementation to "fix." Any future Multi-select build in React needs to replicate the *intended* result (Chips row replacing the Value text) rather than mirroring Figma's raw default-toggle behavior, and design should be aware the Figma component needs the same manual override applied per instance.
+**Removed 2026-07-15 (corrects the 2026-07-13 "known limitation" finding below).** The `Multi-select` boolean property and its Chips frame (with hardcoded example chips) were deleted from all 5 state variants in Figma. Confirmed: no multi-select/chip capability exists anywhere in `Combobox.tsx` (single string `value`, no array, no `multiple` prop) — the Figma property was documenting a capability that was never built in React. The registry already correctly describes Combobox as single-select; this brings Figma in line with that, rather than the other way around.
+
+This is no longer "a known limitation to design around" — there is nothing left to design around. The property, the Chips row, and the auto-hide-Value-text quirk it used to have are all gone from Figma. If Multi-select is ever built in React in the future, it will need a fresh Figma spec — the removed variant is not a reference to revive.
 
 ## Clear action
 
-**Confirmed absent (2026-07-13).** There is no "clear all" control anywhere in the Combobox trigger anatomy. The only removal affordance is per-chip, using `Icon/XCircle` on each chip in the Multi-select anatomy. A clear-all control is not a parity gap to close — it doesn't exist in Figma today — so building one would be a new design addition, not a fix to match an existing spec.
+**Confirmed absent (2026-07-13, unchanged 2026-07-15).** There is no "clear all" control anywhere in the Combobox trigger anatomy. (The prior per-chip `Icon/XCircle` removal affordance no longer applies — Multi-select and its chips were removed, see **Multi-select removed** above.) A clear-all control is not a parity gap to close — it doesn't exist in Figma today — so building one would be a new design addition, not a fix to match an existing spec.
 
 ## Option anatomy
 
-**Confirmed gap (2026-07-13) — not merely deferred.** No open/expanded example frame exists anywhere in the Figma file showing option-list/listbox anatomy: no option icons, no option descriptions, no selected-indicator treatment, no clear-all control. Figma specifies only the five closed-trigger states (Default, Hover, Focused, Error, Disabled) documented above — it never specifies the dropdown panel's contents.
+**Confirmed present (2026-07-15) — corrects the 2026-07-13 "confirmed gap" finding below.** A new demo frame, **"Combobox (example — open)"** (node `2113:2`), now shows the listbox panel directly: a trigger (Focused state) plus a listbox panel (node `2113:10`) containing 5 option rows (nodes `2113:1149`, `2113:1151`, `2113:1153`, `2113:1155`, `2113:1157`) demonstrating default / active-hover / selected / default / disabled states.
 
-React's current option-list behavior (label text only, `aria-selected` + selected-surface token, no icons/descriptions) is therefore **React-first with Figma parity pending**, not Figma-confirmed. Do not infer or invent option-list anatomy from the Figma file as it stands — there is nothing there to infer from. A Figma reference frame for the open state needs to exist before this row of the parity table can move past "React-first."
+Confirmed against this reference frame:
+
+- **Anatomy is genuinely minimal** — plain label text only, no icon, no description — matching `ComboboxOption`'s real type (`{ value, label, disabled? }`) exactly. No invention needed; React already matches.
+- **State styling matches `combobox.module.css`'s real CSS exactly**: `.option` (transparent background, `semantic/text/primary`), `.optionActive` (`semantic/surface/elevated` background + 2px inset outline using `semantic/focus-ring`), `.optionSelected` (font-weight 500 — background token has no Figma equivalent, see **Selected-surface token gap**), `.optionDisabled` (`semantic/text/disabled`).
+- **No clear-all control** appears in the listbox panel either — consistent with **Clear action** above.
+
+Historical note (2026-07-13): this section previously read "no open/expanded example frame exists anywhere in the Figma file... do not infer or invent option-list anatomy from the Figma file as it stands." That was accurate at the time — the reference frame above did not yet exist. It has since been added, and the facts in this section reflect the current state.
+
+## Selected-surface token gap
+
+**Found 2026-07-15, not fixed — a separate decision for later.** `combobox.module.css`'s `.optionSelected` rule references `--combobox-option-selected-surface: var(--semantic-surface-subtle)`, but `semantic/surface/subtle` does not exist in Figma's variable set (confirmed via full search — only `semantic/surface/default`, `/elevated`, `/glass` exist there). The open-example demo's "selected" row therefore has no background fill in Figma; the font-weight-500 distinction (which does exist in code) is the only visual signal in the reference. Resolve later by either adding the missing Figma variable or renaming the CSS custom property to an existing token — this document does not pick one; see `lib/combobox-figma-metadata.ts`'s `COMBOBOX_FIGMA_SELECTED_SURFACE_TOKEN_GAP`.
 
 ## Pointer active-option sync
 
@@ -124,7 +137,7 @@ Public export for composition (Combobox positioning). Not a registry component. 
 | `--combobox-option-radius` | Alias → `--shape-radius-control` |
 | `--combobox-option-text` | Alias → `--semantic-text-primary` |
 | `--combobox-option-active-surface` | Alias → `--semantic-surface-elevated` |
-| `--combobox-option-selected-surface` | Alias → `--semantic-surface-subtle` |
+| `--combobox-option-selected-surface` | Alias → `--semantic-surface-subtle` — **no Figma variable exists for this token** (see **Selected-surface token gap**) |
 | `--combobox-option-disabled-text` | Alias → `--semantic-text-disabled` |
 | `--combobox-empty-*` | Temporary implementation |
 | Field chrome | Alias → Text Input tokens |
@@ -139,7 +152,7 @@ Public export for composition (Combobox positioning). Not a registry component. 
 
 ## Recommended next batch
 
-1. Ask design for a Figma reference frame covering the open/expanded option-list anatomy — nothing further can be confirmed there without one
-2. Diff each confirmed State variant's (Default/Hover/Focused/Error/Disabled) token values against `text-input.module.css` and map the trigger's confirmed variable IDs (`lib/combobox-figma-metadata.ts`) to their React token aliases
-3. Diacritic-normalized filtering (if confirmed)
-4. If Multi-select is built: replicate the *intended* Chips-replaces-Value-text result, not Figma's raw toggle default (see **Multi-select known limitation**)
+1. Resolve the **Selected-surface token gap** — either add a `semantic/surface/subtle` Figma variable or rename `--combobox-option-selected-surface` to an existing token; a separate, deliberate decision, not part of this sync
+2. Diff the option-list reference frame's (`2113:2`) exact popup width, max-height, and option height/padding against the current Temporary token values
+3. Diff each confirmed State variant's (Default/Hover/Focused/Error/Disabled) token values against `text-input.module.css` and map the trigger's confirmed variable IDs (`lib/combobox-figma-metadata.ts`) to their React token aliases
+4. Diacritic-normalized filtering (if confirmed)
