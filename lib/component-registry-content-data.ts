@@ -189,7 +189,8 @@ export function Example() {
     documentationSource: "content/content-data.ts",
     documentationLastUpdated: DOCS_DATE,
     reactLastUpdated: REACT_DATE,
-    figmaReference: "Content & Data / Divider — Orientation (Horizontal/Vertical)",
+    figmaReference:
+      "Content & Data / Divider — Orientation (Horizontal/Vertical), component set 2044:26035. Both variants confirmed token-bound to semantic/border/default. In-context usage shown in demo frame \"Divider (example — in context)\", node 2116:2.",
     documentationUrl: getComponentDocumentationUrl("divider"),
     supportedVariants: ["thematic", "decorative", "structural"],
     supportedSizes: [],
@@ -219,6 +220,10 @@ export function Example() {
       {
         title: "What is the difference between Divider and spacing?",
         body: "Whitespace groups related content. Divider signals a stronger break between distinct sections — do not replace layout spacing with dividers everywhere.",
+      },
+      {
+        title: "Why doesn't Figma have a variant for thematic/decorative/structural?",
+        body: "By design, not a gap — all three variant values render the identical CSS class (only the underlying element, role, and aria attributes differ), so there is nothing visually distinct for Figma to represent. Confirmed via direct Figma inspection 2026-07-15: the component set (2044:26035) intentionally has only the Orientation property.",
       },
     ],
     apiProps: [
