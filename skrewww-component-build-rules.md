@@ -84,3 +84,15 @@ multiple internal state tiers (e.g. a Button's Default vs Hover vs Pressed
 often use progressively different raw colors, not one shared value) — binding
 all tiers to one token can silently destroy state feedback that existed
 before the fix.
+
+A Surface/Glass implementation is not complete once color tokens are
+verified — "glass" requires both a translucent fill AND a background-blur
+effect bound to the appropriate blur token. Verifying color bindings alone
+can pass every property-level check while the actual rendered result is
+still visibly broken (a hard, unblurred edge where a translucent element
+crosses a background boundary). Blur effects are easy to apply only to a
+test/demo instance and forget to bind at the master level — check for this
+specifically, the same way color-only test-instance overrides get checked.
+Property-level verification is necessary but not sufficient for visual
+effects like blur; a final human visual check in the actual file is required
+before calling a Surface/Glass fix complete.

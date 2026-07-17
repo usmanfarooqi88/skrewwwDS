@@ -232,6 +232,18 @@ Flat, because no real gradient-effect mechanism has been established in this
 project yet. This needs a design decision before any future component's
 Gradient mode is expected to look meaningfully different from Flat.
 
+**Follow-up finding — blur effect (2026-07-17, after the color-token fix
+above landed)**: a user visual check in Figma caught that Glass mode still
+showed a hard, unblurred seam where a translucent button crossed a
+background boundary — proving the color-only fix was incomplete. Root cause:
+`component/surface/blur` (an existing token, resolving to 0 in Flat/Gradient
+and 16 in Glass) had only ever been applied as an instance-level override on
+the old "Layer 3 Validation (Pill + Glass)" demo instances — never bound on
+the actual master components. Fixed by adding a BACKGROUND_BLUR effect
+(bound to `component/surface/blur`) to all 62 master variants (45 Button, 2
+Card, 15 Text Input). Verified on a fresh instance: blur resolves to 0 in
+Flat/Gradient, 16 in Glass, purely from mode-switching.
+
 ## Active roadmap
 
 1. **File Upload token verification** — diff the Filled/Empty/Dragging/Error/Disabled variants' token bindings against `file-upload.module.css`'s Temporary aliases now that the component set (`2024:2649`) and both single-file and multi-file anatomy are confirmed
