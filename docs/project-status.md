@@ -162,7 +162,75 @@ PostCSS pipeline.
 - Calendar Grid composed range-picker input (two independently-typable start/end text fields + shared calendar, analogous to Date Picker) — judged non-trivial in scope (comparable to rebuilding Date Picker), not built; see [`calendar-foundation.md`](architecture/calendar-foundation.md#composed-range-picker-input--explicitly-out-of-scope)
 - Tree View, Charts, Timeline
 - Advanced overlay patterns beyond current Dialog/Drawer/Popover/Menu stack
-- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. Surface parity is still fully open and untouched by this pass
+- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface partially resolved 2026-07-17**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass — see the Layer 3 Surface baseline section below. Broader Surface rollout across remaining components is still open, and Gradient mode has no distinct visual treatment of its own anywhere yet (aliased to Flat)
+
+## Layer 3 Surface baseline
+
+Surface-aware token architecture was prototyped successfully earlier, but a
+later master-component audit (2026-07-17) found that the bindings were never
+persisted to the actual component masters — `component/surface/content` had
+zero real bindings anywhere in the file. Button, Card, and Text Input have
+since been genuinely remediated at the master-component level and verified
+via fresh-instance testing across Flat/Gradient/Glass. No corresponding claim
+of full Surface validation was found in this file or in
+[`skrewww-claude-project-instructions.md`](../skrewww-claude-project-instructions.md)
+to correct in place — both already treated Surface rollout as open (see
+"Broader Style System rollout" there) — so this section is new documentation
+of the 2026-07-17 remediation, not a correction of prior text.
+
+**Button — Surface-dependent filled control pattern**
+
+- New tokens: `component/button/primary/background` (+hover, +pressed),
+  `component/button/danger/background` (+hover, +pressed),
+  `component/button/secondary/background` (+background-elevated, +border)
+- Primary/Danger content (Label + icon glyph strokes) bound directly to the
+  existing `component/surface/content` token — semantically valid reuse (dark
+  background needs light text in Flat/Gradient; light-tinted glass needs dark
+  text)
+- Secondary's content deliberately unchanged (`semantic/text/primary`,
+  `semantic/icon/default`) — its background never darkens enough to need
+  switching
+- Key finding: Primary/Danger have 3 real background tiers (base, hover,
+  pressed) with progressively darker Flat/Gradient values and correspondingly
+  tiered Glass opacity — a single shared token per style would have destroyed
+  hover/press feedback
+- All 45 master variants bound; fresh-instance inheritance verified;
+  Flat/Gradient/Glass all verified with no regression
+
+**Card — Surface container pattern**
+
+- New tokens: `component/card/surface`, `component/card/border`
+  (deliberately unchanged across Flat/Gradient, same reasoning as Secondary
+  Button)
+- No content token needed — Title/Body correctly stay `semantic/text/primary`
+  and `/secondary` across all 3 modes; verified via fresh-instance testing
+  (not assumed) that dark text remains readable against the light-tinted
+  Glass background
+- Both Elevation variants (Flat, Raised) bound; Raised has no stroke at all
+  (construction difference, handled correctly)
+
+**Text Input — Surface form-control pattern**
+
+- New tokens: `component/text-input/surface` (uniform across all 5 states),
+  `component/text-input/border` (Default/Disabled tier),
+  `component/text-input/border-hover` (Hover tier, more prominent in all
+  modes including Glass)
+- Focused (focus-ring) and Error (danger) strokes deliberately left
+  untouched — real semantic feedback colors, confirmed to stay fully opaque
+  in Glass mode rather than fading to translucent
+- Value text unchanged (`semantic/text/primary` / `semantic/text/disabled`)
+  throughout — verified readable in all 3 modes
+- All 15 variants (5 states × 3 sizes) bound; fresh-instance verification
+  passed for all 5 states in Flat and Glass
+
+**All three**: raw-paint-matches-binding verified, no local instance
+overrides used, fresh instances inherit correctly with zero manual setup.
+
+**Open item**: Gradient mode currently has no distinct visual treatment of
+its own for any of these 3 components — it is aliased to the same values as
+Flat, because no real gradient-effect mechanism has been established in this
+project yet. This needs a design decision before any future component's
+Gradient mode is expected to look meaningfully different from Flat.
 
 ## Active roadmap
 

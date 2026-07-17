@@ -71,3 +71,16 @@ Playwright `reuseExistingServer` is opt-in via `PLAYWRIGHT_REUSE_SERVER=true` (l
 - Suppress legitimate a11y, React, or browser warnings.
 - Hardcode README component counts without registry derivation.
 - Guess Figma specifications when MCP is unavailable.
+
+## Style System (Shape/Surface) completion criteria
+
+A conceptual token demo or a fix applied only to a test/validation instance
+does not count as a shipped component fix. A Surface (or Shape) implementation
+is complete only when the actual master components are bound and a genuinely
+fresh instance — not a reused or previously-touched one — inherits the
+correct behavior without any local override. Before creating a single shared
+token for a component's background, check whether the component actually has
+multiple internal state tiers (e.g. a Button's Default vs Hover vs Pressed
+often use progressively different raw colors, not one shared value) — binding
+all tiers to one token can silently destroy state feedback that existed
+before the fix.
