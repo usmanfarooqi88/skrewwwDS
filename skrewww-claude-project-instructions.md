@@ -102,7 +102,7 @@ Do **not** treat Table and Data Table as interchangeable.
 
 ### Tree View
 
-- **Implemented** (2026-07-18) — built directly against a real, well-documented Figma reference: the Content/Tree Item component set (Label, Show chevron, State: Default/Hover/Selected) + the "Tree View (example)" composed demo. No numeric Figma node ID was given — cited by name only; MCP re-verification with an actual ID is still open.
+- **Implemented** (2026-07-18) — built directly against a real, well-documented Figma reference: the Content/Tree Item component set (Label, Show chevron, State: Default/Hover/Selected) + the "Tree View (example)" composed demo. Figma node IDs confirmed 2026-07-18 (see `lib/tree-view-figma-metadata.ts` and `docs/project-status.md`'s Figma status section).
 - Renders a flat, depth-first list of rows (`role="tree"`/`role="treeitem"`) — not nested DOM groups. `aria-level`/`aria-setsize`/`aria-posinset` are set explicitly per row.
 - Indentation is `depth * 20px` computed per row, never a fixed set of per-depth variants — matches Figma's own composed example and its explicit "don't hardcode indentation" guidance.
 - `expanded` and `selected` are each independently controlled/uncontrolled via `lib/use-controllable.ts` (same pattern as Accordion/Dialog/Drawer/CalendarGrid/Data Table).

@@ -8,6 +8,10 @@ import {
   DATA_TABLE_FIGMA_COMPONENT_SET_NODE_ID,
   DATA_TABLE_FIGMA_FILE_URL,
 } from "@/lib/data-table-figma-metadata";
+import {
+  TREE_VIEW_FIGMA_COMPONENT_SET_NODE_ID,
+  TREE_VIEW_FIGMA_FILE_URL,
+} from "@/lib/tree-view-figma-metadata";
 
 const sharedConcepts = {
   shape: {
@@ -690,7 +694,9 @@ export function Example() {
     documentationLastUpdated: "2026-07-18",
     reactLastUpdated: "2026-07-18",
     figmaReference:
-      "Content & Data / Content/Tree Item component set (Label, Show chevron, State: Default/Hover/Selected) + the \"Tree View (example)\" composed demo, confirming 20px-per-depth indentation.",
+      "Content & Data / Content/Tree Item component set (node 2058:1988; Label, Show chevron, State: Default/Hover/Selected — variant nodes 2058:1985/1986/1987) + the \"Tree View (example)\" composed demo (node 2058:1998), confirming 20px-per-depth indentation. Parent section \"Content/Tree View\", node 2058:2071. Node IDs confirmed via direct Figma inspection 2026-07-18.",
+    figmaSourceUrl: TREE_VIEW_FIGMA_FILE_URL,
+    figmaNodeId: TREE_VIEW_FIGMA_COMPONENT_SET_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("tree-view"),
     supportedVariants: ["default", "hover", "selected"],
     supportedSizes: [],
