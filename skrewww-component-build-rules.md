@@ -96,3 +96,16 @@ specifically, the same way color-only test-instance overrides get checked.
 Property-level verification is necessary but not sufficient for visual
 effects like blur; a final human visual check in the actual file is required
 before calling a Surface/Glass fix complete.
+
+Not every component needs Surface-mode reactivity. Three legitimate
+exception categories emerged during the Layer 3 rollout: (1) components too
+small or thin for a background-blur effect to render meaningfully (roughly
+under ~24px or a few px thick — checkboxes, dividers, progress bars); (2)
+components whose entire purpose depends on staying visually fixed regardless
+of theme (tooltips, loading skeletons) — translucency would undermine their
+function; (3) components with no fill at all in their structure (plain text
+links, tab items) — there's nothing for Surface mode to affect. Confirm
+which category applies via direct structural inspection (fill bindings,
+dimensions) before assuming a component needs the fix — don't skip a real
+gap by mistaking it for one of these exceptions, and don't force the fix
+onto something where it would visually break or serve no purpose.

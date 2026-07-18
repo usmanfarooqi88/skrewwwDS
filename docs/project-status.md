@@ -162,7 +162,7 @@ PostCSS pipeline.
 - Calendar Grid composed range-picker input (two independently-typable start/end text fields + shared calendar, analogous to Date Picker) — judged non-trivial in scope (comparable to rebuilding Date Picker), not built; see [`calendar-foundation.md`](architecture/calendar-foundation.md#composed-range-picker-input--explicitly-out-of-scope)
 - Tree View, Charts, Timeline
 - Advanced overlay patterns beyond current Dialog/Drawer/Popover/Menu stack
-- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface partially resolved 2026-07-17**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass — see the Layer 3 Surface baseline section below. Broader Surface rollout across remaining components is still open, and Gradient mode has no distinct visual treatment of its own anywhere yet (aliased to Flat)
+- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface substantially resolved 2026-07-17**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass (see the Layer 3 Surface baseline section below), and the Surface/content-cascade audit across the remaining registry (3 batches, 23 components) is now complete, with 2 flagged items still open rather than closed — Menu's Surface fix has no reusable master "Panel" component to live on, and Badge/Alert/Toast carry duplicate tint tokens pending a future consolidation pass (see the Layer 3 Surface audit section below). Gradient mode still has no distinct visual treatment of its own anywhere yet (aliased to Flat)
 
 ## Layer 3 Surface baseline
 
@@ -243,6 +243,101 @@ the actual master components. Fixed by adding a BACKGROUND_BLUR effect
 (bound to `component/surface/blur`) to all 62 master variants (45 Button, 2
 Card, 15 Text Input). Verified on a fresh instance: blur resolves to 0 in
 Flat/Gradient, 16 in Glass, purely from mode-switching.
+
+## Layer 3 Surface audit — Batches 1-3 complete
+
+Extends the Button/Card/Text Input baseline above to the rest of the
+registry: 3 batches, 23 components checked directly in Figma this session
+for the same Surface/content-cascade pattern (color + blur binding at the
+master level). Regression check on Button/Card/Text Input ran and passed
+clean after every single batch (4 total checks across this session) — no
+regressions at any point.
+
+**Batch 1 (11 components — highest contrast risk)**
+
+Fixed:
+- Icon Button — reused Button's exact tokens (identical architecture)
+- Tag — new `component/tag/surface`
+- Badge — 6 new per-style tint-preserving tokens:
+  `component/badge/{neutral,primary,success,warning,danger,info}/surface`;
+  each style keeps its own color identity at reduced opacity in Glass rather
+  than collapsing to generic white
+- Alert — new shared `component/feedback/{info,success,warning,danger}/surface`
+  family; caught a naming mismatch mid-fix — the "Error" variant maps to the
+  "danger" token family, not a literal "error" key
+- Toast — reused Card's tokens (a different visual style from Alert despite
+  being in the same category)
+- Menu — Panel + Item hover fixed, but flagged: no reusable master "Panel"
+  component exists, so the fix lives only on the example frame — the same
+  structural gap as Combobox's listbox
+- Popover, Dialog, Drawer — all reused Card's tokens
+
+Marked not-applicable:
+- Link — zero fill across all 45 variants, nothing to cascade
+- Tooltip — user decision: stays fixed-dark always, doesn't participate in
+  Surface mode
+
+Flagged, not fixed:
+- Badge's and Alert/Toast's tint tokens hold identical values under
+  different names (`component/badge/danger/surface` vs
+  `component/feedback/danger/surface`) — a consolidation opportunity for a
+  future cleanup pass, deliberately not touched now to avoid re-risk
+  mid-batch
+
+**Batch 2 (12 components — form and interactive controls)**
+
+Fixed:
+- Select, Combobox (+ its listbox demo panel built earlier this session),
+  Search Field
+- Date Picker — trigger + separate Calendar Grid popup panel (two distinct
+  surfaces)
+- Textarea — all reused Text Input's tokens
+- File Upload — reused Card's tokens for Empty/Disabled/Filled; new
+  `component/file-upload/dragging-surface` for the Dragging state, whose
+  accent border was deliberately left untouched (same treatment as Error's
+  danger border)
+- Pagination/Page Item — 32px "Current" state reused Button's primary
+  background + `component/surface/content` (distinguished from the
+  small-control exceptions below since it's Button-scale, not
+  Checkbox-scale); Hover reused Menu's item-hover token
+
+Marked not-applicable:
+- Checkbox, Radio, Switch — user decision: ~16-24px indicators, blur would
+  be nonsensical at that scale
+- Radio Group — no Figma component exists, correctly so: it's a pure
+  fieldset/legend semantic wrapper with no visual surface of its own
+- Tabs — zero fill anywhere in the structure, same as Link
+
+**Batch 3 (12 components — containers and content)**
+
+Fixed:
+- Accordion Item and Empty State — both had a raw hardcoded white fill, not
+  even bound to a semantic token; found and fixed, reused Card's tokens
+- List Item — reused Menu's item-hover token
+- Avatar — 24-48px, reused Button's primary background +
+  `component/surface/content` for initials text
+- Table — demo frame only, matches its known React-first/Figma-parity-pending
+  status; reused Card's tokens
+- Calendar Day — 32px "Selected" state, same solid-brand pattern as Page
+  Item, same token reuse
+
+Marked not-applicable:
+- Divider — 1px thick, blur nonsensical
+- Skeleton — user decision: loading placeholder, not themed content, stays
+  neutral gray regardless of theme
+- Progress Bar and Spinner — same functional-indicator rationale as
+  Skeleton, small/thin scale
+- Breadcrumb — zero fill anywhere, same as Link/Tabs
+
+Calendar Grid: no separate component exists — already covered by the same
+panel fixed for Date Picker in Batch 2.
+
+**Open items carried forward** (not closed by this audit):
+1. Menu has no reusable master "Panel" component — the Surface fix lives
+   only on the example frame (Batch 1)
+2. Badge and Alert/Toast maintain duplicate tint tokens with identical
+   values under different names — a future consolidation opportunity, not a
+   correctness bug (Batch 1)
 
 ## Active roadmap
 
