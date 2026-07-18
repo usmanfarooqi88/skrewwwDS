@@ -675,6 +675,140 @@ export function Example() {
 }`,
   },
   {
+    slug: "tree-view",
+    name: "Tree View",
+    category: "Content & Data",
+    summary:
+      "Hierarchical, keyboard-navigable tree — file explorers, nested category browsers, org charts. Composes Content/Tree Item rows with roving-tabindex keyboard navigation and depth-based indentation.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-07-18",
+    reactLastUpdated: "2026-07-18",
+    figmaReference:
+      "Content & Data / Content/Tree Item component set (Label, Show chevron, State: Default/Hover/Selected) + the \"Tree View (example)\" composed demo, confirming 20px-per-depth indentation.",
+    documentationUrl: getComponentDocumentationUrl("tree-view"),
+    supportedVariants: ["default", "hover", "selected"],
+    supportedSizes: [],
+    tokensUsed: [
+      "component/menu/item-hover",
+      "semantic/action/primary",
+      "semantic/icon/muted",
+      "semantic/text/primary",
+      "component/radius/control",
+      "semantic/focus-ring",
+    ],
+    relatedComponents: [
+      { label: "List Item — flat, non-nested row alternative", href: "/components/list-item" },
+      { label: "Menu — the item-hover token Tree Item reuses", href: "/components/menu" },
+    ],
+    relatedTokens: [
+      { label: "component/radius/control", href: "/foundations" },
+      { label: "semantic/focus-ring", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "Multi-select is a deferred v2 — not shown in the Figma reference and not built here.",
+      "Drag-and-drop reordering, virtualization, and async/lazy-loaded children are all out of scope — none are shown in the Figma reference.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "Tree View renders a flat, depth-first list of visible Tree Item rows (role=\"treeitem\") inside a role=\"tree\" container — not nested DOM groups. Each row is Chevron (hidden on leaf nodes) + an optional consumer-supplied icon (16x16 ReactNode slot, matching Figma's deliberate lack of a formal icon-swap property) + Label. Indentation is depth * 20px computed as padding-left per row, matching the 20px-per-depth unit confirmed in Figma's composed example — never a fixed set of per-depth variants.",
+    keyboardBehavior:
+      "Roving tabindex — exactly one row is in the Tab sequence at a time. ArrowDown/ArrowUp move focus between visible rows. ArrowRight expands a collapsed node and moves focus onto its newly-visible first child (or moves directly to the first child if already expanded); a no-op on leaf nodes. ArrowLeft collapses an expanded node in place, or moves focus to its parent if already collapsed or a leaf. Enter and Space select the focused row. Clicking the chevron toggles expand/collapse only; clicking the row body selects only — the two are deliberately independent actions.",
+    focusBehavior:
+      "Focus recovers onto the first visible row if the previously-focused node stops being visible (e.g. a controlled `expanded` update collapses its parent). Expanding a node via ArrowRight defers the actual DOM focus() call to after the new child row commits, since it doesn't exist in the DOM at keydown time.",
+    announcementBehavior:
+      "aria-expanded is present only on rows with children (omitted entirely on leaf rows). aria-level, aria-setsize, and aria-posinset are set explicitly on every row from the flattened depth-first position, since Tree View does not nest DOM groups the way the WAI-ARIA authoring practice's canonical example does.",
+    comparisons: [
+      {
+        title: "When should I use Tree View instead of List Item?",
+        body: "Tree View is for content with genuine hierarchical depth where indentation communicates real structure (file trees, nested categories, org charts). List Item is for flat, non-nested rows — don't reach for Tree View just to get List Item's visual density.",
+      },
+      {
+        title: "Is Tree View's expanded/selected state controlled or uncontrolled?",
+        body: "Both, independently — expanded (string[] of node ids) and selected (a single string | null) each use the same useControllableState hook as Accordion, Dialog, Drawer, CalendarGrid's range mode, and Data Table's sort state. Pass expanded + onExpandedChange or selected + onSelectedChange for controlled usage, or defaultExpanded / defaultSelected for uncontrolled.",
+      },
+      {
+        title: "Does Tree View support selecting multiple nodes?",
+        body: "No — single-select only in this Beta. Multi-select is a deferred v2 with no clear signal it's needed yet, and isn't shown anywhere in the Figma reference.",
+      },
+      {
+        title: "Why is indentation computed instead of a Figma variant?",
+        body: "Figma's own component description calls this out as the #1 common mistake: building indentation as a fixed per-component property. The real anatomy demonstrates it as a genuine per-instance depth spacer (verified at exactly 20px x depth in the composed example), so the React implementation computes the same depth * 20px value as padding-left rather than hardcoding per-level classes or variants.",
+      },
+      {
+        title: "Why doesn't the Icon have its own swap property?",
+        body: "Figma deliberately leaves icon selection as a consumer-supplied slot — different rows in the Figma demo use different icons purely through manual instance swaps, with no property backing it. Tree Item's `icon` field is a plain optional ReactNode for the same reason, not a fixed folder/file enum.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "data",
+        type: "TreeNode[]",
+        description: "Recursive node data: { id, label, icon?, children? }. The only shape Tree View accepts.",
+      },
+      {
+        name: "expanded / defaultExpanded",
+        type: "string[]",
+        description: "Controlled or uncontrolled list of expanded node ids.",
+      },
+      {
+        name: "onExpandedChange",
+        type: "(expanded: string[]) => void",
+        description: "Called whenever the expanded set changes, from click or keyboard.",
+      },
+      {
+        name: "selected / defaultSelected",
+        type: "string | null",
+        description: "Controlled or uncontrolled single selected node id.",
+      },
+      {
+        name: "onSelectedChange",
+        type: "(id: string | null) => void",
+        description: "Called when a row is selected via click, Enter, or Space.",
+      },
+    ],
+    reactExample: `import { useState } from "react";
+import { TreeView } from "@/components/ui";
+
+const data = [
+  {
+    id: "src",
+    label: "src",
+    children: [
+      { id: "components", label: "components", children: [
+        { id: "button", label: "Button.tsx" },
+      ] },
+      { id: "index", label: "index.tsx" },
+    ],
+  },
+  { id: "readme", label: "README.md" },
+];
+
+export function Example() {
+  const [expanded, setExpanded] = useState<string[]>(["src"]);
+  const [selected, setSelected] = useState<string | null>(null);
+
+  return (
+    <TreeView
+      data={data}
+      expanded={expanded}
+      onExpandedChange={setExpanded}
+      selected={selected}
+      onSelectedChange={setSelected}
+      aria-label="Project files"
+    />
+  );
+}`,
+  },
+  {
     slug: "empty-state",
     name: "Empty State",
     category: "Content & Data",

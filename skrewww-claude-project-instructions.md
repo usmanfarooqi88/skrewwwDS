@@ -77,6 +77,7 @@ These are implemented in React (Beta). Verify in the registry before claiming el
 - File Upload
 - Table
 - Data Table
+- Tree View
 - Core form controls, Select, Search Field, overlays (Dialog, Drawer, Popover), and other registry entries marked `hasImplementation: true`
 
 ### Table
@@ -99,11 +100,20 @@ These are implemented in React (Beta). Verify in the registry before claiming el
 
 Do **not** treat Table and Data Table as interchangeable.
 
+### Tree View
+
+- **Implemented** (2026-07-18) — built directly against a real, well-documented Figma reference: the Content/Tree Item component set (Label, Show chevron, State: Default/Hover/Selected) + the "Tree View (example)" composed demo. No numeric Figma node ID was given — cited by name only; MCP re-verification with an actual ID is still open.
+- Renders a flat, depth-first list of rows (`role="tree"`/`role="treeitem"`) — not nested DOM groups. `aria-level`/`aria-setsize`/`aria-posinset` are set explicitly per row.
+- Indentation is `depth * 20px` computed per row, never a fixed set of per-depth variants — matches Figma's own composed example and its explicit "don't hardcode indentation" guidance.
+- `expanded` and `selected` are each independently controlled/uncontrolled via `lib/use-controllable.ts` (same pattern as Accordion/Dialog/Drawer/CalendarGrid/Data Table).
+- Single-select only. Multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are **deferred** — none are shown in the Figma reference.
+
+Do **not** treat the pre-existing `tree-item` documentation-only content slug (Figma-facing prose, no registry entry) as the implemented component — Tree View (`components/ui/TreeView.tsx`) is the canonical, implemented pattern; Tree Item is an internal row it composes.
+
 ---
 
 ## Layer 2 — current major React gaps
 
-- Tree View
 - Charts
 - Timeline
 

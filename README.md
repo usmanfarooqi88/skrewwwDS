@@ -18,7 +18,7 @@ Volatile counts and roadmap live in [`docs/project-status.md`](docs/project-stat
 |----------|------------|
 | Actions | Button, Link |
 | Containers & Overlays | Accordion, Card, Dialog, Drawer, Popover |
-| Content & Data | Avatar, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, List Item, Table, Tag |
+| Content & Data | Avatar, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, List Item, Table, Tag, Tree View |
 | Forms | Checkbox, Combobox, Date Picker, File Upload, Form Field, Radio, Radio Group, Search Field, Select, Switch, Text Input, Textarea, Validation Message |
 | Feedback | Alert, Badge, Progress Bar, Skeleton, Spinner, Toast, Tooltip |
 | Navigation | Breadcrumb, Menu, Pagination, Tabs |
@@ -127,7 +127,8 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 - **File Upload** — React Beta implemented; live Figma MCP verification, progress UI, and preview thumbnails remain deferred
 - **Table** — React-first native HTML table foundation (usability audit complete); Figma verification pending
 - **Data Table** (named "Data Grid" during discovery; canonical name finalized 2026-07-13) — implemented 2026-07-15 at the approved narrow MVP scope (DataTableSortHeader + useDataTableSort sorting, external Pagination, composes Table); Figma verification pending, no component set exists yet
-- **Tree View, Charts, Timeline** — not implemented
+- **Tree View** — implemented 2026-07-18, built against a real, well-documented Figma reference (Content/Tree Item component set + the "Tree View (example)" composed demo); single-select only (multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are deferred)
+- **Charts, Timeline** — not implemented
 - **Advanced overlays** beyond Dialog, Drawer, Popover, Menu — largely deferred
 - **Full Style System rollout** — Shape/Surface personalities partially wired
 - Temporary tokens are marked in `styles/tokens.css` where Figma values are unresolved

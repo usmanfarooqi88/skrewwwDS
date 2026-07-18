@@ -42,6 +42,8 @@ export type {
 } from "@/components/ui/Table";
 export { DataTableSortHeader } from "@/components/ui/DataTableSortHeader";
 export type { DataTableSortHeaderProps } from "@/components/ui/DataTableSortHeader";
+export { TreeView } from "@/components/ui/TreeView";
+export type { TreeNode, TreeViewProps } from "@/components/ui/TreeView";
 export { Alert } from "@/components/ui/Alert";
 export type { AlertProps } from "@/components/ui/Alert";
 export { Badge } from "@/components/ui/Badge";

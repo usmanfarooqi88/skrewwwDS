@@ -39,6 +39,7 @@ import { TablePreview } from "@/components/previews/TablePreview";
 import { DataTablePreview } from "@/components/previews/DataTablePreview";
 import { SelectPreview } from "@/components/previews/SelectPreview";
 import { TextareaPreview } from "@/components/previews/TextareaPreview";
+import { TreeViewPreview } from "@/components/previews/TreeViewPreview";
 
 import type { ComponentType } from "react";
 
@@ -50,6 +51,7 @@ const previewMap: Record<string, ComponentType> = {
   "list-item": ListItemPreview,
   table: TablePreview,
   "data-table": DataTablePreview,
+  "tree-view": TreeViewPreview,
   accordion: AccordionPreview,
   avatar: AvatarPreview,
   divider: DividerPreview,

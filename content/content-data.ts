@@ -135,6 +135,33 @@ export const contentDataComponents: ComponentDoc[] = [
     commonMistakes: "Building indentation as a fixed per-component property instead of a real per-instance spacer value.",
     tokensUsed: ["semantic/surface/elevated", "semantic/action/primary", "semantic/icon/muted", "component/radius/control"],
     properties: "State as variants. Label (text). Show chevron (boolean).",
+    knownLimitation:
+      "Implemented in React as an internal row composed by Tree View (components/ui/internal/TreeItem.tsx) — see /components/tree-view for the canonical, publicly documented, implemented pattern. This entry remains Figma-facing prose about the underlying Content/Tree Item component set.",
+  },
+  {
+    slug: "tree-view",
+    name: "Tree View",
+    category: "Content & Data",
+    variants: "Composed from Tree Item rows — no top-level variants of its own",
+    purpose:
+      "A hierarchical, keyboard-navigable tree for file explorers, nested category browsers, and org charts, composed from Content/Tree Item rows.",
+    whenToUse:
+      "Content with genuine hierarchical depth where indentation communicates real structure, and the user needs to expand/collapse and select individual nodes.",
+    whenNotToUse:
+      "Flat, non-nested lists — use List Item. Multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are all out of scope in this Beta.",
+    accessibility:
+      "role=\"tree\" containing a flat, depth-first list of role=\"treeitem\" rows (not nested DOM groups) — aria-level, aria-setsize, and aria-posinset are set explicitly on every row since DOM nesting doesn't convey depth here. aria-expanded is present only on rows with children. Roving tabindex keeps exactly one row in the Tab sequence; arrow keys move/expand/collapse, Enter/Space selects.",
+    commonMistakes:
+      "Building indentation as a fixed per-component property instead of computing depth * 20px per row (Figma's own description calls this out as the #1 mistake); inventing a fixed folder/file icon-swap enum when Figma deliberately leaves icon selection as a consumer-supplied slot; building multi-select, drag-and-drop, or virtualization that aren't part of this scope.",
+    tokensUsed: [
+      "component/menu/item-hover",
+      "semantic/action/primary",
+      "semantic/icon/muted",
+      "semantic/text/primary",
+      "component/radius/control",
+    ],
+    properties:
+      "data (TreeNode[]: { id, label, icon?, children? }). expanded/defaultExpanded + onExpandedChange (controlled/uncontrolled). selected/defaultSelected + onSelectedChange (controlled/uncontrolled, single-select only).",
   },
   {
     slug: "timeline-item",

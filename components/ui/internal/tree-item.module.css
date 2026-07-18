@@ -1,0 +1,71 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--tree-item-gap);
+  min-height: var(--tree-item-height);
+  padding-right: var(--tree-item-padding-x);
+  border: 0;
+  border-radius: var(--tree-item-radius);
+  background: transparent;
+  color: var(--tree-item-text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.row:hover {
+  background: var(--tree-item-hover-surface);
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: -2px;
+}
+
+.selected {
+  background: var(--tree-item-selected-surface);
+  color: var(--tree-item-selected-text);
+}
+
+.chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--tree-item-chevron-size);
+  height: var(--tree-item-chevron-size);
+  color: var(--tree-item-icon-color);
+  transform: rotate(0deg);
+  transition: transform 0.15s ease;
+}
+
+.chevronExpanded {
+  transform: rotate(90deg);
+}
+
+.chevronSpacer {
+  flex-shrink: 0;
+  width: var(--tree-item-chevron-size);
+  height: var(--tree-item-chevron-size);
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--tree-item-icon-size);
+  height: var(--tree-item-icon-size);
+  color: var(--tree-item-icon-color);
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+[data-skrewww-shape="pill"] .row {
+  border-radius: min(var(--tree-item-radius), 1rem);
+}

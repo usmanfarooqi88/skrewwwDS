@@ -440,6 +440,26 @@
   --list-item-metadata-text: var(--semantic-text-secondary);
   --list-item-radius: var(--shape-radius-control);
 
+  /* ── Tree Item geometry [VERIFIED] — Content/Tree Item component set,
+     confirmed via direct Figma inspection: 20px-per-depth indentation
+     verified in the "Tree View (example)" composed demo (depth 0 = 0px,
+     depth 1 = 20px, depth 2 = 40px). Hover and Selected both reuse Menu
+     Item's already-established, Surface-aware hover token; Selected's
+     label color is a fixed accent (not Surface-reactive), same treatment
+     as Tabs' active indicator. ── */
+  --tree-item-indent-unit: 20px;
+  --tree-item-height: 2.25rem;
+  --tree-item-padding-x: 0.625rem;
+  --tree-item-gap: 0.5rem;
+  --tree-item-icon-size: 1rem;
+  --tree-item-chevron-size: 1rem;
+  --tree-item-text: var(--semantic-text-primary);
+  --tree-item-icon-color: var(--semantic-icon-muted);
+  --tree-item-hover-surface: var(--menu-item-hover-surface);
+  --tree-item-selected-surface: var(--menu-item-hover-surface);
+  --tree-item-selected-text: var(--semantic-action-primary);
+  --tree-item-radius: var(--shape-radius-control);
+
   /* ── Empty State geometry [TEMPORARY] ── */
   --empty-state-max-width: 28rem;
   --empty-state-padding-x: 1rem;

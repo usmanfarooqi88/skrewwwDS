@@ -46,6 +46,6 @@ Browser automation verifies behavior unit tests cannot reliably simulate:
 - Multi-select Combobox (deferred)
 - Command Menu / Context Menu (deferred)
 - Data Table (Table foundation shipped; Data Table's narrow MVP scope approved 2026-07-13, not yet implemented — see `docs/architecture/data-table-discovery.md`)
-- Tree View, Charts, Timeline (deferred)
+- Charts, Timeline (deferred)
 
-Dialog, Popover, Menu, Drawer, Combobox, Date Picker, File Upload, and Table ship with Vitest and Playwright coverage. Extend browser specs when new overlay-heavy or interactive tabular components enter implementation.
+Dialog, Popover, Menu, Drawer, Combobox, Date Picker, File Upload, Table, and Tree View ship with Vitest and Playwright coverage (Tree View: `e2e/tree-view.spec.ts`, 2026-07-18 — default preview state, chevron-click expand, and ArrowUp/Down/Left/Right/Enter keyboard navigation). Extend browser specs when new overlay-heavy or interactive tabular components enter implementation.
