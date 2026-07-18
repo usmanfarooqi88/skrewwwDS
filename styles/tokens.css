@@ -460,6 +460,21 @@
   --tree-item-selected-text: var(--semantic-action-primary);
   --tree-item-radius: var(--shape-radius-control);
 
+  /* ── Charts geometry [VERIFIED] — "Content/Charts" section, confirmed via
+     direct Figma inspection: Bar Chart (example) uses a single
+     semantic/action/primary fill with real proportional bar heights and
+     semantic/text/secondary month labels; Line Chart (example) uses a 2px
+     semantic/action/primary stroke with 6px hollow-ring markers
+     (semantic/surface/default fill, semantic/action/primary stroke). Both
+     are single-series, static (no tooltip/legend) for v1. ── */
+  --bar-chart-fill: var(--semantic-action-primary);
+  --bar-chart-axis-text: var(--semantic-text-secondary);
+  --line-chart-stroke: var(--semantic-action-primary);
+  --line-chart-stroke-width: 2px;
+  --line-chart-dot-radius: 3px;
+  --line-chart-dot-fill: var(--semantic-surface-default);
+  --line-chart-dot-stroke: var(--semantic-action-primary);
+
   /* ── Empty State geometry [TEMPORARY] ── */
   --empty-state-max-width: 28rem;
   --empty-state-padding-x: 1rem;

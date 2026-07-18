@@ -40,6 +40,8 @@ import { DataTablePreview } from "@/components/previews/DataTablePreview";
 import { SelectPreview } from "@/components/previews/SelectPreview";
 import { TextareaPreview } from "@/components/previews/TextareaPreview";
 import { TreeViewPreview } from "@/components/previews/TreeViewPreview";
+import { BarChartPreview } from "@/components/previews/BarChartPreview";
+import { LineChartPreview } from "@/components/previews/LineChartPreview";
 
 import type { ComponentType } from "react";
 
@@ -52,6 +54,8 @@ const previewMap: Record<string, ComponentType> = {
   table: TablePreview,
   "data-table": DataTablePreview,
   "tree-view": TreeViewPreview,
+  "bar-chart": BarChartPreview,
+  "line-chart": LineChartPreview,
   accordion: AccordionPreview,
   avatar: AvatarPreview,
   divider: DividerPreview,

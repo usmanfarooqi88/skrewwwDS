@@ -12,6 +12,11 @@ import {
   TREE_VIEW_FIGMA_COMPONENT_SET_NODE_ID,
   TREE_VIEW_FIGMA_FILE_URL,
 } from "@/lib/tree-view-figma-metadata";
+import {
+  BAR_CHART_FIGMA_EXAMPLE_NODE_ID,
+  CHARTS_FIGMA_FILE_URL,
+  LINE_CHART_FIGMA_EXAMPLE_NODE_ID,
+} from "@/lib/charts-figma-metadata";
 
 const sharedConcepts = {
   shape: {
@@ -812,6 +817,161 @@ export function Example() {
       aria-label="Project files"
     />
   );
+}`,
+  },
+  {
+    slug: "bar-chart",
+    name: "Bar Chart",
+    category: "Content & Data",
+    summary:
+      "Single-series, static bar chart built on recharts — real proportional bar heights, month labels below, no Y-axis/gridlines/legend/tooltip.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-07-18",
+    reactLastUpdated: "2026-07-18",
+    figmaReference:
+      "Content & Data / \"Bar Chart (example)\" (Content/Charts section, node 2058:2568), frame node 2058:2532 — 6 bars (Jan-Jun), single semantic/action/primary fill, real proportional heights (58/95/76/128/108/140 out of a 160px plot area), semantic/text/secondary month labels. No Y-axis, gridlines, legend, or tooltip in the Figma reference. Node IDs confirmed via direct Figma inspection 2026-07-18.",
+    figmaSourceUrl: CHARTS_FIGMA_FILE_URL,
+    figmaNodeId: BAR_CHART_FIGMA_EXAMPLE_NODE_ID,
+    documentationUrl: getComponentDocumentationUrl("bar-chart"),
+    supportedVariants: ["default"],
+    supportedSizes: [],
+    tokensUsed: ["semantic/action/primary", "semantic/text/secondary"],
+    relatedComponents: [
+      { label: "Line Chart — trend data over the same single-series shape", href: "/components/line-chart" },
+    ],
+    relatedTokens: [
+      { label: "semantic/action/primary", href: "/foundations" },
+      { label: "semantic/text/secondary", href: "/foundations" },
+    ],
+    relatedConcepts: [],
+    openQuestions: [
+      "Multi-series support is deferred — not shown in the Figma reference and not built here; v1 is single-series only.",
+      "Interactivity (hover tooltips, legend interactivity) is deferred — v1 is deliberately static, per the approved v1 scope.",
+      "A Y-axis and gridlines beyond the existing X-axis month labels are deferred — not shown in the Figma reference.",
+      "Curve/bar styling beyond fill color and the X-axis label treatment (bar corner radius, spacing, fixed vs. responsive sizing) is this implementation's own decision, not something Figma specified.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "A recharts BarChart with fixed pixel width/height (not a fluid ResponsiveContainer — a deliberate v1 simplification), one Bar per datum filled with semantic/action/primary, and an XAxis rendering only text labels (axisLine and tickLine both disabled) in semantic/text/secondary. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table — so the underlying data is genuinely available to assistive tech, not just implied by bar heights.",
+    announcementBehavior:
+      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden so assistive tech doesn't attempt to read partial axis text out of context.",
+    comparisons: [
+      {
+        title: "Why fixed width/height instead of a responsive container?",
+        body: "A deliberate v1 simplification, not a Figma-specified constraint — recharts's ResponsiveContainer depends on ResizeObserver-based measurement that doesn't work reliably in this project's jsdom test environment, and a static, non-interactive v1 chart doesn't need fluid resizing to be useful.",
+      },
+      {
+        title: "Why is there no Y-axis?",
+        body: "Figma's own \"Bar Chart (example)\" frame has no Y-axis, gridlines, legend, or tooltip — only bars and X-axis month labels. This component matches that reference exactly rather than inferring additional chrome Figma didn't show.",
+      },
+      {
+        title: "How is the underlying data exposed to screen readers?",
+        body: "A visually-hidden (sr-only) table with the same label/value pairs, linked to the chart via aria-describedby. Bar heights alone convey nothing to assistive tech, so this is a real accessibility mechanism, not optional polish.",
+      },
+    ],
+    apiProps: [
+      { name: "data", type: "{ label: string; value: number }[]", description: "Single-series data. Multi-series is deferred." },
+      { name: "label", type: "string", description: "Accessible name for the chart — also used as the hidden data table's caption." },
+      { name: "width", type: "number", default: "480", description: "Fixed pixel width — not fluid/responsive." },
+      { name: "height", type: "number", default: "240", description: "Fixed pixel height — not fluid/responsive." },
+    ],
+    reactExample: `import { BarChart } from "@/components/ui";
+
+const monthlySignups = [
+  { label: "Jan", value: 58 },
+  { label: "Feb", value: 95 },
+  { label: "Mar", value: 76 },
+  { label: "Apr", value: 128 },
+  { label: "May", value: 108 },
+  { label: "Jun", value: 140 },
+];
+
+export function Example() {
+  return <BarChart data={monthlySignups} label="Monthly signups" />;
+}`,
+  },
+  {
+    slug: "line-chart",
+    name: "Line Chart",
+    category: "Content & Data",
+    summary:
+      "Single-series, static line chart built on recharts — a single stroked path with hollow-ring point markers, no axes/gridlines/legend/tooltip.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-07-18",
+    reactLastUpdated: "2026-07-18",
+    figmaReference:
+      "Content & Data / \"Line Chart (example)\" (Content/Charts section, node 2058:2568), frame node 2058:2559 — single 2px semantic/action/primary stroke, 7 data points as 6px hollow-ring markers (fill: semantic/surface/default, stroke: semantic/action/primary, 2px). No axis labels, gridlines, or legend in the Figma reference. Node IDs confirmed via direct Figma inspection 2026-07-18.",
+    figmaSourceUrl: CHARTS_FIGMA_FILE_URL,
+    figmaNodeId: LINE_CHART_FIGMA_EXAMPLE_NODE_ID,
+    documentationUrl: getComponentDocumentationUrl("line-chart"),
+    supportedVariants: ["default"],
+    supportedSizes: [],
+    tokensUsed: ["semantic/action/primary", "semantic/surface/default"],
+    relatedComponents: [
+      { label: "Bar Chart — categorical data over the same single-series shape", href: "/components/bar-chart" },
+    ],
+    relatedTokens: [{ label: "semantic/action/primary", href: "/foundations" }],
+    relatedConcepts: [],
+    openQuestions: [
+      "Multi-series support is deferred — not shown in the Figma reference and not built here; v1 is single-series only.",
+      "Interactivity (hover tooltips, legend interactivity) is deferred — v1 is deliberately static, per the approved v1 scope.",
+      "Axis labels and gridlines are deferred — the Figma reference has none at all for Line Chart.",
+      "Curve type (\"monotone\") and fixed pixel sizing are this implementation's own decisions, not things Figma specified.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "A recharts LineChart with fixed pixel width/height (not a fluid ResponsiveContainer — a deliberate v1 simplification), a single Line (monotone curve) stroked in semantic/action/primary at 2px, with a 3px-radius hollow-ring dot per point (semantic/surface/default fill, semantic/action/primary stroke). No XAxis or YAxis rendered at all, matching the Figma reference exactly. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table.",
+    announcementBehavior:
+      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden.",
+    comparisons: [
+      {
+        title: "Why is there no axis at all, not even X-axis labels?",
+        body: "Figma's own \"Line Chart (example)\" frame has no axis labels at all — unlike Bar Chart, which does show month labels. This component matches that reference exactly rather than adding chrome Figma didn't show.",
+      },
+      {
+        title: "Why \"monotone\" curve type?",
+        body: "Figma shows a single smooth stroked path but doesn't specify a curve algorithm. \"Monotone\" is this implementation's own choice for a pleasant default — not a Figma-verified fact.",
+      },
+      {
+        title: "How is the underlying data exposed to screen readers?",
+        body: "A visually-hidden (sr-only) table with the same label/value pairs, linked to the chart via aria-describedby — the same mechanism Bar Chart uses.",
+      },
+    ],
+    apiProps: [
+      { name: "data", type: "{ label: string; value: number }[]", description: "Single-series data. Multi-series is deferred." },
+      { name: "label", type: "string", description: "Accessible name for the chart — also used as the hidden data table's caption." },
+      { name: "width", type: "number", default: "480", description: "Fixed pixel width — not fluid/responsive." },
+      { name: "height", type: "number", default: "240", description: "Fixed pixel height — not fluid/responsive." },
+    ],
+    reactExample: `import { LineChart } from "@/components/ui";
+
+const monthlySignups = [
+  { label: "Jan", value: 58 },
+  { label: "Feb", value: 95 },
+  { label: "Mar", value: 76 },
+  { label: "Apr", value: 128 },
+  { label: "May", value: 108 },
+  { label: "Jun", value: 140 },
+];
+
+export function Example() {
+  return <LineChart data={monthlySignups} label="Monthly signups" />;
 }`,
   },
   {

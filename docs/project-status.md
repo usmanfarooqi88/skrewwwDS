@@ -10,11 +10,11 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 
 | Metric | Value | Source |
 |--------|------:|--------|
-| Implemented Beta components | 41 | `getImplementedComponentCount()` / `lib/component-registry.ts` |
-| Registry entries with React | 41 | `hasImplementation: true` |
-| Figma-documented components | 57 | `content/` inventory (`lib/data.ts`) |
+| Implemented Beta components | 43 | `getImplementedComponentCount()` / `lib/component-registry.ts` |
+| Registry entries with React | 43 | `hasImplementation: true` |
+| Figma-documented components | 59 | `content/` inventory (`lib/data.ts`) |
 | Documentation-only (no React) | 16 | Figma docs not in implemented registry set |
-| Indexable documentation slugs | 56 | `getIndexableComponentSlugs()` |
+| Indexable documentation slugs | 58 | `getIndexableComponentSlugs()` |
 | Redirect aliases | 2 | `form-field-wrapper`, `accordion-item` |
 
 ### Implemented inventory by category
@@ -23,7 +23,7 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 |----------|------------|
 | Actions | Button, Link |
 | Containers & Overlays | Accordion, Card, Dialog, Drawer, Popover |
-| Content & Data | Avatar, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, List Item, Table, Tag, Tree View |
+| Content & Data | Avatar, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Tree View |
 | Forms | Checkbox, Combobox, Date Picker, File Upload, Form Field, Radio, Radio Group, Search Field, Select, Switch, Text Input, Textarea, Validation Message |
 | Feedback | Alert, Badge, Progress Bar, Skeleton, Spinner, Toast, Tooltip |
 | Navigation | Breadcrumb, Menu, Pagination, Tabs |
@@ -37,13 +37,14 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 - File Upload component-set node ID: **`2024:2649`** ("Forms/File Upload") — confirmed via direct Figma property inspection on 2026-07-15: 5 state variants (Empty/Dragging/Error/Disabled/Filled) + File Name text property. **Both single-file and multi-file anatomy are Figma-confirmed.** The Filled variant (node `2024:2648`) is a vertical list container holding one or more File Row frames (first: node `2107:10`, File Icon + File Name + Remove Icon); the base variant shows one row (single-file as a list of one), and a multi-file example frame (node `2108:21`) shows three. React's existing `multiple`/`maxFiles`/independently-removable file list already matches this structure — nothing to change (see [`file-upload-discovery.md`](architecture/file-upload-discovery.md), `FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-present"` in `lib/file-upload-figma-metadata.ts`)
 - Data Table component-set node ID: unresolved — Figma verification still pending, but **not blocking**: the sorting-only MVP (external Pagination composition) approved 2026-07-13 was implemented 2026-07-15 as a React-first product, same precedent as Table (see [`table-foundation.md`](architecture/table-foundation.md), [`data-table-discovery.md`](architecture/data-table-discovery.md))
 - Tree View component-set node ID: **confirmed 2026-07-18** — "Content/Tree Item" component set is node `2058:1988` (State variants: Default `2058:1985`, Hover `2058:1986`, Selected `2058:1987`); the "Tree View (example)" composed demo is node `2058:1998`; parent section "Content/Tree View" is node `2058:2071`. This closes the one open item from the 2026-07-18 implementation — the component structure, properties, tokens, and 20px-per-depth indentation convention were already accurately described and implemented against; only the node IDs themselves were missing from the record (see `lib/tree-view-figma-metadata.ts`, `TREE_VIEW_FIGMA_AUDIT_STATUS = "verified-2026-07-18"`)
+- Bar Chart / Line Chart component-set node IDs: **confirmed 2026-07-18** — parent section "Content/Charts" is node `2058:2568`; "Bar Chart (example)" frame is node `2058:2532`; "Line Chart (example)" frame is node `2058:2559`. Both examples are illustrative/minimal (establishing color, stroke weight, and marker style), not full chart specs — axes beyond Bar Chart's month labels, legends, and multi-series were never shown in Figma and are documented as deliberate v1 deferrals, not gaps (see `lib/charts-figma-metadata.ts`, `CHARTS_FIGMA_AUDIT_STATUS = "verified-2026-07-18"`)
 - Variable collection counts, page inventory, and current component-set totals: **not verified in this pass**
 
 Historical Figma snapshots must not be treated as current state. See [`skrewww-figma-practices-instructions.md`](../skrewww-figma-practices-instructions.md).
 
 ## Quality-gate status
 
-**Last verified: 2026-07-18** (Tree View implemented; see note below)
+**Last verified: 2026-07-18** (Bar Chart / Line Chart implemented; see note below)
 
 | Gate | Result |
 |------|--------|
@@ -51,9 +52,9 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 | `npm run verify:package` | Pass (`skrewww-docs@0.2.0-beta` lockfile aligned) |
 | ESLint | Pass — 26 problems (0 errors, 26 warnings), `--max-warnings 26` |
 | TypeScript | Pass |
-| Vitest | **546 tests** across **68 files** — 2 new files this pass: `components/ui/internal/tree-flatten.test.ts` (pure flatten/keyboard-resolution logic) and `components/ui/TreeView.test.tsx` (RTL: controlled/uncontrolled expand + select, ARIA attributes at depth, keyboard nav) |
-| Playwright | **138 tests** (isolated `.next-playwright` on port 3100) — 7 new in `e2e/tree-view.spec.ts` |
-| Production build | Pass — Turbopack (default bundler), **72/72 pages** (+1 new `/components/tree-view` page), no webpack fallback needed |
+| Vitest | **556 tests** across **70 files** — 2 new files this pass: `components/ui/BarChart.test.tsx` and `components/ui/LineChart.test.tsx` (proportional rendering given sample data, hidden-data-table accessibility alternative, role="img" wiring) |
+| Playwright | **147 tests** (isolated `.next-playwright` on port 3100) — 4 new in `e2e/bar-chart.spec.ts`, 5 new in `e2e/line-chart.spec.ts`; a flaky `evaluateAll`-before-render race in the Line Chart point-position test was found and fixed (added an explicit `toHaveCount` wait) before this count was captured |
+| Production build | Pass — Turbopack (default bundler), **74/74 pages** (+2 new `/components/bar-chart` and `/components/line-chart` pages), no webpack fallback needed |
 | `npm audit` | **0 vulnerabilities** — resolved 2026-07-15 via a `postcss` override; see resolved note below |
 
 **Next.js major upgrade — resolved 2026-07-13**: Upgraded 14.2.35 → **16.2.10**
@@ -153,6 +154,7 @@ PostCSS pipeline.
   - **Feedback/Skeleton** — handled per sub-shape: Text rebound to `component/radius/control` (no visual change); Rectangle rebound to `component/radius/container` (4px → 12px, deliberate — matches container scale for a large placeholder block); Circle deliberately left at `radius/full` (fixed-circular exception, matching Badge/Avatar/Calendar Day — rebinding would visibly break it into a non-circular shape outside Pill mode).
   - **Not gaps, confirmed intentional exceptions**: Badge, Avatar, and Calendar Day remain fixed-circular at `radius/full` — the remaining 3 of the original 8 flagged components. No further action needed on those.
 - **Tree View** (2026-07-18) — the first of the Layer 2 code-side gaps (Tree View, Charts, Timeline) is implemented, built directly against a real, well-documented Figma reference (Content/Tree Item component set + the "Tree View (example)" composed demo — see `docs/project-status.md`'s registry entry for the full token/anatomy citation). `TreeView` renders a flat, depth-first list of rows (`role="tree"`/`role="treeitem"`, not nested DOM groups) with `aria-level`/`aria-setsize`/`aria-posinset` set explicitly per row, since DOM nesting doesn't convey depth here. Indentation is computed as `depth * 20px` padding-left per row (`components/ui/internal/TreeItem.tsx`) — matching the 20px-per-depth unit Figma's own composed example verifies, and explicitly not a fixed set of per-depth variants, which Figma's own component description calls out as the #1 common mistake. `expanded` (string ids) and `selected` (single string | null) are each independently controlled/uncontrolled via `lib/use-controllable.ts` (same pattern as Accordion/Dialog/Drawer/CalendarGrid/Data Table). Keyboard model: roving tabindex (one row in the Tab sequence), ArrowUp/Down move between visible rows, ArrowRight expands + moves onto a newly-revealed first child (deferred via an effect since that child isn't in the DOM until the expand commits) or moves directly if already expanded, ArrowLeft collapses in place or moves to parent, Enter/Space selects. Single-select only — multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are all explicitly deferred, none shown in the Figma reference. Icon is a plain per-node `ReactNode` slot, matching Figma's deliberate lack of a formal icon-swap property. The pre-existing `tree-item` Figma-facing doc entry (`content/content-data.ts`) was not rewritten — it now carries a `knownLimitation` note pointing to Tree View as the real, implemented, canonical pattern.
+- **Bar Chart and Line Chart** (2026-07-18) — the second of the Layer 2 code-side gaps, built on **recharts 3.9.2** (added as a new dependency; 0 npm audit vulnerabilities) against Figma's "Content/Charts" section (Bar Chart (example) node `2058:2532`, Line Chart (example) node `2058:2559`). Two separate components, matching Figma's own separation into two distinct examples — not one polymorphic `Chart` component. Both take identical single-series data (`{ label: string; value: number }[]`) plus a required `label` prop (the chart's accessible name). Both use **fixed pixel width/height** (default 480x240) rather than a fluid `ResponsiveContainer` — a deliberate v1 simplification, since recharts's `ResizeObserver`-based measurement doesn't work reliably in this project's jsdom test environment, and a static v1 chart doesn't need fluid resizing. Color reuses the existing `semantic/action/primary` token (aliased as `--bar-chart-fill`/`--line-chart-stroke` in `styles/tokens.css`) — no new semantic token invented. Bar Chart renders bars + X-axis month labels only (axisLine/tickLine both disabled, no Y-axis/gridlines/legend/tooltip); Line Chart renders a single monotone-curve stroke + hollow-ring point markers with no axes at all — both match their respective Figma examples exactly. **Accessibility mechanism**: each chart's SVG is `aria-hidden`, wrapped in a `role="img"` container with `aria-label` (the `label` prop) and `aria-describedby` pointing at a visually-hidden (`sr-only`) `<table>` containing the same label/value pairs — bar heights and line paths convey nothing to assistive tech on their own, so this is a real WCAG mechanism, not optional polish. Deliberately deferred for v1 (documented in each registry entry's `openQuestions`, not silently absent): multi-series support, interactivity (hover tooltips, legend interactivity), and a Y-axis/gridlines beyond Bar Chart's existing month labels — none of these are shown in the Figma reference.
 
 ## Major parity gaps
 
@@ -162,7 +164,7 @@ PostCSS pipeline.
 - Figma MCP verification for Data Table — no component set exists yet; not blocking (React-first, same precedent as Table)
 - File Upload progress UI, preview thumbnails, controlled files, and retry semantics
 - Calendar Grid composed range-picker input (two independently-typable start/end text fields + shared calendar, analogous to Date Picker) — judged non-trivial in scope (comparable to rebuilding Date Picker), not built; see [`calendar-foundation.md`](architecture/calendar-foundation.md#composed-range-picker-input--explicitly-out-of-scope)
-- Charts, Timeline — Tree View implemented 2026-07-18 (see Recently shipped); its Figma component-set and example-frame node IDs were confirmed 2026-07-18 (see Figma status above) — no longer a gap
+- Timeline — Tree View and Charts (Bar Chart, Line Chart) both implemented 2026-07-18 (see Recently shipped); their Figma node IDs were confirmed 2026-07-18 (see Figma status above) — no longer gaps. Timeline remains the one Layer 2 code-side gap left
 - Advanced overlay patterns beyond current Dialog/Drawer/Popover/Menu stack
 - Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface substantially resolved 2026-07-17**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass (see the Layer 3 Surface baseline section below), and the Surface/content-cascade audit across the remaining registry (3 batches, 23 components) is now complete, with 2 flagged items still open rather than closed — Menu's Surface fix has no reusable master "Panel" component to live on, and Badge/Alert/Toast carry duplicate tint tokens pending a future consolidation pass (see the Layer 3 Surface audit section below). Gradient mode still has no distinct visual treatment of its own anywhere yet (aliased to Flat)
 

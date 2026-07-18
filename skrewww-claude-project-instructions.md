@@ -78,6 +78,8 @@ These are implemented in React (Beta). Verify in the registry before claiming el
 - Table
 - Data Table
 - Tree View
+- Bar Chart
+- Line Chart
 - Core form controls, Select, Search Field, overlays (Dialog, Drawer, Popover), and other registry entries marked `hasImplementation: true`
 
 ### Table
@@ -110,11 +112,20 @@ Do **not** treat Table and Data Table as interchangeable.
 
 Do **not** treat the pre-existing `tree-item` documentation-only content slug (Figma-facing prose, no registry entry) as the implemented component — Tree View (`components/ui/TreeView.tsx`) is the canonical, implemented pattern; Tree Item is an internal row it composes.
 
+### Bar Chart / Line Chart
+
+- **Implemented** (2026-07-18) — built on **recharts** (added as a dependency) against Figma's "Content/Charts" section. Figma node IDs confirmed 2026-07-18 (see `lib/charts-figma-metadata.ts` and `docs/project-status.md`'s Figma status section).
+- Two separate components, matching Figma's own separation into two distinct examples — not one polymorphic `Chart` component.
+- Both take identical single-series data (`{ label: string; value: number }[]`) plus a required `label` prop (the chart's accessible name).
+- Fixed pixel width/height (not a fluid `ResponsiveContainer`) — a deliberate v1 simplification, not a Figma constraint.
+- Color reuses the existing `semantic/action/primary` token — no new semantic token invented.
+- Accessibility: each chart's SVG is `aria-hidden`, wrapped in a `role="img"` container with `aria-label` + `aria-describedby` pointing at a visually-hidden (`sr-only`) data table with the same label/value pairs.
+- Multi-series support, interactivity (hover tooltips, legend interactivity), and axes/gridlines beyond Bar Chart's existing month labels are **deferred** — none are shown in the Figma reference.
+
 ---
 
 ## Layer 2 — current major React gaps
 
-- Charts
 - Timeline
 
 Do **not** list Calendar as a current React implementation gap.
