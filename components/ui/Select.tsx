@@ -392,7 +392,16 @@ export const SelectControl = forwardRef<HTMLSelectElement, SelectControlProps & 
             aria-hidden="true"
             tabIndex={-1}
             value={resolvedValue}
-            onChange={onChange}
+            // This mirror is visually and programmatically unreachable
+            // (position: absolute off-screen, pointer-events: none,
+            // tabIndex=-1) — its value is only ever set imperatively via
+            // commitValue, which never dispatches a native change event, so
+            // this handler can't fire from real interaction. commitValue
+            // already calls the consumer's onChange manually. A no-op here
+            // (matching the validation input above) keeps this a valid
+            // controlled element without silently dropping the consumer's
+            // handler into a dead code path.
+            onChange={() => {}}
             {...selectProps}
           >
             {showPlaceholder ? (

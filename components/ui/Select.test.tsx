@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Select } from "@/components/ui/Select";
 
 describe("Select", () => {
@@ -106,5 +106,25 @@ describe("Select", () => {
       <Select label="Role" placeholder="Choose role" options={options} value="" onChange={() => {}} />,
     );
     expect(screen.getByRole("combobox")).toHaveTextContent("Choose role");
+  });
+
+  it("never logs a 'value without onChange' warning in uncontrolled usage (no value/onChange passed)", async () => {
+    // Regression guard: the internal aria-hidden native <select> mirror
+    // used to forward the raw `onChange` prop directly, which is undefined
+    // for the common uncontrolled case — combined with its always-present
+    // `value`, that logged React's controlled-field warning on every
+    // uncontrolled Select. commitValue already dispatches the consumer's
+    // onChange manually, so the mirror itself must stay a permanent no-op.
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const user = userEvent.setup();
+    render(<Select label="Role" placeholder="Choose role" options={options} />);
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("option", { name: "Editor" }));
+    expect(screen.getByRole("combobox")).toHaveTextContent("Editor");
+
+    for (const call of errorSpy.mock.calls) {
+      expect(String(call[0])).not.toMatch(/value.*prop.*without.*onChange.*handler/i);
+    }
+    errorSpy.mockRestore();
   });
 });
