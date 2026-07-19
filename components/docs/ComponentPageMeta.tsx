@@ -211,7 +211,7 @@ export function ComponentRelatedLinks({ slug }: { slug: string }) {
           </h2>
           <ul className="mt-2 space-y-1.5 text-sm">
             {group.links.map((link) => (
-              <li key={link.href}>
+              <li key={link.label}>
                 <Link href={link.href} variant="default" size="sm">
                   {link.label}
                 </Link>
