@@ -117,7 +117,8 @@ Do **not** treat the pre-existing `tree-item` documentation-only content slug (F
 - **Implemented** (2026-07-18) — built on **recharts** (added as a dependency) against Figma's "Content/Charts" section. Figma node IDs confirmed 2026-07-18 (see `lib/charts-figma-metadata.ts` and `docs/project-status.md`'s Figma status section).
 - Two separate components, matching Figma's own separation into two distinct examples — not one polymorphic `Chart` component.
 - Both take identical single-series data (`{ label: string; value: number }[]`) plus a required `label` prop (the chart's accessible name).
-- Fixed pixel width/height (not a fluid `ResponsiveContainer`) — a deliberate v1 simplification, not a Figma constraint.
+- Uses recharts's `ResponsiveContainer` — fluid width (genuinely fills the parent), fixed pixel height (default 240). An earlier draft used fixed pixel width/height, justified partly by a jsdom/ResizeObserver test limitation; corrected 2026-07-18 by adding a `ResizeObserver` polyfill to `vitest.setup.ts` instead of constraining real-world sizing.
+- Line Chart's curve type is `"linear"` (straight segments) — confirmed 2026-07-18 by reading the actual Figma vector path data via the Figma Plugin API (every segment is a straight `L` lineto command). An earlier draft used `"monotone"` (a smoothed curve) as an unverified default.
 - Color reuses the existing `semantic/action/primary` token — no new semantic token invented.
 - Accessibility: each chart's SVG is `aria-hidden`, wrapped in a `role="img"` container with `aria-label` + `aria-describedby` pointing at a visually-hidden (`sr-only`) data table with the same label/value pairs.
 - Multi-series support, interactivity (hover tooltips, legend interactivity), and axes/gridlines beyond Bar Chart's existing month labels are **deferred** — none are shown in the Figma reference.

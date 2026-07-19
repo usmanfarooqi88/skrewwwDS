@@ -854,19 +854,19 @@ export function Example() {
       "Multi-series support is deferred — not shown in the Figma reference and not built here; v1 is single-series only.",
       "Interactivity (hover tooltips, legend interactivity) is deferred — v1 is deliberately static, per the approved v1 scope.",
       "A Y-axis and gridlines beyond the existing X-axis month labels are deferred — not shown in the Figma reference.",
-      "Curve/bar styling beyond fill color and the X-axis label treatment (bar corner radius, spacing, fixed vs. responsive sizing) is this implementation's own decision, not something Figma specified.",
+      "Bar corner radius/spacing beyond fill color and the X-axis label treatment is this implementation's own decision, not something Figma specified.",
     ],
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
     anatomy:
-      "A recharts BarChart with fixed pixel width/height (not a fluid ResponsiveContainer — a deliberate v1 simplification), one Bar per datum filled with semantic/action/primary, and an XAxis rendering only text labels (axisLine and tickLine both disabled) in semantic/text/secondary. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table — so the underlying data is genuinely available to assistive tech, not just implied by bar heights.",
+      "A recharts BarChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent, not a fixed pixel box), one Bar per datum filled with semantic/action/primary, and an XAxis rendering only text labels (axisLine and tickLine both disabled) in semantic/text/secondary. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table — so the underlying data is genuinely available to assistive tech, not just implied by bar heights.",
     announcementBehavior:
       "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden so assistive tech doesn't attempt to read partial axis text out of context.",
     comparisons: [
       {
-        title: "Why fixed width/height instead of a responsive container?",
-        body: "A deliberate v1 simplification, not a Figma-specified constraint — recharts's ResponsiveContainer depends on ResizeObserver-based measurement that doesn't work reliably in this project's jsdom test environment, and a static, non-interactive v1 chart doesn't need fluid resizing to be useful.",
+        title: "Why ResponsiveContainer instead of fixed pixel dimensions?",
+        body: "A real consumer embeds this in a variable-width dashboard/card, so the chart should genuinely fill its parent — fixed dimensions were an earlier draft, justified partly by a jsdom/ResizeObserver test limitation that has a standard fix (a ResizeObserver polyfill in vitest.setup.ts) rather than a reason to constrain real-world sizing. Height stays a fixed prop (default 240) since chart height is typically design-determined, not fluid.",
       },
       {
         title: "Why is there no Y-axis?",
@@ -880,8 +880,7 @@ export function Example() {
     apiProps: [
       { name: "data", type: "{ label: string; value: number }[]", description: "Single-series data. Multi-series is deferred." },
       { name: "label", type: "string", description: "Accessible name for the chart — also used as the hidden data table's caption." },
-      { name: "width", type: "number", default: "480", description: "Fixed pixel width — not fluid/responsive." },
-      { name: "height", type: "number", default: "240", description: "Fixed pixel height — not fluid/responsive." },
+      { name: "height", type: "number", default: "240", description: "Fixed pixel height. Width is fluid (ResponsiveContainer), filling the parent." },
     ],
     reactExample: `import { BarChart } from "@/components/ui";
 
@@ -930,13 +929,13 @@ export function Example() {
       "Multi-series support is deferred — not shown in the Figma reference and not built here; v1 is single-series only.",
       "Interactivity (hover tooltips, legend interactivity) is deferred — v1 is deliberately static, per the approved v1 scope.",
       "Axis labels and gridlines are deferred — the Figma reference has none at all for Line Chart.",
-      "Curve type (\"monotone\") and fixed pixel sizing are this implementation's own decisions, not things Figma specified.",
+      "Fixed chart height (width is fluid) is this implementation's own decision, not something Figma specified.",
     ],
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
     anatomy:
-      "A recharts LineChart with fixed pixel width/height (not a fluid ResponsiveContainer — a deliberate v1 simplification), a single Line (monotone curve) stroked in semantic/action/primary at 2px, with a 3px-radius hollow-ring dot per point (semantic/surface/default fill, semantic/action/primary stroke). No XAxis or YAxis rendered at all, matching the Figma reference exactly. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table.",
+      "A recharts LineChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent, not a fixed pixel box), a single Line stroked in semantic/action/primary at 2px, with a 3px-radius hollow-ring dot per point (semantic/surface/default fill, semantic/action/primary stroke). Curve type is \"linear\" (straight segments between points) — confirmed by reading the actual vector path data for node 2058:2560 via the Figma Plugin API: every segment is a straight \"L\" (lineto) command, with no curve commands at all. No XAxis or YAxis rendered at all, matching the Figma reference exactly. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table.",
     announcementBehavior:
       "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden.",
     comparisons: [
@@ -945,8 +944,12 @@ export function Example() {
         body: "Figma's own \"Line Chart (example)\" frame has no axis labels at all — unlike Bar Chart, which does show month labels. This component matches that reference exactly rather than adding chrome Figma didn't show.",
       },
       {
-        title: "Why \"monotone\" curve type?",
-        body: "Figma shows a single smooth stroked path but doesn't specify a curve algorithm. \"Monotone\" is this implementation's own choice for a pleasant default — not a Figma-verified fact.",
+        title: "Why \"linear\" curve type, not a smoothed curve?",
+        body: "Verified, not guessed: the actual vector path data for the Figma \"Line\" node (2058:2560), read directly via the Figma Plugin API, is \"M 0 140 L 43.3 93.3 L 86.7 110.8 L 130 43.75 ...\" — every segment is a straight lineto (\"L\") command. An earlier draft used \"monotone\" (a smoothed curve) as an unverified default; that was corrected to \"linear\" once the real path data was checked.",
+      },
+      {
+        title: "Why ResponsiveContainer instead of fixed pixel dimensions?",
+        body: "A real consumer embeds this in a variable-width dashboard/card, so the chart should genuinely fill its parent — fixed dimensions were an earlier draft, justified partly by a jsdom/ResizeObserver test limitation that has a standard fix (a ResizeObserver polyfill in vitest.setup.ts) rather than a reason to constrain real-world sizing.",
       },
       {
         title: "How is the underlying data exposed to screen readers?",
@@ -956,8 +959,7 @@ export function Example() {
     apiProps: [
       { name: "data", type: "{ label: string; value: number }[]", description: "Single-series data. Multi-series is deferred." },
       { name: "label", type: "string", description: "Accessible name for the chart — also used as the hidden data table's caption." },
-      { name: "width", type: "number", default: "480", description: "Fixed pixel width — not fluid/responsive." },
-      { name: "height", type: "number", default: "240", description: "Fixed pixel height — not fluid/responsive." },
+      { name: "height", type: "number", default: "240", description: "Fixed pixel height. Width is fluid (ResponsiveContainer), filling the parent." },
     ],
     reactExample: `import { LineChart } from "@/components/ui";
 

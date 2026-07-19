@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { Bar, BarChart as RechartsBarChart, XAxis } from "recharts";
+import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis } from "recharts";
 import { cn } from "@/lib/cn";
 import styles from "@/components/ui/bar-chart.module.css";
 
@@ -15,8 +15,7 @@ export type BarChartProps = {
   data: BarChartDatum[];
   /** Accessible name for the chart — also used as the hidden data table's caption. */
   label: string;
-  /** Fixed pixel dimensions, not a fluid/responsive container — a deliberate v1 simplification, not a Figma-specified constraint. */
-  width?: number;
+  /** Fixed pixel height — width is fluid, filling the parent container. */
   height?: number;
   className?: string;
 };
@@ -27,23 +26,32 @@ export type BarChartProps = {
  * labels below in semantic/text/secondary. No Y-axis, gridlines, legend,
  * or tooltip — static and single-series for v1 (see registry openQuestions
  * for what's deliberately deferred, not missing by oversight).
+ *
+ * Uses recharts's ResponsiveContainer so the chart genuinely fills its
+ * parent's width, matching how a real consumer embeds it in a
+ * variable-width dashboard/card. The jsdom test environment has no
+ * ResizeObserver by default and never computes real layout — see the
+ * ResizeObserver polyfill in vitest.setup.ts, which is the correct fix for
+ * that limitation, not a reason to constrain real-world sizing.
  */
-export function BarChart({ data, label, width = 480, height = 240, className }: BarChartProps) {
+export function BarChart({ data, label, height = 240, className }: BarChartProps) {
   const tableId = useId();
 
   return (
     <div className={cn(styles.root, className)}>
       <div role="img" aria-label={label} aria-describedby={tableId}>
         <div aria-hidden="true">
-          <RechartsBarChart width={width} height={height} data={data}>
-            <XAxis
-              dataKey="label"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "var(--bar-chart-axis-text)", fontSize: 12 }}
-            />
-            <Bar dataKey="value" fill="var(--bar-chart-fill)" isAnimationActive={false} />
-          </RechartsBarChart>
+          <ResponsiveContainer width="100%" height={height}>
+            <RechartsBarChart data={data}>
+              <XAxis
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--bar-chart-axis-text)", fontSize: 12 }}
+              />
+              <Bar dataKey="value" fill="var(--bar-chart-fill)" isAnimationActive={false} />
+            </RechartsBarChart>
+          </ResponsiveContainer>
         </div>
       </div>
       <table id={tableId} className="sr-only">

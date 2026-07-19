@@ -36,6 +36,17 @@ describe("LineChart", () => {
     expect(paths[0]).toHaveAttribute("stroke", "var(--line-chart-stroke)");
   });
 
+  it("uses straight (linear) segments between points, matching the real Figma vector path — not a smoothed curve", () => {
+    const { container } = render(<LineChart data={sampleData} label="Monthly signups" />);
+    const d = container.querySelector(".recharts-line-curve")?.getAttribute("d") ?? "";
+    // A linear polyline is only ever "M"/"L" commands. Any cubic/quadratic
+    // curve command ("C"/"Q"/"S"/"T") would mean the curve type regressed
+    // back to a smoothed spline, which the real Figma vector data (node
+    // 2058:2560, confirmed via the Figma Plugin API) does not have.
+    expect(d).toMatch(/^M/);
+    expect(d).not.toMatch(/[CQST]/);
+  });
+
   it("provides an accessible data table alternative with the correct label/value pairs", () => {
     render(<LineChart data={sampleData} label="Monthly signups" />);
     const table = screen.getByRole("table", { hidden: true });

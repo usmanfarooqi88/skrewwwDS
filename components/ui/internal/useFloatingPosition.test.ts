@@ -37,13 +37,13 @@ describe("useFloatingPosition", () => {
     const trigger = document.createElement("button");
     document.body.append(trigger);
     const disconnect = vi.fn();
+    class MockResizeObserver {
+      observe = vi.fn();
+      disconnect = disconnect;
+      unobserve = vi.fn();
+    }
     vi.spyOn(window, "ResizeObserver").mockImplementation(
-      () =>
-        ({
-          observe: vi.fn(),
-          disconnect,
-          unobserve: vi.fn(),
-        }) as unknown as ResizeObserver,
+      MockResizeObserver as unknown as typeof ResizeObserver,
     );
 
     const { unmount } = renderHook(() =>

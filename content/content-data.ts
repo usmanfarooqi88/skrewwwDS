@@ -174,7 +174,7 @@ export const contentDataComponents: ComponentDoc[] = [
     accessibility: "role=\"img\" with an accessible name, plus a visually-hidden (sr-only) data table with the same label/value pairs linked via aria-describedby — bar heights alone convey nothing to assistive tech.",
     commonMistakes: "Treating \"static\" as \"no accessibility work needed\" — the hidden data table is required, not optional polish. Building multi-series or interactive (tooltip/legend) variants that are explicitly deferred for v1.",
     tokensUsed: ["semantic/action/primary", "semantic/text/secondary"],
-    properties: "data ({ label, value }[]). label (accessible name / hidden table caption). width, height (fixed pixel dimensions, default 480x240).",
+    properties: "data ({ label, value }[]). label (accessible name / hidden table caption). height (fixed pixel height, default 240 — width is fluid, filling the parent).",
   },
   {
     slug: "line-chart",
@@ -187,7 +187,7 @@ export const contentDataComponents: ComponentDoc[] = [
     accessibility: "role=\"img\" with an accessible name, plus a visually-hidden (sr-only) data table with the same label/value pairs linked via aria-describedby — the line path alone conveys nothing to assistive tech.",
     commonMistakes: "Treating \"static\" as \"no accessibility work needed\" — the hidden data table is required, not optional polish. Adding axis labels, gridlines, or a legend the Figma reference doesn't show.",
     tokensUsed: ["semantic/action/primary", "semantic/surface/default"],
-    properties: "data ({ label, value }[]). label (accessible name / hidden table caption). width, height (fixed pixel dimensions, default 480x240).",
+    properties: "data ({ label, value }[]). label (accessible name / hidden table caption). height (fixed pixel height, default 240 — width is fluid, filling the parent).",
   },
   {
     slug: "timeline-item",
