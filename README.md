@@ -129,7 +129,7 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 - **Data Table** (named "Data Grid" during discovery; canonical name finalized 2026-07-13) — implemented 2026-07-15 at the approved narrow MVP scope (DataTableSortHeader + useDataTableSort sorting, external Pagination, composes Table); Figma verification pending, no component set exists yet
 - **Tree View** — implemented 2026-07-18, built against a real, well-documented Figma reference (Content/Tree Item component set + the "Tree View (example)" composed demo); single-select only (multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are deferred)
 - **Bar Chart, Line Chart** — implemented 2026-07-18 on recharts; single-series and static only for v1 (no multi-series, no hover tooltips/legend interactivity, no Y-axis/gridlines beyond Bar Chart's existing month labels) — see the registry `openQuestions` for what's deliberately deferred
-- **Timeline** — implemented 2026-07-19; no Figma node ID confirmed yet (unlike Tree View/Charts, cited by component name only) — closes out all of Layer 2's remaining code-side gaps (Tree View, Charts, Timeline)
+- **Timeline** — implemented 2026-07-19, built against a real Figma reference confirmed 2026-07-24 (Content/Timeline Item component set + the "Timeline (example)" composed demo) — closes out all of Layer 2's remaining code-side gaps (Tree View, Charts, Timeline)
 - **Advanced overlays** beyond Dialog, Drawer, Popover, Menu — largely deferred
 - **Full Style System rollout** — Shape/Surface personalities partially wired
 - Temporary tokens are marked in `styles/tokens.css` where Figma values are unresolved

@@ -17,7 +17,10 @@ import {
   CHARTS_FIGMA_FILE_URL,
   LINE_CHART_FIGMA_EXAMPLE_NODE_ID,
 } from "@/lib/charts-figma-metadata";
-import { TIMELINE_FIGMA_COMPONENT_SET_NODE_ID } from "@/lib/timeline-figma-metadata";
+import {
+  TIMELINE_FIGMA_COMPONENT_SET_NODE_ID,
+  TIMELINE_FIGMA_FILE_URL,
+} from "@/lib/timeline-figma-metadata";
 
 const sharedConcepts = {
   shape: {
@@ -993,8 +996,9 @@ export function Example() {
     documentationLastUpdated: "2026-07-19",
     reactLastUpdated: "2026-07-19",
     figmaReference:
-      "Content & Data / \"Content/Timeline Item\" component (State: Default outlined ring / Highlighted larger solid dot; Title/Timestamp/Description fields). No Figma node ID has been confirmed for Timeline yet — unlike Tree View/Charts, this remains unresolved-mcp pending a follow-up (see lib/timeline-figma-metadata.ts). Confirmed behavior: connector-line suppression is purely positional (last item only, independent of state); the Description wraps at 220px width in the Figma reference rather than truncating.",
-    figmaNodeId: TIMELINE_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
+      "Content & Data / \"Content/Timeline Item\" component set (node 2058:2092; Title/Timestamp/Description text properties + State: Default/Highlighted variant) + the \"Timeline (example)\" composed demo (node 2058:2102). Parent section \"Content/Timeline\", node 2058:2130. Node IDs confirmed via direct Figma Plugin API inspection 2026-07-24. Confirmed anatomy: Default is a 10x10 stroke-only dot (1.5px, semantic/action/primary) + a 2x48px Connector Line (semantic/border/default); Highlighted is a 12x12 solid-fill dot (semantic/action/primary), no stroke. Title is always semantic/text/primary; Timestamp/Description are always semantic/text/secondary in both states. Connector-line suppression is purely positional and structural — the last item's Marker Column has no Connector Line child at all, independent of state; there is no formal \"Show connector\" boolean property on the component.",
+    figmaSourceUrl: TIMELINE_FIGMA_FILE_URL,
+    figmaNodeId: TIMELINE_FIGMA_COMPONENT_SET_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("timeline"),
     supportedVariants: ["default", "highlighted"],
     supportedSizes: [],
@@ -1009,7 +1013,6 @@ export function Example() {
     ],
     relatedConcepts: [],
     openQuestions: [
-      "No Figma node ID has been confirmed for Timeline yet — cited by component name only, not verified via MCP.",
       "Exact marker/connector pixel sizing, using one shared marker color across both states, and the Timestamp/Description secondary-text token choice are this implementation's own decisions where the given facts didn't specify them.",
       "No truncation is applied anywhere (Title, Timestamp, or Description) — Alert and Card don't truncate their titles either, and Figma's own reference shows the Description wrapping, not truncating, at 220px. List Item does truncate, but its single-line row density isn't comparable to Timeline's larger content blocks.",
       "An empty data array renders nothing (null) — no other collection component in this codebase (Table, Tree View, Bar Chart, Line Chart) has an established empty-state convention to follow instead.",
