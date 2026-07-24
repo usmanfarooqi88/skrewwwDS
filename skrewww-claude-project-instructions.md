@@ -80,6 +80,7 @@ These are implemented in React (Beta). Verify in the registry before claiming el
 - Tree View
 - Bar Chart
 - Line Chart
+- Timeline
 - Core form controls, Select, Search Field, overlays (Dialog, Drawer, Popover), and other registry entries marked `hasImplementation: true`
 
 ### Table
@@ -123,11 +124,19 @@ Do **not** treat the pre-existing `tree-item` documentation-only content slug (F
 - Accessibility: each chart's SVG is `aria-hidden`, wrapped in a `role="img"` container with `aria-label` + `aria-describedby` pointing at a visually-hidden (`sr-only`) data table with the same label/value pairs.
 - Multi-series support, interactivity (hover tooltips, legend interactivity), and axes/gridlines beyond Bar Chart's existing month labels are **deferred** — none are shown in the Figma reference.
 
+### Timeline
+
+- **Implemented** (2026-07-19) — the third and last of the Layer 2 code-side gaps; closes out Layer 2 entirely. Built against Figma-facing prose already in `content/content-data.ts` (State: Default outlined ring / Highlighted larger solid dot; Title/Timestamp/Description fields) plus directly confirmed behavioral facts. **No Figma node ID has been given or verified**, unlike Tree View/Charts — `lib/timeline-figma-metadata.ts` records this explicitly (`TIMELINE_FIGMA_AUDIT_STATUS = "unresolved-mcp"`), matching `data-table-figma-metadata.ts`'s precedent (an explicit `null`, not an omitted file).
+- Connector-line suppression between events is purely positional — only the last item omits it, entirely independent of `state`. A Default item can be last (and must suppress its connector); a Highlighted item can be in the middle (and must keep its connector).
+- The connector's length is computed via CSS (`flex: 1` inside a grid row stretched to the taller of its two columns), not a fixed pixel value, so it reaches the next item's marker regardless of description length.
+- An empty `data` array renders nothing — no established empty-state convention exists anywhere in this codebase (checked Table, Tree View, Bar Chart, Line Chart).
+- No truncation on Title, Timestamp, or Description — Alert and Card don't truncate their titles either, and Figma's own reference shows the Description wrapping, not truncating, at 220px. List Item does truncate, but its single-line row density isn't comparable to Timeline's larger content blocks.
+
 ---
 
 ## Layer 2 — current major React gaps
 
-- Timeline
+All three Layer 2 code-side gaps (Tree View, Charts, Timeline) are now implemented. None remain.
 
 Do **not** list Calendar as a current React implementation gap.
 

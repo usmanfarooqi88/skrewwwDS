@@ -42,6 +42,7 @@ import { TextareaPreview } from "@/components/previews/TextareaPreview";
 import { TreeViewPreview } from "@/components/previews/TreeViewPreview";
 import { BarChartPreview } from "@/components/previews/BarChartPreview";
 import { LineChartPreview } from "@/components/previews/LineChartPreview";
+import { TimelinePreview } from "@/components/previews/TimelinePreview";
 
 import type { ComponentType } from "react";
 
@@ -56,6 +57,7 @@ const previewMap: Record<string, ComponentType> = {
   "tree-view": TreeViewPreview,
   "bar-chart": BarChartPreview,
   "line-chart": LineChartPreview,
+  timeline: TimelinePreview,
   accordion: AccordionPreview,
   avatar: AvatarPreview,
   divider: DividerPreview,

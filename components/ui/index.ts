@@ -48,6 +48,8 @@ export { BarChart } from "@/components/ui/BarChart";
 export type { BarChartDatum, BarChartProps } from "@/components/ui/BarChart";
 export { LineChart } from "@/components/ui/LineChart";
 export type { LineChartDatum, LineChartProps } from "@/components/ui/LineChart";
+export { Timeline } from "@/components/ui/Timeline";
+export type { TimelineEntry, TimelineProps } from "@/components/ui/Timeline";
 export { Alert } from "@/components/ui/Alert";
 export type { AlertProps } from "@/components/ui/Alert";
 export { Badge } from "@/components/ui/Badge";

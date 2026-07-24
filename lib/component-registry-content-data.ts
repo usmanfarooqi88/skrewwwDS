@@ -17,6 +17,7 @@ import {
   CHARTS_FIGMA_FILE_URL,
   LINE_CHART_FIGMA_EXAMPLE_NODE_ID,
 } from "@/lib/charts-figma-metadata";
+import { TIMELINE_FIGMA_COMPONENT_SET_NODE_ID } from "@/lib/timeline-figma-metadata";
 
 const sharedConcepts = {
   shape: {
@@ -974,6 +975,94 @@ const monthlySignups = [
 
 export function Example() {
   return <LineChart data={monthlySignups} label="Monthly signups" />;
+}`,
+  },
+  {
+    slug: "timeline",
+    name: "Timeline",
+    category: "Content & Data",
+    summary:
+      "Vertical, chronological event list built on Content/Timeline Item rows — Default outlined-ring or Highlighted solid-dot markers, connector suppression purely positional.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-07-19",
+    reactLastUpdated: "2026-07-19",
+    figmaReference:
+      "Content & Data / \"Content/Timeline Item\" component (State: Default outlined ring / Highlighted larger solid dot; Title/Timestamp/Description fields). No Figma node ID has been confirmed for Timeline yet — unlike Tree View/Charts, this remains unresolved-mcp pending a follow-up (see lib/timeline-figma-metadata.ts). Confirmed behavior: connector-line suppression is purely positional (last item only, independent of state); the Description wraps at 220px width in the Figma reference rather than truncating.",
+    figmaNodeId: TIMELINE_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
+    documentationUrl: getComponentDocumentationUrl("timeline"),
+    supportedVariants: ["default", "highlighted"],
+    supportedSizes: [],
+    tokensUsed: ["semantic/action/primary", "semantic/border/default", "semantic/text/primary"],
+    relatedComponents: [
+      { label: "Tree View — hierarchical rather than chronological structure", href: "/components/tree-view" },
+      { label: "List Item — flat, non-chronological row alternative", href: "/components/list-item" },
+    ],
+    relatedTokens: [
+      { label: "semantic/action/primary", href: "/foundations" },
+      { label: "semantic/border/default", href: "/foundations" },
+    ],
+    relatedConcepts: [],
+    openQuestions: [
+      "No Figma node ID has been confirmed for Timeline yet — cited by component name only, not verified via MCP.",
+      "Exact marker/connector pixel sizing, using one shared marker color across both states, and the Timestamp/Description secondary-text token choice are this implementation's own decisions where the given facts didn't specify them.",
+      "No truncation is applied anywhere (Title, Timestamp, or Description) — Alert and Card don't truncate their titles either, and Figma's own reference shows the Description wrapping, not truncating, at 220px. List Item does truncate, but its single-line row density isn't comparable to Timeline's larger content blocks.",
+      "An empty data array renders nothing (null) — no other collection component in this codebase (Table, Tree View, Bar Chart, Line Chart) has an established empty-state convention to follow instead.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "An <ol> of Timeline Item rows. Each row is a CSS grid of two columns: a marker column (a circular marker — outlined ring for Default, larger solid dot for Highlighted — plus a connector line beneath it) and a content column (Title + Timestamp on one line, Description wrapping below). The connector's length is computed via CSS (flex: 1 inside a grid row stretched to the taller of its two columns), not a fixed pixel value, so it reaches the next item's marker regardless of how tall the current row's description makes it. Connector visibility is purely positional — only the last row omits it — entirely independent of each row's own state.",
+    keyboardBehavior:
+      "Purely presentational — Timeline has no interactive elements and captures no keyboard input of its own.",
+    announcementBehavior:
+      "Renders as a real ordered list; each Timestamp is visible text read in document order, not implied by marker position or state alone.",
+    comparisons: [
+      {
+        title: "Why is connector visibility based on position, not state?",
+        body: "They're independent concerns. A Default (outlined-ring) item can be the last event in the list and must suppress its connector for that reason alone — not because it's unhighlighted. A Highlighted item can sit in the middle of the list and must keep its connector. Coupling the two would produce a visibly broken timeline the moment a Default item happens to be last, or a Highlighted item happens to not be.",
+      },
+      {
+        title: "How does the connector reach the next item's marker when a description is long?",
+        body: "The connector is a flex: 1 element inside a flex column (the marker column) that's stretched by CSS Grid to match the height of the row's taller column — usually the content column, which grows with description length. This is computed by the browser's layout engine, not a fixed pixel height copied from one Figma example.",
+      },
+      {
+        title: "Why no truncation on Title, Timestamp, or Description?",
+        body: "Checked precedent first: List Item does truncate its title/description to a single line, but Alert and Card — the more structurally comparable \"content block with a title\" components — don't truncate at all. Figma's own Timeline reference also shows the Description wrapping to 2 lines rather than truncating. Given that mixed signal, this implementation defaults to natural wrapping everywhere, matching the majority precedent and the literal Figma behavior, rather than inventing truncation Timeline alone would need to justify.",
+      },
+      {
+        title: "What happens with an empty data array?",
+        body: "Renders nothing. No other collection component in this codebase (Table, Tree View, Bar Chart, Line Chart) auto-composes an empty-state pattern for zero items — EmptyState is always a separate, consumer-composed choice. Inventing a Timeline-specific empty-state behavior would be inconsistent with every sibling component.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "data",
+        type: '{ title: string; timestamp: string; description: string; state?: "default" | "highlighted" }[]',
+        description: "Chronological list of events, in display order. state defaults to \"default\".",
+      },
+    ],
+    reactExample: `import { Timeline } from "@/components/ui";
+
+const events = [
+  { title: "Order placed", timestamp: "Jan 3, 9:14 AM", description: "Order #48213 received." },
+  {
+    title: "Payment confirmed",
+    timestamp: "Jan 3, 9:16 AM",
+    description: "Charge captured successfully.",
+    state: "highlighted",
+  },
+  { title: "Delivered", timestamp: "Jan 6, 2:41 PM", description: "Left at front door." },
+];
+
+export function Example() {
+  return <Timeline data={events} />;
 }`,
   },
   {

@@ -201,6 +201,27 @@ export const contentDataComponents: ComponentDoc[] = [
     commonMistakes: "Leaving the connector line visible on the final (most recent) event — should be hidden.",
     tokensUsed: ["semantic/action/primary", "semantic/border/default", "semantic/text/primary"],
     properties: "State as variants — Default is an outlined ring, Highlighted is a larger solid dot. Title (text), Timestamp (text), Description (text).",
+    knownLimitation:
+      "Implemented in React as an internal row composed by Timeline (components/ui/internal/TimelineItemRow.tsx) — see /components/timeline for the canonical, publicly documented, implemented pattern. This entry remains Figma-facing prose about the underlying Content/Timeline Item component; no Figma node ID has been confirmed for it yet.",
+  },
+  {
+    slug: "timeline",
+    name: "Timeline",
+    category: "Content & Data",
+    variants: "Composed from Timeline Item rows — no top-level variants of its own",
+    purpose:
+      "A vertical, chronological list of events for activity feeds, order status history, or audit logs, composed from Content/Timeline Item rows.",
+    whenToUse:
+      "Sequential, time-stamped events where chronological order itself is meaningful and each event needs its own title, timestamp, and description.",
+    whenNotToUse:
+      "A fixed, known-length linear process with progress state — use Step Item. An empty list of events — Timeline renders nothing for zero items; there's no established empty-state convention for collection components in this codebase to fall back to.",
+    accessibility:
+      "Renders as a real ordered list (role=\"list\"/<ol>); each event's timestamp is real visible text, not just implied by position or by the marker's visual state.",
+    commonMistakes:
+      "Coupling connector-line visibility to state === \"highlighted\" instead of actual list position — the two are independent: a Default item can be last (and must suppress its connector), and a Highlighted item can be in the middle (and must keep its connector). Introducing truncation or an invented empty-state pattern that no comparable component in this codebase actually uses.",
+    tokensUsed: ["semantic/action/primary", "semantic/border/default", "semantic/text/primary"],
+    properties:
+      "data ({ title, timestamp, description, state? }[] — state defaults to \"default\"; \"highlighted\" is a larger solid dot instead of an outlined ring).",
   },
   {
     slug: "calendar-grid",

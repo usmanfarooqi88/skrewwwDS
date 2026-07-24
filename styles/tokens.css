@@ -475,6 +475,31 @@
   --line-chart-dot-fill: var(--semantic-surface-default);
   --line-chart-dot-stroke: var(--semantic-action-primary);
 
+  /* ── Timeline geometry [TEMPORARY] — "Content/Timeline Item" Figma-facing
+     prose confirmed (State: Default outlined ring / Highlighted larger
+     solid dot; Title/Timestamp/Description fields; connector suppression
+     is purely positional — last item only, decoupled from state), but no
+     Figma node ID has been given/verified for Timeline yet — unlike Tree
+     View/Charts, this is unresolved-mcp until a follow-up confirms it.
+     Marker/connector exact sizing, single shared marker color across both
+     states, and secondary-text token choice for Timestamp/Description
+     below are this implementation's own decisions where the given facts
+     didn't specify them. ── */
+  --timeline-gap: 0.75rem;
+  --timeline-item-gap: 1.5rem;
+  --timeline-header-gap: 0.5rem;
+  --timeline-marker-size: 0.75rem;
+  --timeline-marker-highlighted-size: 1rem;
+  --timeline-marker-border-width: 2px;
+  --timeline-marker-color: var(--semantic-action-primary);
+  --timeline-connector-width: 2px;
+  --timeline-connector-min-height: 1.5rem;
+  --timeline-connector-color: var(--semantic-border-default);
+  --timeline-title-text: var(--semantic-text-primary);
+  --timeline-timestamp-text: var(--semantic-text-secondary);
+  --timeline-description-text: var(--semantic-text-secondary);
+  --timeline-description-max-width: 220px;
+
   /* ── Empty State geometry [TEMPORARY] ── */
   --empty-state-max-width: 28rem;
   --empty-state-padding-x: 1rem;

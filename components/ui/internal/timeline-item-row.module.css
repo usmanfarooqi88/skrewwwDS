@@ -1,0 +1,73 @@
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--timeline-gap);
+  align-items: stretch;
+}
+
+.markerColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.marker {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--timeline-marker-size);
+  height: var(--timeline-marker-size);
+  border-radius: 9999px;
+  border: var(--timeline-marker-border-width) solid var(--timeline-marker-color);
+  background: transparent;
+}
+
+.markerHighlighted {
+  width: var(--timeline-marker-highlighted-size);
+  height: var(--timeline-marker-highlighted-size);
+  border: 0;
+  background: var(--timeline-marker-color);
+}
+
+/*
+ * flex: 1 lets the connector stretch to fill whatever vertical space
+ * remains in the row after the marker — since .item is a grid row with
+ * align-items: stretch, .markerColumn's height always matches the taller
+ * of the two columns (usually .content, which grows with description
+ * length). This makes the connector reach the next item's dot regardless
+ * of how tall this row's content is, rather than a fixed pixel value.
+ */
+.connector {
+  flex: 1;
+  width: var(--timeline-connector-width);
+  min-height: var(--timeline-connector-min-height);
+  margin-top: 2px;
+  background: var(--timeline-connector-color);
+}
+
+.content {
+  min-width: 0;
+  padding-bottom: var(--timeline-item-gap);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--timeline-header-gap);
+}
+
+.title {
+  font-weight: 600;
+  color: var(--timeline-title-text);
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: var(--timeline-timestamp-text);
+}
+
+.description {
+  margin: 0.25rem 0 0;
+  max-width: var(--timeline-description-max-width);
+  color: var(--timeline-description-text);
+}
