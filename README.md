@@ -78,13 +78,44 @@ Four layers (homepage):
 1. Foundation — tokens, color, type, spacing, accessibility
 2. Component Library — Actions, Forms, Navigation, Feedback, Containers & Overlays, Content & Data
 3. Style Systems — Shape and Surface personalities via CSS custom properties
-4. Industry Systems — planned
+4. Industry Systems — planned; see Distribution Model below for how it will ship
 
 Forms use a composed architecture: **FormField** owns label/validation layout; controls prefer native HTML semantics where sufficient; **ValidationMessage** handles field-level feedback only.
 
 Feedback uses shared internal presentation primitives (not public API). **Alert** is persistent inline feedback; **Toast** is transient; **Progress Bar** is measurable progress; **Spinner** is indeterminate loading.
 
 Source-of-truth hierarchy: [`docs/architecture/source-of-truth.md`](docs/architecture/source-of-truth.md)
+
+## Distribution Model (Target Architecture)
+
+**Status: Target Architecture · Under Active Development**
+
+Skrewww has decided on "The Hybrid Registry Model" as its distribution
+architecture. **None of this exists yet** — there is no `@skrewww/core` npm
+package, no `skrewww` CLI, and no publishing pipeline. Every component today
+lives only inside `components/ui/` in this repository, and this docs site
+imports them directly for its own live previews.
+
+The decided (not-yet-built) shape:
+
+- **`@skrewww/core`** (npm, Planned) — a centralized token & governance
+  package covering Layer 1 (Foundations) and Layer 3 (Style Systems), for
+  single-source token governance and a locked WCAG 2.2 AA baseline. Once
+  built: `npm install @skrewww/core`.
+- **`npx skrewww`** (CLI, Planned) — a copy-owned component and preset CLI
+  covering Layer 2 (Component Library) and Layer 4 (Industry Systems), for
+  full source ownership in consumer repos with no abstraction wall for AI
+  coding tools working against the code. Once built: `npx skrewww add
+  <component>` / `npx skrewww init <industry-preset>`, reading from the
+  already-live `/registry.json` as its data source.
+- **This docs site's role**: canonical source and builder. It imports
+  components directly from `components/ui/`, not via the future CLI, and it
+  already generates and serves `/registry.json` at runtime as the intended
+  HTTP feed for external CLI consumption once that CLI exists. The docs site
+  does not dogfood its own CLI.
+
+Full decision record, dated, with the SemVer policy for `@skrewww/core`:
+[`skrewww-claude-project-instructions.md`](skrewww-claude-project-instructions.md#distribution-model--decided-target-architecture-2026-07-25).
 
 ## Project structure
 

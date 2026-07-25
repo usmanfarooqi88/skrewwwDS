@@ -8,7 +8,7 @@ For the latest React component inventory, test results, implementation
 status, and active roadmap, read [`docs/project-status.md`](docs/project-status.md)
 before making recommendations.
 
-Last instruction sync: 2026-07-13
+Last instruction sync: 2026-07-25
 
 ---
 
@@ -30,7 +30,38 @@ Figma is authoritative only for content successfully inspected via Figma MCP.
 1. **Foundation** — tokens, color, type, spacing, radius, elevation, motion, icons, accessibility
 2. **Component Library** — Actions, Forms, Navigation, Feedback, Containers & Overlays, Content & Data
 3. **Style Systems** — Shape and Surface personalities through CSS custom properties
-4. **Industry Systems** — planned
+4. **Industry Systems** — planned; distributed via the CLI presets described below in Distribution Model
+
+---
+
+## Distribution Model — decided target architecture (2026-07-25)
+
+**This is a final, decided architecture — not a proposal under evaluation.**
+None of the described infrastructure exists yet: there is no `@skrewww/core`
+npm package, no `skrewww` CLI, and no publishing pipeline. Do not write or
+imply that `@skrewww/core` or `npx skrewww` currently work. Components today
+live only in this repository's `components/ui/`.
+
+**"The Hybrid Registry Model"**, recorded exactly:
+
+1. **Centralized Token & Governance Package — `@skrewww/core`** (npm, **Planned**)
+   - Scope: Layer 1 (Foundations — `styles/tokens.css`, typography, spacing, elevation, motion) and Layer 3 (Style Systems — Shape/Surface CSS custom properties).
+   - Purpose: single-source token governance, prevent design/token drift, lock in the WCAG 2.2 AA baseline.
+   - Consumption (once built): `npm install @skrewww/core`.
+
+2. **Copy-Owned Component & Preset CLI — `npx skrewww`** (**Planned**, hosted `/registry.json` as its data source)
+   - Scope: Layer 2 (Component Library) and Layer 4 (Industry Systems).
+   - Purpose: full source ownership in consumer repos (`components/ui/`), maximum customization, no abstraction wall for AI coding tools (Cursor, Claude Code, etc.) working against the code.
+   - Consumption (once built): `npx skrewww add <component>` / `npx skrewww init <industry-preset>`.
+
+3. **Monorepo/docs-site operational role** — the docs site (`app/`) is the canonical source and builder: it imports components **directly** from `components/ui/` for its own live previews, not via the future CLI. It generates and serves `/registry.json` at runtime as the feed for external CLI consumption. **The docs site does not dogfood its own CLI.**
+
+4. **SemVer policy for `@skrewww/core`** (real, decided, not deferred): renaming or deleting a token custom property in `styles/tokens.css` requires a **major** version bump in `@skrewww/core`. A `coreVersion` field on registry entries (`ComponentRegistryEntry.coreVersion`, optional) will track each component's minimum required token version once the package exists — currently unpopulated everywhere, since there is no real version to record yet.
+
+### Future-proofing principles (durable rules)
+
+- **Strict Layer Boundary**: components must import foundations exclusively from `@skrewww/core` (or local token aliases linked to it) — no hardcoded color/spacing overrides inside components. This is not a hypothetical concern: the Layer 3 Surface audit already caught exactly this bug class in Figma — Accordion Item and Empty State both had a raw hardcoded white fill, not even bound to a semantic token (see `docs/project-status.md`'s Layer 3 Surface audit section). This rule future-proofs the *code* side against a repeat of that same failure once components are copy-distributed outside this repo, where there's no central audit pass to catch it after the fact.
+- **Layer 4 Scaffolding**: industry systems ship as CLI presets composing existing Layer 2 components — never forked/duplicated copies. This is consistent with, not new relative to, the already-documented Layer 4 principle (see the homepage's Industry Systems description in `app/page.tsx`: "inheriting from the core, never forking it").
 
 ---
 
