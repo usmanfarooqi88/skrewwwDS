@@ -1,0 +1,24 @@
+.total {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.totalLabel {
+  font-size: 0.8125rem;
+  color: var(--semantic-text-secondary);
+}
+
+.totalValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--semantic-text-primary);
+}
+
+.skeletonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

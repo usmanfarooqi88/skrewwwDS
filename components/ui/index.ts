@@ -50,6 +50,16 @@ export { LineChart } from "@/components/ui/LineChart";
 export type { LineChartDatum, LineChartProps } from "@/components/ui/LineChart";
 export { Timeline } from "@/components/ui/Timeline";
 export type { TimelineEntry, TimelineProps } from "@/components/ui/Timeline";
+export { BankingTransactionRow, BankingTransactionDetailRow } from "@/components/ui/BankingTransactionRow";
+export type {
+  BankingTransactionDetailRowProps,
+  BankingTransactionRowProps,
+  BankingTransactionStatus,
+} from "@/components/ui/BankingTransactionRow";
+export { BankingAccountCard } from "@/components/ui/BankingAccountCard";
+export type { BankingAccountCardProps } from "@/components/ui/BankingAccountCard";
+export { BankingBalanceSummary } from "@/components/ui/BankingBalanceSummary";
+export type { BankingBalanceSummaryProps, BankingSpendingRange } from "@/components/ui/BankingBalanceSummary";
 export { Alert } from "@/components/ui/Alert";
 export type { AlertProps } from "@/components/ui/Alert";
 export { Badge } from "@/components/ui/Badge";

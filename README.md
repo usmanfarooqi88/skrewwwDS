@@ -18,7 +18,7 @@ Volatile counts and roadmap live in [`docs/project-status.md`](docs/project-stat
 |----------|------------|
 | Actions | Button, Link |
 | Containers & Overlays | Accordion, Card, Dialog, Drawer, Popover |
-| Content & Data | Avatar, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
+| Content & Data | Avatar, Banking Account Card, Banking Balance Summary, Banking Transaction Row, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
 | Forms | Checkbox, Combobox, Date Picker, File Upload, Form Field, Radio, Radio Group, Search Field, Select, Switch, Text Input, Textarea, Validation Message |
 | Feedback | Alert, Badge, Progress Bar, Skeleton, Spinner, Toast, Tooltip |
 | Navigation | Breadcrumb, Menu, Pagination, Tabs |

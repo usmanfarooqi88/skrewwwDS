@@ -400,7 +400,7 @@ describe("Table architecture and registry", () => {
 
     expect(getRegistryEntry("data-grid")).toBeUndefined();
     expect(getRegistryEntry("table-row")).toBeUndefined();
-    expect(getImplementedComponentCount()).toBe(44);
+    expect(getImplementedComponentCount()).toBe(47);
     expect(DATA_TABLE_IMPLEMENTATION_GATE).toBe("implemented-react-first");
     expect(TABLE_IMPLEMENTATION_ORIGIN).toBe("react-first");
     expect(TABLE_FIGMA_VERIFICATION).toBe("pending");

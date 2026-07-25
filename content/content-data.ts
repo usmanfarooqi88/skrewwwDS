@@ -260,4 +260,67 @@ export const contentDataComponents: ComponentDoc[] = [
     tokensUsed: ["semantic/action/primary", "semantic/text/primary", "semantic/text/disabled", "radius/full"],
     properties: "State as variants. Number (text).",
   },
+  {
+    slug: "banking-transaction-row",
+    name: "Banking Transaction Row",
+    category: "Content & Data",
+    variants: "Status (success/warning/error) — drives Badge variant and amount color, no top-level variants of its own",
+    purpose:
+      "Banking Transaction Row is a single transaction entry in a financial activity list — merchant, date, amount, and status, with a Popover for full detail. The first Layer 4 Industry Systems pilot component; React-first, no Figma reference exists yet for Industry Systems.",
+    whenToUse:
+      "Listing individual financial transactions (purchases, transfers, deposits) where each row needs its own status and an optional detail view without leaving the list.",
+    whenNotToUse:
+      "A generic, non-financial row — use List Item directly. A transaction that doesn't need a status or detail view — a plain List Item composition is simpler.",
+    accessibility:
+      "The whole row is a single native button (List Item's action mode) with aria-expanded/aria-haspopup=\"dialog\"/aria-controls reflecting the anchored Popover's open state — added to List Item itself for this, not layered on top of it.",
+    commonMistakes:
+      "Wrapping List Item in PopoverTrigger instead of PopoverAnchor — List Item doesn't forward a ref, so PopoverTrigger's clone-based ref assignment silently fails to attach to a real DOM node. Inventing new status colors instead of reusing the existing semantic/feedback/success, semantic/feedback/warning, and semantic/action/danger tokens Alert already establishes for exactly this purpose.",
+    tokensUsed: [
+      "semantic/feedback/success",
+      "semantic/feedback/warning",
+      "semantic/action/danger",
+      "semantic/text/primary",
+      "semantic/text/secondary",
+    ],
+    properties:
+      "merchant, merchantLogoSrc?, merchantInitials?, date, amount, status (success/warning/error), statusLabel, detail (ReactNode, typically BankingTransactionDetailRow items).",
+  },
+  {
+    slug: "banking-account-card",
+    name: "Banking Account Card",
+    category: "Content & Data",
+    variants: "No top-level variants of its own — inherits Card's elevation and Layer 3 Shape/Surface modes",
+    purpose:
+      "Banking Account Card is a summary card for one financial account — account type, current balance, a compact balance-history sparkline, and an action button. The second Layer 4 Industry Systems pilot component; React-first, no Figma reference exists yet.",
+    whenToUse:
+      "Dashboards or account-list views showing one account's current state and short-term balance trend at a glance.",
+    whenNotToUse:
+      "Detailed transaction history for an account — compose Banking Transaction Row items in a list instead; Account Card is a summary, not a ledger.",
+    accessibility:
+      "The balance-history chart is exposed via role=\"img\" with an accessible name plus a visually-hidden data table (Line Chart's own accessibility model) — sparkline mode changes only the visual density, not the accessibility tree.",
+    commonMistakes:
+      "Hardcoding the card's background or border-radius instead of leaving Card's own --surface-fill-default / --shape-radius-container custom properties untouched, which is what makes Glass Surface and Pill Shape modes repaint automatically.",
+    tokensUsed: ["semantic/text/primary", "semantic/text/secondary"],
+    properties:
+      "accountName, accountType, balance, balanceHistory (LineChartDatum[]), balanceHistoryLabel, actionLabel, onAction.",
+  },
+  {
+    slug: "banking-balance-summary",
+    name: "Banking Balance Summary",
+    category: "Content & Data",
+    variants: "No top-level variants of its own — time ranges are consumer-supplied Tabs, not a fixed variant set",
+    purpose:
+      "Banking Balance Summary is a spending/income overview card with a time-range-filtered Bar Chart and a loading state. The third Layer 4 Industry Systems pilot component; React-first, no Figma reference exists yet.",
+    whenToUse:
+      "Summarizing spending or income over a small set of selectable time ranges (e.g. 7D/30D/90D) inside a dashboard.",
+    whenNotToUse:
+      "A single, non-comparative chart with no time-range filtering — compose Card + Bar Chart directly without Tabs.",
+    accessibility:
+      "Each time range renders its own Bar Chart instance inside its own Tabs panel, so only the selected range's chart (and its accessible name/hidden data table) is in the accessibility tree at a time — matching Tabs' own hidden-inactive-panel behavior, not a manually toggled visibility hack.",
+    commonMistakes:
+      "Re-scaling one shared dataset for different time ranges instead of giving each range its own real data — spending data genuinely differs by range, it isn't the same series zoomed in or out. Introducing a new loading-state pattern instead of composing the existing Skeleton / SkeletonLoading primitives.",
+    tokensUsed: ["semantic/text/primary", "semantic/text/secondary"],
+    properties:
+      "title, totalLabel, total, ranges ({ value, label, data: BarChartDatum[] }[]), defaultRange?, loading?, loadingLabel?.",
+  },
 ];

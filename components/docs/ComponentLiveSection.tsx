@@ -43,6 +43,9 @@ import { TreeViewPreview } from "@/components/previews/TreeViewPreview";
 import { BarChartPreview } from "@/components/previews/BarChartPreview";
 import { LineChartPreview } from "@/components/previews/LineChartPreview";
 import { TimelinePreview } from "@/components/previews/TimelinePreview";
+import { BankingTransactionRowPreview } from "@/components/previews/BankingTransactionRowPreview";
+import { BankingAccountCardPreview } from "@/components/previews/BankingAccountCardPreview";
+import { BankingBalanceSummaryPreview } from "@/components/previews/BankingBalanceSummaryPreview";
 
 import type { ComponentType } from "react";
 
@@ -91,6 +94,9 @@ const previewMap: Record<string, ComponentType> = {
   skeleton: SkeletonPreview,
   "progress-bar": ProgressBarPreview,
   spinner: SpinnerPreview,
+  "banking-transaction-row": BankingTransactionRowPreview,
+  "banking-account-card": BankingAccountCardPreview,
+  "banking-balance-summary": BankingBalanceSummaryPreview,
 };
 
 export function ComponentLiveSection({ slug }: { slug: string }) {

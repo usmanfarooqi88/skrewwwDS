@@ -17,6 +17,7 @@ import {
   CHARTS_FIGMA_FILE_URL,
   LINE_CHART_FIGMA_EXAMPLE_NODE_ID,
 } from "@/lib/charts-figma-metadata";
+import { BANKING_FIGMA_COMPONENT_SET_NODE_ID } from "@/lib/banking-figma-metadata";
 import {
   TIMELINE_FIGMA_COMPONENT_SET_NODE_ID,
   TIMELINE_FIGMA_FILE_URL,
@@ -1154,6 +1155,271 @@ export function Example() {
       description="Try a different term or clear active filters."
       primaryAction={{ label: "Clear filters", onClick: () => undefined }}
       secondaryAction={{ label: "Browse components", href: "/components" }}
+    />
+  );
+}`,
+  },
+  {
+    slug: "banking-transaction-row",
+    name: "Banking Transaction Row",
+    category: "Content & Data",
+    summary:
+      "Banking Transaction Row is a single financial transaction entry — merchant, date, amount, and status — with a Popover for full transaction detail.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-07-25",
+    reactLastUpdated: "2026-07-25",
+    figmaReference:
+      "Layer 4 Industry Systems (Banking pilot) — no Figma reference exists. Confirmed via a full Figma file search (every page checked) on 2026-07-25: no Industry Systems page and no Banking-related frame or component exists anywhere in the design file. This is a confirmed absence, not a pending MCP check (see lib/banking-figma-metadata.ts, BANKING_FIGMA_AUDIT_STATUS = \"confirmed-no-reference-2026-07-25\").",
+    figmaNodeId: BANKING_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
+    documentationUrl: getComponentDocumentationUrl("banking-transaction-row"),
+    supportedVariants: ["success", "warning", "error"],
+    supportedSizes: [],
+    tokensUsed: [
+      "semantic/feedback/success",
+      "semantic/feedback/warning",
+      "semantic/action/danger",
+      "semantic/text/primary",
+      "semantic/text/secondary",
+    ],
+    relatedComponents: [
+      { label: "List Item — the row shell this composes", href: "/components/list-item" },
+      { label: "Avatar — merchant/counterparty logo or initials", href: "/components/avatar" },
+      { label: "Badge — the status indicator this composes", href: "/components/badge" },
+      { label: "Popover — the detail-view trigger this composes", href: "/components/popover" },
+      { label: "Banking Account Card — sibling Layer 4 Banking pilot component", href: "/components/banking-account-card" },
+    ],
+    relatedTokens: [
+      { label: "semantic/feedback/success", href: "/foundations" },
+      { label: "semantic/feedback/warning", href: "/foundations" },
+      { label: "semantic/action/danger", href: "/foundations" },
+    ],
+    relatedConcepts: [],
+    openQuestions: [
+      "No Figma reference exists for this component or for Industry Systems generally — confirmed absent via full file search on 2026-07-25, not an oversight.",
+      "List Item gained aria-expanded/aria-haspopup/aria-controls passthrough for this component's disclosure trigger — a genuine Layer 2 extension, not a Banking-specific workaround (see components/ui/ListItem.tsx).",
+      "Currency/amount formatting is the consumer's responsibility — amount is a pre-formatted display string, not a number with a built-in formatter, consistent with how Account Card and Balance Summary also take pre-formatted figures.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "Composes: List Item (row shell) + Avatar (merchant logo/initials) + Badge (status) + Popover (detail trigger, anchored via PopoverAnchor since List Item does not forward a ref).",
+    keyboardBehavior:
+      "The row is a single native button (List Item's action mode) — Enter/Space toggles the anchored Popover open/closed, matching native button semantics. No composite keyboard model beyond that.",
+    comparisons: [
+      {
+        title: "Why Popover instead of Drawer for the detail view?",
+        body: "Popover's own documented purpose (\"non-modal floating panel for supplementary or lightly interactive content anchored to a trigger\") precisely matches viewing a handful of read-only detail fields for one row without leaving the transaction list. Drawer's placement is currently left-edge-only, an unconventional position for a per-row detail panel, and Drawer's own description (\"supplementary settings, filters, or secondary forms\") targets a heavier, more form-like use case than this.",
+      },
+      {
+        title: "Why PopoverAnchor instead of PopoverTrigger?",
+        body: "PopoverTrigger clones its child and injects a ref for position tracking — List Item does not forward a ref to its underlying interactive element, so that ref would silently fail to attach. PopoverAnchor wrapping a plain div is the same pattern Combobox already uses for its own non-button trigger (its text input).",
+      },
+    ],
+    apiProps: [
+      { name: "merchant", type: "string", description: "Merchant or counterparty name — also the row's title and the Avatar's accessible label." },
+      { name: "merchantLogoSrc", type: "string", description: "Optional merchant logo image URL." },
+      { name: "merchantInitials", type: "string", description: "Fallback initials shown when merchantLogoSrc is absent or fails to load." },
+      { name: "date", type: "string", description: "Display date/time string — formatting is the consumer's responsibility." },
+      { name: "amount", type: "string", description: "Pre-formatted amount string (e.g. \"-$42.50\") — currency formatting is the consumer's responsibility." },
+      { name: "status", type: '"success" | "warning" | "error"', description: "Drives Badge variant and amount color via existing semantic status tokens." },
+      { name: "statusLabel", type: "string", description: "Visible status text (e.g. \"Completed\", \"Pending\", \"Declined\")." },
+      { name: "detail", type: "ReactNode", description: "Content shown in the anchored Popover — typically BankingTransactionDetailRow items." },
+    ],
+    reactExample: `import {
+  BankingTransactionRow,
+  BankingTransactionDetailRow,
+} from "@/components/ui/BankingTransactionRow";
+
+export function Example() {
+  return (
+    <ul>
+      <BankingTransactionRow
+        merchant="Coffee Collective"
+        merchantInitials="CC"
+        date="Jan 12"
+        amount="-$4.75"
+        status="success"
+        statusLabel="Completed"
+        detail={
+          <>
+            <BankingTransactionDetailRow label="Category" value="Dining" />
+            <BankingTransactionDetailRow label="Transaction ID" value="TX-48213" />
+          </>
+        }
+      />
+    </ul>
+  );
+}`,
+  },
+  {
+    slug: "banking-account-card",
+    name: "Banking Account Card",
+    category: "Content & Data",
+    summary:
+      "Banking Account Card is a summary card for one financial account — account type, current balance, a compact balance-history sparkline, and an action button.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-07-25",
+    reactLastUpdated: "2026-07-25",
+    figmaReference:
+      "Layer 4 Industry Systems (Banking pilot) — no Figma reference exists. Confirmed via a full Figma file search (every page checked) on 2026-07-25 (see lib/banking-figma-metadata.ts, BANKING_FIGMA_AUDIT_STATUS = \"confirmed-no-reference-2026-07-25\").",
+    figmaNodeId: BANKING_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
+    documentationUrl: getComponentDocumentationUrl("banking-account-card"),
+    supportedVariants: [],
+    supportedSizes: [],
+    tokensUsed: ["semantic/text/primary", "semantic/text/secondary"],
+    relatedComponents: [
+      { label: "Card — the surface shell this composes", href: "/components/card" },
+      { label: "Tag — the account-type indicator this composes", href: "/components/tag" },
+      { label: "Button — the action trigger this composes", href: "/components/button" },
+      { label: "Line Chart — the balance-history sparkline this composes", href: "/components/line-chart" },
+      { label: "Banking Transaction Row — sibling Layer 4 Banking pilot component", href: "/components/banking-transaction-row" },
+    ],
+    relatedTokens: [
+      { label: "semantic/text/primary", href: "/foundations" },
+      { label: "semantic/text/secondary", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "No Figma reference exists for this component or for Industry Systems generally — confirmed absent via full file search on 2026-07-25, not an oversight.",
+      "Line Chart gained an additive `sparkline` prop for this component's balance-history treatment — a genuine Layer 2 extension (suppresses point-marker dots, uses a thinner stroke), not a Banking-specific style override (see components/ui/LineChart.tsx).",
+      "Glass Surface + Pill Shape inheritance was verified live (not assumed) — this component sets no background-color or border-radius of its own anywhere in its stylesheet; every surface property comes from Card's own custom properties.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "Composes: Card (surface shell, title + footer slots) + Tag (account type) + Button (action trigger, in Card's footer slot) + Line Chart in sparkline mode (balance history).",
+    comparisons: [
+      {
+        title: "Does Account Card need its own Surface/Shape handling?",
+        body: "No — it inherits Card's `--surface-fill-default` and `--shape-radius-container` custom properties entirely through the CSS cascade. Verified live in Glass Surface + Pill Shape mode rather than assumed from Card's own behavior.",
+      },
+      {
+        title: "Why does Line Chart need a sparkline prop instead of just a small height?",
+        body: "Line Chart's base design already has no axes, gridlines, or legend, so a small height alone gets most of the way there — but its hollow-ring point-marker dots are unconditional in the base design and dominate the visual at sparkline scale. The additive `sparkline` prop suppresses them and uses a thinner stroke.",
+      },
+    ],
+    apiProps: [
+      { name: "accountName", type: "string", description: "Shown as the Card's title heading." },
+      { name: "accountType", type: "string", description: "e.g. \"Checking\", \"Savings\", \"Credit\" — shown as a Tag." },
+      { name: "balance", type: "string", description: "Pre-formatted balance string (e.g. \"$4,231.09\") — currency formatting is the consumer's responsibility." },
+      { name: "balanceHistory", type: "LineChartDatum[]", description: "Recent balance history for the sparkline — same shape as Line Chart's own data prop." },
+      { name: "balanceHistoryLabel", type: "string", description: "Accessible name for the sparkline chart." },
+      { name: "actionLabel", type: "string", description: "Label for the footer action button." },
+      { name: "onAction", type: "() => void", description: "Called when the action button is activated." },
+    ],
+    reactExample: `import { BankingAccountCard } from "@/components/ui/BankingAccountCard";
+
+export function Example() {
+  return (
+    <BankingAccountCard
+      accountName="Everyday Checking"
+      accountType="Checking"
+      balance="$4,231.09"
+      balanceHistory={[
+        { label: "Week 1", value: 4100 },
+        { label: "Week 2", value: 4180 },
+        { label: "Week 3", value: 4050 },
+        { label: "Week 4", value: 4231 },
+      ]}
+      balanceHistoryLabel="30-day balance history for Everyday Checking"
+      actionLabel="View transactions"
+      onAction={() => undefined}
+    />
+  );
+}`,
+  },
+  {
+    slug: "banking-balance-summary",
+    name: "Banking Balance Summary",
+    category: "Content & Data",
+    summary:
+      "Banking Balance Summary is a spending/income overview card with a time-range-filtered Bar Chart and a loading state.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-07-25",
+    reactLastUpdated: "2026-07-25",
+    figmaReference:
+      "Layer 4 Industry Systems (Banking pilot) — no Figma reference exists. Confirmed via a full Figma file search (every page checked) on 2026-07-25 (see lib/banking-figma-metadata.ts, BANKING_FIGMA_AUDIT_STATUS = \"confirmed-no-reference-2026-07-25\").",
+    figmaNodeId: BANKING_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
+    documentationUrl: getComponentDocumentationUrl("banking-balance-summary"),
+    supportedVariants: [],
+    supportedSizes: [],
+    tokensUsed: ["semantic/text/primary", "semantic/text/secondary"],
+    relatedComponents: [
+      { label: "Card — the layout wrapper this composes", href: "/components/card" },
+      { label: "Bar Chart — the spending/income visualization this composes", href: "/components/bar-chart" },
+      { label: "Tabs — the time-range filter this composes", href: "/components/tabs" },
+      { label: "Skeleton — the loading state this composes", href: "/components/skeleton" },
+      { label: "Banking Transaction Row — sibling Layer 4 Banking pilot component", href: "/components/banking-transaction-row" },
+    ],
+    relatedTokens: [
+      { label: "semantic/text/primary", href: "/foundations" },
+      { label: "semantic/text/secondary", href: "/foundations" },
+    ],
+    relatedConcepts: [],
+    openQuestions: [
+      "No Figma reference exists for this component or for Industry Systems generally — confirmed absent via full file search on 2026-07-25, not an oversight.",
+      "Each time range renders its own Bar Chart instance inside its own Tabs panel — real per-range data is expected from the consumer, not one dataset re-scaled across ranges.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "Composes: Card (layout wrapper, title slot) + Tabs (time-range filter, one TabsPanel per range) + Bar Chart (one instance per range, inside its panel) + Skeleton / SkeletonLoading (loading state, replaces the total figure and Tabs entirely while loading).",
+    apiProps: [
+      { name: "title", type: "string", description: "Card title, e.g. \"Spending overview\"." },
+      { name: "totalLabel", type: "string", description: "Label shown next to the total figure, e.g. \"Total spent\"." },
+      { name: "total", type: "string", description: "Pre-formatted total figure (e.g. \"$1,284.32\") — currency formatting is the consumer's responsibility." },
+      { name: "ranges", type: "{ value, label, data: BarChartDatum[] }[]", description: "One entry per selectable time range, each with its own real data." },
+      { name: "defaultRange", type: "string", description: "Defaults to the first range's value when omitted." },
+      { name: "loading", type: "boolean", default: "false", description: "Shows Skeleton placeholders instead of the total figure and Tabs." },
+      { name: "loadingLabel", type: "string", default: '"Loading spending summary"', description: "Accessible label announced while loading." },
+    ],
+    reactExample: `import { BankingBalanceSummary } from "@/components/ui/BankingBalanceSummary";
+
+export function Example() {
+  return (
+    <BankingBalanceSummary
+      title="Spending overview"
+      totalLabel="Total spent"
+      total="$1,284.32"
+      ranges={[
+        {
+          value: "7d",
+          label: "7D",
+          data: [
+            { label: "Mon", value: 42 },
+            { label: "Tue", value: 88 },
+          ],
+        },
+        {
+          value: "30d",
+          label: "30D",
+          data: [
+            { label: "Week 1", value: 320 },
+            { label: "Week 2", value: 410 },
+          ],
+        },
+      ]}
     />
   );
 }`,

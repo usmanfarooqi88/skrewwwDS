@@ -1,0 +1,46 @@
+.anchor {
+  display: block;
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--semantic-text-primary);
+}
+
+.success {
+  color: var(--semantic-feedback-success);
+}
+
+.warning {
+  color: var(--semantic-feedback-warning);
+}
+
+.error {
+  color: var(--semantic-action-danger);
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.375rem 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.detailLabel {
+  color: var(--semantic-text-secondary);
+}
+
+.detailValue {
+  color: var(--semantic-text-primary);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
