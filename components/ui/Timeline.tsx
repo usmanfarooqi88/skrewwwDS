@@ -10,10 +10,10 @@ export type TimelineProps = {
 };
 
 /**
- * Built against Figma's "Content/Timeline Item" component (State:
- * Default/Highlighted) — no Figma node ID has been confirmed for Timeline
- * yet, unlike Tree View/Charts; this is unresolved-mcp pending a
- * follow-up. Connector suppression is purely positional (only the last
+ * Built against Figma's "Content/Timeline Item" component set (State:
+ * Default/Highlighted), node 2058:2092 — confirmed via direct Figma
+ * inspection; see lib/timeline-figma-metadata.ts. Connector suppression is
+ * purely positional (only the last
  * item omits it) — independent of `state`, not derived from it. No
  * established empty-array convention exists anywhere in this codebase
  * (checked Table, Tree View, Bar Chart, Line Chart, and any internal
