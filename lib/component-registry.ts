@@ -58,6 +58,25 @@ export type ComponentRegistryEntry = {
   announcementBehavior?: string;
   figmaSourceUrl?: string;
   figmaNodeId?: string;
+  /**
+   * CLI-resolution fields for the planned "npx skrewww" copy-owned
+   * distribution model (see skrewww-claude-project-instructions.md's
+   * Distribution Model section) — the CLI does not exist yet. All five
+   * are optional and intentionally left undefined on most entries: only
+   * populate with real values derived from a component's actual source
+   * (imports, files, CSS custom properties), never guessed. See
+   * docs/project-status.md for which entries currently have real data.
+   */
+  /** npm packages this component's source actually imports (e.g. "react", "next"). */
+  dependencies?: string[];
+  /** Which @skrewww/core-covered layers this component's CSS relies on ("tokens", "shape", "surface"). */
+  coreDependencies?: string[];
+  /** This component's own source files, relative to the repo root. */
+  files?: string[];
+  /** CSS custom property names (with -- prefix) actually referenced in this component's stylesheet(s). */
+  cssTokens?: string[];
+  /** Minimum @skrewww/core version required, once that package exists and is versioned. */
+  coreVersion?: string;
 };
 
 import { calendarRegistryEntries } from "@/lib/component-registry-calendar";
@@ -109,6 +128,42 @@ export const componentRegistry: ComponentRegistryEntry[] = [
       "semantic/text/primary",
       "semantic/focus-ring",
       "opacity/disabled",
+    ],
+    // Proof-of-concept for the planned CLI-resolution schema — derived directly
+    // from components/ui/Button.tsx and button.module.css, not guessed.
+    dependencies: ["react", "next"],
+    coreDependencies: ["tokens", "shape", "surface"],
+    files: ["components/ui/Button.tsx", "components/ui/button.module.css"],
+    cssTokens: [
+      "--control-font-size-lg",
+      "--control-font-size-md",
+      "--control-font-size-sm",
+      "--control-gap",
+      "--control-height-lg",
+      "--control-height-md",
+      "--control-height-sm",
+      "--control-padding-x-lg",
+      "--control-padding-x-md",
+      "--control-padding-x-sm",
+      "--opacity-disabled",
+      "--semantic-action-danger",
+      "--semantic-action-danger-hover",
+      "--semantic-action-danger-pressed",
+      "--semantic-action-primary",
+      "--semantic-action-primary-hover",
+      "--semantic-action-primary-pressed",
+      "--semantic-border-default",
+      "--semantic-border-disabled",
+      "--semantic-border-strong",
+      "--semantic-focus-ring",
+      "--semantic-surface-disabled",
+      "--semantic-surface-elevated",
+      "--semantic-surface-subtle",
+      "--semantic-text-disabled",
+      "--semantic-text-inverse",
+      "--semantic-text-primary",
+      "--shape-radius-control",
+      "--surface-fill-control",
     ],
     relatedComponents: [
       { label: "Icon Button — compact icon-only actions", href: "/components/icon-button" },
@@ -222,6 +277,19 @@ export function Example() {
       "component/radius/container",
       "shadow-blur/3",
       "shadow-color/3",
+    ],
+    // Proof-of-concept for the planned CLI-resolution schema — derived directly
+    // from components/ui/Card.tsx and card.module.css, not guessed.
+    dependencies: ["react"],
+    coreDependencies: ["tokens", "shape", "surface"],
+    files: ["components/ui/Card.tsx", "components/ui/card.module.css"],
+    cssTokens: [
+      "--semantic-text-primary",
+      "--semantic-text-secondary",
+      "--shape-radius-container",
+      "--surface-border-default",
+      "--surface-fill-default",
+      "--surface-shadow-raised",
     ],
     relatedComponents: [
       { label: "Dialog — modal attention pattern", href: "/components/dialog" },

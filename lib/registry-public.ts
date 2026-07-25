@@ -36,10 +36,20 @@ export type PublicRegistryEntry = {
   hasPreview: boolean;
   indexing: ComponentRegistryEntry["indexing"];
   announcementBehavior?: string;
+  /**
+   * CLI-resolution fields for the planned "npx skrewww" distribution
+   * model — the CLI does not exist yet. Undefined on most entries; only
+   * populated where derived from real source (see docs/project-status.md).
+   */
+  dependencies?: string[];
+  coreDependencies?: string[];
+  files?: string[];
+  cssTokens?: string[];
+  coreVersion?: string;
 };
 
 export type PublicRegistryMetadata = {
-  schemaVersion: "1.1.0";
+  schemaVersion: "1.2.0";
   designSystemVersion: string;
   generatedFrom: "lib/component-registry.ts";
   canonicalBaseUrl: string;
@@ -96,6 +106,11 @@ export function getPublicRegistry(): PublicRegistry {
       hasPreview,
       indexing,
       announcementBehavior,
+      dependencies,
+      coreDependencies,
+      files,
+      cssTokens,
+      coreVersion,
     }) => ({
       slug,
       name,
@@ -121,12 +136,17 @@ export function getPublicRegistry(): PublicRegistry {
       hasPreview,
       indexing,
       announcementBehavior,
+      dependencies,
+      coreDependencies,
+      files,
+      cssTokens,
+      coreVersion,
     }),
   );
 
   return {
     metadata: {
-      schemaVersion: "1.1.0",
+      schemaVersion: "1.2.0",
       designSystemVersion: siteConfig.designSystemVersion,
       generatedFrom: "lib/component-registry.ts",
       canonicalBaseUrl: siteConfig.origin,

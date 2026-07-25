@@ -51,7 +51,7 @@ describe("SEO infrastructure", () => {
     const registry = getPublicRegistry();
     const serialized = serializePublicRegistry();
 
-    expect(registry.metadata.schemaVersion).toBe("1.1.0");
+    expect(registry.metadata.schemaVersion).toBe("1.2.0");
     expect(registry.metadata.canonicalBaseUrl).toBe(siteConfig.origin);
     expect(registry.metadata.implementedComponentCount).toBe(getImplementedComponentCount());
     expect(serialized).not.toContain("localhost");

@@ -8,6 +8,7 @@ import { getIndexableComponentSlugs } from "@/lib/indexing-policy";
 import { REDIRECTED_COMPONENT_SLUGS } from "@/lib/routes";
 import { siteConfig } from "@/lib/site-config";
 import { COMBOBOX_FIGMA_AUDIT_STATUS } from "@/lib/combobox-figma-metadata";
+import { getPublicRegistry } from "@/lib/registry-public";
 
 export function getProjectStatusFacts() {
   const implemented = getImplementedRegistryEntries();
@@ -38,7 +39,7 @@ export function getProjectStatusFacts() {
     lastVerifiedDate: siteConfig.lastUpdated,
     packageVersion: "0.2.0-beta",
     designSystemVersion: siteConfig.designSystemVersion,
-    registrySchemaVersion: "1.1.0" as const,
+    registrySchemaVersion: getPublicRegistry().metadata.schemaVersion,
     implementedComponentCount: getImplementedComponentCount(),
     registryEntryCount: componentRegistry.length,
     figmaDocumentedComponentCount: allComponents.length,

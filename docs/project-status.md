@@ -17,6 +17,14 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 | Indexable documentation slugs | 59 | `getIndexableComponentSlugs()` |
 | Redirect aliases | 2 | `form-field-wrapper`, `accordion-item` |
 
+### Distribution Model CLI-resolution fields (2026-07-25)
+
+`registry.json`'s schema version bumped to **1.2.0** (additive, backward-compatible) to add five optional CLI-resolution fields to `ComponentRegistryEntry` / `PublicRegistryEntry`, in support of the decided-but-not-yet-built "npx skrewww" distribution model (see [`skrewww-claude-project-instructions.md`](../skrewww-claude-project-instructions.md#distribution-model--decided-target-architecture-2026-07-25)): `dependencies`, `coreDependencies`, `files`, `cssTokens`, `coreVersion`.
+
+**Only Button and Card carry real data**, derived directly from their actual source files (imports, own `.tsx`/`.module.css` files, and every CSS custom property their stylesheet references) — not guessed. `coreVersion` is left unpopulated even on these two, since `@skrewww/core` doesn't exist yet and has no real version to record. No Layer 4 (Industry Systems) component exists yet, so no Layer-4 proof-of-concept entry was added.
+
+**All other 57 registry entries have these five fields absent/undefined.** Populating the full registry against this schema is a separate, not-yet-scheduled pass — do not backfill it with inferred or plausible-sounding values; derive each entry's real `dependencies`/`files`/`cssTokens` from its actual source the same way Button and Card were done.
+
 ### Implemented inventory by category
 
 | Category | Components |
