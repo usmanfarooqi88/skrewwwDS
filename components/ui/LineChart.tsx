@@ -17,6 +17,18 @@ export type LineChartProps = {
   label: string;
   /** Fixed pixel height — width is fluid, filling the parent container. */
   height?: number;
+  /**
+   * Compact rendering for inline/dashboard use (e.g. a balance-history
+   * sparkline inside a card): suppresses the hollow-ring point markers and
+   * uses a thinner 1.5px stroke instead of the base 2px. Added for the
+   * Layer 4 Banking pilot's Account Card, which needed a true sparkline
+   * treatment — the base chart's `height` prop alone gets you small
+   * dimensions, but the point-marker dots are unconditional in the base
+   * design and dominate the visual at sparkline scale. Data and
+   * accessibility (role="img" + hidden data table) are unchanged; this is
+   * additive and does not alter default behavior.
+   */
+  sparkline?: boolean;
   className?: string;
 };
 
@@ -40,7 +52,7 @@ export type LineChartProps = {
  * ResizeObserver polyfill in vitest.setup.ts, which is the correct fix for
  * that limitation, not a reason to constrain real-world sizing.
  */
-export function LineChart({ data, label, height = 240, className }: LineChartProps) {
+export function LineChart({ data, label, height = 240, sparkline = false, className }: LineChartProps) {
   const tableId = useId();
 
   return (
@@ -53,13 +65,17 @@ export function LineChart({ data, label, height = 240, className }: LineChartPro
                 type="linear"
                 dataKey="value"
                 stroke="var(--line-chart-stroke)"
-                strokeWidth={2}
-                dot={{
-                  r: 3,
-                  fill: "var(--line-chart-dot-fill)",
-                  stroke: "var(--line-chart-dot-stroke)",
-                  strokeWidth: 2,
-                }}
+                strokeWidth={sparkline ? 1.5 : 2}
+                dot={
+                  sparkline
+                    ? false
+                    : {
+                        r: 3,
+                        fill: "var(--line-chart-dot-fill)",
+                        stroke: "var(--line-chart-dot-stroke)",
+                        strokeWidth: 2,
+                      }
+                }
                 activeDot={false}
                 isAnimationActive={false}
               />

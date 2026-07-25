@@ -72,4 +72,24 @@ describe("LineChart", () => {
     expect(container.querySelectorAll(".recharts-legend-wrapper")).toHaveLength(0);
     expect(container.querySelectorAll(".recharts-tooltip-wrapper")).toHaveLength(0);
   });
+
+  it("defaults to rendering point-marker dots when sparkline is not set", () => {
+    const { container } = render(<LineChart data={sampleData} label="Monthly signups" />);
+    expect(container.querySelectorAll(".recharts-line-dots circle")).toHaveLength(sampleData.length);
+  });
+
+  it("sparkline=true suppresses point-marker dots and uses a thinner stroke", () => {
+    const { container } = render(
+      <LineChart data={sampleData} label="Monthly signups" sparkline height={40} />,
+    );
+    expect(container.querySelectorAll(".recharts-line-dots circle")).toHaveLength(0);
+    const path = container.querySelector(".recharts-line-curve");
+    expect(path).toHaveAttribute("stroke-width", "1.5");
+  });
+
+  it("sparkline mode still exposes the accessible data table and role=img name", () => {
+    render(<LineChart data={sampleData} label="Monthly signups" sparkline />);
+    expect(screen.getByRole("img", { name: "Monthly signups" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { hidden: true })).toHaveAccessibleName("Monthly signups");
+  });
 });

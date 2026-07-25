@@ -16,6 +16,16 @@ export type ListItemProps = {
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
+  /**
+   * ARIA disclosure attributes for an action row (onClick) that toggles
+   * external content it doesn't own — e.g. a row that opens a Popover
+   * anchored to it via PopoverAnchor (added for Banking Transaction Row,
+   * which needed the whole row to announce its expanded/collapsed state).
+   * No-ops on navigational (href) or plain static rows.
+   */
+  "aria-expanded"?: boolean;
+  "aria-haspopup"?: "dialog" | "menu" | "listbox" | "true";
+  "aria-controls"?: string;
 };
 
 function warnInvalidCombination(message: string) {
@@ -54,6 +64,9 @@ export function ListItem({
   onClick,
   disabled = false,
   className,
+  "aria-expanded": ariaExpanded,
+  "aria-haspopup": ariaHaspopup,
+  "aria-controls": ariaControls,
 }: ListItemProps) {
   const isNavigational = Boolean(href);
   const isAction = Boolean(onClick);
@@ -115,6 +128,9 @@ export function ListItem({
           className={cn(styles.row, styles.interactive)}
           onClick={onClick}
           disabled={disabled}
+          aria-expanded={ariaExpanded}
+          aria-haspopup={ariaHaspopup}
+          aria-controls={ariaControls}
         >
           <ListItemContent
             title={title}

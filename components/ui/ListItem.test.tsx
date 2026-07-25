@@ -82,4 +82,22 @@ describe("ListItem", () => {
     );
     expect(screen.getByRole("button", { name: "Disabled action" })).toBeDisabled();
   });
+
+  it("forwards disclosure ARIA attributes on action rows for external content they toggle (e.g. an anchored Popover)", () => {
+    render(
+      <ul>
+        <ListItem
+          onClick={() => undefined}
+          title="Toggle detail"
+          aria-expanded={true}
+          aria-haspopup="dialog"
+          aria-controls="detail-panel"
+        />
+      </ul>,
+    );
+    const button = screen.getByRole("button", { name: "Toggle detail" });
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    expect(button).toHaveAttribute("aria-haspopup", "dialog");
+    expect(button).toHaveAttribute("aria-controls", "detail-panel");
+  });
 });
