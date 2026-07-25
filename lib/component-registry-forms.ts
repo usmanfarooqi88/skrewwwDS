@@ -29,7 +29,7 @@ export const formsRegistryEntries: ComponentRegistryEntry[] = [
     name: "Form Field",
     category: "Forms",
     summary:
-      "Shared field wrapper for label, description, required indicator, and validation placement — not a visual input.",
+      "Form Field is a shared field wrapper for label, description, required indicator, and validation placement — not a visual input.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -98,7 +98,7 @@ export function Example() {
     name: "Validation Message",
     category: "Forms",
     summary:
-      "Inline typed feedback paired with a field — error, warning, success, or info — with icon and text.",
+      "Validation Message is inline typed feedback paired with a field — error, warning, success, or info — with icon and text.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -156,7 +156,7 @@ export function Example() {
     name: "Checkbox",
     category: "Forms",
     summary:
-      "Native checkbox for independent or multi-select choices, including indeterminate group states.",
+      "Checkbox is a native checkbox for independent or multi-select choices, including indeterminate group states.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -220,7 +220,7 @@ export function Example() {
     slug: "radio",
     name: "Radio",
     category: "Forms",
-    summary: "Native radio button for a single option inside a mutually exclusive group.",
+    summary: "Radio is a native radio button for a single option inside a mutually exclusive group.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -276,7 +276,7 @@ export function Example() {
     name: "Radio Group",
     category: "Forms",
     summary:
-      "Accessible grouping layer for mutually exclusive radio options with legend, helper text, and errors.",
+      "Radio Group is an accessible grouping layer for mutually exclusive radio options with legend, helper text, and errors.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -347,7 +347,7 @@ export function Example() {
     name: "Switch",
     category: "Forms",
     summary:
-      "Boolean settings control for immediate on/off changes — not a substitute for Checkbox in forms.",
+      "Switch is a boolean settings control for immediate on/off changes — not a substitute for Checkbox in forms.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -409,7 +409,7 @@ export function Example() {
     name: "Textarea",
     category: "Forms",
     summary:
-      "Multi-line native textarea for longer free-text content, composed with FormField for label and validation.",
+      "Textarea is a multi-line native textarea for longer free-text content, composed with FormField for label and validation.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -479,7 +479,7 @@ export function Example() {
     name: "Select",
     category: "Forms",
     summary:
-      "Combobox-style single-select with a Popover listbox trigger and hidden native select for form submission.",
+      "Select is a combobox-style single-select with a Popover listbox trigger and hidden native select for form submission.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -551,7 +551,7 @@ export function Example() {
     name: "Combobox",
     category: "Forms",
     summary:
-      "Editable searchable single-select with a filterable listbox — distinct from non-searchable Select and query-only Search Field.",
+      "Combobox is an editable searchable single-select with a filterable listbox — distinct from non-searchable Select and query-only Search Field.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -659,7 +659,7 @@ export function Example() {
     name: "Search Field",
     category: "Forms",
     summary:
-      "Search-specific text field with leading magnifying-glass icon and optional clear action — built on shared text-input control behavior.",
+      "Search Field is a search-specific text field with leading magnifying-glass icon and optional clear action — built on shared text-input control behavior.",
     status: "beta",
     version: "0.2.0-beta",
     reactAvailability: "available",
@@ -726,7 +726,7 @@ export function Example() {
     name: "Date Picker",
     category: "Forms",
     summary:
-      "Date-only field with editable D MMM YYYY text entry (en-GB) and calendar popover for single-date selection.",
+      "Date Picker is a date-only field with editable D MMM YYYY text entry (en-GB) and calendar popover for single-date selection.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",
@@ -820,7 +820,7 @@ export function Example() {
     name: "File Upload",
     category: "Forms",
     summary:
-      "Native file input with drag-and-drop dropzone, advisory validation, selected-file list, and multipart form submission — selection only, not network upload.",
+      "File Upload is a native file input with drag-and-drop dropzone, advisory validation, selected-file list, and multipart form submission — selection only, not network upload.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",

@@ -86,7 +86,7 @@ export const componentRegistry: ComponentRegistryEntry[] = [
     name: "Button",
     category: "Actions",
     summary:
-      "Primary interactive trigger for user actions — submit, confirm, navigate, or initiate a process.",
+      "Button is a primary interactive trigger for user actions — submit, confirm, navigate, or initiate a process.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -202,7 +202,7 @@ export function Example() {
     name: "Card",
     category: "Containers & Overlays",
     summary:
-      "General-purpose content container grouping related information with a clear visual boundary.",
+      "Card is a general-purpose content container grouping related information with a clear visual boundary.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -289,7 +289,7 @@ export function Example() {
     slug: "text-input",
     name: "Text Input",
     category: "Forms",
-    summary: "Single-line text entry for short, free-form data such as names, emails, or search terms.",
+    summary: "Text Input is a single-line text entry for short, free-form data such as names, emails, or search terms.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",

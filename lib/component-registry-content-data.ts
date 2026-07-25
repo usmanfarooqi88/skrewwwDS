@@ -43,7 +43,7 @@ export const contentDataRegistryEntries: ComponentRegistryEntry[] = [
     name: "Tag",
     category: "Content & Data",
     summary:
-      "Compact classification label for categories, filters, or user-applied values — distinct from read-only Badge status metadata.",
+      "Tag is a compact classification label for categories, filters, or user-applied values — distinct from read-only Badge status metadata.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",
@@ -117,7 +117,7 @@ export function Example() {
     name: "Avatar",
     category: "Content & Data",
     summary:
-      "Circular visual identity for a user or entity with image, initials, or icon fallback.",
+      "Avatar is a circular visual identity for a user or entity with image, initials, or icon fallback.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",
@@ -192,7 +192,7 @@ export function Example() {
     name: "Divider",
     category: "Content & Data",
     summary:
-      "Thin separator line between content sections — horizontal or vertical, semantic or decorative.",
+      "Divider is a thin separator line between content sections — horizontal or vertical, semantic or decorative.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",
@@ -270,7 +270,7 @@ export function Example() {
     name: "List Item",
     category: "Content & Data",
     summary:
-      "Single row inside a collection — avatar, title, description, metadata, and optional trailing content.",
+      "List Item is a single row inside a collection — avatar, title, description, metadata, and optional trailing content.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",
@@ -364,7 +364,7 @@ export function Example() {
     name: "Table",
     category: "Content & Data",
     summary:
-      "Native HTML table foundation with captions, headers, body rows, footers, cell alignment, responsive overflow, RTL support, print-friendly scrolling, and composition patterns for empty/loading/error — not the interactive Data Table pattern (no sorting, selection, or pagination).",
+      "Table is a native HTML table foundation with captions, headers, body rows, footers, cell alignment, responsive overflow, RTL support, print-friendly scrolling, and composition patterns for empty/loading/error — not the interactive Data Table pattern (no sorting, selection, or pagination).",
     status: "beta",
     version: "0.1.1-beta",
     reactAvailability: "available",
@@ -514,7 +514,7 @@ export function Example() {
     name: "Data Table",
     category: "Content & Data",
     summary:
-      "Interactive data-table pattern composing Table with header sorting and external Pagination — no columns-config prop; the consumer writes their own Table/TableHead/TableBody markup and drops in DataTableSortHeader for sortable columns.",
+      "Data Table is an interactive data-table pattern composing Table with header sorting and external Pagination — no columns-config prop; the consumer writes their own Table/TableHead/TableBody markup and drops in DataTableSortHeader for sortable columns.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -692,7 +692,7 @@ export function Example() {
     name: "Tree View",
     category: "Content & Data",
     summary:
-      "Hierarchical, keyboard-navigable tree — file explorers, nested category browsers, org charts. Composes Content/Tree Item rows with roving-tabindex keyboard navigation and depth-based indentation.",
+      "Tree View is a hierarchical, keyboard-navigable tree — file explorers, nested category browsers, org charts. Composes Content/Tree Item rows with roving-tabindex keyboard navigation and depth-based indentation.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -828,7 +828,7 @@ export function Example() {
     name: "Bar Chart",
     category: "Content & Data",
     summary:
-      "Single-series, static bar chart built on recharts — real proportional bar heights, month labels below, no Y-axis/gridlines/legend/tooltip.",
+      "Bar Chart is a single-series, static bar chart built on recharts — real proportional bar heights, month labels below, no Y-axis/gridlines/legend/tooltip.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -906,7 +906,7 @@ export function Example() {
     name: "Line Chart",
     category: "Content & Data",
     summary:
-      "Single-series, static line chart built on recharts — a single stroked path with hollow-ring point markers, no axes/gridlines/legend/tooltip.",
+      "Line Chart is a single-series, static line chart built on recharts — a single stroked path with hollow-ring point markers, no axes/gridlines/legend/tooltip.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -985,7 +985,7 @@ export function Example() {
     name: "Timeline",
     category: "Content & Data",
     summary:
-      "Vertical, chronological event list built on Content/Timeline Item rows — Default outlined-ring or Highlighted solid-dot markers, connector suppression purely positional.",
+      "Timeline is a vertical, chronological event list built on Content/Timeline Item rows — Default outlined-ring or Highlighted solid-dot markers, connector suppression purely positional.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -1073,7 +1073,7 @@ export function Example() {
     name: "Empty State",
     category: "Content & Data",
     summary:
-      "Zero-content placeholder with title, description, and optional recovery actions for collections, search, or first-use flows.",
+      "Empty State is a zero-content placeholder with title, description, and optional recovery actions for collections, search, or first-use flows.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",

@@ -21,7 +21,7 @@ export const containersRegistryEntries: ComponentRegistryEntry[] = [
     name: "Accordion",
     category: "Containers & Overlays",
     summary:
-      "Stacked collapsible sections for progressive disclosure built from Accordion Item building blocks.",
+      "Accordion is a set of stacked collapsible sections for progressive disclosure, built from Accordion Item building blocks.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",
@@ -122,7 +122,7 @@ export function Example() {
     name: "Dialog",
     category: "Containers & Overlays",
     summary:
-      "Modal overlay that interrupts workflow for focused attention, information, or a decision.",
+      "Dialog is a modal overlay that interrupts workflow for focused attention, information, or a decision.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",
@@ -244,7 +244,7 @@ export function Example() {
     name: "Popover",
     category: "Containers & Overlays",
     summary:
-      "Non-modal floating panel for supplementary or lightly interactive content anchored to a trigger.",
+      "Popover is a non-modal floating panel for supplementary or lightly interactive content anchored to a trigger.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",
@@ -352,7 +352,7 @@ export function Example() {
     name: "Drawer",
     category: "Containers & Overlays",
     summary:
-      "Edge-anchored modal panel for supplementary settings, filters, or secondary forms.",
+      "Drawer is an edge-anchored modal panel for supplementary settings, filters, or secondary forms.",
     status: "beta",
     version: "0.5.0-beta",
     reactAvailability: "available",

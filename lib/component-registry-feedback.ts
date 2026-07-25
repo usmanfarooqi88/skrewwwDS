@@ -21,7 +21,7 @@ export const feedbackRegistryEntries: ComponentRegistryEntry[] = [
     name: "Alert",
     category: "Feedback",
     summary:
-      "Persistent inline feedback block for contextual status tied to page content — not auto-dismissing.",
+      "Alert is a persistent inline feedback block for contextual status tied to page content — not auto-dismissing.",
     status: "beta",
     version: "0.3.0-beta",
     reactAvailability: "available",
@@ -91,7 +91,7 @@ export function Example() {
     name: "Toast",
     category: "Feedback",
     summary:
-      "Transient floating notification for confirming actions or reporting short-lived events.",
+      "Toast is a transient floating notification for confirming actions or reporting short-lived events.",
     status: "beta",
     version: "0.3.0-beta",
     reactAvailability: "available",
@@ -169,7 +169,7 @@ export function Example() {
     name: "Progress Bar",
     category: "Feedback",
     summary:
-      "Determinate or indeterminate progress toward a known or unknown completion point.",
+      "Progress Bar is determinate or indeterminate progress toward a known or unknown completion point.",
     status: "beta",
     version: "0.3.0-beta",
     reactAvailability: "available",
@@ -230,7 +230,7 @@ export function Example() {
     name: "Spinner",
     category: "Feedback",
     summary:
-      "Indeterminate loading indicator for operations without a meaningful completion percentage.",
+      "Spinner is an indeterminate loading indicator for operations without a meaningful completion percentage.",
     status: "beta",
     version: "0.3.0-beta",
     reactAvailability: "available",
@@ -284,7 +284,7 @@ export function Example() {
     name: "Badge",
     category: "Feedback",
     summary:
-      "Compact non-interactive label for status, classification, or numeric counts at a glance.",
+      "Badge is a compact non-interactive label for status, classification, or numeric counts at a glance.",
     status: "beta",
     version: "0.3.0-beta",
     reactAvailability: "available",
@@ -358,7 +358,7 @@ export function Example() {
     name: "Tooltip",
     category: "Feedback",
     summary:
-      "Brief supplementary label for a trigger, shown on keyboard focus or pointer hover.",
+      "Tooltip is a brief supplementary label for a trigger, shown on keyboard focus or pointer hover.",
     status: "beta",
     version: "0.3.0-beta",
     reactAvailability: "available",
@@ -428,7 +428,7 @@ export function Example() {
     name: "Skeleton",
     category: "Feedback",
     summary:
-      "Temporary placeholder shapes that preserve layout while known content is loading.",
+      "Skeleton is temporary placeholder shapes that preserve layout while known content is loading.",
     status: "beta",
     version: "0.3.0-beta",
     reactAvailability: "available",

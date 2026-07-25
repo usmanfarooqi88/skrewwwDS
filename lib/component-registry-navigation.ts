@@ -21,7 +21,7 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
     name: "Link",
     category: "Actions",
     summary:
-      "Semantic navigational text styled as inline or standalone links — not for primary actions.",
+      "Link is semantic navigational text styled as inline or standalone links — not for primary actions.",
     status: "beta",
     version: "0.4.0-beta",
     reactAvailability: "available",
@@ -90,7 +90,7 @@ export function Example() {
     name: "Breadcrumb",
     category: "Navigation",
     summary:
-      "Ordered hierarchical trail showing location with navigable ancestors and a current-page indicator.",
+      "Breadcrumb is an ordered hierarchical trail showing location with navigable ancestors and a current-page indicator.",
     status: "beta",
     version: "0.4.0-beta",
     reactAvailability: "available",
@@ -158,7 +158,7 @@ export function Example() {
     name: "Tabs",
     category: "Navigation",
     summary:
-      "Switches between related in-context views using tablist/tab/tabpanel semantics and roving focus.",
+      "Tabs is a navigation pattern that switches between related in-context views using tablist/tab/tabpanel semantics and roving focus.",
     status: "beta",
     version: "0.4.0-beta",
     reactAvailability: "available",
@@ -230,7 +230,7 @@ export function Example() {
     name: "Pagination",
     category: "Navigation",
     summary:
-      "Paged navigation control with Previous/Next boundaries, numbered pages, and optional ellipsis.",
+      "Pagination is a paged navigation control with Previous/Next boundaries, numbered pages, and optional ellipsis.",
     status: "beta",
     version: "0.4.0-beta",
     reactAvailability: "available",
@@ -296,7 +296,7 @@ export function Example() {
     name: "Menu",
     category: "Navigation",
     summary:
-      "Compact command surface for contextual actions — distinct from Select (form values) and Popover (supplementary content).",
+      "Menu is a compact command surface for contextual actions — distinct from Select (form values) and Popover (supplementary content).",
     status: "beta",
     version: "0.4.0-beta",
     reactAvailability: "available",
