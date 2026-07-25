@@ -418,9 +418,9 @@ describe("Table architecture and registry", () => {
   it("documents Table and Data Table audit details in LLM indexes", () => {
     const index = buildLlmsTxt();
     const full = buildLlmsFullTxt();
-    expect(index).toMatch(/Table is the native HTML tabular foundation/);
-    expect(full).toMatch(/Data Table composes Table/);
-    expect(full).toMatch(/Data Table is implemented/);
+    expect(index).toMatch(/Table is a native HTML table foundation/);
+    expect(full).toMatch(/Data Table is an interactive data-table pattern composing Table/);
+    expect(full).toMatch(/Data Table:.*deferred/);
     expect(full).not.toMatch(/Data Grid/);
   });
 });

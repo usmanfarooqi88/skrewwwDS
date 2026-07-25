@@ -1,9 +1,67 @@
-import { getImplementedRegistryEntries } from "@/lib/component-registry";
+import { getImplementedRegistryEntries, getRegistryEntry } from "@/lib/component-registry";
 import { getIndexableComponentSlugs } from "@/lib/indexing-policy";
 import { categoryPageContent, getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { getComponentHref } from "@/lib/routes";
+
+/**
+ * Components whose Forms-architecture role is worth restating in the
+ * compact llms.txt beyond the plain implemented-components list — each
+ * line is derived from the registry's own (self-contained) summary, so
+ * it can't drift from what every other section already says.
+ */
+const FORMS_ARCHITECTURE_HIGHLIGHT_SLUGS = [
+  "form-field",
+  "search-field",
+  "combobox",
+  "file-upload",
+  "table",
+  "data-table",
+  "select",
+] as const;
+
+function buildFormsArchitectureLines(): string[] {
+  const highlights = FORMS_ARCHITECTURE_HIGHLIGHT_SLUGS.flatMap((slug) => {
+    const entry = getRegistryEntry(slug);
+    return entry ? [`- ${entry.name}: ${entry.documentationUrl} — ${entry.summary}`] : [];
+  });
+
+  return [
+    // Cross-cutting architectural rules with no single registry entry to
+    // derive from — genuinely hand-authored policy, not per-component data.
+    "- Controls use native HTML semantics (input, textarea, select, checkbox, radio, switch).",
+    "- ValidationMessage's inline feedback is linked to its field via aria-describedby — an accessibility-wiring detail not tracked as a discrete registry field.",
+    ...highlights,
+  ];
+}
+
+/**
+ * Components whose real openQuestions are worth surfacing in the compact
+ * llms.txt (not just the full llms-full.txt detail blocks). Derived live
+ * from the registry so it can't silently drift from the same facts
+ * documented everywhere else.
+ */
+const LIMITATIONS_HIGHLIGHT_SLUGS = ["file-upload", "table", "data-table", "combobox"] as const;
+
+function buildLimitationsLines(): string[] {
+  const derived = LIMITATIONS_HIGHLIGHT_SLUGS.flatMap((slug) => {
+    const entry = getRegistryEntry(slug);
+    if (!entry) return [];
+    return entry.openQuestions.map((question) => `- ${entry.name}: ${question}`);
+  });
+
+  return [
+    ...derived,
+    // Select's non-searchability is a contrast with the nearby searchable
+    // Combobox, not a tracked openQuestion of Select's own — kept hand-written.
+    "- Select uses a Popover listbox with a hidden native select for form submission — not searchable (see Combobox for the searchable equivalent).",
+    // Cross-cutting facts with no single registry entry to derive from —
+    // genuinely hand-authored, not per-component data.
+    "- Multi-select Combobox and advanced overlays remain documented but not implemented.",
+    "- Control-only composition exports are internal implementation details and are not public registry components.",
+  ];
+}
 
 export function buildLlmsTxt(): string {
   const implemented = getImplementedRegistryEntries().filter(
@@ -53,16 +111,7 @@ export function buildLlmsTxt(): string {
     ),
     "",
     "## Forms architecture (important)",
-    "- FormField owns label, description, required indication, and validation placement.",
-    "- Controls use native HTML semantics (input, textarea, select, checkbox, radio, switch).",
-    "- ValidationMessage provides typed inline feedback linked with aria-describedby.",
-    "- Search Field is the canonical search-specific component: /components/search-field",
-    "- Combobox is the searchable editable single-select: /components/combobox — predefined options only; local prefix/substring filtering; polite filter status announcements; not multi-select or free-form.",
-    "- File Upload selects and validates files locally: /components/file-upload — native multipart submission; drag-and-drop; no network upload or progress UI in Beta.",
-    "- Table is the native HTML tabular foundation: /components/table — React-first; captions, headers, footers, alignment, overflow, RTL, print-friendly scrolling; interactive cells via composition; empty/loading/error via composition; not the interactive Data Table pattern; no sorting, selection, or spreadsheet keyboard navigation.",
-    "- Data Table composes Table: /components/data-table — DataTableSortHeader (sortable header building block) + useDataTableSort (dual controlled/uncontrolled sort-state hook); no columns/rows prop API, consumer owns the Table markup; external Pagination composition; no selection, sticky header, density, virtualization, or role=\"grid\".",
-    "- Select is non-searchable: /components/select",
-    "- Figma Form Field Wrapper maps to React FormField at /components/form-field",
+    ...buildFormsArchitectureLines(),
     "",
     "## Figma and React relationship",
     "Figma documents component intent, variants, and tokens. React implementations track Figma where confirmed and document open questions when parity is incomplete. Beta status means production use is possible but APIs and visuals may change.",
@@ -73,15 +122,7 @@ export function buildLlmsTxt(): string {
       .map((slug) => `- ${slug}: ${absoluteUrl(getComponentHref(slug))}`),
     "",
     "## Limitations",
-    "- File Upload is implemented in React Beta with native file input, drag-and-drop, advisory validation, selected-file removal, and native multipart form submission.",
-    "- File Upload does not perform network uploads, progress UI, retry, preview thumbnails, or controlled files in this MVP.",
-    "- Live Figma verification for File Upload tokens and component-set node ID remains pending.",
-    "- Table is implemented in React Beta as a React-first native HTML table foundation — captions, column/row headers, multi-level native attrs, alignment, footers, responsive overflow with Temporary edge fades, RTL logical CSS, print-friendly overflow, and composition patterns for empty/loading/error. It does not use role=\"grid\" and does not own sorting, selection, pagination, or editing. TableScrollArea tabIndex is consumer-controlled.",
-    "- Data Table is implemented in React Beta as the sorting-only MVP approved 2026-07-13: DataTableSortHeader + useDataTableSort compose Table, external Pagination composition, no columns/rows prop API. Row selection, sticky headers, density, and virtualization remain deferred (see /docs/architecture/data-table-discovery.md).",
-    "- Multi-select Combobox and advanced overlays remain documented but not implemented.",
-    "- Combobox Beta supports local filtering only — no remote/async search, no free-form custom values, no multi-select chips.",
-    "- Select uses a Popover listbox with a hidden native select for form submission — not searchable.",
-    "- Control-only composition exports are internal implementation details and are not public registry components.",
+    ...buildLimitationsLines(),
     "",
   ];
 

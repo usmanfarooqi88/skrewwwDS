@@ -411,7 +411,7 @@ export function Example() {
     openQuestions: [
       "Figma component-set node ID unresolved — live MCP verification pending.",
       "Temporary table geometry and scroll-shadow tokens await Figma confirmation.",
-      "Data Table's narrow MVP scope (sorting only, external Pagination) was approved 2026-07-13 — not yet implemented; selection, sticky headers, and density remain excluded from v1.",
+      "Data Table (implemented 2026-07-15) composes Table for the narrow MVP scope approved 2026-07-13 — sorting only, external Pagination; selection, sticky headers, and density remain excluded from v1.",
     ],
     hasImplementation: true,
     hasPreview: true,
