@@ -427,7 +427,7 @@ export function Example() {
     comparisons: [
       {
         title: "What is the difference between Table and Data Table?",
-        body: "Table is a semantic presentational foundation. Data Table is the higher-level interaction pattern that composes Table — its narrow MVP scope (sorting only, external Pagination) was approved 2026-07-13, but it has not been implemented yet.",
+        body: "Table is a semantic presentational foundation. Data Table is the higher-level interaction pattern that composes Table — its narrow MVP scope (sorting only, external Pagination) was approved 2026-07-13 and implemented 2026-07-15.",
       },
       {
         title: "Why does Table use native HTML?",
@@ -455,7 +455,7 @@ export function Example() {
       },
       {
         title: "Does Table support sorting?",
-        body: "No — sorting is unsupported on Table itself. Sorting is the approved MVP interactive pillar for Data Table, which composes Table but has not been implemented yet.",
+        body: "No — sorting is unsupported on Table itself. Sorting is the MVP interactive pillar Data Table (which composes Table) implemented for its approved scope.",
       },
       {
         title: "Does Table support row selection?",
