@@ -1,4 +1,5 @@
 import type { IndexingPolicy } from "@/lib/indexing-policy";
+import type { IndustryName } from "@/lib/industry-content";
 
 export type MaturityStatus = "beta" | "stable" | "documented" | "planned";
 
@@ -25,6 +26,13 @@ export type ComponentRegistryEntry = {
   slug: string;
   name: string;
   category: string;
+  /**
+   * Layer 4 (Industry Systems) grouping — orthogonal to `category`, which
+   * stays unchanged. When set, this component belongs to an
+   * "Industries > {industry}" nav group (sidebar, breadcrumbs, JSON-LD,
+   * sitemap) instead of its `category` group — see lib/industry-content.ts.
+   */
+  industry?: IndustryName;
   summary: string;
   status: MaturityStatus;
   version: string;

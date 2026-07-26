@@ -1163,6 +1163,7 @@ export function Example() {
     slug: "banking-transaction-row",
     name: "Banking Transaction Row",
     category: "Content & Data",
+    industry: "Banking",
     summary:
       "Banking Transaction Row is a single financial transaction entry — merchant, date, amount, and status — with a Popover for full transaction detail.",
     status: "beta",
@@ -1262,6 +1263,7 @@ export function Example() {
     slug: "banking-account-card",
     name: "Banking Account Card",
     category: "Content & Data",
+    industry: "Banking",
     summary:
       "Banking Account Card is a summary card for one financial account — account type, current balance, a compact balance-history sparkline, and an action button.",
     status: "beta",
@@ -1346,6 +1348,7 @@ export function Example() {
     slug: "banking-balance-summary",
     name: "Banking Balance Summary",
     category: "Content & Data",
+    industry: "Banking",
     summary:
       "Banking Balance Summary is a spending/income overview card with a time-range-filtered Bar Chart and a loading state.",
     status: "beta",

@@ -53,7 +53,7 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 
 ## Quality-gate status
 
-**Last verified: 2026-07-25** (Layer 4 Banking pilot implemented; see note below)
+**Last verified: 2026-07-25** (Layer 4 Industries IA restructuring; see note below)
 
 | Gate | Result |
 |------|--------|
@@ -61,9 +61,9 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 | `npm run verify:package` | Pass (`skrewww-docs@0.2.0-beta` lockfile aligned) |
 | ESLint | Pass — 26 problems (0 errors, 26 warnings), `--max-warnings 26` |
 | TypeScript | Pass |
-| Vitest | **590 tests** across **75 files** — 3 new files this pass (`BankingTransactionRow.test.tsx`, `BankingAccountCard.test.tsx`, `BankingBalanceSummary.test.tsx`), plus new cases added to `LineChart.test.tsx` (sparkline prop) and `ListItem.test.tsx` (disclosure ARIA passthrough) |
-| Playwright | **160 tests** (isolated `.next-playwright` on port 3100) — 10 new across `e2e/banking-transaction-row.spec.ts` and `e2e/banking-balance-summary.spec.ts` |
-| Production build | Pass — Turbopack (default bundler), **78/78 pages** (+3 new `/components/banking-*` pages), no webpack fallback needed |
+| Vitest | **590 tests** across **75 files** — unchanged from the Banking pilot pass; the Industries IA change is registry/nav/routing data, not new test surface |
+| Playwright | **160 tests** (isolated `.next-playwright` on port 3100) — unchanged from the Banking pilot pass |
+| Production build | Pass — Turbopack (default bundler), **80/80 pages** (+2 new `/components/industries` and `/components/industries/banking` pages), no webpack fallback needed |
 | `npm audit` | **0 vulnerabilities** — resolved 2026-07-15 via a `postcss` override; see resolved note below |
 
 **Next.js major upgrade — resolved 2026-07-13**: Upgraded 14.2.35 → **16.2.10**
@@ -169,7 +169,7 @@ PostCSS pipeline.
 
 ## Layer 4 pilot — Banking (first Industry Systems pilot)
 
-**Implemented 2026-07-25** — the first Layer 4 (Industry Systems) pilot, not a Layer 2 gap and not folded into "Major parity gaps" below. Three components, genuinely greenfield: confirmed via a full Figma file search (every page checked) that no Industry Systems page and no Banking-related frame or component exists anywhere in the design file. Figma status for all three is **React-first, Figma parity pending** — no reference exists, none was invented (see `lib/banking-figma-metadata.ts`, `BANKING_FIGMA_AUDIT_STATUS = "confirmed-no-reference-2026-07-25"`, a confirmed *absence*, not Table/Data Table's "unresolved-mcp" pending-check status). Category is **Content & Data** (no new site category was introduced — `README_CATEGORY_ORDER` and the category-page infrastructure are scoped to the 6 existing categories; the industry pilot is signaled via the `banking-` slug prefix and this section, not a new top-level category).
+**Implemented 2026-07-25** — the first Layer 4 (Industry Systems) pilot, not a Layer 2 gap and not folded into "Major parity gaps" below. Three components, genuinely greenfield: confirmed via a full Figma file search (every page checked) that no Industry Systems page and no Banking-related frame or component exists anywhere in the design file. Figma status for all three is **React-first, Figma parity pending** — no reference exists, none was invented (see `lib/banking-figma-metadata.ts`, `BANKING_FIGMA_AUDIT_STATUS = "confirmed-no-reference-2026-07-25"`, a confirmed *absence*, not Table/Data Table's "unresolved-mcp" pending-check status). `category` on all three registry/content entries is **Content & Data**, unchanged — that field still describes the underlying component kind. **Navigation/IA note (superseded same day, see the section directly below)**: at initial implementation, no distinct nav grouping existed yet and these three were reachable only via their `category`, indistinguishable from Layer 2 Content & Data components except by name prefix — corrected the same day by the "Industries" navigation structure below, once Healthcare's future addition made the gap in reachability structurally clear.
 
 - **Banking Transaction Row** (`/components/banking-transaction-row`) — **Composes:** List Item (row shell) + Avatar (merchant logo/initials) + Badge (status) + Popover (detail-view trigger, anchored via `PopoverAnchor` since List Item doesn't forward a ref). Chose **Popover over Drawer**: Popover's own documented purpose ("non-modal floating panel for supplementary or lightly interactive content anchored to a trigger") precisely matches viewing a handful of read-only detail fields for one row without leaving the list; Drawer's placement is currently left-edge-only (`DrawerPlacement = "left"`), an unconventional position for a per-row detail panel, and its own description ("supplementary settings, filters, or secondary forms") targets a heavier use case. Status (`success`/`warning`/`error`) drives both the Badge variant and the amount's color via the existing `semantic/feedback/success`, `semantic/feedback/warning`, and `semantic/action/danger` tokens — no new colors.
 - **Banking Account Card** (`/components/banking-account-card`) — **Composes:** Card (surface shell, title + footer slots) + Tag (account type) + Button (action trigger, in Card's footer) + Line Chart in sparkline mode (balance history). Glass Surface + Pill Shape inheritance was verified live via computed-style inspection (not assumed): the same Account Card instance resolves `border-radius: 12px` / `background-color: rgb(255,255,255)` under the default Rounded+Flat mode, `border-radius: 16px` under Pill Shape, and `background-color: rgba(255,255,255,0.72)` under Glass Surface — purely from Card's own `--shape-radius-container`/`--surface-fill-default` custom properties, zero Account-Card-specific surface code.
@@ -180,6 +180,33 @@ PostCSS pipeline.
 - **Line Chart** gained an optional `sparkline` prop (`components/ui/LineChart.tsx`) — the base chart already has no axes/gridlines/legend by design, so a small `height` alone gets most of the way to a sparkline, but its hollow-ring point-marker dots are unconditional in the base design and dominate the visual at sparkline scale. `sparkline` suppresses the dots and uses a thinner 1.5px stroke (vs 2px); data and accessibility (role="img" + hidden data table) are unchanged.
 
 No new industry-specific tokens were introduced — every token used aliases to existing Foundation/Semantic tokens (`semantic/feedback/success`, `semantic/feedback/warning`, `semantic/action/danger`, `semantic/text/primary`, `semantic/text/secondary`), consistent with the existing Industry-token rule.
+
+## Layer 4 navigation/IA — "Industries" as a distinct nav structure (2026-07-25)
+
+**Real information-architecture fix, same day as the pilot above but a separate decision.** Before this, the three Banking components were reachable only via `category: "Content & Data"` — visually indistinguishable from real Layer 2 Content & Data components (Avatar, Tag, Table, ...) except for the "Banking" name prefix. This is corrected structurally, not cosmetically, because Healthcare and other industries are on the roadmap and need to nest cleanly as siblings, not as a rework.
+
+**Schema decision**: a new, optional `industry` field, orthogonal to `category` (which is unchanged on all three entries — it still describes the underlying component kind, e.g. "Content & Data"). `industry` is the authoritative signal for a two-level Industries > {industry} nav grouping, additive on top of the existing category system rather than a redesign of it:
+
+- `lib/industry-content.ts` (new file, mirrors `lib/category-content.ts`): `industries` array (currently `["Banking"]`, extensible), `IndustryName` type, `industrySlugMap`, `industryPageContent` (summary/description/accessibility/status per industry), `getIndustryPageHref`, `getIndustryNameFromSlug`, and `INDUSTRIES_INDEX_HREF`.
+- `ComponentRegistryEntry.industry?: IndustryName` (`lib/component-registry.ts`) and `ComponentDoc.industry?: string` (`lib/types.ts`) — both optional, undefined for every Layer 2 component. Set to `"Banking"` on all three pilot entries in both `lib/component-registry-content-data.ts` and `content/content-data.ts`.
+- `PublicRegistryEntry.industry?: string` (`lib/registry-public.ts`) — exposed in `/registry.json`. Schema version bumped **1.2.0 → 1.3.0** (additive).
+- `getIndustryIndexing()` added to `lib/indexing-policy.ts`, mirroring `getCategoryIndexing()`.
+
+**New routes**:
+- `/components/industries` — a new top-level index, the direct peer of `/components` (lists each industry with a link, mirroring how `/components` lists each Layer 2 category).
+- `/components/industries/[industrySlug]` — one page per industry (`/components/industries/banking` today), structured identically to `/components/category/[categorySlug]` — breadcrumb, summary/description/status/accessibility content, and the implemented-components list filtered by `entry.industry === industry`.
+
+**Sidebar** (`components/SidebarNav.tsx`): industry-classified components are excluded from their `category` group (`!component.industry` filter) and instead rendered in a new "Industries" section below the six Layer 2 category groups, visually separated (a top border + brand-colored "Industries" label), with "Banking" as its own indented sub-label above the 3 components — two levels of grouping, matching the two-level nav requirement. `/components/page.tsx` gets the same exclusion plus a pointer to the new Industries index.
+
+**Breadcrumbs and JSON-LD corrected** — industry-classified component pages now show **Home → Industries → Banking → [Component]** instead of **Home → Components → Content & Data → [Component]**:
+- `ComponentBreadcrumbs` (`components/docs/ComponentPageMeta.tsx`) looks up the registry entry's `industry` field (via the `slug` prop it already receives) and branches the crumb trail — no new prop threading required of callers.
+- `componentPageJsonLd` (`lib/structured-data.ts`) branches its `BreadcrumbList` the same way; `articleSection`/`keywords` use `industry` when present instead of `category`. A new `industryPageJsonLd` mirrors `categoryPageJsonLd` for the new industry pages. `categoryPageJsonLd`'s implemented-component count now excludes industry-classified entries (`!entry.industry`), matching the sidebar/index-page exclusion.
+
+**Sitemap and llms.txt**: `lib/sitemap-data.ts` adds the Industries index and each industry page (same priority tier as category pages). `lib/llms-content.ts` adds an "Industries (Layer 4 — distinct from Component categories above)" section listing the Industries index and each industry page, directly below "Component categories".
+
+**Homepage** (`app/page.tsx`): the Layer 4 "Industry Systems" status line, previously hardcoded "Not started" (stale since the pilot shipped), now reads "Banking pilot (3 components)".
+
+**Not done, deliberately**: no changes to the three Banking components' own code (`BankingTransactionRow.tsx` etc.) — this was registry/navigation/routing structure only. `category` was left as `"Content & Data"` on all three rather than invented a new Layer-2-style category value, since `industry` is the correct, additive signal for this and changing `category` would have been a needless second source of truth for the same fact.
 
 ## Major parity gaps
 

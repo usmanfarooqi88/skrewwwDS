@@ -264,6 +264,7 @@ export const contentDataComponents: ComponentDoc[] = [
     slug: "banking-transaction-row",
     name: "Banking Transaction Row",
     category: "Content & Data",
+    industry: "Banking",
     variants: "Status (success/warning/error) — drives Badge variant and amount color, no top-level variants of its own",
     purpose:
       "Banking Transaction Row is a single transaction entry in a financial activity list — merchant, date, amount, and status, with a Popover for full detail. The first Layer 4 Industry Systems pilot component; React-first, no Figma reference exists yet for Industry Systems.",
@@ -289,6 +290,7 @@ export const contentDataComponents: ComponentDoc[] = [
     slug: "banking-account-card",
     name: "Banking Account Card",
     category: "Content & Data",
+    industry: "Banking",
     variants: "No top-level variants of its own — inherits Card's elevation and Layer 3 Shape/Surface modes",
     purpose:
       "Banking Account Card is a summary card for one financial account — account type, current balance, a compact balance-history sparkline, and an action button. The second Layer 4 Industry Systems pilot component; React-first, no Figma reference exists yet.",
@@ -308,6 +310,7 @@ export const contentDataComponents: ComponentDoc[] = [
     slug: "banking-balance-summary",
     name: "Banking Balance Summary",
     category: "Content & Data",
+    industry: "Banking",
     variants: "No top-level variants of its own — time ranges are consumer-supplied Tabs, not a fixed variant set",
     purpose:
       "Banking Balance Summary is a spending/income overview card with a time-range-filtered Bar Chart and a loading state. The third Layer 4 Industry Systems pilot component; React-first, no Figma reference exists yet.",

@@ -2,6 +2,7 @@ import { getImplementedRegistryEntries, getRegistryEntry } from "@/lib/component
 import { getIndexableComponentSlugs } from "@/lib/indexing-policy";
 import { categoryPageContent, getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
+import { industries, getIndustryPageHref, INDUSTRIES_INDEX_HREF } from "@/lib/industry-content";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { getComponentHref } from "@/lib/routes";
 
@@ -102,6 +103,12 @@ export function buildLlmsTxt(): string {
     ...(Object.keys(categoryPageContent) as CategoryName[]).map(
       (category) =>
         `- ${category}: ${absoluteUrl(getCategoryPageHref(category))}`,
+    ),
+    "",
+    "## Industries (Layer 4 — distinct from Component categories above)",
+    `- Industries index: ${absoluteUrl(INDUSTRIES_INDEX_HREF)}`,
+    ...industries.map(
+      (industry) => `- ${industry}: ${absoluteUrl(getIndustryPageHref(industry))}`,
     ),
     "",
     "## Implemented components",

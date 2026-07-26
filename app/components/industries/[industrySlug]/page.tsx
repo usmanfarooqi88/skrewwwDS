@@ -4,63 +4,60 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/docs/JsonLd";
 import { getImplementedRegistryEntries } from "@/lib/component-registry";
 import {
-  categoryPageContent,
-  categorySlugMap,
-  getCategoryNameFromSlug,
-  getCategoryPageHref,
-} from "@/lib/category-content";
-import type { CategoryName } from "@/lib/category-content";
+  industryPageContent,
+  industrySlugMap,
+  getIndustryNameFromSlug,
+  getIndustryPageHref,
+  INDUSTRIES_INDEX_HREF,
+} from "@/lib/industry-content";
 import { getComponentHref } from "@/lib/routes";
-import { getCategoryIndexing, getMetadataRobots } from "@/lib/indexing-policy";
-import { categoryPageJsonLd } from "@/lib/structured-data";
+import { getIndustryIndexing, getMetadataRobots } from "@/lib/indexing-policy";
+import { industryPageJsonLd } from "@/lib/structured-data";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
 export function generateStaticParams() {
-  return Object.values(categorySlugMap).map((categorySlug) => ({ categorySlug }));
+  return Object.values(industrySlugMap).map((industrySlug) => ({ industrySlug }));
 }
 
 export async function generateMetadata(
   props: {
-    params: Promise<{ categorySlug: string }>;
+    params: Promise<{ industrySlug: string }>;
   }
 ): Promise<Metadata> {
   const params = await props.params;
-  const category = getCategoryNameFromSlug(params.categorySlug);
-  if (!category) return { title: "Category not found — Skrewww" };
+  const industry = getIndustryNameFromSlug(params.industrySlug);
+  if (!industry) return { title: "Industry not found — Skrewww" };
 
-  const content = categoryPageContent[category];
+  const content = industryPageContent[industry];
   const title = `${content.title} components — ${siteConfig.name}`;
-  const url = absoluteUrl(getCategoryPageHref(category));
+  const url = absoluteUrl(getIndustryPageHref(industry));
 
   return {
     title,
     description: content.summary,
     alternates: { canonical: url },
-    robots: getMetadataRobots(getCategoryIndexing(category)),
+    robots: getMetadataRobots(getIndustryIndexing(industry)),
     openGraph: { title, description: content.summary, url, type: "website" },
   };
 }
 
-export default async function ComponentCategoryPage(
+export default async function IndustryPage(
   props: {
-    params: Promise<{ categorySlug: string }>;
+    params: Promise<{ industrySlug: string }>;
   }
 ) {
   const params = await props.params;
-  const category = getCategoryNameFromSlug(params.categorySlug);
-  if (!category) notFound();
+  const industry = getIndustryNameFromSlug(params.industrySlug);
+  if (!industry) notFound();
 
-  const content = categoryPageContent[category];
-  // Industry-classified (Layer 4) components are excluded — they belong
-  // to their own Industries > {industry} grouping (/components/industries),
-  // not their `category`, matching categoryPageJsonLd's own exclusion.
+  const content = industryPageContent[industry];
   const implemented = getImplementedRegistryEntries().filter(
-    (entry) => entry.category === category && !entry.industry,
+    (entry) => entry.industry === industry,
   );
 
   return (
     <article className="mx-auto max-w-4xl px-8 py-16">
-      <JsonLd data={categoryPageJsonLd(category)} />
+      <JsonLd data={industryPageJsonLd(industry)} />
 
       <nav aria-label="Breadcrumb" className="mb-4">
         <ol className="flex flex-wrap items-center gap-1.5 font-mono text-xs text-ink-400">
@@ -71,19 +68,22 @@ export default async function ComponentCategoryPage(
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <Link href="/components" className="hover:text-ink-700">
-              Components
+            <Link href={INDUSTRIES_INDEX_HREF} className="hover:text-ink-700">
+              Industries
             </Link>
           </li>
           <li aria-hidden="true">/</li>
           <li className="text-ink-600" aria-current="page">
-            {category}
+            {industry}
           </li>
         </ol>
       </nav>
 
       <header className="mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight text-ink-900">
+        <p className="font-mono text-xs uppercase tracking-wide text-brand-500">
+          Layer 4 · Industry Systems
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-900">
           {content.title}
         </h1>
         <p className="mt-3 text-base leading-relaxed text-ink-600">{content.summary}</p>
@@ -91,7 +91,7 @@ export default async function ComponentCategoryPage(
 
       <div className="space-y-8">
         <section>
-          <h2 className="text-sm font-semibold text-ink-900">What this category contains</h2>
+          <h2 className="text-sm font-semibold text-ink-900">What this industry contains</h2>
           <p className="mt-2 text-sm leading-relaxed text-ink-600">{content.description}</p>
         </section>
 
@@ -132,12 +132,7 @@ export default async function ComponentCategoryPage(
             </ul>
           ) : (
             <p className="mt-2 text-sm text-ink-500">
-              No React implementation is available in this category yet. Documentation-only
-              entries remain on the{" "}
-              <Link href="/components" className="text-brand-600 hover:text-brand-700">
-                components index
-              </Link>
-              .
+              No React implementation is available in this industry yet.
             </p>
           )}
         </section>

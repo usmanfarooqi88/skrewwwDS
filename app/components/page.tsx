@@ -3,6 +3,7 @@ import { allComponents } from "@/lib/data";
 import { categories } from "@/lib/types";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
+import { INDUSTRIES_INDEX_HREF } from "@/lib/industry-content";
 import { getImplementedRegistryEntries } from "@/lib/component-registry";
 import { REDIRECTED_COMPONENT_SLUGS, getComponentHref } from "@/lib/routes";
 
@@ -16,12 +17,21 @@ export default function ComponentsIndexPage() {
         {allComponents.length} documented components across {categories.length} categories.
         {implementedCount} have Beta React implementations with live previews.
       </p>
+      <p className="mt-2 text-sm text-ink-500">
+        Layer 4 Industry Systems components (Banking and future industries) are grouped
+        separately — see{" "}
+        <Link href={INDUSTRIES_INDEX_HREF} className="text-brand-600 hover:text-brand-700">
+          Industries
+        </Link>
+        .
+      </p>
 
       <div className="mt-10 space-y-10">
         {categories.map((category) => {
           const items = allComponents.filter(
             (component) =>
               component.category === category &&
+              !component.industry &&
               !REDIRECTED_COMPONENT_SLUGS.includes(
                 component.slug as (typeof REDIRECTED_COMPONENT_SLUGS)[number],
               ),

@@ -9,6 +9,7 @@ import { DocSection } from "@/components/DocSection";
 import { JsonLd } from "@/components/docs/JsonLd";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
+import { getIndustryPageHref } from "@/lib/industry-content";
 import { componentPageJsonLd } from "@/lib/structured-data";
 import { TokenPillRow } from "@/components/TokenPill";
 import { ComponentApiSection } from "@/components/docs/ComponentApiSection";
@@ -57,7 +58,7 @@ export default async function ComponentDetailPage(props: { params: Promise<{ slu
 
       <header className="mb-8">
         <p className="font-mono text-xs uppercase tracking-wide text-brand-500">
-          {component.category}
+          {registry?.industry ? `Industries · ${registry.industry}` : component.category}
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-900">
           {component.name}
@@ -139,10 +140,14 @@ export default async function ComponentDetailPage(props: { params: Promise<{ slu
 
       <footer className="mt-10 border-t border-ink-200 pt-4">
         <Link
-          href={getCategoryPageHref(component.category as CategoryName)}
+          href={
+            registry?.industry
+              ? getIndustryPageHref(registry.industry)
+              : getCategoryPageHref(component.category as CategoryName)
+          }
           className="text-sm text-ink-400 hover:text-ink-700"
         >
-          Back to {component.category} components
+          Back to {registry?.industry ?? component.category} components
         </Link>
       </footer>
     </article>

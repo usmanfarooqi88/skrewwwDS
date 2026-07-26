@@ -34,8 +34,8 @@ const layers = [
     n: "04",
     name: "Industry Systems",
     desc: "Banking, Healthcare, Enterprise SaaS, and more — inheriting from the core, never forking it.",
-    status: "Not started",
-    tone: "neutral",
+    status: "Banking pilot (3 components)",
+    tone: "warning",
   },
 ];
 

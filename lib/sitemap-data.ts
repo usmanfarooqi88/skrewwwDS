@@ -5,7 +5,17 @@ import {
   getCategoryPageHref,
 } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
-import { getComponentIndexing, getCategoryIndexing, getIndexableComponentSlugs } from "@/lib/indexing-policy";
+import {
+  industries,
+  getIndustryPageHref,
+  INDUSTRIES_INDEX_HREF,
+} from "@/lib/industry-content";
+import {
+  getComponentIndexing,
+  getCategoryIndexing,
+  getIndustryIndexing,
+  getIndexableComponentSlugs,
+} from "@/lib/indexing-policy";
 import { getComponentHref } from "@/lib/routes";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
@@ -22,6 +32,12 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
       lastModified: siteConfig.lastUpdated,
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: absoluteUrl(INDUSTRIES_INDEX_HREF),
+      lastModified: siteConfig.lastUpdated,
+      changeFrequency: "weekly",
+      priority: 0.85,
     },
     {
       url: absoluteUrl("/foundations"),
@@ -60,6 +76,15 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
       priority: 0.75,
     }));
 
+  const industryPages: MetadataRoute.Sitemap = industries
+    .filter((industry) => getIndustryIndexing(industry) === "index")
+    .map((industry) => ({
+      url: absoluteUrl(getIndustryPageHref(industry)),
+      lastModified: siteConfig.lastUpdated,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    }));
+
   const componentPages: MetadataRoute.Sitemap = getIndexableComponentSlugs().map(
     (slug) => {
       const registry = getRegistryEntry(slug);
@@ -75,7 +100,7 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
     },
   );
 
-  return [...staticPages, ...categoryPages, ...componentPages];
+  return [...staticPages, ...categoryPages, ...industryPages, ...componentPages];
 }
 
 export function getSitemapUrls(): string[] {

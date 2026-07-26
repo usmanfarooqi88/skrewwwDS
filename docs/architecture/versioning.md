@@ -9,7 +9,7 @@ Skrewww uses several version identifiers. They serve different purposes and **do
 | **Package version** | `package.json` `version` | npm package / documentation site release tag (currently `0.2.0-beta`). |
 | **Design system version** | `lib/site-config.ts` `designSystemVersion` | Overall platform maturity surfaced in metadata, LLM indexes, and JSON-LD. |
 | **Documentation version** | `lib/site-config.ts` `documentationVersion` | Documentation site content generation baseline. |
-| **Registry schema version** | `lib/registry-public.ts` `metadata.schemaVersion` | Shape of `/registry.json` (currently `1.2.0`). Breaking registry field changes bump this. |
+| **Registry schema version** | `lib/registry-public.ts` `metadata.schemaVersion` | Shape of `/registry.json` (currently `1.3.0`). Breaking registry field changes bump this. |
 | **Component version** | Each `ComponentRegistryEntry.version` | Per-component API/visual maturity (e.g. calendar batch `0.5.0-beta`, early forms `0.2.0-beta`). |
 | **Core version** | Each `ComponentRegistryEntry.coreVersion` (optional) | Minimum `@skrewww/core` version a component's tokens require — real only once that package exists and is versioned; see the Distribution Model section in `skrewww-claude-project-instructions.md` for the SemVer policy (a token custom-property rename/deletion is a `@skrewww/core` major bump). Currently unpopulated everywhere — the package doesn't exist yet. |
 | **Component status** | `ComponentRegistryEntry.status` | `beta` = production-usable with possible API/visual change; `documented` = Figma-only; `stable` reserved for future promotion. |

@@ -2,6 +2,8 @@ import { getRegistryEntry, getImplementedRegistryEntries } from "@/lib/component
 import { getComponentBySlug } from "@/lib/data";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
+import { getIndustryPageHref, INDUSTRIES_INDEX_HREF } from "@/lib/industry-content";
+import type { IndustryName } from "@/lib/industry-content";
 import { getComponentCanonicalUrl } from "@/lib/registry-seo";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
@@ -63,14 +65,25 @@ export function componentPageJsonLd(slug: string): JsonLd[] {
   if (!registry || !doc) return [];
 
   const pageUrl = getComponentCanonicalUrl(slug);
-  const categoryUrl = absoluteUrl(getCategoryPageHref(doc.category as CategoryName));
 
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", url: siteConfig.origin },
-    { name: "Components", url: absoluteUrl("/components") },
-    { name: doc.category, url: categoryUrl },
-    { name: doc.name, url: pageUrl },
-  ]);
+  // Industry-classified components (Layer 4) get their own top-level
+  // breadcrumb trail — Home > Industries > {industry} > {name} — instead
+  // of Home > Components > {category} > {name}. `industry` is the
+  // authoritative signal (registry field), not `category`, which stays
+  // unchanged on these entries for other purposes.
+  const breadcrumbs = registry.industry
+    ? breadcrumbJsonLd([
+        { name: "Home", url: siteConfig.origin },
+        { name: "Industries", url: absoluteUrl(INDUSTRIES_INDEX_HREF) },
+        { name: registry.industry, url: absoluteUrl(getIndustryPageHref(registry.industry)) },
+        { name: doc.name, url: pageUrl },
+      ])
+    : breadcrumbJsonLd([
+        { name: "Home", url: siteConfig.origin },
+        { name: "Components", url: absoluteUrl("/components") },
+        { name: doc.category, url: absoluteUrl(getCategoryPageHref(doc.category as CategoryName)) },
+        { name: doc.name, url: pageUrl },
+      ]);
 
   const article: JsonLd = {
     "@context": "https://schema.org",
@@ -82,10 +95,10 @@ export function componentPageJsonLd(slug: string): JsonLd[] {
     datePublished: registry.documentationLastUpdated,
     dateModified: registry.reactLastUpdated,
     version: registry.version,
-    articleSection: doc.category,
+    articleSection: registry.industry ?? doc.category,
     inLanguage: "en",
     isAccessibleForFree: true,
-    keywords: [doc.category, ...registry.supportedVariants, registry.status].join(", "),
+    keywords: [registry.industry ?? doc.category, ...registry.supportedVariants, registry.status].join(", "),
     author: {
       "@type": "Organization",
       name: siteConfig.organizationName,
@@ -110,7 +123,11 @@ export function componentPageJsonLd(slug: string): JsonLd[] {
 
 export function categoryPageJsonLd(category: CategoryName): JsonLd[] {
   const pageUrl = absoluteUrl(getCategoryPageHref(category));
-  const implemented = getImplementedRegistryEntries().filter((entry) => entry.category === category);
+  // Industry-classified (Layer 4) components are excluded — they belong
+  // to their own Industries > {industry} grouping, not their `category`.
+  const implemented = getImplementedRegistryEntries().filter(
+    (entry) => entry.category === category && !entry.industry,
+  );
 
   return [
     breadcrumbJsonLd([
@@ -123,6 +140,28 @@ export function categoryPageJsonLd(category: CategoryName): JsonLd[] {
       "@type": "WebPage",
       name: `${category} components — ${siteConfig.shortName}`,
       description: `${implemented.length} implemented Beta component(s) documented in the ${category} category.`,
+      url: pageUrl,
+      dateModified: siteConfig.lastUpdated,
+      isPartOf: websiteJsonLd(),
+    },
+  ];
+}
+
+export function industryPageJsonLd(industry: IndustryName): JsonLd[] {
+  const pageUrl = absoluteUrl(getIndustryPageHref(industry));
+  const implemented = getImplementedRegistryEntries().filter((entry) => entry.industry === industry);
+
+  return [
+    breadcrumbJsonLd([
+      { name: "Home", url: siteConfig.origin },
+      { name: "Industries", url: absoluteUrl(INDUSTRIES_INDEX_HREF) },
+      { name: industry, url: pageUrl },
+    ]),
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: `${industry} components — ${siteConfig.shortName}`,
+      description: `${implemented.length} implemented Beta component(s) documented in the ${industry} industry.`,
       url: pageUrl,
       dateModified: siteConfig.lastUpdated,
       isPartOf: websiteJsonLd(),

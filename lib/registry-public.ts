@@ -15,6 +15,8 @@ export type PublicRegistryEntry = {
   slug: string;
   name: string;
   category: string;
+  /** Layer 4 (Industry Systems) grouping — see lib/industry-content.ts. Undefined for Layer 2 components. */
+  industry?: string;
   summary: string;
   status: ComponentRegistryEntry["status"];
   version: string;
@@ -49,7 +51,7 @@ export type PublicRegistryEntry = {
 };
 
 export type PublicRegistryMetadata = {
-  schemaVersion: "1.2.0";
+  schemaVersion: "1.3.0";
   designSystemVersion: string;
   generatedFrom: "lib/component-registry.ts";
   canonicalBaseUrl: string;
@@ -86,6 +88,7 @@ export function getPublicRegistry(): PublicRegistry {
       slug,
       name,
       category,
+      industry,
       summary,
       status,
       version,
@@ -115,6 +118,7 @@ export function getPublicRegistry(): PublicRegistry {
       slug,
       name,
       category,
+      industry,
       summary,
       status,
       version,
@@ -146,7 +150,7 @@ export function getPublicRegistry(): PublicRegistry {
 
   return {
     metadata: {
-      schemaVersion: "1.2.0",
+      schemaVersion: "1.3.0",
       designSystemVersion: siteConfig.designSystemVersion,
       generatedFrom: "lib/component-registry.ts",
       canonicalBaseUrl: siteConfig.origin,

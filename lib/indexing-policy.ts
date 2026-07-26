@@ -2,6 +2,8 @@ import { allComponents, getComponentBySlug } from "@/lib/data";
 import { getRegistryEntry } from "@/lib/component-registry";
 import type { CategoryName } from "@/lib/category-content";
 import { categoryPageContent } from "@/lib/category-content";
+import type { IndustryName } from "@/lib/industry-content";
+import { industryPageContent } from "@/lib/industry-content";
 import { REDIRECTED_COMPONENT_SLUGS } from "@/lib/routes";
 import type { ComponentDoc } from "@/lib/types";
 
@@ -43,6 +45,10 @@ export function getComponentIndexing(slug: string): IndexingPolicy {
 
 export function getCategoryIndexing(category: CategoryName): IndexingPolicy {
   return categoryPageContent[category].indexing;
+}
+
+export function getIndustryIndexing(industry: IndustryName): IndexingPolicy {
+  return industryPageContent[industry].indexing;
 }
 
 export function getIndexableComponentSlugs(): string[] {

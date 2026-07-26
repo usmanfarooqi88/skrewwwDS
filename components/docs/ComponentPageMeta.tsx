@@ -5,8 +5,10 @@ import { getRegistryEntry } from "@/lib/component-registry";
 import { getComponentBySlug } from "@/lib/data";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
+import { getIndustryPageHref, INDUSTRIES_INDEX_HREF } from "@/lib/industry-content";
 
 export function ComponentBreadcrumbs({
+  slug,
   name,
   category,
 }: {
@@ -14,15 +16,31 @@ export function ComponentBreadcrumbs({
   name: string;
   category: string;
 }) {
+  // Industry-classified (Layer 4) components get their own top-level
+  // trail — Home > Industries > {industry} > {name} — instead of
+  // Home > Components > {category} > {name}. The registry's `industry`
+  // field is the authoritative signal, looked up here via `slug` rather
+  // than requiring every caller to thread it through.
+  const industry = getRegistryEntry(slug)?.industry;
+
   return (
     <Breadcrumb
       className="mb-4"
-      items={[
-        { label: "Home", href: "/", home: true },
-        { label: "Components", href: "/components" },
-        { label: category, href: getCategoryPageHref(category as CategoryName) },
-        { label: name },
-      ]}
+      items={
+        industry
+          ? [
+              { label: "Home", href: "/", home: true },
+              { label: "Industries", href: INDUSTRIES_INDEX_HREF },
+              { label: industry, href: getIndustryPageHref(industry) },
+              { label: name },
+            ]
+          : [
+              { label: "Home", href: "/", home: true },
+              { label: "Components", href: "/components" },
+              { label: category, href: getCategoryPageHref(category as CategoryName) },
+              { label: name },
+            ]
+      }
     />
   );
 }
