@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileDocsNav } from "@/components/MobileDocsNav";
 import { AppProviders } from "@/components/providers/AppProviders";
@@ -37,6 +39,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MobileDocsNav />
           <main className="min-h-screen md:ml-64">{children}</main>
         </AppProviders>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

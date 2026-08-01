@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test.describe("Bar Chart browser behavior", () => {
   test.beforeEach(async ({ page }) => {

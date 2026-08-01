@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test.describe("Timeline browser behavior", () => {
   test.beforeEach(async ({ page }) => {

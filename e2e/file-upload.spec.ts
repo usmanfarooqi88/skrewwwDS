@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 function documentsInput(page: import("@playwright/test").Page) {
   return page.locator('input[type="file"][name="attachments"]');
