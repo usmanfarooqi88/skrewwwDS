@@ -6,6 +6,7 @@ import { AppProviders } from "@/components/providers/AppProviders";
 import { JsonLd } from "@/components/docs/JsonLd";
 import { siteStructuredData } from "@/lib/structured-data";
 import { getDefaultSocialImageUrl, siteConfig } from "@/lib/site-config";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.origin),
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MobileDocsNav />
           <main className="min-h-screen md:ml-64">{children}</main>
         </AppProviders>
+        <Analytics />
       </body>
     </html>
   );
