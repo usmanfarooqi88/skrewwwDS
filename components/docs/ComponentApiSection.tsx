@@ -44,7 +44,7 @@ export function ComponentApiSection({ slug }: { slug: string }) {
       </DocSection>
 
       <DocSection label="React example">
-        <CopyCodeButton code={entry.reactExample} />
+        <CopyCodeButton code={entry.reactExample} slug={slug} />
         <pre className="overflow-x-auto rounded-md bg-ink-900 p-4 font-mono text-xs leading-relaxed text-ink-0">
           <code>{entry.reactExample}</code>
         </pre>

@@ -34,13 +34,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-skrewww-shape="rounded" data-skrewww-surface="flat">
       <body className="bg-white font-sans text-ink-900 antialiased">
         <JsonLd data={siteStructuredData()} />
+        {/*
+          Analytics/SpeedInsights must render before AppProviders in this
+          tree. React commits sibling effects in JSX order, and Analytics's
+          own mount effect is what defines window.va — any custom trackEvent()
+          call fired from a mount effect nested inside AppProviders (e.g.
+          ComponentViewTracker) would otherwise race ahead of it and silently
+          no-op on window.va being undefined.
+        */}
+        <Analytics />
+        <SpeedInsights />
         <AppProviders>
           <Sidebar />
           <MobileDocsNav />
           <main className="min-h-screen md:ml-64">{children}</main>
         </AppProviders>
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

@@ -4,9 +4,9 @@ import { getImplementedComponentCount } from "@/lib/component-registry";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
 import { siteConfig } from "@/lib/site-config";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { TokenPill } from "@/components/TokenPill";
+import { HomeHeroCtas } from "@/components/HomeHeroCtas";
 
 const layers = [
   {
@@ -67,12 +67,7 @@ export default function HomePage() {
           adapt through tokens — never forks — across shape, surface, brand, and eventually
           industry. Built to be read by designers, developers, and coding agents alike.
         </p>
-        <div className="mt-7 flex flex-wrap items-center gap-3">
-          <Button href="/components">Browse components</Button>
-          <Button href="/foundations" variant="secondary">
-            View foundations
-          </Button>
-        </div>
+        <HomeHeroCtas />
       </div>
 
       <div className="mb-16">

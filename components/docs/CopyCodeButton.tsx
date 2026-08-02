@@ -3,12 +3,14 @@
 import { Copy } from "@phosphor-icons/react";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useToast } from "@/components/ui/ToastProvider";
+import { trackEvent } from "@/lib/analytics";
 
-export function CopyCodeButton({ code }: { code: string }) {
+export function CopyCodeButton({ code, slug }: { code: string; slug: string }) {
   const { toast } = useToast();
 
   async function handleCopy() {
     await navigator.clipboard.writeText(code);
+    trackEvent("component_code_copied", { slug });
     toast({
       type: "success",
       title: "Code copied",

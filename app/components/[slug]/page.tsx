@@ -14,6 +14,7 @@ import { componentPageJsonLd } from "@/lib/structured-data";
 import { TokenPillRow } from "@/components/TokenPill";
 import { ComponentApiSection } from "@/components/docs/ComponentApiSection";
 import { ComponentLiveSection } from "@/components/docs/ComponentLiveSection";
+import { ComponentViewTracker } from "@/components/docs/ComponentViewTracker";
 import {
   ComponentBreadcrumbs,
   ComponentRelatedLinks,
@@ -50,6 +51,11 @@ export default async function ComponentDetailPage(props: { params: Promise<{ slu
   return (
     <article className="mx-auto max-w-3xl px-8 py-16">
       <JsonLd data={componentPageJsonLd(canonicalSlug)} />
+      <ComponentViewTracker
+        slug={canonicalSlug}
+        name={component.name}
+        category={registry?.industry ?? component.category}
+      />
       <ComponentBreadcrumbs
         slug={params.slug}
         name={component.name}
