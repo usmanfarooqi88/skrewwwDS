@@ -59,14 +59,24 @@ describe("Controlled state closeout", () => {
 
   it("CalendarGrid reflects controlled value updates from parent", () => {
     const { rerender } = render(
-      <CalendarGrid value="2026-07-11" aria-label="Choose date" />,
+      <CalendarGrid
+        value="2026-07-11"
+        defaultVisibleMonth={{ year: 2026, month: 7 }}
+        aria-label="Choose date"
+      />,
     );
     const selectedCell = screen
       .getByRole("button", { name: /11 July 2026/i })
       .closest('[role="gridcell"]');
     expect(selectedCell).toHaveAttribute("aria-selected", "true");
 
-    rerender(<CalendarGrid value="2026-07-14" aria-label="Choose date" />);
+    rerender(
+      <CalendarGrid
+        value="2026-07-14"
+        defaultVisibleMonth={{ year: 2026, month: 7 }}
+        aria-label="Choose date"
+      />,
+    );
     const nextSelectedCell = screen
       .getByRole("button", { name: /14 July 2026/i })
       .closest('[role="gridcell"]');

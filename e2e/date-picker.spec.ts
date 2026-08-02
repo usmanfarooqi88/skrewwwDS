@@ -6,6 +6,11 @@ test.describe("Date Picker browser behavior", () => {
   });
 
   test("opens from keyboard and selects a date", async ({ page }) => {
+    // The first "Release date" picker on the page has no value/defaultValue, so its
+    // calendar opens on the real current month — pin the clock so the assertions
+    // below (which pick "14 July 2026") don't drift with wall-clock date rollover.
+    await page.clock.setFixedTime(new Date("2026-07-15T12:00:00"));
+    await page.reload();
     await page.getByRole("button", { name: "Open calendar" }).first().click();
     await expect(page.getByRole("grid", { name: "Choose date" })).toBeVisible();
     await page.getByRole("button", { name: "14 July 2026" }).click();

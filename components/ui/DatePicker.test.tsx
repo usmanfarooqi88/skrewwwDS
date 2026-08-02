@@ -31,7 +31,9 @@ describe("DatePicker", () => {
   it("supports controlled value changes from the calendar", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(<DatePicker label="Release date" onValueChange={onValueChange} />);
+    render(
+      <DatePicker label="Release date" defaultValue="2026-07-11" onValueChange={onValueChange} />,
+    );
     await user.click(screen.getByRole("button", { name: "Open calendar" }));
     await user.click(screen.getByRole("button", { name: "14 July 2026" }));
     expect(onValueChange).toHaveBeenCalledTimes(1);
@@ -40,7 +42,7 @@ describe("DatePicker", () => {
 
   it("syncs the text field when selecting a date in the popover", async () => {
     const user = userEvent.setup();
-    render(<DatePicker label="Release date" />);
+    render(<DatePicker label="Release date" defaultValue="2026-07-11" />);
     await user.click(screen.getByRole("button", { name: "Open calendar" }));
     await user.click(screen.getByRole("button", { name: "14 July 2026" }));
     expect(screen.getByRole("textbox", { name: "Release date" })).toHaveValue(
