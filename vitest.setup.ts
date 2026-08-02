@@ -1,8 +1,17 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterEach } from "vitest";
+import { afterEach, vi } from "vitest";
 
 process.env.NEXT_PUBLIC_SITE_URL ??= "https://skrewww.test";
+
+/**
+ * The real server-only package throws unconditionally unless resolved
+ * through Next.js's build pipeline, which swaps in a no-op for server
+ * contexts. Vitest has no equivalent — without this, any test importing a
+ * module that does `import "server-only"` (e.g. lib/server/*) fails before
+ * a single test runs, regardless of what that module actually does.
+ */
+vi.mock("server-only", () => ({}));
 
 class TestDataTransferItemList {
   private readonly files: File[] = [];
