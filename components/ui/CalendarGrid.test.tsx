@@ -2,6 +2,13 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CalendarGrid } from "@/components/ui/CalendarGrid";
+import {
+  addMonths,
+  calendarDateFromParts,
+  formatMonthLabel,
+  getMonthFromDate,
+  getTodayCalendarDate,
+} from "@/components/ui/internal/calendar-date";
 
 describe("CalendarGrid", () => {
   it("exposes grid structure and month label", () => {
@@ -9,6 +16,24 @@ describe("CalendarGrid", () => {
     expect(screen.getByRole("grid")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /July 2026/i })).toBeInTheDocument();
     expect(screen.getAllByRole("columnheader")).toHaveLength(7);
+  });
+
+  it("derives the initial visible month from a controlled value, not today's real date", () => {
+    // Regression test: the visible-month fallback used to check only
+    // `defaultValue`, never the controlled `value` prop, so a fully
+    // controlled CalendarGrid with no defaultVisibleMonth silently opened on
+    // today's real month instead of the given value's month. Picking a month
+    // 6 away from whatever "today" actually is (wrapping the year) keeps
+    // this test correct regardless of when it runs, unlike a hardcoded date.
+    const todayMonth = getMonthFromDate(getTodayCalendarDate());
+    const targetMonth = addMonths(todayMonth, 6);
+    const value = calendarDateFromParts({ ...targetMonth, day: 10 });
+
+    render(<CalendarGrid value={value} aria-label="Choose date" />);
+
+    expect(
+      screen.getByRole("heading", { name: formatMonthLabel(targetMonth) }),
+    ).toBeInTheDocument();
   });
 
   it("keeps one day in the tab sequence", () => {

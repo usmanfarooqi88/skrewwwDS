@@ -184,11 +184,14 @@ export function CalendarGrid(props: CalendarGridProps) {
     valueProvided,
   });
 
+  const initialSelectedValue = value ?? defaultValue;
   const [currentMonth, setCurrentMonth] = useControllableState<CalendarMonthParts>({
     value: visibleMonth,
     defaultValue:
       defaultVisibleMonth ??
-      (defaultValue ? getMonthFromDate(defaultValue) : getMonthFromDate(getTodayCalendarDate())),
+      (initialSelectedValue
+        ? getMonthFromDate(initialSelectedValue)
+        : getMonthFromDate(getTodayCalendarDate())),
     onChange: onVisibleMonthChange,
   });
 
