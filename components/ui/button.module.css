@@ -7,7 +7,11 @@
   border-radius: var(--shape-radius-control);
   font-family: inherit;
   font-weight: 500;
-  line-height: 1;
+  /* 1 clips descenders (y/g/j/p/q) under .label's overflow: hidden — the line
+     box was tighter than this font's real ascent+descent metrics. 1.2 is the
+     same ratio already verified safe for Tag/Badge's compact single-line
+     labels. */
+  line-height: 1.2;
   white-space: nowrap;
   cursor: pointer;
   transition:
