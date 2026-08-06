@@ -67,7 +67,7 @@ export default function HomePage() {
           adapt through tokens — never forks — across shape, surface, brand, and eventually
           industry. Built to be read by designers, developers, and coding agents alike.
         </p>
-        <HomeHeroCtas />
+        <HomeHeroCtas totalComponents={totalComponents} />
       </div>
 
       <div className="mb-16">

@@ -72,6 +72,18 @@ describe("sanitizeHref", () => {
   it("strips both a query string and a fragment", () => {
     expect(sanitizeHref("/components?ref=email#section")).toBe("/components");
   });
+
+  it("leaves a full external URL with no query or fragment unchanged", () => {
+    expect(sanitizeHref("https://usmanfarooqi.gumroad.com/l/skrewww-pro")).toBe(
+      "https://usmanfarooqi.gumroad.com/l/skrewww-pro",
+    );
+  });
+
+  it("still strips query/fragment from an external URL that has them", () => {
+    expect(
+      sanitizeHref("https://usmanfarooqi.gumroad.com/l/skrewww-pro?ref=email#pricing"),
+    ).toBe("https://usmanfarooqi.gumroad.com/l/skrewww-pro");
+  });
 });
 
 function ViewTrackerHost({ slug, name, category }: { slug: string; name: string; category: string }) {
