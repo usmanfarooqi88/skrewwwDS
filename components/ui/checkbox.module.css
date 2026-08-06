@@ -23,6 +23,11 @@
   border: 1px solid var(--semantic-border-default);
   /* Preserve checkbox affordance in Pill/Squircle global modes */
   border-radius: min(var(--shape-radius-control), var(--control-checkbox-radius-max));
+  /* Same clamp as border-radius above, so the squircle curve never exceeds
+     the checkbox's own affordance limit at this small a size — baked into
+     the dedicated --squircle-clip-path-checkbox token itself. */
+  clip-path: var(--squircle-clip-path-checkbox, none);
+  backdrop-filter: var(--glass-backdrop-filter-sm, none);
   background: var(--surface-fill-control);
   transition:
     border-color 0.15s ease,
@@ -41,6 +46,11 @@
 .input:focus-visible {
   outline: 2px solid var(--semantic-focus-ring);
   outline-offset: 2px;
+}
+
+/* Same clip-path-clips-outline reasoning as Button — see button.module.css. */
+[data-skrewww-shape="squircle"] .input:focus-visible {
+  outline-offset: 0;
 }
 
 .input:checked,

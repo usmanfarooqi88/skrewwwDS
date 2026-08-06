@@ -53,7 +53,18 @@
   display: inline-flex;
 }
 
+/* Found during this pass: had a translucent Glass background with no
+   backdrop-filter at all, and its own one-off 90% mix — same missing-blur
+   bug as Card/Button/etc., consolidated into the shared "md" tier since
+   this is a full container block, not a compact control. */
 [data-skrewww-surface="glass"] .root {
-  background: color-mix(in srgb, var(--semantic-surface-default) 90%, white);
+  background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-md), white);
+  backdrop-filter: var(--glass-backdrop-filter-md);
   border-radius: var(--shape-radius-container);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .root {
+    background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-md-fallback), white);
+  }
 }

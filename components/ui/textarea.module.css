@@ -8,9 +8,11 @@
   display: block;
   resize: vertical; /* [TEMPORARY] — Figma resize behavior not confirmed */
   min-height: var(--control-textarea-min-height-md);
-  padding-top: 0.625rem;
+  /* Matches padding-left (inherited from .input's --control-padding-x-md)
+     so text sits evenly inset from the top-left corner, not just the left. */
+  padding-top: var(--control-padding-x-md);
   padding-right: 2.25rem;
-  padding-bottom: 0.625rem;
+  padding-bottom: var(--control-padding-x-md);
   vertical-align: top;
 }
 
@@ -43,14 +45,14 @@
 
 .sizeSm.textarea {
   min-height: var(--control-textarea-min-height-sm);
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  padding-top: var(--control-padding-x-sm);
+  padding-bottom: var(--control-padding-x-sm);
 }
 
 .sizeLg.textarea {
   min-height: var(--control-textarea-min-height-lg);
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: var(--control-padding-x-lg);
+  padding-bottom: var(--control-padding-x-lg);
 }
 
 @media (prefers-reduced-motion: reduce) {

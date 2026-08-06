@@ -9,7 +9,13 @@
   width: 100%;
   border: 1px solid var(--semantic-border-default);
   border-radius: var(--shape-radius-control);
+  /* TextInput wasn't in the originally-reported list of squircle consumers,
+     but it consumes --shape-radius-control via plain border-radius exactly
+     like Button/Checkbox/Drawer's close button — same bug, fixed the same
+     way, found while auditing the other 5. */
+  clip-path: var(--squircle-clip-path-control, none);
   background: var(--surface-fill-control);
+  backdrop-filter: var(--glass-backdrop-filter-sm, none);
   color: var(--semantic-text-primary);
   font-family: inherit;
   line-height: 1.4;
@@ -35,6 +41,14 @@
   box-shadow: 0 0 0 2px var(--semantic-focus-ring);
 }
 
+/* clip-path clips an outset box-shadow ring exactly like it clips outline
+   (same reasoning as Button/Checkbox) — an inset ring stays fully visible
+   since it never extends past the clip boundary. Squircle mode only; every
+   other shape mode keeps the outset ring above unchanged. */
+[data-skrewww-shape="squircle"] .input:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--semantic-focus-ring);
+}
+
 .input:disabled {
   cursor: not-allowed;
   pointer-events: none;
@@ -55,6 +69,10 @@
 
 .input[aria-invalid="true"]:focus-visible {
   box-shadow: 0 0 0 2px var(--semantic-action-danger);
+}
+
+[data-skrewww-shape="squircle"] .input[aria-invalid="true"]:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--semantic-action-danger);
 }
 
 .input[type="search"]::-webkit-search-cancel-button {

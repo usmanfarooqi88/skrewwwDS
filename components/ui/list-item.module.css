@@ -94,7 +94,18 @@
   border-radius: min(var(--list-item-radius), 1rem);
 }
 
+/* Found during this pass: had a translucent Glass background with no
+   backdrop-filter at all — same missing-blur bug as Card/Button/etc.,
+   just not in the originally-reported list. Fixed the same way. */
 [data-skrewww-surface="glass"] .static .row,
 [data-skrewww-surface="glass"] .interactive {
-  background: color-mix(in srgb, var(--list-item-surface) 92%, white);
+  background: color-mix(in srgb, var(--list-item-surface) var(--glass-mix-md), white);
+  backdrop-filter: var(--glass-backdrop-filter-md);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .static .row,
+  [data-skrewww-surface="glass"] .interactive {
+    background: color-mix(in srgb, var(--list-item-surface) var(--glass-mix-md-fallback), white);
+  }
 }

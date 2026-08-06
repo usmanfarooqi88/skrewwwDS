@@ -5,6 +5,16 @@
   gap: var(--control-gap);
   border: 1px solid transparent;
   border-radius: var(--shape-radius-control);
+  /* Real squircle geometry in Squircle mode — see the
+     --squircle-clip-path-control definition in styles/tokens.css for the
+     technique and why. Falls back to `none` (plain border-radius above
+     still applies) in every other shape mode, where the token is never
+     defined. */
+  clip-path: var(--squircle-clip-path-control, none);
+  /* Only .secondary's background is actually translucent (surface-fill-
+     control) — Primary/Danger's solid brand colors make this a no-op for
+     them, harmlessly, so it's simplest to set once here for all variants. */
+  backdrop-filter: var(--glass-backdrop-filter-sm, none);
   font-family: inherit;
   font-weight: 500;
   /* 1 clips descenders (y/g/j/p/q) under .label's overflow: hidden — the line
@@ -28,6 +38,14 @@
 .button:focus-visible {
   outline: 2px solid var(--semantic-focus-ring);
   outline-offset: 2px;
+}
+
+/* clip-path clips outline exactly like it clips box-shadow — a detached
+   2px-offset ring would get cut off at the clip boundary. Flush instead of
+   floating is a fully visible, deliberate trade-off in Squircle mode only;
+   every other shape mode keeps the detached ring above unchanged. */
+[data-skrewww-shape="squircle"] .button:focus-visible {
+  outline-offset: 0;
 }
 
 .button:disabled,

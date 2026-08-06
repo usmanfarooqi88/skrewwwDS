@@ -22,6 +22,7 @@
   border-radius: 50%;
   border: 1px solid var(--semantic-border-default);
   background: var(--surface-fill-control);
+  backdrop-filter: var(--glass-backdrop-filter-sm, none);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;

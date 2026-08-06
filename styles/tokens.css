@@ -563,9 +563,192 @@
 }
 
 [data-skrewww-shape="squircle"] {
-  /* [EXPERIMENTAL] Approximate border-radius only — not true squircle geometry */
-  --shape-radius-control: 8px; /* [UNRESOLVED] */
-  --shape-radius-container: 16px; /* [UNRESOLVED] */
+  --shape-radius-control: 8px; /* [VERIFIED] Squircle control intent */
+  --shape-radius-container: 16px; /* [VERIFIED] Squircle container intent */
+
+  /*
+   * Real superellipse corner geometry, not an approximated border-radius.
+   * CSS corner-shape: superellipse() (the native, spec-track way to do
+   * this) is Chromium-only as of mid-2026 with no Safari/Firefox timeline,
+   * so it isn't a viable primary technique for this project yet. This
+   * clip-path polygon is the standard, production-common fallback: an
+   * authored approximation of the same curve, working identically in every
+   * browser that supports clip-path: polygon() (effectively all of them).
+   *
+   * Math: a superellipse corner satisfies |u|^(2K) + |v|^(2K) = 1 in the
+   * corner's local, radius-normalized coordinates (K=2 is the "iOS-style
+   * squircle" the corner-shape spec itself names as superellipse(2)).
+   * Solving parametrically: u(t) = (cos t)^(1/K), v(t) = (sin t)^(1/K) for
+   * t in [0, pi/2] satisfies that equation for any K, and converts to box
+   * coordinates as x(t) = R*(1-u(t)), y(t) = R*(1-v(t)) — the endpoints
+   * (0,R) and (R,0) match a circular border-radius exactly (same tangent
+   * points), only the curve in between differs: flatter near the straight
+   * edges, curving more sharply right at the corner. 9 sampled points per
+   * corner (36 total for all four) is enough for the curve to read as
+   * genuinely smooth at UI scale. Generated with K=2, N=8.
+   *
+   * Each radius variable is baked directly into its own token, rather than
+   * parametrized on a generic placeholder consumers set locally. A custom
+   * property's var() references resolve against the cascade at the
+   * ELEMENT WHERE IT'S DECLARED, not lazily per-descendant at point of
+   * use — a generic --squircle-r referenced here but only ever set later
+   * on .button/.card/etc computes as guaranteed-invalid right here (since
+   * --squircle-r doesn't exist at this element), and that invalid value is
+   * what inherits down, regardless of what a descendant sets --squircle-r
+   * to. Confirmed with a minimal reproduction before settling on this
+   * fix — the generic version reliably produced `clip-path: none`
+   * everywhere. Baking in --shape-radius-control/--shape-radius-container
+   * directly works because both ARE already defined on this same
+   * selector, so the substitution succeeds where it's declared.
+   */
+  --squircle-clip-path-control: polygon(
+      0px var(--shape-radius-control),
+      calc(var(--shape-radius-control) * 0.0097) calc(var(--shape-radius-control) * 0.5583),
+      calc(var(--shape-radius-control) * 0.0388) calc(var(--shape-radius-control) * 0.3814),
+      calc(var(--shape-radius-control) * 0.0882) calc(var(--shape-radius-control) * 0.2546),
+      calc(var(--shape-radius-control) * 0.1591) calc(var(--shape-radius-control) * 0.1591),
+      calc(var(--shape-radius-control) * 0.2546) calc(var(--shape-radius-control) * 0.0882),
+      calc(var(--shape-radius-control) * 0.3814) calc(var(--shape-radius-control) * 0.0388),
+      calc(var(--shape-radius-control) * 0.5583) calc(var(--shape-radius-control) * 0.0097),
+      calc(var(--shape-radius-control) * 1) 0px,
+      calc(100% - var(--shape-radius-control) * 1) 0px,
+      calc(100% - var(--shape-radius-control) * 0.5583) calc(var(--shape-radius-control) * 0.0097),
+      calc(100% - var(--shape-radius-control) * 0.3814) calc(var(--shape-radius-control) * 0.0388),
+      calc(100% - var(--shape-radius-control) * 0.2546) calc(var(--shape-radius-control) * 0.0882),
+      calc(100% - var(--shape-radius-control) * 0.1591) calc(var(--shape-radius-control) * 0.1591),
+      calc(100% - var(--shape-radius-control) * 0.0882) calc(var(--shape-radius-control) * 0.2546),
+      calc(100% - var(--shape-radius-control) * 0.0388) calc(var(--shape-radius-control) * 0.3814),
+      calc(100% - var(--shape-radius-control) * 0.0097) calc(var(--shape-radius-control) * 0.5583),
+      100% var(--shape-radius-control),
+      100% calc(100% - var(--shape-radius-control)),
+      calc(100% - var(--shape-radius-control) * 0.0097) calc(100% - var(--shape-radius-control) * 0.5583),
+      calc(100% - var(--shape-radius-control) * 0.0388) calc(100% - var(--shape-radius-control) * 0.3814),
+      calc(100% - var(--shape-radius-control) * 0.0882) calc(100% - var(--shape-radius-control) * 0.2546),
+      calc(100% - var(--shape-radius-control) * 0.1591) calc(100% - var(--shape-radius-control) * 0.1591),
+      calc(100% - var(--shape-radius-control) * 0.2546) calc(100% - var(--shape-radius-control) * 0.0882),
+      calc(100% - var(--shape-radius-control) * 0.3814) calc(100% - var(--shape-radius-control) * 0.0388),
+      calc(100% - var(--shape-radius-control) * 0.5583) calc(100% - var(--shape-radius-control) * 0.0097),
+      calc(100% - var(--shape-radius-control) * 1) 100%,
+      calc(var(--shape-radius-control) * 1) 100%,
+      calc(var(--shape-radius-control) * 0.5583) calc(100% - var(--shape-radius-control) * 0.0097),
+      calc(var(--shape-radius-control) * 0.3814) calc(100% - var(--shape-radius-control) * 0.0388),
+      calc(var(--shape-radius-control) * 0.2546) calc(100% - var(--shape-radius-control) * 0.0882),
+      calc(var(--shape-radius-control) * 0.1591) calc(100% - var(--shape-radius-control) * 0.1591),
+      calc(var(--shape-radius-control) * 0.0882) calc(100% - var(--shape-radius-control) * 0.2546),
+      calc(var(--shape-radius-control) * 0.0388) calc(100% - var(--shape-radius-control) * 0.3814),
+      calc(var(--shape-radius-control) * 0.0097) calc(100% - var(--shape-radius-control) * 0.5583),
+      0px calc(100% - var(--shape-radius-control))
+    );
+
+  --squircle-clip-path-container: polygon(
+      0px var(--shape-radius-container),
+      calc(var(--shape-radius-container) * 0.0097) calc(var(--shape-radius-container) * 0.5583),
+      calc(var(--shape-radius-container) * 0.0388) calc(var(--shape-radius-container) * 0.3814),
+      calc(var(--shape-radius-container) * 0.0882) calc(var(--shape-radius-container) * 0.2546),
+      calc(var(--shape-radius-container) * 0.1591) calc(var(--shape-radius-container) * 0.1591),
+      calc(var(--shape-radius-container) * 0.2546) calc(var(--shape-radius-container) * 0.0882),
+      calc(var(--shape-radius-container) * 0.3814) calc(var(--shape-radius-container) * 0.0388),
+      calc(var(--shape-radius-container) * 0.5583) calc(var(--shape-radius-container) * 0.0097),
+      calc(var(--shape-radius-container) * 1) 0px,
+      calc(100% - var(--shape-radius-container) * 1) 0px,
+      calc(100% - var(--shape-radius-container) * 0.5583) calc(var(--shape-radius-container) * 0.0097),
+      calc(100% - var(--shape-radius-container) * 0.3814) calc(var(--shape-radius-container) * 0.0388),
+      calc(100% - var(--shape-radius-container) * 0.2546) calc(var(--shape-radius-container) * 0.0882),
+      calc(100% - var(--shape-radius-container) * 0.1591) calc(var(--shape-radius-container) * 0.1591),
+      calc(100% - var(--shape-radius-container) * 0.0882) calc(var(--shape-radius-container) * 0.2546),
+      calc(100% - var(--shape-radius-container) * 0.0388) calc(var(--shape-radius-container) * 0.3814),
+      calc(100% - var(--shape-radius-container) * 0.0097) calc(var(--shape-radius-container) * 0.5583),
+      100% var(--shape-radius-container),
+      100% calc(100% - var(--shape-radius-container)),
+      calc(100% - var(--shape-radius-container) * 0.0097) calc(100% - var(--shape-radius-container) * 0.5583),
+      calc(100% - var(--shape-radius-container) * 0.0388) calc(100% - var(--shape-radius-container) * 0.3814),
+      calc(100% - var(--shape-radius-container) * 0.0882) calc(100% - var(--shape-radius-container) * 0.2546),
+      calc(100% - var(--shape-radius-container) * 0.1591) calc(100% - var(--shape-radius-container) * 0.1591),
+      calc(100% - var(--shape-radius-container) * 0.2546) calc(100% - var(--shape-radius-container) * 0.0882),
+      calc(100% - var(--shape-radius-container) * 0.3814) calc(100% - var(--shape-radius-container) * 0.0388),
+      calc(100% - var(--shape-radius-container) * 0.5583) calc(100% - var(--shape-radius-container) * 0.0097),
+      calc(100% - var(--shape-radius-container) * 1) 100%,
+      calc(var(--shape-radius-container) * 1) 100%,
+      calc(var(--shape-radius-container) * 0.5583) calc(100% - var(--shape-radius-container) * 0.0097),
+      calc(var(--shape-radius-container) * 0.3814) calc(100% - var(--shape-radius-container) * 0.0388),
+      calc(var(--shape-radius-container) * 0.2546) calc(100% - var(--shape-radius-container) * 0.0882),
+      calc(var(--shape-radius-container) * 0.1591) calc(100% - var(--shape-radius-container) * 0.1591),
+      calc(var(--shape-radius-container) * 0.0882) calc(100% - var(--shape-radius-container) * 0.2546),
+      calc(var(--shape-radius-container) * 0.0388) calc(100% - var(--shape-radius-container) * 0.3814),
+      calc(var(--shape-radius-container) * 0.0097) calc(100% - var(--shape-radius-container) * 0.5583),
+      0px calc(100% - var(--shape-radius-container))
+    );
+
+  /*
+   * Same curve, applied to the right two corners only (top-right,
+   * bottom-right) with the left two left sharp — for shapes with an
+   * asymmetric radius today (e.g. Drawer's left-placement panel, which is
+   * flush with the viewport edge on its left side).
+   */
+  --squircle-clip-path-container-right: polygon(
+      0px 0px,
+      calc(100% - var(--shape-radius-container) * 1) 0px,
+      calc(100% - var(--shape-radius-container) * 0.5583) calc(var(--shape-radius-container) * 0.0097),
+      calc(100% - var(--shape-radius-container) * 0.3814) calc(var(--shape-radius-container) * 0.0388),
+      calc(100% - var(--shape-radius-container) * 0.2546) calc(var(--shape-radius-container) * 0.0882),
+      calc(100% - var(--shape-radius-container) * 0.1591) calc(var(--shape-radius-container) * 0.1591),
+      calc(100% - var(--shape-radius-container) * 0.0882) calc(var(--shape-radius-container) * 0.2546),
+      calc(100% - var(--shape-radius-container) * 0.0388) calc(var(--shape-radius-container) * 0.3814),
+      calc(100% - var(--shape-radius-container) * 0.0097) calc(var(--shape-radius-container) * 0.5583),
+      100% var(--shape-radius-container),
+      100% calc(100% - var(--shape-radius-container)),
+      calc(100% - var(--shape-radius-container) * 0.0097) calc(100% - var(--shape-radius-container) * 0.5583),
+      calc(100% - var(--shape-radius-container) * 0.0388) calc(100% - var(--shape-radius-container) * 0.3814),
+      calc(100% - var(--shape-radius-container) * 0.0882) calc(100% - var(--shape-radius-container) * 0.2546),
+      calc(100% - var(--shape-radius-container) * 0.1591) calc(100% - var(--shape-radius-container) * 0.1591),
+      calc(100% - var(--shape-radius-container) * 0.2546) calc(100% - var(--shape-radius-container) * 0.0882),
+      calc(100% - var(--shape-radius-container) * 0.3814) calc(100% - var(--shape-radius-container) * 0.0388),
+      calc(100% - var(--shape-radius-container) * 0.5583) calc(100% - var(--shape-radius-container) * 0.0097),
+      calc(100% - var(--shape-radius-container) * 1) 100%,
+      0px 100%
+    );
+
+  /* Checkbox clamps its radius to preserve its square-ish affordance at
+     16px — reuses the same clamp expression here so the curve never
+     exceeds what border-radius already limits it to. */
+  --squircle-clip-path-checkbox: polygon(
+      0px min(var(--shape-radius-control), var(--control-checkbox-radius-max)),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0097) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.5583),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0388) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.3814),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0882) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.2546),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.1591) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.1591),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.2546) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0882),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.3814) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0388),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.5583) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0097),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 1) 0px,
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 1) 0px,
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.5583) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0097),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.3814) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0388),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.2546) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0882),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.1591) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.1591),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0882) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.2546),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0388) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.3814),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0097) calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.5583),
+      100% min(var(--shape-radius-control), var(--control-checkbox-radius-max)),
+      100% calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max))),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0097) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.5583),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0388) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.3814),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0882) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.2546),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.1591) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.1591),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.2546) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0882),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.3814) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0388),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.5583) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0097),
+      calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 1) 100%,
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 1) 100%,
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.5583) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0097),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.3814) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0388),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.2546) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0882),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.1591) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.1591),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0882) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.2546),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0388) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.3814),
+      calc(min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.0097) calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)) * 0.5583),
+      0px calc(100% - min(var(--shape-radius-control), var(--control-checkbox-radius-max)))
+    );
 }
 
 /* ── Surface modes ── */
@@ -585,9 +768,59 @@
 }
 
 [data-skrewww-surface="glass"] {
-  /* [EXPERIMENTAL] Blur/opacity pending Figma Surface collection */
   --surface-fill-default: rgb(255 255 255 / 0.72);
   --surface-fill-control: rgb(255 255 255 / 0.85);
+
+  /*
+   * Shared blur/opacity tokens for every Glass-mode component — previously
+   * each of the 9 components with a real backdrop-filter treatment
+   * (Dialog, Popover, Accordion, Badge, Calendar Grid, Tabs, Pagination,
+   * Tooltip, Drawer) hardcoded its own blur radius independently (8px,
+   * 10px, or 12px) with no shared source of truth. Two tiers, matched to
+   * component scale: "sm" for compact inline controls and chips, "md" for
+   * larger panels/containers. Tooltip's blur moves from its previous
+   * one-off 10px to the sm tier's 8px, and its color-mix from 92% to the
+   * sm tier's 88%, for the same reason — consolidating a third arbitrary
+   * value that wasn't actually justified by anything about Tooltip's size
+   * relative to Badge/Tabs/Pagination.
+   */
+  --glass-blur-sm: 8px;
+  --glass-blur-md: 12px;
+  --glass-mix-sm: 88%;
+  --glass-mix-md: 92%;
+  /* Fallback mix percentages, used only when backdrop-filter isn't
+     supported (see the @supports block below) — a few points more opaque
+     so the surface reads as intentionally solid rather than just "the
+     blur silently didn't happen." */
+  --glass-mix-sm-fallback: 94%;
+  --glass-mix-md-fallback: 97%;
+
+  /*
+   * Referenced unconditionally by components (backdrop-filter: var(...,
+   * none)) the same way --squircle-clip-path is — undefined, and so `none`,
+   * outside Glass mode; a real blur() inside it.
+   */
+  --glass-backdrop-filter-sm: blur(var(--glass-blur-sm));
+  --glass-backdrop-filter-md: blur(var(--glass-blur-md));
+}
+
+/*
+ * backdrop-filter isn't universally supported (no Safari/Firefox timeline
+ * concerns here specifically, but older browser versions and some
+ * embedded/webview contexts still lack it). Previously there was no
+ * fallback at all — an unsupported browser would silently render the
+ * translucent-but-unblurred background with no compensation, which reads
+ * as "broken" over a busy background rather than intentional. Bumping the
+ * base surface tokens' opacity here covers Card/Button/Checkbox/Radio/
+ * TextInput automatically; the 9 components with their own color-mix
+ * expression each have a matching override in their own file referencing
+ * --glass-mix-*-fallback.
+ */
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] {
+    --surface-fill-default: rgb(255 255 255 / 0.92);
+    --surface-fill-control: rgb(255 255 255 / 0.97);
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

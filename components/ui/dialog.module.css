@@ -101,8 +101,14 @@
 }
 
 [data-skrewww-surface="glass"] .content {
-  background: color-mix(in srgb, var(--dialog-surface) 92%, white);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--dialog-surface) var(--glass-mix-md), white);
+  backdrop-filter: var(--glass-backdrop-filter-md);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .content {
+    background: color-mix(in srgb, var(--dialog-surface) var(--glass-mix-md-fallback), white);
+  }
 }
 
 [data-skrewww-shape="pill"] .content {

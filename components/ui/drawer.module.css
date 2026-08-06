@@ -41,6 +41,48 @@
   animation: drawer-enter-left var(--drawer-open-duration) var(--drawer-motion-easing);
 }
 
+/*
+ * Same box-shadow-vs-clip-path split as Card (see card.module.css) — .panel
+ * keeps its own elevation box-shadow unclipped, using its existing
+ * (approximate) border-radius above for the shadow's silhouette; the exact
+ * squircle curve applies to a ::before fill layer instead. Only .left needs
+ * this today: its exposed corners are the right two only, so it uses the
+ * right-corners-only curve rather than the general 4-corner one.
+ */
+[data-skrewww-shape="squircle"] .left {
+  background: none;
+  border-color: transparent;
+}
+
+[data-skrewww-shape="squircle"] .left::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  clip-path: var(--squircle-clip-path-container-right);
+  background: var(--drawer-surface);
+  backdrop-filter: var(--glass-backdrop-filter-md, none);
+  border: 1px solid var(--drawer-border);
+  border-left: none;
+}
+
+/*
+ * Squircle's ::before is a different element than .panel below, so the
+ * plain Glass rule on .panel never reaches it — without this, Glass+
+ * Squircle combined would silently lose the tint (falling back to
+ * .left::before's plain, unblurred --drawer-surface above) even though
+ * each mode works fine on its own.
+ */
+[data-skrewww-shape="squircle"][data-skrewww-surface="glass"] .left::before {
+  background: color-mix(in srgb, var(--drawer-surface) var(--glass-mix-md), white);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-shape="squircle"][data-skrewww-surface="glass"] .left::before {
+    background: color-mix(in srgb, var(--drawer-surface) var(--glass-mix-md-fallback), white);
+  }
+}
+
 .header {
   display: flex;
   align-items: flex-start;
@@ -66,6 +108,9 @@
   height: var(--drawer-close-size);
   border: 1px solid var(--drawer-border);
   border-radius: min(var(--shape-radius-control), 9999px);
+  /* min(..., 9999px) is effectively just --shape-radius-control since
+     9999px never wins, so the plain -control token is correct here. */
+  clip-path: var(--squircle-clip-path-control, none);
   background: transparent;
   color: var(--drawer-text);
   cursor: pointer;
@@ -74,6 +119,11 @@
 .close:focus-visible {
   outline: 2px solid var(--semantic-focus-ring);
   outline-offset: 2px;
+}
+
+/* Same clip-path-clips-outline reasoning as Button — see button.module.css. */
+[data-skrewww-shape="squircle"] .close:focus-visible {
+  outline-offset: 0;
 }
 
 .description {
@@ -114,8 +164,14 @@
 }
 
 [data-skrewww-surface="glass"] .panel {
-  background: color-mix(in srgb, var(--drawer-surface) 92%, white);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--drawer-surface) var(--glass-mix-md), white);
+  backdrop-filter: var(--glass-backdrop-filter-md);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .panel {
+    background: color-mix(in srgb, var(--drawer-surface) var(--glass-mix-md-fallback), white);
+  }
 }
 
 [data-skrewww-shape="pill"] .left {

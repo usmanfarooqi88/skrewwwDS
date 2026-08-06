@@ -39,6 +39,15 @@
 }
 
 [data-skrewww-surface="glass"] .tooltip {
-  background: color-mix(in srgb, var(--tooltip-surface) 92%, white);
-  backdrop-filter: blur(10px);
+  /* Was a one-off 10px/92% previously — consolidated to the shared "sm"
+     tier (8px/88%), matching Badge/Tabs/Pagination's similarly-compact
+     scale; see the tier comment in styles/tokens.css. */
+  background: color-mix(in srgb, var(--tooltip-surface) var(--glass-mix-sm), white);
+  backdrop-filter: var(--glass-backdrop-filter-sm);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .tooltip {
+    background: color-mix(in srgb, var(--tooltip-surface) var(--glass-mix-sm-fallback), white);
+  }
 }

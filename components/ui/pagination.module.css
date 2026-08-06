@@ -71,6 +71,12 @@
 }
 
 [data-skrewww-surface="glass"] .control {
-  background: color-mix(in srgb, var(--semantic-surface-default) 88%, white);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-sm), white);
+  backdrop-filter: var(--glass-backdrop-filter-sm);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .control {
+    background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-sm-fallback), white);
+  }
 }

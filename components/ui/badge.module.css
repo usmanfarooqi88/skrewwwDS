@@ -93,25 +93,47 @@
 [data-skrewww-surface="glass"] .success,
 [data-skrewww-surface="glass"] .warning,
 [data-skrewww-surface="glass"] .error {
-  backdrop-filter: blur(8px);
+  backdrop-filter: var(--glass-backdrop-filter-sm);
 }
 
 [data-skrewww-surface="glass"] .neutral {
-  background: color-mix(in srgb, var(--badge-neutral-surface) 88%, white);
+  background: color-mix(in srgb, var(--badge-neutral-surface) var(--glass-mix-sm), white);
 }
 
 [data-skrewww-surface="glass"] .info {
-  background: color-mix(in srgb, var(--badge-info-surface) 88%, white);
+  background: color-mix(in srgb, var(--badge-info-surface) var(--glass-mix-sm), white);
 }
 
 [data-skrewww-surface="glass"] .success {
-  background: color-mix(in srgb, var(--badge-success-surface) 88%, white);
+  background: color-mix(in srgb, var(--badge-success-surface) var(--glass-mix-sm), white);
 }
 
 [data-skrewww-surface="glass"] .warning {
-  background: color-mix(in srgb, var(--badge-warning-surface) 88%, white);
+  background: color-mix(in srgb, var(--badge-warning-surface) var(--glass-mix-sm), white);
 }
 
 [data-skrewww-surface="glass"] .error {
-  background: color-mix(in srgb, var(--badge-error-surface) 88%, white);
+  background: color-mix(in srgb, var(--badge-error-surface) var(--glass-mix-sm), white);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .neutral {
+    background: color-mix(in srgb, var(--badge-neutral-surface) var(--glass-mix-sm-fallback), white);
+  }
+
+  [data-skrewww-surface="glass"] .info {
+    background: color-mix(in srgb, var(--badge-info-surface) var(--glass-mix-sm-fallback), white);
+  }
+
+  [data-skrewww-surface="glass"] .success {
+    background: color-mix(in srgb, var(--badge-success-surface) var(--glass-mix-sm-fallback), white);
+  }
+
+  [data-skrewww-surface="glass"] .warning {
+    background: color-mix(in srgb, var(--badge-warning-surface) var(--glass-mix-sm-fallback), white);
+  }
+
+  [data-skrewww-surface="glass"] .error {
+    background: color-mix(in srgb, var(--badge-error-surface) var(--glass-mix-sm-fallback), white);
+  }
 }
