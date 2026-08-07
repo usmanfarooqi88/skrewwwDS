@@ -78,7 +78,7 @@ Four layers (homepage):
 1. Foundation — tokens, color, type, spacing, accessibility
 2. Component Library — Actions, Forms, Navigation, Feedback, Containers & Overlays, Content & Data
 3. Style Systems — Shape and Surface personalities via CSS custom properties
-4. Industry Systems — planned; see Distribution Model below for how it will ship
+4. Industry Systems — Banking pilot shipped (3 components); additional industries planned via the CLI preset model — see Distribution Model below
 
 Forms use a composed architecture: **FormField** owns label/validation layout; controls prefer native HTML semantics where sufficient; **ValidationMessage** handles field-level feedback only.
 
@@ -152,7 +152,7 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 
 ## Known limitations
 
-- **Figma MCP verification pending** for several parity audits (including Combobox component-set node ID)
+- **Combobox** — component-set node confirmed via Figma MCP (`2024:2480`, "Forms/Combobox") since 2026-07-13; remaining gap is a single token mapping, not open MCP verification — see `semantic/surface/subtle` in **Temporary Combobox tokens** below and [`combobox-parity.md`](docs/architecture/combobox-parity.md#selected-surface-token-gap)
 - **Temporary Combobox tokens** — several popup/option values await Figma variable confirmation
 - **Multi-select Combobox** — deferred
 - **File Upload** — React Beta implemented; live Figma MCP verification, progress UI, and preview thumbnails remain deferred

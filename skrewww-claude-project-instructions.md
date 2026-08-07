@@ -30,7 +30,7 @@ Figma is authoritative only for content successfully inspected via Figma MCP.
 1. **Foundation** — tokens, color, type, spacing, radius, elevation, motion, icons, accessibility
 2. **Component Library** — Actions, Forms, Navigation, Feedback, Containers & Overlays, Content & Data
 3. **Style Systems** — Shape and Surface personalities through CSS custom properties
-4. **Industry Systems** — planned; distributed via the CLI presets described below in Distribution Model
+4. **Industry Systems** — Banking pilot shipped 2026-07-25 (3 components: Banking Transaction Row, Banking Account Card, Banking Balance Summary; see `docs/project-status.md`'s "Layer 4 pilot" section); additional industries planned via the CLI presets described below in Distribution Model
 
 ---
 

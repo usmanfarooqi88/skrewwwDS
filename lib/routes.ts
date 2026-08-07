@@ -20,8 +20,3 @@ export function getCanonicalComponentSlug(slug: string): string {
 }
 
 export { absoluteUrl as getAbsoluteUrl, siteConfig } from "@/lib/site-config";
-
-/** @deprecated Use siteConfig.origin or absoluteUrl() from lib/site-config.ts */
-export const SITE_ORIGIN = (
-  process.env.NEXT_PUBLIC_SITE_ORIGIN?.replace(/\/$/, "") ?? "https://skrewww.dev"
-);

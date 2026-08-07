@@ -1,4 +1,15 @@
 /**
+ * Intentionally unimported by TypeScript: most of these constants exist
+ * only as the canonical, version-controlled record of a confirmed Figma
+ * fact — cited by name in prose (docs/architecture/*.md,
+ * docs/project-status.md), not consumed by any import. A dead-code tool
+ * (e.g. knip) will flag several as "unused exports"; that's expected and
+ * correct for its own definition of "used," not a reason to delete them.
+ * Deleting one removes the single source of truth it records, leaving
+ * only prose with nothing to keep it honest.
+ */
+
+/**
  * Figma metadata for Timeline / Content-Timeline Item — node IDs confirmed via
  * direct Figma Plugin API inspection on 2026-07-24. The component structure,
  * properties, tokens, and positional (not state-coupled) connector suppression

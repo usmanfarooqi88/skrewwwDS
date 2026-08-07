@@ -84,7 +84,7 @@ export function buildLlmsTxt(): string {
     "1. Foundation — tokens, color, type, spacing, radius, elevation, motion, icons, accessibility.",
     "2. Component Library — Actions, Forms, Navigation, Feedback, Containers & Overlays, Content & Data.",
     "3. Style Systems — Shape and Surface personalities applied through tokens, not forks.",
-    "4. Industry Systems — future industry-specific layers inheriting from the core.",
+    `4. Industry Systems — ${industries.join("/")} pilot shipped (${implemented.filter((entry) => entry.industry).length} components); additional industries planned via the CLI preset model, composing Layer 2 rather than forking it.`,
     "",
     "## Current status",
     `- Design system version: ${siteConfig.designSystemVersion}`,

@@ -1,3 +1,14 @@
+/**
+ * Intentionally unimported by TypeScript: most of these constants exist
+ * only as the canonical, version-controlled record of a confirmed Figma
+ * fact — cited by name in prose (docs/architecture/*.md,
+ * docs/project-status.md), not consumed by any import. A dead-code tool
+ * (e.g. knip) will flag several as "unused exports"; that's expected and
+ * correct for its own definition of "used," not a reason to delete them.
+ * Deleting one removes the single source of truth it records, leaving
+ * only prose with nothing to keep it honest.
+ */
+
 /** Figma source for Combobox parity audits — node IDs updated when MCP inspection succeeds. */
 export const COMBOBOX_FIGMA_FILE_URL =
   "https://www.figma.com/design/U6KUuNf7DF4CP9QBOkLSUx/Skrewww---Design-System?node-id=2002-2365";

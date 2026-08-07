@@ -64,7 +64,7 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 | Vitest | **590 tests** across **75 files** — unchanged from the Banking pilot pass; the Industries IA change is registry/nav/routing data, not new test surface |
 | Playwright | **160 tests** (isolated `.next-playwright` on port 3100) — unchanged from the Banking pilot pass |
 | Production build | Pass — Turbopack (default bundler), **80/80 pages** (+2 new `/components/industries` and `/components/industries/banking` pages), no webpack fallback needed |
-| `npm audit` | **0 vulnerabilities** — resolved 2026-07-15 via a `postcss` override; see resolved note below |
+| `npm audit` | **2 high-severity vulnerabilities remain, deliberately unresolved** — `next` (multiple CVEs) and its transitive `sharp` dependency; both require `next@16.3.0` via `npm audit fix --force`, outside the currently pinned exact `"next": "16.2.10"`. 4 other advisories (`brace-expansion`, `js-yaml`, `postcss`, `undici`) resolved 2026-08-07 via plain `npm audit fix` — no `package.json` change, no version outside stated ranges. See note below. |
 
 **Next.js major upgrade — resolved 2026-07-13**: Upgraded 14.2.35 → **16.2.10**
 (React 18 → **19.2.7**, ESLint 8 → **9.39.5** with flat config). Closes the
@@ -148,6 +148,28 @@ inspection of `node_modules/`, not just trusting the audit output.
 515 Vitest tests, 131 Playwright tests, 71/71-page Turbopack build)
 re-verified clean afterward — the version bump didn't disturb Tailwind's
 PostCSS pipeline.
+
+**npm audit — 4 of 6 findings resolved via plain `npm audit fix`, 2 deliberately deferred (2026-08-07)**:
+The 0-vulnerabilities state above did not hold indefinitely — the advisory
+database is not static, and new CVEs get published against already-installed
+dependency versions with no code change on this repo's side. A later audit
+found the count had risen to 6 (1 moderate, 5 high): `brace-expansion`,
+`js-yaml`, `postcss` (a different, newer advisory than the one fixed above),
+`sharp`, `undici`, and `next` itself (several CVEs, including SSRF via
+attacker-controlled rewrite destinations and a Server Actions DoS). Running
+plain `npm audit fix` (no `--force`) resolved `brace-expansion`, `js-yaml`,
+`postcss`, and `undici` — all via transitive dependency bumps within their
+existing semver ranges (confirmed via `git diff package.json`: zero changes;
+`package-lock.json` only). **2 high-severity vulnerabilities remain,
+deliberately unresolved**: `next` and its transitive `sharp` dependency both
+require `npm audit fix --force`, which would install `next@16.3.0` —
+outside the currently pinned exact `"next": "16.2.10"`. Per the same
+decision category as the earlier Next 14.2.35→16.x upgrade (evaluated and
+deferred separately, not forced through an audit-fix command), this bump is
+left as an explicit, separate decision for the project owner rather than
+applied silently. Until that decision is made, **`npm audit` reports 2 high
+severity vulnerabilities, not 0** — this file will be updated again when
+that decision lands.
 
 ## Recently shipped
 

@@ -19,10 +19,6 @@ export function getComponentBySlug(slug: string): ComponentDoc | undefined {
   return allComponents.find((c) => c.slug === slug);
 }
 
-export function getComponentsByCategory(category: string): ComponentDoc[] {
-  return allComponents.filter((c) => c.category === category);
-}
-
 export function getCategoryCounts(): { category: string; count: number }[] {
   return categories.map((category) => ({
     category,
