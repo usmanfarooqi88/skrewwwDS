@@ -26,13 +26,15 @@ this layer.
 
 ## Scope of this pass
 
-Foundation + Button only. The mechanism (generator, lookup table,
+Foundation + Button + Card. The mechanism (generator, lookup table,
 extraction) is structurally able to support more components — adding one
 means adding its files to `lib/component-registry.ts` (already the
-convention) and an entry per new file to `FILE_DESTINATIONS` in
-`lib/shadcn-registry-generator.ts` — but no additional component,
-native CLI, community registry infrastructure, or Vite/Remix
-generalization is in scope here.
+convention), an entry per new file to `FILE_DESTINATIONS` in
+`lib/shadcn-registry-generator.ts`, and a thin `buildXManifest()` wrapper
+around the generic `buildComponentManifest(slug)` (extracted when Card
+was added — see the Card section below) — but no additional component
+beyond these three, native CLI, community registry infrastructure, or
+Vite/Remix generalization is in scope here.
 
 ## How it works
 
@@ -47,13 +49,18 @@ generalization is in scope here.
   boundary-comment markers (not hardcoded line numbers). Importing this
   module never writes a file.
 - **`scripts/generate-shadcn-registry.ts`** is the only place that writes
-  to disk — a thin CLI wrapper around the two `build*Manifest()`
-  functions, writing `public/r/foundation.json` and `public/r/button.json`.
+  to disk — a thin CLI wrapper around the three `build*Manifest()`
+  functions, writing `public/r/foundation.json`, `public/r/button.json`,
+  and `public/r/card.json`.
 - **Transport-layer flattening happens only in the generator.** The
   canonical type keeps a component's own `files` and its private
-  `internalDependencies` as separate arrays; `buildButtonManifest()` is
-  the one place that concatenates them into a single shadcn `files[]`
-  array, per the doc comment already on `ComponentRegistryEntry`.
+  `internalDependencies` as separate arrays; the private
+  `buildComponentManifest(slug)` function is the one place that
+  concatenates them into a single shadcn `files[]` array, per the doc
+  comment already on `ComponentRegistryEntry`. `buildButtonManifest()`
+  and `buildCardManifest()` are both thin wrappers around it — extracted
+  when Card was added, since the original Button-only function already
+  contained no logic specific to Button beyond its own literal slug.
 - **Per-file `type` and `target` are explicit and exhaustive, never
   inferred from a file extension and never defaulted.** `FILE_DESTINATIONS`
   in `lib/shadcn-registry-generator.ts` is a literal lookup table from
@@ -67,11 +74,14 @@ generalization is in scope here.
   matching Button's literal imports, which only worked because the POC's
   test project's default aliases happened to line up).
 - **Host requirements never leak as an installable dependency.**
-  `hostRequirements` (`react`, `react-dom`, `next`) is rendered only into
-  the shadcn item's free-text `docs` field, never into `dependencies` —
-  preserving the same canonical-only discipline already established for
-  `/registry.json` (`lib/seo.test.ts` guards that route; this layer
-  doesn't touch that route at all).
+  `hostRequirements` is rendered only into the shadcn item's free-text
+  `docs` field, never into `dependencies` — preserving the same
+  canonical-only discipline already established for `/registry.json`
+  (`lib/seo.test.ts` guards that route; this layer doesn't touch that
+  route at all). The actual list differs per component, derived from real
+  source, not copied between entries: Button's is `["react", "react-dom",
+  "next"]` (it imports `next/link`); Card's is `["react", "react-dom"]`
+  only, since Card has no Next.js import of its own.
 
 ## Generated vs. committed
 
@@ -119,10 +129,10 @@ change is made in this pass.
 
 Served as static files under `public/r/`, at `/r/{name}.json`:
 production shape `https://skrewww.dev/r/{name}.json` (per
-`source-of-truth.md`'s domain table), currently `/r/foundation.json` and
-`/r/button.json`. This coexists with `/registry.json` at the root — a
-different path, a different purpose (shadcn CLI consumption vs. the
-existing public registry feed) — with zero changes to
+`source-of-truth.md`'s domain table), currently `/r/foundation.json`,
+`/r/button.json`, and `/r/card.json`. This coexists with `/registry.json`
+at the root — a different path, a different purpose (shadcn CLI
+consumption vs. the existing public registry feed) — with zero changes to
 `app/registry.json/route.ts`, `lib/registry-public.ts`, or
 `PublicRegistryMetadata.schemaVersion` (still `1.4.0`). Existing
 `/registry.json` consumers are unaffected.
@@ -258,3 +268,58 @@ approximation:
 - **`.sr-only`** utility — present, visually hidden, accessible.
 - **Local `box-sizing: border-box`** — confirmed load-bearing on its own
   with the consumer's ambient reset removed.
+
+## Card added to distribution — 2026-08-09
+
+Card became the second real component (after Button) distributed through
+this layer, reusing the identical mechanism with no architectural change.
+
+**Manifest facts (`/r/card.json`):**
+- `name: "card"`, `type: "registry:ui"`
+- `dependencies: []` — Card has no third-party npm package need of its own
+- `registryDependencies: ["@skrewww/foundation"]` — Foundation resolves
+  separately via its own registry dependency, exactly as it does for
+  Button
+- `docs` states host requirements as `react, react-dom` only — unlike
+  Button, Card has no `next/link` import, so `next` is correctly absent
+- Transports exactly three files, each carrying an explicit `path`,
+  `content`, `type`, and `target`: `components/ui/Card.tsx`,
+  `components/ui/card.module.css`, `lib/cn.ts`
+- The canonical-only `hostRequirements` field stays absent from the
+  public shadcn payload — same discipline already established for
+  Button and for `/registry.json`
+
+**Generator change**: `buildButtonManifest()`'s body (already free of any
+logic specific to Button beyond its own literal slug) was extracted into
+a private, generic `buildComponentManifest(slug)`; `buildButtonManifest()`
+and the new `buildCardManifest()` are both thin wrappers over it.
+`FILE_DESTINATIONS` gained two literal entries for Card's two files —
+still an explicit, fail-closed lookup table, no fallback added. No public
+registry schema-version bump was needed: adding a second component to
+`/r/*.json` introduced no new field or structural change to the shape.
+
+**Production verification (2026-08-09)**: `https://skrewww.com/r/card.json`
+passed all 13 checks run against it after deployment — HTTP 200,
+`application/json` content type, a valid non-empty registry-item shape,
+correct `name`/`type`, an exact `dependencies`/`registryDependencies`
+match, correct `docs` wording, exactly the three expected files each
+carrying all four required fields, zero occurrences of the string
+`hostRequirements` anywhere in the raw payload, and the live payload
+byte-identical to a fresh local `buildCardManifest()` output generated
+from the exact pushed commit (`5f08d9e`). `/r/foundation.json` and
+`/r/button.json` both continued to return 200 after the deployment,
+confirming no regression to the two existing manifests.
+
+**Tier B (`scripts/smoke-test-consumer.ts`) extended, not duplicated**:
+the script now takes an optional component-name argument
+(`npm run smoke:consumer`, `npm run smoke:consumer -- button`, and
+`npm run smoke:consumer -- card`), defaulting to `button` for backward
+compatibility. An unsupported component name fails immediately, before
+any scaffold or network work, listing the supported components in the
+error message. `--keep` continues to work with a component argument
+present. Card's Tier B run passed end-to-end; Button's Tier B run (both
+the default-arg and the explicit `-- button` form) still passes unchanged
+after the parameterization. All shared orchestration — dynamic port, the
+async `spawn`-based subprocess runner that prevents the same-process
+registry-server deadlock, OS-temp isolation, npm-dependency-delta
+diffing, and cleanup guarantees — was left untouched.

@@ -100,6 +100,20 @@ project scaffolding and npm/shadcn tooling. Full architecture and
 manual external-consumer verification details remain in
 [`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
 
+### Card added to shadcn distribution — 2026-08-09
+
+Card became the second component (after Button) distributed through the
+shadcn-compatible layer, reusing the same generator mechanism with no
+architectural change. `https://skrewww.com/r/card.json` passed all 13
+production verification checks (byte-identical to a local build of the
+exact deployed commit, correct manifest fields, zero `hostRequirements`
+occurrences in the public payload, `/r/foundation.json`/`/r/button.json`
+unaffected). Tier B (`npm run smoke:consumer`) now takes an optional
+component argument (`-- button` / `-- card`, defaulting to `button`), and
+both pass end-to-end. No public registry schema-version bump was needed.
+Full mechanics and verification detail in
+[`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
+
 ### Implemented inventory by category
 
 | Category | Components |
