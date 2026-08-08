@@ -364,13 +364,28 @@ export function Example() {
     ],
     // Proof-of-concept for the planned CLI-resolution schema — derived directly
     // from components/ui/Card.tsx and card.module.css, not guessed.
-    dependencies: ["react"],
+    // Real dependency contract, verified against actual source (2026-08-09):
+    // Card's own source imports no third-party npm package of its own —
+    // "react"/"react-dom" are host/framework assumptions, not packages the
+    // registry should install (see `hostRequirements`). Unlike Button, Card
+    // has no next/link import, so "next" is correctly excluded here.
+    dependencies: [],
+    hostRequirements: ["react", "react-dom"],
+    // lib/cn.ts (class-name join helper) — copied alongside Card, never a
+    // public Skrewww registry component in its own right.
+    internalDependencies: ["lib/cn.ts"],
+    // The shared Foundation resource — does not have its own registry entry
+    // yet; declared here because it is Card's real, verified dependency
+    // regardless of whether a transport manifest exists yet.
+    registryDependencies: ["@skrewww/foundation"],
     coreDependencies: ["tokens", "shape", "surface"],
     files: ["components/ui/Card.tsx", "components/ui/card.module.css"],
     cssTokens: [
+      "--glass-backdrop-filter-md",
       "--semantic-text-primary",
       "--semantic-text-secondary",
       "--shape-radius-container",
+      "--squircle-clip-path-container",
       "--surface-border-default",
       "--surface-fill-default",
       "--surface-shadow-raised",
