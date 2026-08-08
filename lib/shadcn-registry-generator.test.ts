@@ -5,6 +5,7 @@ import { componentRegistry } from "@/lib/component-registry";
 import {
   assertValidShadcnRegistryItem,
   buildButtonManifest,
+  buildCardManifest,
   buildFoundationManifest,
   classifyFile,
   extractFoundationCss,
@@ -23,6 +24,12 @@ function buttonEntry() {
   return entry;
 }
 
+function cardEntry() {
+  const entry = componentRegistry.find((candidate) => candidate.slug === "card");
+  if (!entry) throw new Error("card entry missing from canonical registry — fix the test fixture");
+  return entry;
+}
+
 describe("shadcn registry generator", () => {
   it("generates deterministic output for the same canonical input", () => {
     const first = JSON.stringify(buildButtonManifest());
@@ -32,6 +39,10 @@ describe("shadcn registry generator", () => {
     const firstFoundation = JSON.stringify(buildFoundationManifest());
     const secondFoundation = JSON.stringify(buildFoundationManifest());
     expect(firstFoundation).toBe(secondFoundation);
+
+    const firstCard = JSON.stringify(buildCardManifest());
+    const secondCard = JSON.stringify(buildCardManifest());
+    expect(firstCard).toBe(secondCard);
   });
 
   it("transports every canonical Button file and internal dependency exactly once", () => {
@@ -105,6 +116,27 @@ describe("shadcn registry generator", () => {
   it("produces manifests that satisfy the supported shadcn registry-item structural shape", () => {
     expect(() => assertValidShadcnRegistryItem(buildFoundationManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildButtonManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildCardManifest())).not.toThrow();
+  });
+
+  it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
+    const manifest = buildCardManifest();
+    const actualPaths = manifest.files.map((file) => file.path).sort();
+    expect(actualPaths).toEqual(["components/ui/Card.tsx", "components/ui/card.module.css", "lib/cn.ts"]);
+  });
+
+  it("keeps @skrewww/foundation as Card's registryDependency, canonically and in the generated manifest", () => {
+    const entry = cardEntry();
+    expect(entry.registryDependencies ?? []).toContain("@skrewww/foundation");
+
+    const manifest = buildCardManifest();
+    expect(manifest.registryDependencies).toContain("@skrewww/foundation");
+  });
+
+  it("documents Card's host requirements as react + react-dom, without next (unlike Button)", () => {
+    const manifest = buildCardManifest();
+    expect(manifest.docs).toContain("react, react-dom");
+    expect(manifest.docs).not.toContain("next");
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

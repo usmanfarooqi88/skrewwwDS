@@ -1,10 +1,11 @@
 /**
  * Pure, importable generator for the shadcn-compatible distribution layer
- * (`/r/foundation.json`, `/r/button.json`). Every function here is a pure
- * transform of real repo files or the canonical registry — importing this
- * module performs no filesystem writes. The file-writing CLI entry point
- * lives in scripts/generate-shadcn-registry.ts, which imports the build*
- * functions below and is the only place `public/r/*.json` gets written.
+ * (`/r/foundation.json`, `/r/button.json`, `/r/card.json`). Every function
+ * here is a pure transform of real repo files or the canonical registry —
+ * importing this module performs no filesystem writes. The file-writing
+ * CLI entry point lives in scripts/generate-shadcn-registry.ts, which
+ * imports the build* functions below and is the only place
+ * `public/r/*.json` gets written.
  *
  * This generator is a second, independent distribution channel alongside
  * the still-unimplemented `@skrewww/core` + `npx skrewww` roadmap in
@@ -12,10 +13,10 @@
  * docs/architecture/shadcn-distribution.md for how the two relate.
  *
  * Scope (see docs/architecture/shadcn-distribution.md): Foundation +
- * Button only. Adding a second component later means adding entries to
- * FILE_DESTINATIONS and a new build*Manifest function — the lookup-table
- * shape here is deliberately not Button-specific, but no other component
- * is wired up in this pass.
+ * Button + Card. Adding another component means adding its file(s) to
+ * FILE_DESTINATIONS and a thin `buildXManifest() { return
+ * buildComponentManifest("x"); }` wrapper — buildComponentManifest itself
+ * is already generic across any single-component canonical entry.
  */
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -73,6 +74,14 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
   "components/ui/icons.tsx": {
     type: "registry:ui",
     target: "~/components/ui/icons.tsx",
+  },
+  "components/ui/Card.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Card.tsx",
+  },
+  "components/ui/card.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/card.module.css",
   },
   "lib/cn.ts": {
     type: "registry:lib",
@@ -190,14 +199,21 @@ export function buildFoundationManifest(): ShadcnRegistryItem {
   };
 }
 
-export function buildButtonManifest(): ShadcnRegistryItem {
-  const entry = componentRegistry.find((candidate) => candidate.slug === "button");
+/**
+ * Generic build for any single-component registry:ui manifest, driven
+ * entirely by that component's canonical entry — no component-specific
+ * logic lives here. Extracted once Button and Card needed the identical
+ * transform; add a new component by giving it a canonical entry + the
+ * relevant FILE_DESTINATIONS rows, not by writing a new build function.
+ */
+function buildComponentManifest(slug: string): ShadcnRegistryItem {
+  const entry = componentRegistry.find((candidate) => candidate.slug === slug);
   if (!entry) {
-    throw new Error('generate-shadcn-registry: canonical "button" entry not found in lib/component-registry.ts.');
+    throw new Error(`generate-shadcn-registry: canonical "${slug}" entry not found in lib/component-registry.ts.`);
   }
 
   // Transport-layer flattening happens HERE, not in the canonical model —
-  // entry.files (Button-owned) and entry.internalDependencies (private
+  // entry.files (component-owned) and entry.internalDependencies (private
   // helpers) stay separate arrays on ComponentRegistryEntry by design;
   // this is the one place they merge into a single shadcn files[] array.
   const ownedFiles = entry.files ?? [];
@@ -230,6 +246,14 @@ export function buildButtonManifest(): ShadcnRegistryItem {
     docs: `Host requirements (assumed already present, not installed by this command): ${(entry.hostRequirements ?? []).join(", ")}.`,
     files,
   };
+}
+
+export function buildButtonManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("button");
+}
+
+export function buildCardManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("card");
 }
 
 /**
