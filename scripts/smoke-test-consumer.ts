@@ -7,11 +7,17 @@
  * os.tmpdir() (never inside this repo), serves the @skrewww registry
  * locally from manifests built in-memory via lib/shadcn-registry-generator.ts
  * (no write to public/r/ — the Skrewww working tree is never touched),
- * installs @skrewww/button via the real, pinned shadcn CLI, wires and
- * verifies Foundation CSS activation, renders Button in a real page, and
- * confirms `next build` succeeds.
+ * installs the requested @skrewww component via the real, pinned shadcn
+ * CLI, wires and verifies Foundation CSS activation, renders the component
+ * in a real page using its actual public API, and confirms `next build`
+ * succeeds.
  *
- * Run: npm run smoke:consumer [-- --keep]
+ * Run: npm run smoke:consumer [-- <component>] [-- --keep]
+ * <component> defaults to "button" when omitted, for backward
+ * compatibility with the original Button-only smoke test. Currently
+ * supported: button, card (see COMPONENT_DESCRIPTORS below — adding
+ * another component means adding a descriptor there, not touching the
+ * orchestration logic itself, which is already component-agnostic).
  * --keep preserves the OS-temp working directory and prints its path
  * instead of deleting it on exit.
  *
@@ -29,17 +35,94 @@ import { createServer, type Server } from "node:http";
 import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
-import { buildButtonManifest, buildFoundationManifest, type ShadcnRegistryItem } from "../lib/shadcn-registry-generator";
+import { buildButtonManifest, buildCardManifest, buildFoundationManifest, type ShadcnRegistryItem } from "../lib/shadcn-registry-generator";
 
 const CREATE_NEXT_APP_VERSION = "16.3.0";
 const SHADCN_VERSION = "4.16.2";
 
-const KEEP = process.argv.includes("--keep");
+const cliArgs = process.argv.slice(2);
+const KEEP = cliArgs.includes("--keep");
 
 const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   foundation: buildFoundationManifest,
   button: buildButtonManifest,
+  card: buildCardManifest,
 };
+
+/**
+ * Everything that differs between components under smoke test: the static
+ * independent critical-path safety net (deliberately separate from the
+ * dynamically-derived target set — see the assertions in main() for why
+ * both exist), and a minimal consumer page exercising the component's
+ * REAL public API (never an invented compound API).
+ */
+type ComponentSmokeDescriptor = {
+  criticalPaths: string[];
+  renderHarness: () => string;
+  assertHarness: (pageSource: string) => boolean;
+  harnessAssertionLabel: string;
+};
+
+const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
+  button: {
+    criticalPaths: [
+      "components/ui/Button.tsx",
+      "components/ui/button.module.css",
+      "lib/cn.ts",
+      "components/ui/icons.tsx",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Button } from "@/components/ui/Button";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", gap: 12 }}>',
+        '      <Button variant="primary">Smoke test default</Button>',
+        '      <Button variant="primary" disabled>',
+        "        Smoke test disabled",
+        "      </Button>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Button"/.test(pageSource) && /disabled/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Button and renders default + disabled instances",
+  },
+  card: {
+    criticalPaths: ["components/ui/Card.tsx", "components/ui/card.module.css", "lib/cn.ts", "styles/skrewww-foundation.css"],
+    renderHarness: () =>
+      [
+        'import { Card } from "@/components/ui/Card";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <Card title="Smoke test" footer="Footer content">',
+        "      Smoke test body content",
+        "    </Card>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Card"/.test(pageSource) && /title="Smoke test"/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Card and renders it with a title + footer",
+  },
+};
+
+const componentArg = cliArgs.find((arg) => !arg.startsWith("--"));
+const COMPONENT_NAME = componentArg ?? "button";
+const descriptor = COMPONENT_DESCRIPTORS[COMPONENT_NAME];
+if (!descriptor) {
+  console.error(
+    `Unsupported component "${COMPONENT_NAME}" for smoke:consumer. ` +
+      `Supported components: ${Object.keys(COMPONENT_DESCRIPTORS).join(", ")}.`,
+  );
+  process.exit(1);
+}
 
 function log(line: string): void {
   console.log(line);
@@ -268,15 +351,19 @@ async function main(): Promise<void> {
   log(`Temp root: ${tmpRoot}`);
 
   try {
-    log("\n[1/13] Building manifests in-memory from the current skrewwwDS working tree (no filesystem writes to the repo)");
-    const graph = resolveGraph("button");
-    const buttonItem = graph.find((item) => item.name === "button");
-    if (!buttonItem) throw new Error("button item missing from resolved graph");
+    log(`\n[1/13] Building manifests in-memory from the current skrewwwDS working tree (no filesystem writes to the repo)`);
+    const graph = resolveGraph(COMPONENT_NAME);
+    const componentItem = graph.find((item) => item.name === COMPONENT_NAME);
+    if (!componentItem) throw new Error(`${COMPONENT_NAME} item missing from resolved graph`);
     mkdirSync(registryRDir, { recursive: true });
     for (const item of graph) {
       writeFileSync(join(registryRDir, `${item.name}.json`), JSON.stringify(item, null, 2));
     }
-    assert("manifests built for button + foundation", graph.length === 2, `graph: ${graph.map((i) => i.name).join(", ")}`);
+    assert(
+      `manifests built for ${COMPONENT_NAME} + foundation`,
+      graph.some((item) => item.name === COMPONENT_NAME) && graph.some((item) => item.name === "foundation"),
+      `graph: ${graph.map((i) => i.name).join(", ")}`,
+    );
 
     log("\n[2/13] Starting local registry server (loopback-only, dynamic port)");
     const started = await startRegistryServer(registryRoot);
@@ -284,8 +371,8 @@ async function main(): Promise<void> {
     const registryBaseUrl = started.baseUrl;
     log(`  Registry base URL: ${registryBaseUrl}`);
 
-    log("\n[3/13] Readiness check on /r/button.json");
-    await waitUntilReady(`${registryBaseUrl}/r/button.json`);
+    log(`\n[3/13] Readiness check on /r/${COMPONENT_NAME}.json`);
+    await waitUntilReady(`${registryBaseUrl}/r/${COMPONENT_NAME}.json`);
     assert("local registry server ready", true);
 
     log(`\n[4/13] Scaffolding Tailwind-free consumer (create-next-app@${CREATE_NEXT_APP_VERSION}, pinned)`);
@@ -336,8 +423,8 @@ async function main(): Promise<void> {
       ),
     );
 
-    log(`\n[7/13] shadcn@${SHADCN_VERSION} view @skrewww/button (before any files are written)`);
-    const { stdout: viewOutput } = await run("npx", [`shadcn@${SHADCN_VERSION}`, "view", "@skrewww/button"], {
+    log(`\n[7/13] shadcn@${SHADCN_VERSION} view @skrewww/${COMPONENT_NAME} (before any files are written)`);
+    const { stdout: viewOutput } = await run("npx", [`shadcn@${SHADCN_VERSION}`, "view", `@skrewww/${COMPONENT_NAME}`], {
       cwd: consumerDir,
       captureStdout: true,
     });
@@ -349,7 +436,7 @@ async function main(): Promise<void> {
     }
     assert("view resolves to a JSON array with one item", Array.isArray(viewJson) && viewJson.length === 1);
     const viewedItem = (viewJson as ShadcnRegistryItem[])[0];
-    assert("view item name is button", viewedItem.name === "button");
+    assert(`view item name is ${COMPONENT_NAME}`, viewedItem.name === COMPONENT_NAME);
     assert(
       "view item declares @skrewww/foundation as a registryDependency",
       viewedItem.registryDependencies.includes("@skrewww/foundation"),
@@ -358,8 +445,8 @@ async function main(): Promise<void> {
     log("\n[8/13] Pre-add filesystem snapshot");
     const preAddSnapshot = snapshotDir(consumerDir);
 
-    log(`\n[9/13] shadcn@${SHADCN_VERSION} add @skrewww/button`);
-    await run("npx", [`shadcn@${SHADCN_VERSION}`, "add", "@skrewww/button", "--yes"], { cwd: consumerDir });
+    log(`\n[9/13] shadcn@${SHADCN_VERSION} add @skrewww/${COMPONENT_NAME}`);
+    await run("npx", [`shadcn@${SHADCN_VERSION}`, "add", `@skrewww/${COMPONENT_NAME}`, "--yes"], { cwd: consumerDir });
 
     log("\n[10/13] Post-add filesystem + package.json snapshot, diff, and assertions");
     const postAddSnapshot = snapshotDir(consumerDir);
@@ -383,14 +470,7 @@ async function main(): Promise<void> {
       missingExpected.length ? `missing: ${missingExpected.join(", ")}` : "all present",
     );
 
-    const criticalPaths = [
-      "components/ui/Button.tsx",
-      "components/ui/button.module.css",
-      "lib/cn.ts",
-      "components/ui/icons.tsx",
-      "styles/skrewww-foundation.css",
-    ];
-    for (const criticalPath of criticalPaths) {
+    for (const criticalPath of descriptor.criticalPaths) {
       assert(`critical path exists on disk: ${criticalPath}`, existsSync(join(consumerDir, criticalPath)));
     }
 
@@ -433,28 +513,10 @@ async function main(): Promise<void> {
     const globalsIdx = wiredLayoutSrc.search(globalsImportPattern);
     assert("Foundation CSS import precedes consumer globals.css import", foundationIdx !== -1 && foundationIdx < globalsIdx);
 
-    writeFileSync(
-      join(consumerDir, "app", "page.tsx"),
-      [
-        'import { Button } from "@/components/ui/Button";',
-        "",
-        "export default function Home() {",
-        "  return (",
-        '    <div style={{ padding: 40, display: "flex", gap: 12 }}>',
-        '      <Button variant="primary">Smoke test default</Button>',
-        '      <Button variant="primary" disabled>',
-        "        Smoke test disabled",
-        "      </Button>",
-        "    </div>",
-        "  );",
-        "}",
-        "",
-      ].join("\n"),
-    );
+    writeFileSync(join(consumerDir, "app", "page.tsx"), descriptor.renderHarness());
     assert(
-      "consumer page imports Button and renders default + disabled instances",
-      /from "@\/components\/ui\/Button"/.test(readFileSync(join(consumerDir, "app", "page.tsx"), "utf8")) &&
-        /disabled/.test(readFileSync(join(consumerDir, "app", "page.tsx"), "utf8")),
+      descriptor.harnessAssertionLabel,
+      descriptor.assertHarness(readFileSync(join(consumerDir, "app", "page.tsx"), "utf8")),
     );
 
     log("\n[12/13] npm run build");
