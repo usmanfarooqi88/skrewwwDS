@@ -70,7 +70,11 @@ describe("project configuration", () => {
 
   it("uses default .next for production build scripts", () => {
     const pkg = JSON.parse(readRootFile("package.json"));
-    expect(pkg.scripts.build).toBe("next build");
+    // "build" gained a "generate:registry" pre-step (writes public/r/*.json
+    // before next build — see docs/architecture/shadcn-distribution.md) but
+    // still targets the default .next dir, same as before; the real
+    // invariant this test guards is the second assertion below.
+    expect(pkg.scripts.build).toBe("npm run generate:registry && next build");
     expect(pkg.scripts["build:e2e"]).not.toContain("npm run build");
   });
 

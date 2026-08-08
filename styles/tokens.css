@@ -95,6 +95,37 @@
 
   --opacity-disabled: var(--primitive-opacity-disabled);
 
+  /*
+   * ══ Foundation boundary (verified 2026-08-08) ══
+   *
+   * Everything above this line in this file — Primitive, Semantic, Brand,
+   * the Shape/Surface aliased defaults, and Control sizing — is the
+   * universal Foundation tier: needed by every component, owned by none
+   * of them individually. The Shape mode blocks ([data-skrewww-shape=...],
+   * further down this file) and Surface mode blocks
+   * ([data-skrewww-surface=...], further down still) are ALSO part of
+   * this Foundation tier, even though they're physically distant in this
+   * file — they override the same universal aliases declared here, not
+   * anything component-specific.
+   *
+   * Everything below this line, from "Form control geometry" onward
+   * through the ~28 named "<Component> geometry" blocks, is
+   * component-specific: it belongs to one component (or a small family,
+   * e.g. Checkbox/Radio/Switch/Textarea share "Form control geometry"),
+   * not to every component. Button does not read any custom property
+   * from any of these component-geometry blocks.
+   *
+   * This split is a recorded fact, not a new design: it is exactly the
+   * boundary this file's own section comments already draw. Verified
+   * with a direct grep before writing this comment — no universal-tier
+   * declaration above this line, nor any Shape/Surface mode override,
+   * references a component-specific custom property. The dependency
+   * direction only ever runs component-geometry → universal, never the
+   * reverse, which is what makes a future physical split into a
+   * standalone Foundation stylesheet safe whenever that's undertaken —
+   * not attempted in this slice.
+   */
+
   /* ── Form control geometry [TEMPORARY] ── */
   --control-checkbox-size: 1rem;
   --control-checkbox-radius-max: 4px;
@@ -546,6 +577,7 @@
 }
 
 /* ── Shape modes ── */
+/* Foundation tier — see the "Foundation boundary" note near --opacity-disabled above. */
 [data-skrewww-shape="sharp"] {
   --shape-radius-control: 0px; /* [VERIFIED] Sharp mode intent */
   --shape-radius-container: 0px; /* [VERIFIED] Sharp mode intent */
@@ -752,6 +784,7 @@
 }
 
 /* ── Surface modes ── */
+/* Foundation tier — see the "Foundation boundary" note near --opacity-disabled above. */
 [data-skrewww-surface="flat"] {
   --surface-fill-default: var(--semantic-surface-default);
   --surface-fill-control: var(--semantic-surface-default);

@@ -69,23 +69,82 @@ export type ComponentRegistryEntry = {
   /**
    * CLI-resolution fields for the planned "npx skrewww" copy-owned
    * distribution model (see skrewww-claude-project-instructions.md's
-   * Distribution Model section) — the CLI does not exist yet. All five
-   * are optional and intentionally left undefined on most entries: only
-   * populate with real values derived from a component's actual source
-   * (imports, files, CSS custom properties), never guessed. See
+   * Distribution Model section) — the CLI does not exist yet. All fields
+   * below are optional and intentionally left undefined on most entries:
+   * only populate with real values derived from a component's actual
+   * source (imports, files, CSS custom properties), never guessed. See
    * docs/project-status.md for which entries currently have real data.
+   *
+   * These five categories answer five genuinely different questions about
+   * what "installing" this component requires, and are kept distinct on
+   * purpose rather than flattened into one file list — a generated
+   * transport manifest (e.g. a shadcn-shaped registry item) MAY flatten
+   * `files` + `internalDependencies` into its own single `files[]` array,
+   * because that flattening is a transport-format concern; the canonical
+   * model here must not do that flattening itself:
+   *
+   * - `files` — this component's OWN source. Its identity as a registry
+   *   item.
+   * - `internalDependencies` — private/internal files this component's
+   *   own source imports (a shared helper, an icon primitive) that must
+   *   travel alongside it but are never a public, independently
+   *   installable Skrewww component in their own right — they have no
+   *   registry slug and never will.
+   * - `registryDependencies` — slugs/identifiers of OTHER installable
+   *   Skrewww registry items this component requires (including the
+   *   shared Foundation resource). Each one has its own independent
+   *   existence, versioning, and could be installed on its own — unlike
+   *   `internalDependencies`.
+   * - `dependencies` — real, third-party npm packages that must be
+   *   installed because this component's own source uniquely needs them.
+   *   Deliberately excludes the host framework itself — see
+   *   `hostRequirements` for that.
+   * - `hostRequirements` — host/framework packages this component
+   *   assumes are already present in the consumer's project (e.g.
+   *   `react`, `react-dom`, and currently `next` for its internal-link
+   *   navigation). Never something a CLI should install on the
+   *   component's behalf — attempting to would be redundant at best and
+   *   a version-conflict risk at worst.
    */
-  /** npm packages this component's source actually imports (e.g. "react", "next"). */
-  dependencies?: string[];
-  /** Which @skrewww/core-covered layers this component's CSS relies on ("tokens", "shape", "surface"). */
-  coreDependencies?: string[];
-  /** This component's own source files, relative to the repo root. */
+  /** This component's own source files, relative to the repo root — the registry item's own identity. */
   files?: string[];
+  /** Private/internal files copied alongside this component; never a public, independently installable Skrewww registry item on their own. */
+  internalDependencies?: string[];
+  /** Slugs of other Skrewww registry items this component requires (e.g. the shared Foundation resource) — each independently installable and versioned. */
+  registryDependencies?: string[];
+  /** Real third-party npm packages this component's own source uniquely needs — excludes host/framework packages (see `hostRequirements`). */
+  dependencies?: string[];
+  /** Host/framework packages this component assumes are already present in the consumer's project — never installed on the component's behalf. */
+  hostRequirements?: string[];
+  /** Which @skrewww/core-covered layers this component's CSS relies on ("tokens", "shape", "surface") — the future @skrewww/core npm-package consumption path, distinct from `registryDependencies`' copy-owned CLI path. */
+  coreDependencies?: string[];
   /** CSS custom property names (with -- prefix) actually referenced in this component's stylesheet(s). */
   cssTokens?: string[];
   /** Minimum @skrewww/core version required, once that package exists and is versioned. */
   coreVersion?: string;
 };
+
+/**
+ * Canonical registry SCHEMA version — versions the shape of
+ * `ComponentRegistryEntry` itself (its fields), not any individual
+ * component's own `version`, and not the derived public registry's
+ * `PublicRegistryMetadata.schemaVersion` in lib/registry-public.ts. All
+ * three are independent and must be bumped separately:
+ *
+ * - A component's `version` field changes when THAT component's own
+ *   implementation changes.
+ * - `CANONICAL_REGISTRY_SCHEMA_VERSION` changes when the shape of this
+ *   TypeScript type changes (a field is added, removed, or its meaning
+ *   changes) — e.g. this was never bumped when `dependencies`/`files`/
+ *   `cssTokens`/`coreVersion` were first added, which is exactly the gap
+ *   this constant closes going forward.
+ * - `PublicRegistryMetadata.schemaVersion` versions the DERIVED, public
+ *   `/registry.json` output shape (`PublicRegistryEntry`), which may
+ *   expose only a subset of canonical fields and evolve on its own
+ *   schedule — a canonical schema change does not require a public
+ *   schema bump, and vice versa.
+ */
+export const CANONICAL_REGISTRY_SCHEMA_VERSION = "1.0.0";
 
 import { calendarRegistryEntries } from "@/lib/component-registry-calendar";
 import { containersRegistryEntries } from "@/lib/component-registry-containers";
@@ -139,7 +198,22 @@ export const componentRegistry: ComponentRegistryEntry[] = [
     ],
     // Proof-of-concept for the planned CLI-resolution schema — derived directly
     // from components/ui/Button.tsx and button.module.css, not guessed.
-    dependencies: ["react", "next"],
+    // Real dependency contract, verified against actual source (2026-08-08):
+    // Button's own source imports no third-party npm package of its own —
+    // "react"/"react-dom"/"next" are host/framework assumptions, not
+    // packages the registry should install (see `hostRequirements`).
+    dependencies: [],
+    hostRequirements: ["react", "react-dom", "next"],
+    // lib/cn.ts (class-name join helper) and the `LoadingSpinner` export
+    // from components/ui/icons.tsx — copied alongside Button, never public
+    // Skrewww registry components in their own right.
+    internalDependencies: ["lib/cn.ts", "components/ui/icons.tsx"],
+    // The shared Foundation resource (universal Primitive/Semantic/Brand/
+    // Shape/Surface/control-sizing tier + the shared accessibility utility
+    // in styles/foundation.css) — does not have its own registry entry
+    // yet; declared here because it is Button's real, verified dependency
+    // regardless of whether a transport manifest exists yet.
+    registryDependencies: ["@skrewww/foundation"],
     coreDependencies: ["tokens", "shape", "surface"],
     files: ["components/ui/Button.tsx", "components/ui/button.module.css"],
     cssTokens: [
@@ -153,6 +227,7 @@ export const componentRegistry: ComponentRegistryEntry[] = [
       "--control-padding-x-lg",
       "--control-padding-x-md",
       "--control-padding-x-sm",
+      "--glass-backdrop-filter-sm",
       "--opacity-disabled",
       "--semantic-action-danger",
       "--semantic-action-danger-hover",
@@ -171,6 +246,7 @@ export const componentRegistry: ComponentRegistryEntry[] = [
       "--semantic-text-inverse",
       "--semantic-text-primary",
       "--shape-radius-control",
+      "--squircle-clip-path-control",
       "--surface-fill-control",
     ],
     relatedComponents: [

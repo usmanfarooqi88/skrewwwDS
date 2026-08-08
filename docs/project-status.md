@@ -25,6 +25,63 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 
 **All other 60 registry entries (including the three Banking pilot components) have these five fields absent/undefined.** Populating the full registry against this schema is a separate, not-yet-scheduled pass — do not backfill it with inferred or plausible-sounding values; derive each entry's real `dependencies`/`files`/`cssTokens` from its actual source the same way Button and Card were done.
 
+### `dependencies` semantic correction — schema 1.3.0 → 1.4.0 (2026-08-08)
+
+**`registry.json`'s schema version bumped to 1.4.0.** Unlike the 1.2.0 → 1.3.0 bump (a purely additive new field), this one is a **semantic contract change to an existing field's meaning**, not a JSON-shape change — `PublicRegistryEntry.dependencies` is still `string[] | undefined`, but what it represents has changed:
+
+- **Old meaning (1.2.0–1.3.0):** npm packages directly imported by the component's source, **including host/framework packages** such as React and Next.js. Under this definition, Button's `dependencies: ["react", "next"]` was accurate — its source does import from both.
+- **New meaning (1.4.0):** third-party npm packages the distribution/install layer should actually add, **excluding host/framework baseline packages**, which are represented separately in the canonical registry's `hostRequirements` field (see below). Button's `dependencies` is now `[]`, since it has no third-party package need of its own; `react`, `react-dom`, and `next` moved to `hostRequirements` instead.
+
+This was treated as a version-bump-worthy contract change rather than a silent data correction because a consumer relying on the original documented meaning (e.g., "install everything in `dependencies`, including the framework") would now see materially different data under the same field name — the JSON shape never moved, but the externally observable meaning did.
+
+**`hostRequirements` stays canonical-only for now — not exposed in `/registry.json`.** It exists on `ComponentRegistryEntry` (`lib/component-registry.ts`) and is populated for Button (`["react", "react-dom", "next"]`), but is deliberately not added to `PublicRegistryEntry` in this pass, following the same discipline already established for the 1.2.0 fields: wait for at least one more real component to populate it, or an actual distribution consumer to need it, before committing to a public shape. `lib/seo.test.ts` asserts the serialized public registry never contains the string `"hostRequirements"`, guarding against an accidental leak.
+
+**Three version concepts stay independent — do not conflate them:**
+- A component's own `version` field (e.g. Button's `"0.1.0-beta"`) — changes when that component's implementation changes.
+- `CANONICAL_REGISTRY_SCHEMA_VERSION` (`lib/component-registry.ts`, currently `"1.0.0"`) — versions the shape of the canonical `ComponentRegistryEntry` type itself.
+- `PublicRegistryMetadata.schemaVersion` (`lib/registry-public.ts`, now `"1.4.0"`) — versions the derived, public `/registry.json` output shape and its documented field semantics. This is the one this section is about; the other two are unaffected by it.
+
+### shadcn-compatible distribution layer — Foundation + Button (2026-08-08)
+
+A shadcn/ui-compatible transport layer shipped for Foundation + Button
+only, generated from the canonical registry rather than hand-maintained.
+Proven end-to-end beforehand via a POC: a real `npx shadcn@latest add
+@skrewww/button` install into a fresh, Tailwind-free `create-next-app`
+project succeeded with zero manual repair — correct file placement,
+Foundation auto-resolved once via `registryDependencies`, correct
+Shape/Surface mode behavior, working `.sr-only`, no unexpected npm
+packages, passing lint/typecheck/build. Full detail, mapping rules, and
+follow-ups in
+[`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
+
+**This is implemented independently from the previously documented
+`@skrewww/core` + `npx skrewww` roadmap** (see
+`skrewww-claude-project-instructions.md`'s "Distribution Model" section,
+still unimplemented). The shadcn layer is, as of this date, the first
+Skrewww distribution mechanism actually proven working end-to-end; the
+long-term relationship between the two roadmaps has not been decided.
+
+Key facts:
+- New: `lib/shadcn-registry-generator.ts` (pure, tested generation logic),
+  `scripts/generate-shadcn-registry.ts` (file-writing CLI entry point,
+  wired into `npm run build` via a new `generate:registry` script).
+- Output (`public/r/foundation.json`, `public/r/button.json`, served at
+  `/r/{name}.json`) is generated at build time and gitignored, not
+  committed — same treatment as `/registry.json`, which this feature does
+  not modify.
+- No canonical schema change: `lib/component-registry.ts`,
+  `CANONICAL_REGISTRY_SCHEMA_VERSION`, `lib/registry-public.ts`, and
+  `PublicRegistryMetadata.schemaVersion` (`"1.4.0"`) are all untouched.
+- Two known follow-ups recorded but deliberately unresolved: `icons.tsx`
+  transport coupling (Button ships the whole file for one export) and a
+  consumer-side ESLint warning divergence — see the architecture doc for
+  the measured numbers. Neither `icons.tsx` nor any ESLint config changed
+  in this pass.
+- No CI added. This repo has no `.github/workflows/` yet; drift
+  protection for this feature relies on the existing local
+  `npm run test:all` gate (`test` validates the generator's pure
+  functions, `build` runs real generation).
+
 ### Implemented inventory by category
 
 | Category | Components |

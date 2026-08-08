@@ -1,0 +1,30 @@
+/**
+ * Skrewww Foundation — shared accessibility utilities.
+ *
+ * Distinct from styles/tokens.css (CSS custom properties: Primitive,
+ * Semantic, Brand, Shape, Surface, control-sizing tiers). This file holds
+ * plain CSS classes that are part of the same universal Foundation tier —
+ * needed by many components, owned by no single one, and previously living
+ * only inside the docs application's own app/globals.css, which made their
+ * correctness depend on this being a Next.js site rather than being a
+ * portable Skrewww resource. A fresh external project consuming a
+ * distributed Skrewww component (e.g. @skrewww/button) needs this file
+ * too, the same way it needs styles/tokens.css.
+ *
+ * Do not duplicate .sr-only into individual component CSS Modules — every
+ * component that needs visually-hidden-but-accessible text (Button,
+ * Badge, Spinner, FormField, Dialog, and others) references this one,
+ * global, unscoped class by name.
+ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

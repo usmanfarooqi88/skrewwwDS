@@ -6,6 +6,11 @@ node_modules/
 .next-playwright/
 out/
 
+# Generated shadcn distribution manifests (scripts/generate-shadcn-registry.ts) —
+# derived from lib/component-registry.ts + styles/tokens.css + styles/foundation.css,
+# never hand-edited. See docs/architecture/shadcn-distribution.md.
+public/r/
+
 # Production
 build/
 dist/
