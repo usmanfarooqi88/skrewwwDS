@@ -51,13 +51,17 @@ describe("SEO infrastructure", () => {
     const registry = getPublicRegistry();
     const serialized = serializePublicRegistry();
 
-    expect(registry.metadata.schemaVersion).toBe("1.3.0");
+    expect(registry.metadata.schemaVersion).toBe("1.4.0");
     expect(registry.metadata.canonicalBaseUrl).toBe(siteConfig.origin);
     expect(registry.metadata.implementedComponentCount).toBe(getImplementedComponentCount());
     expect(serialized).not.toContain("localhost");
     expect(serialized).not.toContain("TextInputControl");
     expect(serialized).not.toContain("TextareaControl");
     expect(serialized).not.toContain("SelectControl");
+    // hostRequirements is canonical-only for now (see docs/project-status.md's
+    // 1.4.0 entry) — not yet a proven-stable public field, deliberately kept
+    // out of /registry.json until a second real component populates it.
+    expect(serialized).not.toContain("hostRequirements");
     expect(JSON.parse(serialized).metadata.designSystemVersion).toBeTruthy();
   });
 

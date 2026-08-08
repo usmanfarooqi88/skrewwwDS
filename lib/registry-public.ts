@@ -42,6 +42,18 @@ export type PublicRegistryEntry = {
    * CLI-resolution fields for the planned "npx skrewww" distribution
    * model — the CLI does not exist yet. Undefined on most entries; only
    * populated where derived from real source (see docs/project-status.md).
+   *
+   * `dependencies` semantics changed in schema 1.4.0 (see
+   * PublicRegistryMetadata.schemaVersion below and docs/project-status.md
+   * for the dated record): it previously meant "npm packages this
+   * component's source actually imports, including host/framework
+   * packages such as React and Next.js" (e.g. Button's dependencies were
+   * `["react", "next"]`). It now means "third-party npm packages the
+   * distribution/install layer should add, excluding host/framework
+   * baseline packages" (Button's are now `[]`, since it has no such
+   * package — react/react-dom/next are host requirements, tracked
+   * separately in the canonical registry's `hostRequirements` field,
+   * which is deliberately NOT exposed here yet — see project-status.md).
    */
   dependencies?: string[];
   coreDependencies?: string[];
@@ -51,7 +63,7 @@ export type PublicRegistryEntry = {
 };
 
 export type PublicRegistryMetadata = {
-  schemaVersion: "1.3.0";
+  schemaVersion: "1.4.0";
   designSystemVersion: string;
   generatedFrom: "lib/component-registry.ts";
   canonicalBaseUrl: string;
@@ -150,7 +162,7 @@ export function getPublicRegistry(): PublicRegistry {
 
   return {
     metadata: {
-      schemaVersion: "1.3.0",
+      schemaVersion: "1.4.0",
       designSystemVersion: siteConfig.designSystemVersion,
       generatedFrom: "lib/component-registry.ts",
       canonicalBaseUrl: siteConfig.origin,
