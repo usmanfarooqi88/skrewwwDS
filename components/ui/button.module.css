@@ -1,4 +1,9 @@
 .button {
+  /* Explicit, not assumed: this repo's docs shell gets border-box from
+     Tailwind's Preflight, but Button must not depend on that ambient
+     reset to size correctly in a fresh project that doesn't have
+     Tailwind — height/padding/border math below requires it directly. */
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
