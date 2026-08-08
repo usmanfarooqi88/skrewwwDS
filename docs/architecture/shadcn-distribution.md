@@ -152,3 +152,109 @@ existing public registry feed) — with zero changes to
   (via `test` + `build`), run locally/manually. Adding a first CI
   workflow is a separate, repository-wide decision, not made as a side
   effect of this feature.
+
+## Verified External Consumer Test — 2026-08-09
+
+Distinct from the original POC section above (which used a locally
+served registry): this pass installed `@skrewww/button` from the **live
+production registry** (`https://skrewww.com/r/{name}.json`) into a
+brand-new, genuinely Tailwind-free `create-next-app` project, with real
+browser interaction testing (not just static screenshots).
+
+**Outcome: PASS WITH DOCUMENTED TOOLING LIMITATION.** The limitation
+found is upstream `shadcn` CLI behavior (`init` requiring a Tailwind
+config), not a defect in the `@skrewww` registry or transport layer —
+the registry itself, Foundation dependency resolution, file placement,
+and runtime behavior all validated cleanly.
+
+### Tailwind-free limitation
+
+`shadcn` CLI **4.16.2**'s `init` command hard-requires an existing
+Tailwind CSS configuration and refuses to proceed without one —
+confirmed failing identically across all three `--base` options (`base`,
+`radix`, `aria`):
+
+```
+- Validating Tailwind CSS.
+✖ Validating Tailwind CSS.
+No Tailwind CSS configuration found... Install Tailwind CSS then try again.
+```
+
+Zero side effects from the failed attempts (`package.json` and file tree
+byte-identical before/after). **Tailwind-free consumers must skip `init`
+entirely** and hand-author `components.json` instead. Minimal config
+that worked, exactly as used in this test:
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "registries": {
+    "@skrewww": "https://skrewww.com/r/{name}.json"
+  }
+}
+```
+
+### Foundation auto-resolution
+
+`npx shadcn@latest add @skrewww/button` automatically resolved and
+installed `@skrewww/foundation` via its `registryDependencies` entry —
+no separate `add @skrewww/foundation` command was needed.
+
+### Installed file targets (verified exact paths)
+
+- `components/ui/Button.tsx`
+- `components/ui/button.module.css`
+- `lib/cn.ts`
+- `components/ui/icons.tsx`
+- `styles/skrewww-foundation.css` (Foundation CSS target)
+
+### No unexpected npm packages
+
+`package.json` was diffed before `shadcn add` and after — identical.
+Zero new npm packages were installed as a side effect of the `add`
+command.
+
+### Build and runtime
+
+Verified passing under **Next.js 16.3.0 / React 19.2.8** in the fresh
+consumer app: `next build` compiled, typechecked, and generated static
+output successfully.
+
+### Runtime verification coverage
+
+All confirmed rendering correctly in the fresh consumer, via real
+browser interaction (not just static screenshots) — computed
+`getComputedStyle` values and genuine DOM events, not visual
+approximation:
+
+- **Rounded** and **Squircle** shape modes — `border-radius`/`clip-path`
+  checked directly (Rounded: `6px` / `none`; Squircle: `8px` / a
+  resolved 34-point `polygon(...)`, confirming the superellipse geometry
+  genuinely resolves in a real consumer browser, not just the source
+  repo).
+- **Flat** and **Glass** surface modes.
+- **Hover** state — confirmed via `:hover` match + computed
+  `background-color` change.
+- **Focus-visible** state — confirmed via real `Tab` keypresses +
+  `:focus-visible` match + computed outline.
+- **Disabled** state — confirmed a real click attempt does not fire the
+  handler, `pointer-events: none` applied.
+- **`.sr-only`** utility — present, visually hidden, accessible.
+- **Local `box-sizing: border-box`** — confirmed load-bearing on its own
+  with the consumer's ambient reset removed.
