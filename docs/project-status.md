@@ -82,6 +82,24 @@ Key facts:
   `npm run test:all` gate (`test` validates the generator's pure
   functions, `build` runs real generation).
 
+### Automated external-consumer smoke test — 2026-08-09
+
+`npm run smoke:consumer` is now implemented as the automated Tier B
+distribution regression test. It scaffolds a fresh Tailwind-free
+Next.js consumer in OS temp storage, serves locally generated Skrewww
+registry manifests, verifies `@skrewww/button` resolution through
+shadcn, recursively confirms `@skrewww/foundation` installation,
+validates expected file placement and npm dependency delta, wires
+Foundation CSS, renders Button in a real consumer page, and requires
+`next build` to pass. The first verified run passed end-to-end in ~45
+seconds with no unexpected filesystem or package changes.
+
+The smoke test is intentionally not part of `npm run test:all` because
+it is a slower external-consumer integration check involving fresh
+project scaffolding and npm/shadcn tooling. Full architecture and
+manual external-consumer verification details remain in
+[`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
+
 ### Implemented inventory by category
 
 | Category | Components |
