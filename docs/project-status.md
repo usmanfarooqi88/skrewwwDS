@@ -114,6 +114,31 @@ both pass end-to-end. No public registry schema-version bump was needed.
 Full mechanics and verification detail in
 [`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
 
+### Text Input, Form Field, and Validation Message added to shadcn distribution — 2026-08-09
+
+Three form-layer components — Text Input, Form Field, and Validation Message —
+became the third milestone for the shadcn distribution layer, proving the
+multi-hop registry dependency chain and npm-package resolution in a real scenario.
+All three endpoints (`https://skrewww.com/r/text-input.json`, `/r/form-field.json`,
+`/r/validation-message.json`) passed production verification — HTTP 200, valid JSON,
+correct manifest fields, byte-identical to the deployed commit (`5e3a2f0`),
+and all prior endpoints (`/r/foundation.json`, `/r/button.json`, `/r/card.json`)
+remained unaffected. Tier B smoke test (`npm run smoke:consumer -- text-input`)
+passed end-to-end: Text Input's dependency chain auto-resolved Form Field and
+Validation Message; `@phosphor-icons/react` installed as the only net-new npm
+package (Validation Message's real dependency); shared `lib/cn.ts` across all
+three components resolved to a single final file; consumer build succeeded.
+Verified facts:
+
+- **Dependency chain**: Text Input → Form Field → Validation Message → @phosphor-icons/react + Foundation
+- **First real npm package in the layer**: Validation Message's `dependencies: ["@phosphor-icons/react"]` (no prior manifest had non-empty `dependencies`)
+- **Shared file resolution**: `lib/cn.ts` transported by all three manifests, installed once
+- **No regression**: All 6 endpoints now live; no prior regression
+- **No schema bump needed**: Three-component dependency chain fits existing registry-item shape
+
+Full detail in
+[`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
+
 ### Implemented inventory by category
 
 | Category | Components |

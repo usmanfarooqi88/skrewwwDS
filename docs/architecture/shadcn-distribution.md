@@ -26,15 +26,16 @@ this layer.
 
 ## Scope of this pass
 
-Foundation + Button + Card. The mechanism (generator, lookup table,
-extraction) is structurally able to support more components — adding one
-means adding its files to `lib/component-registry.ts` (already the
-convention), an entry per new file to `FILE_DESTINATIONS` in
-`lib/shadcn-registry-generator.ts`, and a thin `buildXManifest()` wrapper
-around the generic `buildComponentManifest(slug)` (extracted when Card
-was added — see the Card section below) — but no additional component
-beyond these three, native CLI, community registry infrastructure, or
-Vite/Remix generalization is in scope here.
+Foundation + Button + Card + Text Input + Form Field + Validation Message.
+The mechanism (generator, lookup table, extraction) is structurally able
+to support more components — adding one means adding its files to
+`lib/component-registry.ts` (already the convention), an entry per new
+file to `FILE_DESTINATIONS` in `lib/shadcn-registry-generator.ts`, and
+a thin `buildXManifest()` wrapper around the generic
+`buildComponentManifest(slug)` (extracted when Card was added — see the
+Card section below) — but no additional component beyond these six, native
+CLI, community registry infrastructure, or Vite/Remix generalization is
+in scope here.
 
 ## How it works
 
@@ -323,3 +324,50 @@ after the parameterization. All shared orchestration — dynamic port, the
 async `spawn`-based subprocess runner that prevents the same-process
 registry-server deadlock, OS-temp isolation, npm-dependency-delta
 diffing, and cleanup guarantees — was left untouched.
+
+## Text Input, Form Field, and Validation Message added to distribution — 2026-08-09
+
+Three interdependent form components became the next real case to test the distribution layer's multi-hop dependency chain and npm-package resolution.
+
+**Manifest facts (`/r/text-input.json`, `/r/form-field.json`, `/r/validation-message.json`):**
+
+- **Text Input** (`name: "text-input"`)
+  - `dependencies: []` — no third-party npm packages
+  - `registryDependencies: ["@skrewww/form-field", "@skrewww/foundation"]` — depends on Form Field, which itself depends on Validation Message
+  - Transports: `components/ui/TextInput.tsx`, `components/ui/TextInputControl.tsx`, `components/ui/text-input.module.css`, `lib/cn.ts`
+
+- **Form Field** (`name: "form-field"`)
+  - `dependencies: []` — no third-party npm packages
+  - `registryDependencies: ["@skrewww/validation-message", "@skrewww/foundation"]` — depends on Validation Message
+  - Transports: `components/ui/FormField.tsx`, `components/ui/form-field.module.css`, `lib/cn.ts`
+
+- **Validation Message** (`name: "validation-message"`)
+  - `dependencies: ["@phosphor-icons/react"]` — **first real npm package dependency** in this layer, beyond Foundation's own requirements
+  - `registryDependencies: ["@skrewww/foundation"]`
+  - Transports: `components/ui/ValidationMessage.tsx`, `components/ui/validation-message.module.css`, `lib/cn.ts`
+
+**Verified dependency graph**:
+```
+text-input
+  → form-field
+    → validation-message
+      → @phosphor-icons/react
+      → @skrewww/foundation
+    → @skrewww/foundation
+  → @skrewww/foundation
+```
+
+**Production verification (2026-08-09)**: All three endpoints (`https://skrewww.com/r/text-input.json`, `/r/form-field.json`, `/r/validation-message.json`) passed all checks — HTTP 200, valid JSON, correct manifest fields, exact `dependencies`/`registryDependencies` match, and byte-identical to a fresh local build of the pushed commit (`5e3a2f0`). `/r/foundation.json`, `/r/button.json`, and `/r/card.json` all continued to return 200 after deployment, confirming no regression.
+
+**Tier B (`npm run smoke:consumer -- text-input`) extended**: The smoke test now supports Text Input as a component argument and passed end-to-end. Verified:
+- Text Input's registry dependency chain auto-resolved (Form Field and Validation Message installed without separate `add` commands)
+- Correct file placement for all three components + Foundation
+- npm dependency delta matched expected: `@phosphor-icons/react` was the only net-new npm package installed
+- Shared `lib/cn.ts` file transport across all three components resolved to a single, byte-identical final file
+- Text Input's internal FormField reference resolved correctly at runtime
+- Foundation CSS activated and applied
+- Consumer `next build` succeeded
+
+**Milestone fact**: This is the first verified case of a real, multi-hop shadcn registry dependency chain with non-empty npm `dependencies`, proving that the transport and resolution layers handle both registry-to-registry composition and npm-package pull-in correctly.
+
+**No public registry schema-version bump was needed.** Adding three more components to `/r/*.json` and resolving a three-component chain introduced no new field or structural change to the shadcn registry-item shape.
