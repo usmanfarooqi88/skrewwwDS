@@ -6,7 +6,10 @@ import {
   assertValidShadcnRegistryItem,
   buildButtonManifest,
   buildCardManifest,
+  buildFormFieldManifest,
   buildFoundationManifest,
+  buildTextInputManifest,
+  buildValidationMessageManifest,
   classifyFile,
   extractFoundationCss,
   extractFoundationCssFromSource,
@@ -30,6 +33,24 @@ function cardEntry() {
   return entry;
 }
 
+function textInputEntry() {
+  const entry = componentRegistry.find((candidate) => candidate.slug === "text-input");
+  if (!entry) throw new Error("text-input entry missing from canonical registry — fix the test fixture");
+  return entry;
+}
+
+function formFieldEntry() {
+  const entry = componentRegistry.find((candidate) => candidate.slug === "form-field");
+  if (!entry) throw new Error("form-field entry missing from canonical registry — fix the test fixture");
+  return entry;
+}
+
+function validationMessageEntry() {
+  const entry = componentRegistry.find((candidate) => candidate.slug === "validation-message");
+  if (!entry) throw new Error("validation-message entry missing from canonical registry — fix the test fixture");
+  return entry;
+}
+
 describe("shadcn registry generator", () => {
   it("generates deterministic output for the same canonical input", () => {
     const first = JSON.stringify(buildButtonManifest());
@@ -43,6 +64,18 @@ describe("shadcn registry generator", () => {
     const firstCard = JSON.stringify(buildCardManifest());
     const secondCard = JSON.stringify(buildCardManifest());
     expect(firstCard).toBe(secondCard);
+
+    const firstTextInput = JSON.stringify(buildTextInputManifest());
+    const secondTextInput = JSON.stringify(buildTextInputManifest());
+    expect(firstTextInput).toBe(secondTextInput);
+
+    const firstFormField = JSON.stringify(buildFormFieldManifest());
+    const secondFormField = JSON.stringify(buildFormFieldManifest());
+    expect(firstFormField).toBe(secondFormField);
+
+    const firstValidationMessage = JSON.stringify(buildValidationMessageManifest());
+    const secondValidationMessage = JSON.stringify(buildValidationMessageManifest());
+    expect(firstValidationMessage).toBe(secondValidationMessage);
   });
 
   it("transports every canonical Button file and internal dependency exactly once", () => {
@@ -117,6 +150,9 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildFoundationManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildButtonManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildCardManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildTextInputManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildFormFieldManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildValidationMessageManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -137,6 +173,53 @@ describe("shadcn registry generator", () => {
     const manifest = buildCardManifest();
     expect(manifest.docs).toContain("react, react-dom");
     expect(manifest.docs).not.toContain("next");
+  });
+
+  it("transports exactly TextInput.tsx + TextInputControl.tsx + text-input.module.css + lib/cn.ts, and declares form-field + foundation as registry dependencies (never bundling FormField/ValidationMessage files directly)", () => {
+    const entry = textInputEntry();
+    expect(entry.registryDependencies ?? []).toEqual(["@skrewww/form-field", "@skrewww/foundation"]);
+
+    const manifest = buildTextInputManifest();
+    const actualPaths = manifest.files.map((file) => file.path).sort();
+    expect(actualPaths).toEqual([
+      "components/ui/TextInput.tsx",
+      "components/ui/TextInputControl.tsx",
+      "components/ui/text-input.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/foundation"]);
+  });
+
+  it("transports exactly FormField.tsx + form-field.module.css + lib/cn.ts, and declares validation-message + foundation as registry dependencies", () => {
+    const entry = formFieldEntry();
+    expect(entry.registryDependencies ?? []).toEqual(["@skrewww/validation-message", "@skrewww/foundation"]);
+
+    const manifest = buildFormFieldManifest();
+    const actualPaths = manifest.files.map((file) => file.path).sort();
+    expect(actualPaths).toEqual(["components/ui/FormField.tsx", "components/ui/form-field.module.css", "lib/cn.ts"]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/validation-message", "@skrewww/foundation"]);
+  });
+
+  it("transports exactly ValidationMessage.tsx + validation-message.module.css + lib/cn.ts, and declares @phosphor-icons/react as its real npm dependency", () => {
+    const entry = validationMessageEntry();
+    expect(entry.dependencies ?? []).toEqual(["@phosphor-icons/react"]);
+
+    const manifest = buildValidationMessageManifest();
+    const actualPaths = manifest.files.map((file) => file.path).sort();
+    expect(actualPaths).toEqual([
+      "components/ui/ValidationMessage.tsx",
+      "components/ui/validation-message.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+  });
+
+  it("documents Text Input's and Form Field's host requirements as react + react-dom, without next", () => {
+    expect(buildTextInputManifest().docs).toContain("react, react-dom");
+    expect(buildTextInputManifest().docs).not.toContain("next");
+    expect(buildFormFieldManifest().docs).toContain("react, react-dom");
+    expect(buildFormFieldManifest().docs).not.toContain("next");
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

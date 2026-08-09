@@ -1,11 +1,12 @@
 /**
  * Pure, importable generator for the shadcn-compatible distribution layer
- * (`/r/foundation.json`, `/r/button.json`, `/r/card.json`). Every function
- * here is a pure transform of real repo files or the canonical registry —
- * importing this module performs no filesystem writes. The file-writing
- * CLI entry point lives in scripts/generate-shadcn-registry.ts, which
- * imports the build* functions below and is the only place
- * `public/r/*.json` gets written.
+ * (`/r/foundation.json`, `/r/button.json`, `/r/card.json`,
+ * `/r/text-input.json`, `/r/form-field.json`, `/r/validation-message.json`).
+ * Every function here is a pure transform of real repo files or the
+ * canonical registry — importing this module performs no filesystem
+ * writes. The file-writing CLI entry point lives in
+ * scripts/generate-shadcn-registry.ts, which imports the build* functions
+ * below and is the only place `public/r/*.json` gets written.
  *
  * This generator is a second, independent distribution channel alongside
  * the still-unimplemented `@skrewww/core` + `npx skrewww` roadmap in
@@ -13,10 +14,14 @@
  * docs/architecture/shadcn-distribution.md for how the two relate.
  *
  * Scope (see docs/architecture/shadcn-distribution.md): Foundation +
- * Button + Card. Adding another component means adding its file(s) to
- * FILE_DESTINATIONS and a thin `buildXManifest() { return
- * buildComponentManifest("x"); }` wrapper — buildComponentManifest itself
- * is already generic across any single-component canonical entry.
+ * Button + Card + Text Input + Form Field + Validation Message. Adding
+ * another component means adding its file(s) to FILE_DESTINATIONS and a
+ * thin `buildXManifest() { return buildComponentManifest("x"); }` wrapper
+ * — buildComponentManifest itself is already generic across any
+ * single-component canonical entry, including multi-hop
+ * registryDependencies chains (text-input -> form-field ->
+ * validation-message -> foundation) and real npm `dependencies`
+ * (validation-message -> @phosphor-icons/react).
  */
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -82,6 +87,34 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
   "components/ui/card.module.css": {
     type: "registry:ui",
     target: "~/components/ui/card.module.css",
+  },
+  "components/ui/TextInput.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/TextInput.tsx",
+  },
+  "components/ui/TextInputControl.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/TextInputControl.tsx",
+  },
+  "components/ui/text-input.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/text-input.module.css",
+  },
+  "components/ui/FormField.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/FormField.tsx",
+  },
+  "components/ui/form-field.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/form-field.module.css",
+  },
+  "components/ui/ValidationMessage.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/ValidationMessage.tsx",
+  },
+  "components/ui/validation-message.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/validation-message.module.css",
   },
   "lib/cn.ts": {
     type: "registry:lib",
@@ -254,6 +287,18 @@ export function buildButtonManifest(): ShadcnRegistryItem {
 
 export function buildCardManifest(): ShadcnRegistryItem {
   return buildComponentManifest("card");
+}
+
+export function buildTextInputManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("text-input");
+}
+
+export function buildFormFieldManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("form-field");
+}
+
+export function buildValidationMessageManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("validation-message");
 }
 
 /**
