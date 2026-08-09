@@ -15,9 +15,13 @@
  * Run: npm run smoke:consumer [-- <component>] [-- --keep]
  * <component> defaults to "button" when omitted, for backward
  * compatibility with the original Button-only smoke test. Currently
- * supported: button, card (see COMPONENT_DESCRIPTORS below — adding
- * another component means adding a descriptor there, not touching the
- * orchestration logic itself, which is already component-agnostic).
+ * selectable: button, card, text-input (see COMPONENT_DESCRIPTORS below —
+ * adding another component means adding a descriptor there, not touching
+ * the orchestration logic itself, which is already component-agnostic).
+ * form-field and validation-message are registered in MANIFEST_BUILDERS
+ * as transitive-only dependencies (needed for recursive graph resolution
+ * when text-input is selected) but have no descriptor of their own,
+ * exactly like foundation never has one.
  * --keep preserves the OS-temp working directory and prints its path
  * instead of deleting it on exit.
  *
@@ -35,7 +39,15 @@ import { createServer, type Server } from "node:http";
 import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
-import { buildButtonManifest, buildCardManifest, buildFoundationManifest, type ShadcnRegistryItem } from "../lib/shadcn-registry-generator";
+import {
+  buildButtonManifest,
+  buildCardManifest,
+  buildFormFieldManifest,
+  buildFoundationManifest,
+  buildTextInputManifest,
+  buildValidationMessageManifest,
+  type ShadcnRegistryItem,
+} from "../lib/shadcn-registry-generator";
 
 const CREATE_NEXT_APP_VERSION = "16.3.0";
 const SHADCN_VERSION = "4.16.2";
@@ -47,6 +59,9 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   foundation: buildFoundationManifest,
   button: buildButtonManifest,
   card: buildCardManifest,
+  "text-input": buildTextInputManifest,
+  "form-field": buildFormFieldManifest,
+  "validation-message": buildValidationMessageManifest,
 };
 
 /**
@@ -55,12 +70,26 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
  * dynamically-derived target set — see the assertions in main() for why
  * both exist), and a minimal consumer page exercising the component's
  * REAL public API (never an invented compound API).
+ *
+ * expectedSharedTargets: consumer-relative paths (already run through
+ * targetToRelPath — never "~/...") that this component's resolved graph
+ * is expected to contribute from more than one manifest (e.g. lib/cn.ts
+ * from both text-input and form-field). Defaults to none — Button/Card's
+ * graphs never share a target across manifests.
+ *
+ * closeStdinOnAdd: closes stdin specifically for this component's
+ * `shadcn add` invocation (see the closeStdin option on run()) — opt-in
+ * per component so a first-of-its-kind interactive-prompt risk can be
+ * hardened against without changing behavior for already-proven
+ * components.
  */
 type ComponentSmokeDescriptor = {
   criticalPaths: string[];
   renderHarness: () => string;
   assertHarness: (pageSource: string) => boolean;
   harnessAssertionLabel: string;
+  expectedSharedTargets?: string[];
+  closeStdinOnAdd?: boolean;
 };
 
 const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
@@ -110,6 +139,52 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     assertHarness: (pageSource) =>
       /from "@\/components\/ui\/Card"/.test(pageSource) && /title="Smoke test"/.test(pageSource),
     harnessAssertionLabel: "consumer page imports Card and renders it with a title + footer",
+  },
+  "text-input": {
+    criticalPaths: [
+      "components/ui/TextInput.tsx",
+      "components/ui/TextInputControl.tsx",
+      "components/ui/text-input.module.css",
+      "components/ui/FormField.tsx",
+      "components/ui/form-field.module.css",
+      "components/ui/ValidationMessage.tsx",
+      "components/ui/validation-message.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    // lib/cn.ts is independently declared by text-input, form-field, and
+    // validation-message (all three real registry items in this graph) —
+    // the first multi-manifest graph where a target is genuinely
+    // contributed more than once. See the shared-target assertions in
+    // main() for what this proves.
+    expectedSharedTargets: ["lib/cn.ts"],
+    // First-ever multi-hop graph (text-input -> form-field ->
+    // validation-message -> foundation) and first-ever nonempty real npm
+    // `dependencies` install (@phosphor-icons/react) — closing stdin is
+    // defense-in-depth against an unforeseen interactive prompt hanging
+    // the smoke test on unverified territory, on top of `--yes`.
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { TextInput } from "@/components/ui/TextInput";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        "    <TextInput",
+        '      label="Smoke test input"',
+        '      placeholder="Type something"',
+        '      error="Smoke test error"',
+        "    />",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/TextInput"/.test(pageSource) &&
+      /label="Smoke test input"/.test(pageSource) &&
+      /error="Smoke test error"/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports TextInput and renders it with a real label + error, exercising TextInput -> FormField -> ValidationMessage -> @phosphor-icons/react",
   },
 };
 
@@ -283,16 +358,25 @@ function escapeRegExp(value: string): string {
  * request back to that same process's server, which would then never be
  * accepted. Discovered the hard way: execFileSync here produced a
  * same-process deadlock indistinguishable from a hung CLI.
+ *
+ * closeStdin (optional, default false) forces stdin to "ignore" instead
+ * of the default resolution below — for every existing caller this option
+ * is omitted, so their resolved stdin is byte-identical to before this
+ * option existed. Used only for the text-input `shadcn add` call: `--yes`
+ * already suppresses most prompts, but a stray interactive prompt on
+ * unverified territory (first multi-manifest shared-target graph) should
+ * fail fast on EOF rather than hang on inherited terminal input.
  */
 function run(
   command: string,
   args: string[],
-  options: { cwd?: string; captureStdout?: boolean } = {},
+  options: { cwd?: string; captureStdout?: boolean; closeStdin?: boolean } = {},
 ): Promise<{ stdout: string }> {
   return new Promise((resolve, reject) => {
+    const stdin = options.closeStdin ? "ignore" : options.captureStdout ? "ignore" : "inherit";
     const child = spawn(command, args, {
       cwd: options.cwd,
-      stdio: options.captureStdout ? ["ignore", "pipe", "inherit"] : "inherit",
+      stdio: [stdin, options.captureStdout ? "pipe" : "inherit", "inherit"],
     });
     let stdout = "";
     if (options.captureStdout) {
@@ -446,14 +530,21 @@ async function main(): Promise<void> {
     const preAddSnapshot = snapshotDir(consumerDir);
 
     log(`\n[9/13] shadcn@${SHADCN_VERSION} add @skrewww/${COMPONENT_NAME}`);
-    await run("npx", [`shadcn@${SHADCN_VERSION}`, "add", `@skrewww/${COMPONENT_NAME}`, "--yes"], { cwd: consumerDir });
+    await run("npx", [`shadcn@${SHADCN_VERSION}`, "add", `@skrewww/${COMPONENT_NAME}`, "--yes"], {
+      cwd: consumerDir,
+      closeStdin: descriptor.closeStdinOnAdd,
+    });
 
     log("\n[10/13] Post-add filesystem + package.json snapshot, diff, and assertions");
     const postAddSnapshot = snapshotDir(consumerDir);
     const postAddDepNames = readPackageDependencyNames(consumerDir);
     const { added, removed, modified } = diffSnapshots(preAddSnapshot, postAddSnapshot);
 
-    const expectedTargets = new Set(graph.flatMap((item) => item.files.map((f) => targetToRelPath(f.target))));
+    // Not deduped — used below to detect which consumer-relative targets
+    // are genuinely contributed by more than one manifest in the graph,
+    // before expectedTargets collapses them into a Set.
+    const allTargetContributions = graph.flatMap((item) => item.files.map((f) => targetToRelPath(f.target)));
+    const expectedTargets = new Set(allTargetContributions);
     const expectedNpmDependencies = new Set(graph.flatMap((item) => item.dependencies));
 
     const addedExcludingPackageFiles = added.filter((p) => p !== "package.json" && p !== "package-lock.json");
@@ -496,6 +587,56 @@ async function main(): Promise<void> {
       unexpectedChanges.length === 0,
       unexpectedChanges.length ? unexpectedChanges.join(", ") : "none",
     );
+
+    // Shared-target verification: some graphs (first seen with text-input,
+    // where text-input, form-field, and validation-message all
+    // independently declare lib/cn.ts) genuinely contribute the same
+    // consumer-relative target from more than one manifest. This proves
+    // the FINAL installed state is correct — exactly one file at that
+    // path, with content matching every contributing manifest's own
+    // embedded content — not how many times the shadcn CLI wrote to disk
+    // internally while resolving the graph.
+    const targetContributionCounts = new Map<string, number>();
+    for (const relPath of allTargetContributions) {
+      targetContributionCounts.set(relPath, (targetContributionCounts.get(relPath) ?? 0) + 1);
+    }
+    const actualSharedTargets = Array.from(targetContributionCounts.entries())
+      .filter(([, count]) => count > 1)
+      .map(([relPath]) => relPath)
+      .sort();
+    const expectedSharedTargets = [...(descriptor.expectedSharedTargets ?? [])].sort();
+    assert(
+      "shared-target contribution matches expectation (a target genuinely declared by more than one manifest in the resolved graph)",
+      JSON.stringify(actualSharedTargets) === JSON.stringify(expectedSharedTargets),
+      `expected: [${expectedSharedTargets.join(", ")}], actual: [${actualSharedTargets.join(", ")}]`,
+    );
+
+    for (const relPath of actualSharedTargets) {
+      const onDiskPath = join(consumerDir, relPath);
+      assert(`shared target present as exactly one final file on disk: ${relPath}`, existsSync(onDiskPath));
+
+      const contributingContents = new Set(
+        graph.flatMap((item) =>
+          item.files.filter((f) => targetToRelPath(f.target) === relPath).map((f) => f.content),
+        ),
+      );
+      assert(
+        `every manifest contributing ${relPath} embeds identical content`,
+        contributingContents.size === 1,
+        `${contributingContents.size} distinct content value(s) found across contributing manifests`,
+      );
+
+      const onDiskContent = readFileSync(onDiskPath, "utf8");
+      const canonicalContent = Array.from(contributingContents)[0];
+      assert(
+        `installed ${relPath} is byte-identical to the canonical content every contributing manifest embeds`,
+        onDiskContent === canonicalContent,
+      );
+    }
+    // addedExcludingPackageFiles/unexpectedAdded above already prove no
+    // alternate/suffixed duplicate (e.g. lib/cn-1.ts) was created — such a
+    // path would not be in expectedTargets and would already have failed
+    // that assertion, so no separate check is needed here.
 
     log("\n[11/13] Wiring Foundation CSS import (before consumer globals.css, exactly once) and rendering a real consumer page");
     const layoutPath = join(consumerDir, "app", "layout.tsx");
