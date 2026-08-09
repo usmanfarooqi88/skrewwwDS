@@ -48,6 +48,18 @@ export const formsRegistryEntries: ComponentRegistryEntry[] = [
       "semantic/text/secondary",
       "semantic/action/danger",
     ],
+    // Real dependency contract, verified against actual source (2026-08-09):
+    // FormField.tsx imports and renders ValidationMessage directly for its
+    // error path (a real code dependency, independently public and
+    // registry-slugged — not folded into internalDependencies). No
+    // third-party npm package of its own; no next import.
+    dependencies: [],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts"],
+    registryDependencies: ["@skrewww/validation-message", "@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/FormField.tsx", "components/ui/form-field.module.css"],
+    cssTokens: ["--semantic-action-danger", "--semantic-text-primary", "--semantic-text-secondary"],
     relatedComponents: [
       { label: "Validation Message — typed inline feedback", href: "/components/validation-message" },
       { label: "Text Input — control composed with FormField", href: "/components/text-input" },
@@ -117,6 +129,24 @@ export function Example() {
       "semantic/feedback/warning",
       "semantic/feedback/success",
       "semantic/feedback/info",
+    ],
+    // Real dependency contract, verified against actual source (2026-08-09):
+    // ValidationMessage.tsx imports 4 icons from
+    // @phosphor-icons/react/dist/ssr — a real, installed npm package
+    // (package.json dependencies, ^2.1.10), the first genuinely nonempty
+    // `dependencies` array in this registry's CLI-resolution fields. No
+    // next import.
+    dependencies: ["@phosphor-icons/react"],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts"],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/ValidationMessage.tsx", "components/ui/validation-message.module.css"],
+    cssTokens: [
+      "--semantic-action-danger",
+      "--semantic-feedback-info",
+      "--semantic-feedback-success",
+      "--semantic-feedback-warning",
     ],
     relatedComponents: [
       { label: "Form Field — positions validation below controls", href: "/components/form-field" },

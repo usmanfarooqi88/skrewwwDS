@@ -478,6 +478,53 @@ export function Example() {
       "semantic/action/danger",
       "semantic/surface/default",
     ],
+    // Real dependency contract, verified against actual source (2026-08-09):
+    // TextInput.tsx composes FormField internally (a real, documented
+    // architectural dependency — see docs/architecture/form-field.md, not
+    // a conceptual pairing) and imports the private, unexported
+    // TextInputControl for its native input visuals. No third-party npm
+    // package of its own; "react"/"react-dom" are host assumptions, no
+    // next import exists anywhere in TextInput.tsx/TextInputControl.tsx.
+    dependencies: [],
+    hostRequirements: ["react", "react-dom"],
+    // TextInputControl.tsx (private control primitive, never independently
+    // installable — see docs/architecture/form-field.md) and lib/cn.ts.
+    internalDependencies: ["components/ui/TextInputControl.tsx", "lib/cn.ts"],
+    // FormField is a real code dependency (TextInput.tsx imports and
+    // renders it), not merely conceptually related — it is independently
+    // public and independently registry-slugged, so it is declared here
+    // rather than folded into internalDependencies. Foundation is declared
+    // directly too, matching the existing Button/Card convention of
+    // declaring it wherever a component's own CSS consumes its tokens.
+    registryDependencies: ["@skrewww/form-field", "@skrewww/foundation"],
+    coreDependencies: ["tokens", "shape", "surface"],
+    files: ["components/ui/TextInput.tsx", "components/ui/text-input.module.css"],
+    cssTokens: [
+      "--control-font-size-lg",
+      "--control-font-size-md",
+      "--control-font-size-sm",
+      "--control-height-lg",
+      "--control-height-md",
+      "--control-height-sm",
+      "--control-padding-x-lg",
+      "--control-padding-x-md",
+      "--control-padding-x-sm",
+      "--glass-backdrop-filter-sm",
+      "--opacity-disabled",
+      "--semantic-action-danger",
+      "--semantic-border-default",
+      "--semantic-border-disabled",
+      "--semantic-border-strong",
+      "--semantic-focus-ring",
+      "--semantic-icon-muted",
+      "--semantic-surface-disabled",
+      "--semantic-surface-subtle",
+      "--semantic-text-disabled",
+      "--semantic-text-primary",
+      "--shape-radius-control",
+      "--squircle-clip-path-control",
+      "--surface-fill-control",
+    ],
     relatedComponents: [
       { label: "Form Field — shared label and helper pattern", href: "/components/form-field" },
       { label: "Validation Message — typed inline feedback", href: "/components/validation-message" },

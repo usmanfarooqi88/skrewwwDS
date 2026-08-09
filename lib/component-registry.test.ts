@@ -63,3 +63,75 @@ describe("component registry — Card distribution metadata", () => {
     expect(card?.registryDependencies).toEqual(["@skrewww/foundation"]);
   });
 });
+
+describe("component registry — Text Input distribution metadata", () => {
+  const textInput = componentRegistry.find((entry) => entry.slug === "text-input");
+
+  it("has a real Text Input entry", () => {
+    expect(textInput).toBeDefined();
+  });
+
+  it("declares no npm dependencies", () => {
+    expect(textInput?.dependencies).toEqual([]);
+  });
+
+  it("declares host requirements without next", () => {
+    expect(textInput?.hostRequirements).toEqual(["react", "react-dom"]);
+  });
+
+  it("declares TextInputControl and lib/cn.ts as internal dependencies", () => {
+    expect(textInput?.internalDependencies).toEqual(["components/ui/TextInputControl.tsx", "lib/cn.ts"]);
+  });
+
+  it("declares @skrewww/form-field as a real code dependency, not merely conceptual, plus @skrewww/foundation", () => {
+    expect(textInput?.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/foundation"]);
+  });
+});
+
+describe("component registry — Form Field distribution metadata", () => {
+  const formField = componentRegistry.find((entry) => entry.slug === "form-field");
+
+  it("has a real Form Field entry", () => {
+    expect(formField).toBeDefined();
+  });
+
+  it("declares no npm dependencies", () => {
+    expect(formField?.dependencies).toEqual([]);
+  });
+
+  it("declares host requirements without next", () => {
+    expect(formField?.hostRequirements).toEqual(["react", "react-dom"]);
+  });
+
+  it("declares lib/cn.ts as its only internal dependency", () => {
+    expect(formField?.internalDependencies).toEqual(["lib/cn.ts"]);
+  });
+
+  it("declares @skrewww/validation-message as a real code dependency, plus @skrewww/foundation", () => {
+    expect(formField?.registryDependencies).toEqual(["@skrewww/validation-message", "@skrewww/foundation"]);
+  });
+});
+
+describe("component registry — Validation Message distribution metadata", () => {
+  const validationMessage = componentRegistry.find((entry) => entry.slug === "validation-message");
+
+  it("has a real Validation Message entry", () => {
+    expect(validationMessage).toBeDefined();
+  });
+
+  it("declares @phosphor-icons/react as its real npm dependency (first nonempty dependencies array in this registry)", () => {
+    expect(validationMessage?.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("declares host requirements without next", () => {
+    expect(validationMessage?.hostRequirements).toEqual(["react", "react-dom"]);
+  });
+
+  it("declares lib/cn.ts as its only internal dependency", () => {
+    expect(validationMessage?.internalDependencies).toEqual(["lib/cn.ts"]);
+  });
+
+  it("declares @skrewww/foundation as its only registry dependency", () => {
+    expect(validationMessage?.registryDependencies).toEqual(["@skrewww/foundation"]);
+  });
+});
