@@ -80,3 +80,14 @@
     background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-sm-fallback), white);
   }
 }
+
+/* .current has the same specificity as the generic glass .control rule
+   above (0,2,0 each) — without this, source order would let the generic
+   rule's translucent background silently win over .current's own
+   --pagination-current-surface, collapsing the current-page indicator
+   into the same fill as every other page control in Glass mode. Placed
+   after both the base and @supports-fallback glass rules so it wins in
+   either branch via source order at equal specificity. */
+[data-skrewww-surface="glass"] .current {
+  background: var(--pagination-current-surface);
+}
