@@ -533,6 +533,8 @@ panel fixed for Date Picker in Batch 2.
 
 ## Active roadmap
 
+**Scope discipline — "do not expand sideways" clarified**: this phrase governs starting **new React component/product scope** (new components, new industries, new product surfaces) — it does not apply to distribution work on components that are already built. The primary track (the Figma Surface/parity follow-ups and Timeline-class work below) remains the priority when choosing where to spend limited attention. shadcn distribution packaging (Card, Text Input, and future already-built components) is an explicitly allowed **parallel track**, not a violation of that discipline — it is distribution hardening on already-shipped components, not new component expansion, and it is not blocked or deferred by the primary track.
+
 1. **File Upload token verification** — diff the Filled/Empty/Dragging/Error/Disabled variants' token bindings against `file-upload.module.css`'s Temporary aliases now that the component set (`2024:2649`) and both single-file and multi-file anatomy are confirmed
 2. **Data Table Figma parity** — MCP audit for a component-set node once available; not blocking (see [`data-table-discovery.md`](architecture/data-table-discovery.md))
 3. **Combobox selected-option token gap** (low priority) — `semantic/surface/subtle` (used by `--combobox-option-selected-surface`) has no Figma variable; either add the missing variable or rename the CSS token to an existing one — a separate, deliberate decision, not urgent (see [`combobox-parity.md`](architecture/combobox-parity.md#selected-surface-token-gap))
