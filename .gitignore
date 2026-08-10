@@ -47,3 +47,6 @@ yarn-error.log*
 # Misc caches
 .turbo/
 coverage/
+
+# Personal Claude Code workflow file — not repo policy
+CLAUDE.md
