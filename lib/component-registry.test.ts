@@ -73,6 +73,25 @@ describe("component registry — Calendar Day Figma bindings", () => {
   });
 });
 
+describe("component registry — Pagination Page Item Figma bindings", () => {
+  const pagination = componentRegistry.find((entry) => entry.slug === "pagination");
+
+  it("records canonical Page Item bindings instead of inferred generic surface tokens", () => {
+    expect(pagination?.tokensUsed).toEqual([
+      "component/button/primary/background",
+      "component/surface/content",
+      "component/surface/blur",
+      "component/menu/item-hover",
+      "component/surface/content-muted",
+      "semantic/text/primary",
+      "semantic/text/disabled",
+      "opacity/disabled",
+      "component/radius/control",
+    ]);
+    expect(pagination?.tokensUsed).not.toContain("semantic/surface/elevated");
+  });
+});
+
 describe("component registry — Card distribution metadata", () => {
   const card = componentRegistry.find((entry) => entry.slug === "card");
 

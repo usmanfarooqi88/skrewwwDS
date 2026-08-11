@@ -56,6 +56,15 @@ describe("Pagination", () => {
     expect(screen.getByLabelText("Previous page")).toHaveAttribute("aria-disabled", "true");
   });
 
+  it("supports an additive disabled numbered-page item without activation semantics", () => {
+    render(<Pagination items={[{ type: "page", page: 4, href: "/?p=4", disabled: true }]} />);
+    const item = screen.getByLabelText("Page 4");
+    expect(item).toHaveAttribute("aria-disabled", "true");
+    expect(item).not.toHaveAttribute("href");
+    expect(item.tagName).toBe("SPAN");
+    expect(item.className).toMatch(/disabled/);
+  });
+
   it("keeps ellipsis non-interactive", () => {
     render(
       <Pagination

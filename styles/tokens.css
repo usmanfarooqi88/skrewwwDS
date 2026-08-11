@@ -295,15 +295,24 @@
   --tab-indicator-thickness: 2px;
   --tab-transition-duration: 150ms;
 
-  /* ── Pagination geometry [TEMPORARY] ── */
-  --pagination-control-size: 2.25rem;
-  --pagination-gap: 0.375rem;
-  --pagination-font-size: 0.875rem;
+  /* ── Pagination Page Item geometry [VERIFIED] ── */
+  --pagination-control-size: 2rem;
+  --pagination-gap: 0.25rem;
+  --pagination-font-size: 1rem;
+  --pagination-page-radius: 4px;
   --pagination-text: var(--semantic-text-secondary);
-  --pagination-current-surface: var(--semantic-surface-elevated);
-  --pagination-current-text: var(--semantic-text-primary);
+  --pagination-page-content: var(--component-surface-content, #ffffff);
+  --pagination-page-hover-surface: #f7f7f8;
+  --pagination-page-hover-content: #17181b;
+  /* [VERIFIED] Updated 2026-08-11 to match the approved Figma Page Item
+     Current contract (component set 2024:2894, Current 2024:2892) — the
+     previously-shipped neutral/elevated treatment was never an approved
+     intentional deviation from Primary/brand family. */
+  --pagination-current-surface: var(--semantic-action-primary);
+  --pagination-current-text: var(--component-surface-content, var(--semantic-text-inverse));
   --pagination-border: var(--semantic-border-default);
-  --pagination-disabled-text: var(--semantic-text-disabled);
+  --pagination-disabled-text: #a0a3ac;
+  --pagination-ellipsis-content: #a0a3ac;
   --pagination-ellipsis-width: 2rem;
 
   /* ── Dialog geometry [TEMPORARY] ── */
@@ -636,12 +645,14 @@
   --shape-radius-control: 0px; /* [VERIFIED] Sharp mode intent */
   --shape-radius-container: 0px; /* [VERIFIED] Sharp mode intent */
   --component-button-radius-control: 0px;
+  --pagination-page-radius: 0px;
 }
 
 [data-skrewww-shape="rounded"] {
   --shape-radius-control: 6px; /* [TEMPORARY] */
   --shape-radius-container: 12px; /* [TEMPORARY] */
   --component-button-radius-control: 4px; /* [VERIFIED] Button master */
+  --pagination-page-radius: 4px;
 }
 
 [data-skrewww-shape="pill"] {
@@ -649,12 +660,14 @@
   /* [EXPERIMENTAL] Container stays capped — full pill geometry is inappropriate for Card */
   --shape-radius-container: 16px; /* [TEMPORARY] capped container radius for Card */
   --component-button-radius-control: 9999px;
+  --pagination-page-radius: 9999px;
 }
 
 [data-skrewww-shape="squircle"] {
   --shape-radius-control: 8px; /* [VERIFIED] Squircle control intent */
   --shape-radius-container: 16px; /* [VERIFIED] Squircle container intent */
   --component-button-radius-control: 8px;
+  --pagination-page-radius: 8px;
 
   /*
    * Real superellipse corner geometry, not an approximated border-radius.

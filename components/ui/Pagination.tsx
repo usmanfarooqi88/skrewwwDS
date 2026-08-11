@@ -4,7 +4,7 @@ import { getLinkRel, shouldUseNativeAnchor } from "@/components/ui/internal/link
 import styles from "@/components/ui/pagination.module.css";
 
 export type PaginationItem =
-  | { type: "page"; page: number; href?: string; current?: boolean }
+  | { type: "page"; page: number; href?: string; current?: boolean; disabled?: boolean }
   | { type: "ellipsis" }
   | { type: "previous"; href?: string; disabled?: boolean; label?: string; page?: number }
   | { type: "next"; href?: string; disabled?: boolean; label?: string; page?: number };
@@ -20,15 +20,30 @@ function PageControl({
   page,
   href,
   current = false,
+  disabled = false,
   onPageChange,
 }: {
   page: number;
   href?: string;
   current?: boolean;
+  disabled?: boolean;
   onPageChange?: (page: number) => void;
 }) {
   const label = `Page ${page}`;
-  const className = cn(styles.control, current && styles.current);
+  const className = cn(
+    styles.control,
+    styles.pageItem,
+    current && styles.current,
+    disabled && styles.disabled,
+  );
+
+  if (disabled) {
+    return (
+      <span className={className} aria-disabled="true" aria-label={label}>
+        {page}
+      </span>
+    );
+  }
 
   if (current) {
     return (
@@ -137,6 +152,7 @@ export function Pagination({
                 page={item.page}
                 href={item.href}
                 current={item.current}
+                disabled={item.disabled}
                 onPageChange={onPageChange}
               />
             ) : null}

@@ -20,23 +20,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--pagination-control-size);
-  min-height: var(--pagination-control-size);
-  padding: 0 0.5rem;
-  border: 1px solid var(--pagination-border);
-  border-radius: min(var(--shape-radius-control), 9999px);
-  background: var(--semantic-surface-default);
-  color: var(--pagination-text);
-  font-size: var(--pagination-font-size);
-  font-weight: 500;
+  box-sizing: border-box;
   font-variant-numeric: tabular-nums;
   text-decoration: none;
   cursor: pointer;
 }
 
-.control:hover:not(.current):not(.disabled) {
-  color: var(--semantic-action-primary);
-  border-color: var(--semantic-action-primary);
+.pageItem {
+  flex: 0 0 var(--pagination-control-size);
+  width: var(--pagination-control-size);
+  height: var(--pagination-control-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--pagination-page-radius);
+  background: transparent;
+  color: var(--pagination-page-content);
+  font-size: var(--pagination-font-size);
+  font-weight: 400;
+  backdrop-filter: none;
+}
+
+.pageItem:hover:not(.current):not(.disabled) {
+  background: var(--pagination-page-hover-surface);
+  color: var(--pagination-page-hover-content);
 }
 
 .control:focus-visible {
@@ -47,47 +53,85 @@
 .current {
   background: var(--pagination-current-surface);
   color: var(--pagination-current-text);
-  border-color: var(--semantic-action-primary);
+  font-weight: 700;
   cursor: default;
 }
 
 .disabled {
   color: var(--pagination-disabled-text);
-  border-color: var(--semantic-border-disabled);
   cursor: not-allowed;
 }
 
+.pageItem.disabled {
+  background: transparent;
+  opacity: var(--opacity-disabled);
+}
+
 .boundary {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
   padding-inline: 0.75rem;
+  border: 1px solid var(--pagination-border);
+  border-radius: min(var(--shape-radius-control), 9999px);
+  background: var(--semantic-surface-default);
+  color: var(--pagination-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.boundary:hover:not(.disabled) {
+  color: var(--semantic-action-primary);
+  border-color: var(--semantic-action-primary);
+}
+
+.boundary.disabled {
+  border-color: var(--semantic-border-disabled);
 }
 
 .ellipsis {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--pagination-ellipsis-width);
-  min-height: var(--pagination-control-size);
-  color: var(--pagination-text);
+  width: var(--pagination-ellipsis-width);
+  height: var(--pagination-control-size);
+  color: var(--pagination-ellipsis-content);
+  font-size: var(--pagination-font-size);
 }
 
-[data-skrewww-surface="glass"] .control {
+[data-skrewww-surface="glass"] .boundary {
   background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-sm), white);
   backdrop-filter: var(--glass-backdrop-filter-sm);
 }
 
 @supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-surface="glass"] .control {
+  [data-skrewww-surface="glass"] .boundary {
     background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-sm-fallback), white);
   }
 }
 
-/* .current has the same specificity as the generic glass .control rule
-   above (0,2,0 each) — without this, source order would let the generic
-   rule's translucent background silently win over .current's own
-   --pagination-current-surface, collapsing the current-page indicator
-   into the same fill as every other page control in Glass mode. Placed
-   after both the base and @supports-fallback glass rules so it wins in
-   either branch via source order at equal specificity. */
+[data-skrewww-surface="glass"] .pageItem:hover:not(.current):not(.disabled) {
+  background: rgb(255 255 255 / 0.2);
+  backdrop-filter: var(--glass-backdrop-filter-lg);
+}
+
+[data-skrewww-surface="glass"] .ellipsis {
+  color: #17181b;
+}
+
+/* Superseded 2026-08-11: .current now matches the approved Figma Page Item
+   Current contract (component set 2024:2894, Current 2024:2892) — Primary/
+   brand family, not the neutral/elevated treatment. */
 [data-skrewww-surface="glass"] .current {
-  background: var(--pagination-current-surface);
+  background: var(--component-brand-fill-glass);
+  backdrop-filter: var(--glass-backdrop-filter-lg);
+}
+
+[data-skrewww-shape="squircle"] .pageItem {
+  clip-path: var(--squircle-clip-path-control);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .current {
+    background: var(--semantic-action-primary);
+  }
 }
