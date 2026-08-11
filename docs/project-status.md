@@ -1,6 +1,6 @@
 # Project status
 
-Last verified: **2026-07-15** (derived from repository registry, tests, and build configuration — not manually maintained counts)
+Last verified: **2026-08-11** (Layer 3 parity reconciliation; implementation counts remain registry-derived)
 
 See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.md)
 
@@ -161,13 +161,14 @@ Full detail in
 - Tree View component-set node ID: **confirmed 2026-07-18** — "Content/Tree Item" component set is node `2058:1988` (State variants: Default `2058:1985`, Hover `2058:1986`, Selected `2058:1987`); the "Tree View (example)" composed demo is node `2058:1998`; parent section "Content/Tree View" is node `2058:2071`. This closes the one open item from the 2026-07-18 implementation — the component structure, properties, tokens, and 20px-per-depth indentation convention were already accurately described and implemented against; only the node IDs themselves were missing from the record (see `lib/tree-view-figma-metadata.ts`, `TREE_VIEW_FIGMA_AUDIT_STATUS = "verified-2026-07-18"`)
 - Bar Chart / Line Chart component-set node IDs: **confirmed 2026-07-18** — parent section "Content/Charts" is node `2058:2568`; "Bar Chart (example)" frame is node `2058:2532`; "Line Chart (example)" frame is node `2058:2559`. Both examples are illustrative/minimal (establishing color, stroke weight, and marker style), not full chart specs — axes beyond Bar Chart's month labels, legends, and multi-series were never shown in Figma and are documented as deliberate v1 deferrals, not gaps (see `lib/charts-figma-metadata.ts`, `CHARTS_FIGMA_AUDIT_STATUS = "verified-2026-07-18"`)
 - Timeline component-set node ID: **confirmed 2026-07-24** — "Content/Timeline Item" component set is node `2058:2092` (Title/Timestamp/Description text properties + State: Default/Highlighted variant); the "Timeline (example)" composed demo is node `2058:2102`; parent section "Content/Timeline" is node `2058:2130`. This closes the one open item from the 2026-07-19 implementation — the component structure, properties, tokens, and positional (not state-coupled) connector suppression were already accurately described and implemented against; only the node IDs themselves were missing from the record. Confirmed anatomy: Default is a 10x10 stroke-only dot (1.5px, semantic/action/primary) + a 2x48px Connector Line (semantic/border/default); Highlighted is a 12x12 solid-fill dot (semantic/action/primary), no stroke; Title is always semantic/text/primary, Timestamp/Description always semantic/text/secondary in both states. The last item's connector is structurally absent (no Connector Line child at all), not merely hidden — there is no formal "Show connector" boolean property (see `lib/timeline-figma-metadata.ts`, `TIMELINE_FIGMA_AUDIT_STATUS = "verified-2026-07-24"`)
+- Layer 3 approved parity scopes for Button, Avatar, Calendar Day, and Pagination Page Item: **verified and closed 2026-08-11** via live inspection of the locked source file and post-implementation audits. This is not a claim of full Layer 3 or full design-system parity. Exact component/master IDs, variable bindings, resolved values, closing commits, and explicit exclusions are archived in `lib/layer3-surface-figma-metadata.ts`.
 - Variable collection counts, page inventory, and current component-set totals: **not verified in this pass**
 
 Historical Figma snapshots must not be treated as current state. See [`skrewww-figma-practices-instructions.md`](../skrewww-figma-practices-instructions.md).
 
 ## Quality-gate status
 
-**Last verified: 2026-07-25** (Layer 4 Industries IA restructuring; see note below)
+**Last verified: 2026-08-11** (latest completed Layer 3 parity verification runs)
 
 | Gate | Result |
 |------|--------|
@@ -175,9 +176,9 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 | `npm run verify:package` | Pass (`skrewww-docs@0.2.0-beta` lockfile aligned) |
 | ESLint | Pass — 26 problems (0 errors, 26 warnings), `--max-warnings 26` |
 | TypeScript | Pass |
-| Vitest | **590 tests** across **75 files** — unchanged from the Banking pilot pass; the Industries IA change is registry/nav/routing data, not new test surface |
-| Playwright | **160 tests** (isolated `.next-playwright` on port 3100) — unchanged from the Banking pilot pass |
-| Production build | Pass — Turbopack (default bundler), **80/80 pages** (+2 new `/components/industries` and `/components/industries/banking` pages), no webpack fallback needed |
+| Vitest | Pass — **688/688 tests** across **81 files** |
+| Playwright | Focused Button, Avatar, Calendar Day, and Pagination suites passed during the parity batches; the historical full-suite total was not rerun and is not replaced by focused counts |
+| Production build | Pass — Turbopack (default bundler), **81 pages** |
 | `npm audit` | **2 high-severity vulnerabilities remain, deliberately unresolved** — `next` (multiple CVEs) and its transitive `sharp` dependency; both require `next@16.3.0` via `npm audit fix --force`, outside the currently pinned exact `"next": "16.2.10"`. 4 other advisories (`brace-expansion`, `js-yaml`, `postcss`, `undici`) resolved 2026-08-07 via plain `npm audit fix` — no `package.json` change, no version outside stated ranges. See note below. |
 
 **Next.js major upgrade — resolved 2026-07-13**: Upgraded 14.2.35 → **16.2.10**
@@ -354,7 +355,7 @@ No new industry-specific tokens were introduced — every token used aliases to 
 - Calendar Grid composed range-picker input (two independently-typable start/end text fields + shared calendar, analogous to Date Picker) — judged non-trivial in scope (comparable to rebuilding Date Picker), not built; see [`calendar-foundation.md`](architecture/calendar-foundation.md#composed-range-picker-input--explicitly-out-of-scope)
 - ~~Timeline~~ — Tree View, Charts, and Timeline (all three Layer 2 code-side gaps) are now implemented (see Recently shipped). Tree View and Charts' Figma node IDs were confirmed 2026-07-18; Timeline's node ID was confirmed 2026-07-24 (see Figma status above) — no open Figma-verification item remains across all three
 - Advanced overlay patterns beyond current Dialog/Drawer/Popover/Menu stack
-- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface substantially resolved 2026-07-17**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass (see the Layer 3 Surface baseline section below), and the Surface/content-cascade audit across the remaining registry (3 batches, 23 components) is now complete, with 2 flagged items still open rather than closed — Menu's Surface fix has no reusable master "Panel" component to live on, and Badge/Alert/Toast carry duplicate tint tokens pending a future consolidation pass (see the Layer 3 Surface audit section below). Gradient mode still has no distinct visual treatment of its own anywhere yet (aliased to Flat)
+- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface substantially resolved 2026-07-17 in Figma**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass (see the Layer 3 Surface baseline section below), and the Surface/content-cascade audit across the remaining registry (3 batches, 23 components) is now complete, with 2 flagged items still open rather than closed — Menu's Surface fix has no reusable master "Panel" component to live on, and Badge/Alert/Toast carry duplicate tint tokens pending a future consolidation pass (see the Layer 3 Surface audit section below). **React parity for Button/Avatar/Calendar Day/Pagination was a separate, later fix (2026-08-11)** — the Figma verification above did not mean the React implementation matched it; see the "Layer 3 React parity fix" section below for what was actually missing and what's now fixed. Gradient mode still has no distinct visual treatment of its own anywhere yet (aliased to Flat)
 
 ## Layer 3 Surface baseline
 
@@ -388,6 +389,25 @@ of the 2026-07-17 remediation, not a correction of prior text.
   hover/press feedback
 - All 45 master variants bound; fresh-instance inheritance verified;
   Flat/Gradient/Glass all verified with no regression
+
+**Correction (2026-08-11) — this subsection describes the Figma contract
+only, not React parity.** The bullets above accurately record what was
+verified in Figma on 2026-07-17. They do not mean the React implementation
+matched it: an independent source-level check (styles/tokens.css and every
+component's own `.module.css`) found `component/surface/content` did not
+exist anywhere in the React codebase, and Button's Primary/Danger
+`color`/`background-color` had zero `[data-skrewww-surface="glass"]`
+override at all — rendering identically across Flat/Gradient/Glass in the
+shipped product the entire time, contrary to what a reader would reasonably
+infer from "all verified with no regression" above. Avatar and Calendar Day
+Selected had the identical gap (both reuse the same static
+`--semantic-action-primary`/`--semantic-text-inverse` pattern with no Glass
+override), and Pagination Current was found to not even be on the
+brand-fill family in code — it shipped as the unrelated neutral/elevated
+treatment. See the Layer 3 Surface audit and Active roadmap sections below
+for the full finding and the 2026-08-11 fix. This correction is left in
+place rather than rewritten in place, per this file's own no-silent-rewrite
+convention — the original bullets are Figma-accurate and untouched.
 
 **Card — Surface container pattern**
 
@@ -435,6 +455,58 @@ the actual master components. Fixed by adding a BACKGROUND_BLUR effect
 (bound to `component/surface/blur`) to all 62 master variants (45 Button, 2
 Card, 15 Text Input). Verified on a fresh instance: blur resolves to 0 in
 Flat/Gradient, 16 in Glass, purely from mode-switching.
+
+## Layer 3 React parity — closed approved scopes (2026-08-11)
+
+Live audits used the locked `Skrewww - Design System` file
+(`U6KUuNf7DF4CP9QBOkLSUx`) as source of truth. The approved scopes below
+are verified and closed; this does **not** declare full Layer 3 or full
+design-system parity. Exact master IDs, variable IDs, resolved values, and
+exclusions live in `lib/layer3-surface-figma-metadata.ts`.
+
+- **Button** — Primary and Danger Default/Hover/Pressed/Focused/Disabled,
+  Secondary's verified Glass treatment, Small/Medium/Large consistency,
+  16px Glass blur, disabled opacity, separate Primary/Danger focus-gradient
+  families, and the 1px OUTSIDE focused treatment are verified. Rounded is
+  4px. Closed by `e0969f8f42a489a3d8c7624d00d795ba0c8cf166`.
+- **Avatar** — initials masters are verified at 24/32/48px with 12/14/16px
+  type, no stroke, shared Primary Surface fill/content/blur bindings, and a
+  fixed `radius/full` circle under every global Shape mode. Closed by
+  `61b18bc9eab2428e8e2807daf884625dc6d915b1`.
+- **Calendar Day** — the five live masters Default, Today, Selected,
+  Disabled, and Outside are verified at 32px, 14px, and `radius/full`.
+  Today uses the verified 1.5px inside stroke without a separate dot;
+  Selected carries the verified Surface fill/content/16px Glass blur;
+  Disabled and Outside retain their distinct opacity behavior. Closed by
+  `68ca733af663d819e3d9a556713ce13f1eabd352`.
+- **Pagination Page Item** — Default, Hover, Current, Disabled, Ellipsis,
+  32px geometry, 16px typography, 4px represented trail gap, Surface
+  behavior, stroke absence, and Shape radii are verified. Closed by
+  `5cfb4e6`.
+
+**Explicitly unresolved or outside these verified scopes**:
+
+- Button's exact React Squircle polygon equivalence to Figma corner
+  smoothing `0.6000000238` remains unverified. Primary Glass Hover's dark
+  `#17181B` content can appear muddy over complex backgrounds, but it
+  matches live Figma; readability changes require Figma design approval and
+  are not a React parity defect.
+- Avatar image fallback, icon fallback, Hover, Pressed, Focused, and
+  Disabled visual parity remain unverified because no matching masters
+  exist.
+- Calendar Day Range Start, Range End, Range Middle, and range preview are
+  CODE-ONLY / UNVERIFIED. Hover, Selected Hover, Pressed, and Focused are
+  also unverified. No range state is claimed to share Selected's verified
+  Figma contract.
+- Pagination Page Item Pressed, Focused, responsive/compact composition,
+  First/Last controls, and exact Squircle polygon equivalence remain
+  unverified.
+- **Textual Previous/Next intentionally preserved; Figma icon-only Trail is
+  composition-only evidence.** This is an approved product decision for
+  clarity, accessibility, and existing consumer expectations, and is an
+  intentional composition divergence rather than a parity defect. No
+  canonical Previous/Next parity is claimed; their disabled Figma
+  presentation remains unverified.
 
 ## Layer 3 Surface audit — Batches 1-3 complete
 
@@ -488,10 +560,12 @@ Fixed:
   `component/file-upload/dragging-surface` for the Dragging state, whose
   accent border was deliberately left untouched (same treatment as Error's
   danger border)
-- Pagination/Page Item — 32px "Current" state reused Button's primary
-  background + `component/surface/content` (distinguished from the
-  small-control exceptions below since it's Button-scale, not
-  Checkbox-scale); Hover reused Menu's item-hover token
+- Pagination/Page Item — Figma's 32px Current state reused Button's primary
+  background + `component/surface/content`, while Hover reused Menu's
+  item-hover token. React originally shipped Current on an unrelated
+  neutral/elevated family; the completed 2026-08-11 parity batch corrected
+  Current and verified Default, Hover, Disabled, and Ellipsis as well. See
+  the closed-scope Layer 3 React parity section above.
 
 Marked not-applicable:
 - Checkbox, Radio, Switch — user decision: ~16-24px indicators, blur would
