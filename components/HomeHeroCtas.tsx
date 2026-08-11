@@ -9,9 +9,12 @@ const GUMROAD_PRO_HREF = "https://usmanfarooqi.gumroad.com/l/skrewww-pro";
 
 const FREE_FIGMA_COMPONENT_COUNT = 23;
 
+const secondaryLinkClass =
+  "inline-flex items-center py-1 text-sm font-medium text-brand-600 underline decoration-brand-300 underline-offset-4 hover:text-brand-700 hover:decoration-brand-600";
+
 export function HomeHeroCtas({ totalComponents }: { totalComponents: number }) {
   return (
-    <div className="mt-7 flex flex-col gap-3">
+    <div className="mt-6 flex flex-col gap-4 sm:mt-7 sm:gap-3">
       <div className="flex flex-wrap items-center gap-3">
         <Button
           href="/components"
@@ -32,10 +35,9 @@ export function HomeHeroCtas({ totalComponents }: { totalComponents: number }) {
         </Button>
       </div>
       <div>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+          <a
             href={FIGMA_FREE_FILE_HREF}
-            variant="secondary"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() =>
@@ -44,22 +46,23 @@ export function HomeHeroCtas({ totalComponents }: { totalComponents: number }) {
                 href: FIGMA_FREE_FILE_HREF,
               })
             }
+            className={secondaryLinkClass}
           >
             Get free Figma file
-          </Button>
-          <Button
+          </a>
+          <a
             href={GUMROAD_PRO_HREF}
-            variant="secondary"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() =>
               trackEvent("navigation_cta_clicked", { label: "Get Skrewww Pro", href: GUMROAD_PRO_HREF })
             }
+            className={secondaryLinkClass}
           >
             Get Skrewww Pro
-          </Button>
+          </a>
         </div>
-        <p className="mt-2 font-mono text-xs uppercase tracking-wide text-ink-400">
+        <p className="mt-2 font-mono text-[13px] uppercase tracking-wide text-ink-500 sm:text-xs sm:text-ink-400">
           Figma design files — {FREE_FIGMA_COMPONENT_COUNT} components free, {totalComponents} in Pro
         </p>
       </div>

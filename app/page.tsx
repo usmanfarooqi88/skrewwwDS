@@ -5,8 +5,9 @@ import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
 import { siteConfig } from "@/lib/site-config";
 import { Card } from "@/components/ui/Card";
-import { TokenPill } from "@/components/TokenPill";
+import { TokenPillRow } from "@/components/TokenPill";
 import { HomeHeroCtas } from "@/components/HomeHeroCtas";
+import { cn } from "@/lib/cn";
 
 const layers = [
   {
@@ -45,14 +46,17 @@ const toneClasses: Record<string, string> = {
   neutral: "bg-ink-100 text-ink-500",
 };
 
+const eyebrowClass =
+  "font-mono text-[13px] font-semibold uppercase tracking-wide text-ink-500 sm:text-xs sm:font-medium sm:text-ink-400";
+
 export default function HomePage() {
   const counts = getCategoryCounts();
   const totalComponents = allComponents.length;
   const implementedCount = getImplementedComponentCount();
 
   return (
-    <div className="mx-auto max-w-4xl px-8 py-16">
-      <div className="mb-16">
+    <div className="mx-auto max-w-4xl px-5 py-10 sm:px-8 sm:py-16">
+      <div className="mb-10 sm:mb-16">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-ink-200 px-3 py-1 font-mono text-xs text-ink-500">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
           {siteConfig.designSystemVersion} — {implementedCount} Beta React components
@@ -62,7 +66,7 @@ export default function HomePage() {
           <br />
           Every surface.
         </h1>
-        <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-500">
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-600 sm:mt-5 sm:text-lg sm:text-ink-500">
           Skrewww is an AI-first design system platform. The same {totalComponents} components
           adapt through tokens — never forks — across shape, surface, brand, and eventually
           industry. Built to be read by designers, developers, and coding agents alike.
@@ -70,60 +74,65 @@ export default function HomePage() {
         <HomeHeroCtas totalComponents={totalComponents} />
       </div>
 
-      <div className="mb-16">
-        <h2 className="mb-1 font-mono text-xs font-medium uppercase tracking-wide text-ink-400">
-          Architecture
-        </h2>
-        <p className="mb-6 text-sm text-ink-500">
+      <div className="mb-10 sm:mb-16">
+        <h2 className={eyebrowClass}>Architecture</h2>
+        <p className="mt-1.5 mb-5 text-[15px] leading-relaxed text-ink-600 sm:mt-1 sm:mb-6 sm:text-sm sm:text-ink-500">
           Every decision in this system is scoped to one of four layers. Status shown here is
           real, not aspirational.
         </p>
         <Card elevation="flat" bodyClassName="divide-y divide-ink-200 p-0">
           {layers.map((layer) => (
-            <div key={layer.n} className="flex items-start gap-4 p-4">
-              <span className="mt-0.5 font-mono text-xs text-ink-300">{layer.n}</span>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-ink-900">{layer.name}</h3>
+            <div key={layer.n} className="p-4 sm:flex sm:items-start sm:gap-4">
+              <span className="block font-mono text-[11px] text-ink-400 sm:mt-0.5 sm:shrink-0 sm:text-xs sm:text-ink-300">
+                {layer.n}
+              </span>
+              <div className="mt-1 sm:mt-0 sm:min-w-0 sm:flex-1">
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                  <h3 className="text-base font-semibold text-ink-900 sm:text-sm">{layer.name}</h3>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${toneClasses[layer.tone]}`}
+                    className={cn(
+                      "shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium",
+                      toneClasses[layer.tone],
+                    )}
                   >
                     {layer.status}
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-ink-500">{layer.desc}</p>
+                <p className="mt-2 text-[15px] leading-relaxed text-ink-600 sm:mt-1 sm:text-sm sm:text-ink-500">
+                  {layer.desc}
+                </p>
               </div>
             </div>
           ))}
         </Card>
       </div>
 
-      <Card elevation="flat" className="mb-16 bg-ink-50">
-        <h2 className="mb-1 font-mono text-xs font-medium uppercase tracking-wide text-ink-400">
-          Tokens, not hex codes
-        </h2>
-        <p className="mb-3 text-sm text-ink-500">
+      <Card elevation="flat" className="mb-10 bg-ink-50 sm:mb-16">
+        <h2 className={eyebrowClass}>Tokens, not hex codes</h2>
+        <p className="mt-1.5 mb-4 text-[15px] leading-relaxed text-ink-600 sm:mt-1 sm:mb-3 sm:text-sm sm:text-ink-500">
           Every color, radius, and shadow referenced in these docs is a real, resolvable token —
           not prose describing one. This is what a Button actually points to:
         </p>
-        <TokenPill token="semantic/action/primary" />{" "}
-        <TokenPill token="component/radius/control" />{" "}
-        <TokenPill token="semantic/focus-ring" />
+        <TokenPillRow
+          tokens={["semantic/action/primary", "component/radius/control", "semantic/focus-ring"]}
+        />
       </Card>
 
       <div>
-        <h2 className="mb-4 font-mono text-xs font-medium uppercase tracking-wide text-ink-400">
-          Components by category
-        </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <h2 className={cn(eyebrowClass, "mb-3.5 sm:mb-4")}>Components by category</h2>
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
           {counts.map(({ category, count }) => (
             <Link
               key={category}
               href={getCategoryPageHref(category as CategoryName)}
-              className="rounded-lg border border-ink-200 p-4 hover:border-brand-500 hover:bg-brand-50/40"
+              className="rounded-lg border border-ink-200 p-3.5 hover:border-brand-500 hover:bg-brand-50/40 sm:p-4"
             >
-              <div className="text-2xl font-semibold text-ink-900">{count}</div>
-              <div className="mt-0.5 text-sm text-ink-500">{category}</div>
+              <div className="text-[28px] font-bold leading-none text-ink-900 sm:text-2xl sm:font-semibold">
+                {count}
+              </div>
+              <div className="mt-1.5 text-sm font-medium text-ink-600 sm:mt-0.5 sm:font-normal sm:text-ink-500">
+                {category}
+              </div>
             </Link>
           ))}
         </div>
