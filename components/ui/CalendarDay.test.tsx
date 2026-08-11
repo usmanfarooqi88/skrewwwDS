@@ -16,6 +16,7 @@ describe("CalendarDay", () => {
       "aria-current",
       "date",
     );
+    expect(screen.getByRole("button", { name: /11 July 2026/ }).children).toHaveLength(1);
   });
 
   it("prevents selection when disabled", async () => {

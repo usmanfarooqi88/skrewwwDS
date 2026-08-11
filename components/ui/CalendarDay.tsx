@@ -125,7 +125,6 @@ export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(funct
       <span className={styles.dayNumber} aria-hidden="true">
         {dayNumber}
       </span>
-      {today ? <span className={styles.todayIndicator} aria-hidden="true" /> : null}
     </button>
   );
 });

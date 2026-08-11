@@ -8,7 +8,7 @@
   min-width: var(--calendar-day-min-touch);
   height: var(--calendar-day-size);
   min-height: var(--calendar-day-min-touch);
-  border: 1px solid transparent;
+  border: 0;
   border-radius: var(--calendar-day-radius);
   background: transparent;
   color: var(--calendar-day-text);
@@ -30,34 +30,29 @@
 .selected {
   background: var(--calendar-day-selected-surface);
   color: var(--calendar-day-selected-text);
-  border-color: var(--calendar-day-selected-surface);
 }
 
 .today:not(.selected) {
-  border-color: var(--calendar-day-today-indicator);
-}
-
-.todayIndicator {
-  position: absolute;
-  bottom: 0.25rem;
-  width: 0.25rem;
-  height: 0.25rem;
-  border-radius: 9999px;
-  background: var(--calendar-day-today-indicator);
-}
-
-.selected .todayIndicator {
-  background: var(--calendar-day-selected-text);
+  box-shadow: inset 0 0 0 1.5px var(--calendar-day-today-indicator);
 }
 
 .outside {
   color: var(--calendar-day-muted-text);
 }
 
+.outside:not(.rangeStart, .rangeEnd, .rangeMiddle, .rangePreviewEnd, .rangePreviewMiddle) {
+  color: var(--calendar-day-disabled-text);
+}
+
 .disabled,
 .day:disabled {
   color: var(--calendar-day-disabled-text);
   cursor: not-allowed;
+}
+
+.disabled:not(.rangeStart, .rangeEnd, .rangeMiddle, .rangePreviewEnd, .rangePreviewMiddle),
+.day:disabled:not(.rangeStart, .rangeEnd, .rangeMiddle, .rangePreviewEnd, .rangePreviewMiddle) {
+  opacity: var(--opacity-disabled);
 }
 
 .dayNumber {
@@ -68,6 +63,19 @@
    the inner corner so the band reads as continuous. A single-day range has
    both .rangeStart and .rangeEnd, which cancel each other's flattening back
    to a full pill — see the combined selector below. */
+.rangeStart,
+.rangeEnd,
+.rangeMiddle,
+.rangePreviewEnd,
+.rangePreviewMiddle {
+  width: var(--calendar-day-code-only-size);
+  min-width: var(--calendar-day-code-only-min-touch);
+  height: var(--calendar-day-code-only-size);
+  min-height: var(--calendar-day-code-only-min-touch);
+  border: 1px solid transparent;
+  border-radius: var(--calendar-day-code-only-radius);
+}
+
 .rangeMiddle {
   background: var(--calendar-day-range-middle-surface);
   border-radius: 0;
@@ -86,7 +94,7 @@
 }
 
 .rangeStart.rangeEnd {
-  border-radius: var(--calendar-day-radius);
+  border-radius: var(--calendar-day-code-only-radius);
 }
 
 /* Provisional (uncommitted) hover/keyboard preview — a lighter, dashed
@@ -112,7 +120,7 @@
 }
 
 .rangeStart.rangeEnd:hover:not(:disabled) {
-  border-radius: var(--calendar-day-radius);
+  border-radius: var(--calendar-day-code-only-radius);
 }
 
 .rangeMiddle:hover:not(:disabled) {
@@ -126,16 +134,27 @@
   color: var(--calendar-day-text);
 }
 
-[data-skrewww-shape="pill"] .day {
-  border-radius: min(var(--calendar-day-radius), 9999px);
-}
-
-[data-skrewww-shape="pill"] .rangeStart.rangeEnd {
-  border-radius: min(var(--calendar-day-radius), 9999px);
-}
-
 [data-skrewww-surface="glass"] .day:hover:not(:disabled) {
   background: color-mix(in srgb, var(--calendar-day-hover-surface) 90%, white);
+}
+
+/* component/button/primary/background family + component/surface/blur —
+   resting Selected only (2026-08-11, node 2058:2143). Higher specificity
+   than .selected:hover below, so the code-only hover-on-selected treatment
+   remains untouched.
+   [KNOWN GAP] .rangeStart/.rangeEnd share the exact same non-Glass tokens
+   as .selected but aren't included here — no verified Glass value exists
+   for the range-endpoint case specifically, so they're left on the prior
+   solid-brand-unconditional behavior rather than guessed. */
+[data-skrewww-surface="glass"] .selected {
+  background: var(--component-brand-fill-glass);
+  backdrop-filter: var(--glass-backdrop-filter-lg);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .selected {
+    background: var(--semantic-action-primary);
+  }
 }
 
 [data-skrewww-surface="glass"] .selected:hover:not(:disabled),

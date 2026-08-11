@@ -19,7 +19,7 @@ export function CalendarDayPreview() {
         </PreviewGroup>
         <p className="mt-4 text-sm text-ink-600">
           Visible day numbers use full-date accessible names such as “14 July 2026”. Today uses
-          border and dot indicators — not color alone.
+          the verified inside stroke rather than a separate dot.
         </p>
       </ComponentPreview>
     </div>

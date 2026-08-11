@@ -54,6 +54,25 @@ describe("component registry — Avatar Figma bindings", () => {
   });
 });
 
+describe("component registry — Calendar Day Figma bindings", () => {
+  const calendarDay = componentRegistry.find((entry) => entry.slug === "calendar-day");
+
+  it("records only the canonical bindings confirmed on the live masters", () => {
+    expect(calendarDay?.tokensUsed).toEqual([
+      "semantic/text/primary",
+      "semantic/text/disabled",
+      "semantic/action/primary",
+      "component/button/primary/background",
+      "component/surface/content",
+      "component/surface/blur",
+      "radius/full",
+    ]);
+    expect(calendarDay?.tokensUsed).not.toContain("component/radius/control");
+    expect(calendarDay?.tokensUsed).not.toContain("semantic/text/secondary");
+    expect(calendarDay?.tokensUsed).not.toContain("semantic/focus-ring");
+  });
+});
+
 describe("component registry — Card distribution metadata", () => {
   const card = componentRegistry.find((entry) => entry.slug === "card");
 

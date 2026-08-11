@@ -583,18 +583,31 @@
   --empty-state-title-text: var(--semantic-text-primary);
   --empty-state-description-text: var(--semantic-text-secondary);
 
-  /* ── Calendar Day geometry [TEMPORARY] ── */
-  --calendar-day-size: 2.5rem;
-  --calendar-day-min-touch: 2.5rem;
-  --calendar-day-text: var(--semantic-text-primary);
+  /* ── Calendar Day geometry ── */
+  --calendar-day-size: 2rem; /* 32px; Figma masters 2058:2141–2145 */
+  --calendar-day-min-touch: 2rem;
+  /* semantic/text/primary (VariableID:2002:2462), resolved in the audited
+     Figma Light mode. Scoped here because the shared foundation currently
+     resolves differently and is outside this component correction. */
+  --calendar-day-text: #17181b;
   --calendar-day-muted-text: var(--semantic-text-secondary);
   --calendar-day-hover-surface: var(--semantic-surface-elevated);
   --calendar-day-selected-surface: var(--semantic-action-primary);
   --calendar-day-selected-hover-surface: var(--semantic-action-primary-hover);
-  --calendar-day-selected-text: var(--semantic-text-inverse);
+  /* [VERIFIED] component/surface/content participant, confirmed 2026-08-11
+     (component set 2058:2146, Selected 2058:2143) — resting Selected state
+     only. Selected:hover is code-only/unverified and stays untouched. */
+  --calendar-day-selected-text: var(--component-surface-content, var(--semantic-text-inverse));
   --calendar-day-today-indicator: var(--semantic-action-primary);
-  --calendar-day-disabled-text: var(--semantic-text-disabled);
-  --calendar-day-radius: var(--shape-radius-control);
+  /* semantic/text/disabled (VariableID:2002:2464), resolved in the audited
+     Figma Light mode; scoped for the same foundation-drift reason above. */
+  --calendar-day-disabled-text: #a0a3ac;
+  --calendar-day-radius: var(--radius-full, 9999px);
+  /* Range and preview states have no live Figma masters. Preserve their
+     pre-audit geometry and Shape behavior independently of verified days. */
+  --calendar-day-code-only-size: 2.5rem;
+  --calendar-day-code-only-min-touch: 2.5rem;
+  --calendar-day-code-only-radius: var(--shape-radius-control);
   --calendar-day-range-middle-surface: color-mix(in srgb, var(--calendar-day-selected-surface) 16%, transparent);
   --calendar-day-range-middle-hover-surface: color-mix(in srgb, var(--calendar-day-selected-surface) 24%, transparent);
   --calendar-day-range-preview-surface: color-mix(in srgb, var(--calendar-day-selected-surface) 8%, transparent);

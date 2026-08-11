@@ -36,33 +36,45 @@ export const calendarRegistryEntries: ComponentRegistryEntry[] = [
     supportedSizes: [],
     tokensUsed: [
       "semantic/text/primary",
-      "semantic/text/secondary",
       "semantic/text/disabled",
       "semantic/action/primary",
-      "semantic/focus-ring",
-      "component/radius/control",
+      "component/button/primary/background",
+      "component/surface/content",
+      "component/surface/blur",
+      "radius/full",
     ],
     relatedComponents: [
       { label: "Calendar Grid — month composition", href: "/components/calendar-grid" },
       { label: "Date Picker — popover field composition", href: "/components/date-picker" },
     ],
     relatedTokens: [
-      { label: "semantic/action/primary", href: "/foundations" },
-      { label: "component/radius/control", href: "/foundations" },
+      { label: "semantic/action/primary (Today stroke)", href: "/foundations" },
+      { label: "component/button/primary/background (Selected fill)", href: "/foundations" },
+      { label: "component/surface/content", href: "/foundations" },
+      { label: "component/surface/blur", href: "/foundations" },
+      { label: "semantic/text/disabled (Disabled and Outside)", href: "/foundations" },
+      { label: "radius/full", href: "/foundations" },
     ],
-    relatedConcepts: [sharedConcepts.shape],
+    // Genuine Surface participant, confirmed via Figma master-component
+    // inspection 2026-08-11 (component set 2058:2146, Selected 2058:2143)
+    // — the resting Selected fill and its text both respond to Surface
+    // mode. Previously omitted here; that was a real metadata gap, not an
+    // intentional Flat-only exclusion. Range start/middle/end and
+    // hover-on-selected are code-only/unverified. Calendar Day itself binds
+    // radius/full and does not participate in Figma's global Shape modes.
+    relatedConcepts: [sharedConcepts.surface],
     openQuestions: [
-      "Multi-select and event-indicator states are not confirmed. Range start/middle/end states are implemented — see Calendar Grid's range mode.",
+      "Range start/middle/end, range preview, hover, selected hover, pressed, and focused are implemented React capabilities without corresponding live Figma masters; their visual parity remains unverified.",
       "Calendar Day should be composed inside Calendar Grid — not used standalone without grid context.",
     ],
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
-    anatomy: "Calendar Day = native button + visible day number + optional today indicator.",
+    anatomy: "Calendar Day = native button + visible day number. Today is represented by the verified inside stroke.",
     comparisons: [
       {
         title: "What is the difference between today and selected?",
-        body: "Today marks the current calendar date. Selected marks the chosen value. They are independent and use separate visual indicators.",
+        body: "Today marks the current calendar date with an inside stroke. Selected marks the chosen value with the Surface-dependent primary fill.",
       },
       {
         title: "How is a Calendar Day labelled for screen readers?",
