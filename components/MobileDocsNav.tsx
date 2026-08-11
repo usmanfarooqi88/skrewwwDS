@@ -32,7 +32,7 @@ export function MobileDocsNav() {
             alt="skrewww"
             width={590}
             height={161}
-            className="h-5 w-auto"
+            className="h-6 w-auto"
             priority
           />
         </Link>
@@ -51,7 +51,9 @@ export function MobileDocsNav() {
           </DrawerTrigger>
           <DrawerContent aria-label="Documentation navigation">
             <DrawerTitle visuallyHidden>Documentation navigation</DrawerTitle>
-            <DrawerClose />
+            <div className="flex shrink-0 justify-end px-5 pt-5">
+              <DrawerClose className="min-h-11 min-w-11" />
+            </div>
             <DrawerBody className="px-0 pb-6">
               <SidebarNav onNavigate={closeDrawer} />
             </DrawerBody>
