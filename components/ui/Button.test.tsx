@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { Button } from "@/components/ui/Button";
 import { PlusIcon } from "@/components/ui/icons";
@@ -80,5 +81,40 @@ describe("Button", () => {
     control.focus();
     await user.keyboard("{Enter}");
     expect(onClick).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the native control as the public ref, className, and style owner", () => {
+    const ref = createRef<HTMLButtonElement>();
+    render(
+      <Button ref={ref} className="consumer-class" style={{ marginTop: 7 }}>
+        Native root
+      </Button>,
+    );
+
+    const control = screen.getByRole("button", { name: "Native root" });
+    expect(ref.current).toBe(control);
+    expect(control).toHaveClass("consumer-class");
+    expect(control).toHaveStyle({ marginTop: "7px" });
+    expect(control.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
+  });
+
+  it("preserves native submit and reset form behavior", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
+    render(
+      <form onSubmit={onSubmit}>
+        <input aria-label="Value" defaultValue="initial" />
+        <Button type="submit">Submit</Button>
+        <Button type="reset">Reset</Button>
+      </form>,
+    );
+
+    const input = screen.getByRole("textbox", { name: "Value" });
+    await user.clear(input);
+    await user.type(input, "changed");
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+    expect(onSubmit).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(input).toHaveValue("initial");
   });
 });

@@ -5,8 +5,27 @@ import { Button } from "@/components/ui/Button";
 import { ChevronRightIcon, PlusIcon } from "@/components/ui/icons";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 
+const surfaceModes = ["flat", "gradient", "glass"] as const;
+const shapeModes = ["sharp", "rounded", "pill", "squircle"] as const;
+
+function modeLabel(mode: string) {
+  return mode.charAt(0).toUpperCase() + mode.slice(1);
+}
+
 export function ButtonPreview() {
   const [loading, setLoading] = useState(false);
+  const [surface, setSurface] = useState<(typeof surfaceModes)[number]>("flat");
+  const [shape, setShape] = useState<(typeof shapeModes)[number]>("rounded");
+
+  function selectSurface(mode: (typeof surfaceModes)[number]) {
+    document.documentElement.setAttribute("data-skrewww-surface", mode);
+    setSurface(mode);
+  }
+
+  function selectShape(mode: (typeof shapeModes)[number]) {
+    document.documentElement.setAttribute("data-skrewww-shape", mode);
+    setShape(mode);
+  }
 
   return (
     <div className="space-y-8">
@@ -14,11 +33,87 @@ export function ButtonPreview() {
         title="Live preview"
         description="Interactive Button instances using Skrewww tokens. Shape and surface are controlled globally through CSS custom properties — not separate component files."
       >
-        <PreviewGroup label="Visual variants">
-          <Button variant="primary">Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="danger">Danger</Button>
-        </PreviewGroup>
+        <div className="mb-5 flex flex-wrap gap-5" data-testid="button-preview-mode-controls">
+          <fieldset>
+            <legend className="mb-2 font-mono text-[11px] font-medium uppercase tracking-wide text-ink-500">
+              Surface
+            </legend>
+            <div className="inline-flex rounded-lg border border-ink-200 bg-white p-1" aria-label="Surface mode">
+              {surfaceModes.map((mode) => {
+                const active = surface === mode;
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={active}
+                    className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      active ? "bg-ink-900 text-white" : "text-ink-600 hover:bg-ink-100"
+                    }`}
+                    onClick={() => selectSurface(mode)}
+                  >
+                    {modeLabel(mode)}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend className="mb-2 font-mono text-[11px] font-medium uppercase tracking-wide text-ink-500">
+              Shape
+            </legend>
+            <div className="inline-flex flex-wrap rounded-lg border border-ink-200 bg-white p-1" aria-label="Shape mode">
+              {shapeModes.map((mode) => {
+                const active = shape === mode;
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={active}
+                    className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      active ? "bg-ink-900 text-white" : "text-ink-600 hover:bg-ink-100"
+                    }`}
+                    onClick={() => selectShape(mode)}
+                  >
+                    {modeLabel(mode)}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        </div>
+
+        <div
+          className="relative isolate overflow-hidden rounded-xl border border-ink-200 bg-gradient-to-br from-brand-50 via-white to-ink-100 px-6 py-10"
+          data-testid="button-glass-qa-backdrop"
+        >
+          <div className="pointer-events-none absolute bottom-2 left-3 h-20 w-20 rounded-full bg-brand-400/75" aria-hidden="true" />
+          <div
+            className="pointer-events-none absolute left-[28%] top-8 h-20 w-1/2 -rotate-6 rounded-2xl bg-gradient-to-r from-info/80 via-brand-500/80 to-warning/70"
+            aria-hidden="true"
+          />
+          <div className="pointer-events-none absolute -bottom-12 -right-8 h-40 w-40 rounded-full bg-danger/75" aria-hidden="true" />
+
+          <div className="relative z-10">
+            <h3 className="font-mono text-[11px] font-medium uppercase tracking-wide text-ink-400">
+              Visual variants
+            </h3>
+            <div className="relative mt-3 flex flex-wrap items-center gap-3 py-2">
+              <div
+                className="pointer-events-none absolute -inset-x-3 inset-y-0 rounded-lg border border-ink-900/15 opacity-55"
+                data-testid="button-glass-qa-stripes"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(90deg, rgb(19 19 22 / 0.72) 0 2px, rgb(255 255 255 / 0.82) 2px 8px)",
+                }}
+                aria-hidden="true"
+              />
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="danger">Danger</Button>
+            </div>
+          </div>
+        </div>
       </ComponentPreview>
 
       <ComponentPreview title="Sizes">

@@ -1,4 +1,4 @@
-import { test as base, expect } from "@playwright/test";
+import { test as base, expect, type Locator, type Page } from "@playwright/test";
 
 /**
  * Vercel Web Analytics and Speed Insights request their script from an
@@ -22,3 +22,102 @@ export const test = base.extend({
 });
 
 export { expect };
+
+/**
+ * Resolves a computed color (background-color, color, border-color) to
+ * concrete 0-255 RGB + 0-1 alpha, regardless of which CSS serialization
+ * Chromium chose for it. Observed in practice on the same underlying
+ * color-mix() value across different reads: "rgb(...)", "color(srgb ...)",
+ * and "oklab(...)" — Chromium's choice isn't stable, so parsing the string
+ * with a format-specific regex (as an earlier test in this repo did) is
+ * brittle by construction. Painting the raw string onto a 1x1 canvas and
+ * reading the pixel back sidesteps the serialization question entirely —
+ * the canvas 2D context accepts any valid CSS Color 4 syntax as fillStyle
+ * and always reports back in plain 8-bit RGBA, whichever format it was.
+ */
+export async function resolvedRgba(
+  locator: Locator,
+  property: "backgroundColor" | "color" | "borderColor" | "borderTopColor",
+): Promise<{ r: number; g: number; b: number; a: number }> {
+  return locator.evaluate((el, prop) => {
+    const value = getComputedStyle(el)[prop as "backgroundColor"];
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = value;
+    ctx.fillRect(0, 0, 1, 1);
+    // Indexed rather than destructured — this repo's tsconfig targets es5,
+    // and destructuring a canvas ImageData's Uint8ClampedArray-like `data`
+    // needs downlevelIteration / an es2015+ target.
+    const data = ctx.getImageData(0, 0, 1, 1).data;
+    return { r: data[0], g: data[1], b: data[2], a: data[3] / 255 };
+  }, property);
+}
+
+/** Parses a "#rrggbb" hex string (optionally with a separate 0-1 alpha) into the same {r,g,b,a} shape resolvedRgba returns. */
+export function hexToRgba(hex: string, alpha = 1): { r: number; g: number; b: number; a: number } {
+  const clean = hex.replace("#", "");
+  return {
+    r: parseInt(clean.slice(0, 2), 16),
+    g: parseInt(clean.slice(2, 4), 16),
+    b: parseInt(clean.slice(4, 6), 16),
+    a: alpha,
+  };
+}
+
+/**
+ * Tolerant color comparison — a color-mix()/oklab round-trip through the
+ * canvas premultiplied-alpha conversion in resolvedRgba introduces a few
+ * units of 8-bit rounding error per channel, so exact equality is the
+ * wrong bar here. ±4 per RGB channel and ±0.03 alpha is generous enough to
+ * absorb that rounding while still catching a genuinely wrong color
+ * (a different hue or a materially different opacity tier).
+ */
+export function expectColorClose(
+  actual: { r: number; g: number; b: number; a: number },
+  expected: { r: number; g: number; b: number; a: number },
+  message?: string,
+) {
+  const label = message ? `${message}: ` : "";
+  expect(actual.r, `${label}red channel — actual ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`).toBeGreaterThanOrEqual(expected.r - 4);
+  expect(actual.r).toBeLessThanOrEqual(expected.r + 4);
+  expect(actual.g).toBeGreaterThanOrEqual(expected.g - 4);
+  expect(actual.g).toBeLessThanOrEqual(expected.g + 4);
+  expect(actual.b).toBeGreaterThanOrEqual(expected.b - 4);
+  expect(actual.b).toBeLessThanOrEqual(expected.b + 4);
+  expect(actual.a).toBeGreaterThanOrEqual(expected.a - 0.03);
+  expect(actual.a).toBeLessThanOrEqual(expected.a + 0.03);
+}
+
+/**
+ * Sets the Surface mode for the current page's document. Several Glass-
+ * mode rules (Button Primary/Danger, Avatar, Calendar Day Selected,
+ * Pagination Current) change background-color, and .button/.day/.control
+ * all have a real `transition: background-color 0.15s ease` — reading
+ * getComputedStyle() immediately after the attribute flip can catch a
+ * mid-transition interpolated color instead of the settled one.
+ *
+ * A fixed `waitForTimeout` after the flip was tried first and is
+ * deliberately not what shipped: under Playwright's default parallel
+ * workers all hitting the same server at once, one run needed ~200ms and
+ * passed, a later run of the exact same test needed more and failed with
+ * an alpha read mid-transition — a real, observed flake, not a
+ * hypothetical one. Neutralizing transitions/animations for the page
+ * instead makes the read deterministic rather than racing a guessed
+ * duration against real-world server/render load.
+ */
+export async function setSurfaceMode(page: Page, mode: "flat" | "gradient" | "glass") {
+  await page.evaluate((m) => {
+    if (!document.getElementById("__e2e-disable-transitions")) {
+      const style = document.createElement("style");
+      style.id = "__e2e-disable-transitions";
+      style.textContent =
+        "*, *::before, *::after { transition: none !important; animation: none !important; }";
+      document.head.appendChild(style);
+    }
+    document.documentElement.setAttribute("data-skrewww-surface", m);
+    void document.body.offsetHeight;
+  }, mode);
+}

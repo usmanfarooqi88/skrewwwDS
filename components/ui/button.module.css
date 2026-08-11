@@ -4,22 +4,12 @@
      reset to size correctly in a fresh project that doesn't have
      Tailwind — height/padding/border math below requires it directly. */
   box-sizing: border-box;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--control-gap);
   border: 1px solid transparent;
-  border-radius: var(--shape-radius-control);
-  /* Real squircle geometry in Squircle mode — see the
-     --squircle-clip-path-control definition in styles/tokens.css for the
-     technique and why. Falls back to `none` (plain border-radius above
-     still applies) in every other shape mode, where the token is never
-     defined. */
-  clip-path: var(--squircle-clip-path-control, none);
-  /* Only .secondary's background is actually translucent (surface-fill-
-     control) — Primary/Danger's solid brand colors make this a no-op for
-     them, harmlessly, so it's simplest to set once here for all variants. */
-  backdrop-filter: var(--glass-backdrop-filter-sm, none);
+  border-radius: var(--component-button-radius-control);
   font-family: inherit;
   font-weight: 500;
   /* 1 clips descenders (y/g/j/p/q) under .label's overflow: hidden — the line
@@ -36,21 +26,78 @@
     box-shadow 0.15s ease;
 }
 
+.visualSurface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  clip-path: var(--squircle-clip-path-control, none);
+  backdrop-filter: var(--glass-backdrop-filter-lg, none);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: var(--control-gap);
+}
+
 .button:focus {
   outline: none;
 }
 
-.button:focus-visible {
+.secondary:focus-visible {
   outline: 2px solid var(--semantic-focus-ring);
   outline-offset: 2px;
 }
 
-/* clip-path clips outline exactly like it clips box-shadow — a detached
-   2px-offset ring would get cut off at the clip boundary. Flush instead of
-   floating is a fully visible, deliberate trade-off in Squircle mode only;
-   every other shape mode keeps the detached ring above unchanged. */
-[data-skrewww-shape="squircle"] .button:focus-visible {
-  outline-offset: 0;
+/* Primary and Danger Focused masters use the same verified three-stop
+   semantic stroke families as their Glass borders, aligned 1px OUTSIDE.
+   The native root stays unclipped so this decorative ring remains visible
+   in Squircle mode; the clipped fill/blur lives on .visualSurface. */
+.primary:focus-visible::before,
+.danger:focus-visible::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border: 1px solid transparent;
+  border-radius: calc(var(--component-button-radius-control) + 1px);
+  background-origin: border-box;
+  background-clip: border-box;
+  pointer-events: none;
+  mask:
+    linear-gradient(#000 0 0) padding-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+[data-skrewww-shape="squircle"] .primary:focus-visible::before,
+[data-skrewww-shape="squircle"] .danger:focus-visible::before {
+  clip-path: var(--squircle-clip-path-control);
+}
+
+.primary:focus-visible::before {
+  background-image: linear-gradient(
+    17.526deg,
+    var(--component-button-primary-border-start) 0%,
+    var(--component-button-primary-border-mid) 50%,
+    var(--component-button-primary-border-end) 100%
+  );
+}
+
+.danger:focus-visible::before {
+  background-image: linear-gradient(
+    17.526deg,
+    var(--component-button-danger-border-start) 0%,
+    var(--component-button-danger-border-mid) 50%,
+    var(--component-button-danger-border-end) 100%
+  );
 }
 
 .button:disabled,
@@ -62,21 +109,22 @@
 
 .primary:disabled,
 .primary[aria-disabled="true"] {
-  background-color: var(--semantic-action-primary);
-  color: var(--semantic-text-inverse);
-}
-
-.secondary:disabled,
-.secondary[aria-disabled="true"] {
-  background-color: var(--semantic-surface-disabled);
-  border-color: var(--semantic-border-disabled);
-  color: var(--semantic-text-disabled);
+  color: var(--component-surface-content, var(--semantic-text-inverse));
 }
 
 .danger:disabled,
 .danger[aria-disabled="true"] {
-  background-color: var(--semantic-action-danger);
-  color: var(--semantic-text-inverse);
+  color: var(--component-surface-content, var(--semantic-text-inverse));
+}
+
+.primary:disabled .visualSurface,
+.primary[aria-disabled="true"] .visualSurface {
+  background-color: var(--component-button-primary-fill);
+}
+
+.danger:disabled .visualSurface,
+.danger[aria-disabled="true"] .visualSurface {
+  background-color: var(--component-danger-fill);
 }
 
 .fullWidth {
@@ -102,44 +150,171 @@
 }
 
 .primary {
-  background-color: var(--semantic-action-primary);
-  color: var(--semantic-text-inverse);
+  /* Falls back to white outside Glass — see --component-surface-content in
+     styles/tokens.css. */
+  color: var(--component-surface-content, var(--semantic-text-inverse));
 }
 
-.primary:hover:not(:disabled):not([aria-disabled="true"]) {
-  background-color: var(--semantic-action-primary-hover);
+.primary .visualSurface {
+  background-color: var(--component-button-primary-fill);
 }
 
-.primary:active:not(:disabled):not([aria-disabled="true"]) {
-  background-color: var(--semantic-action-primary-pressed);
+.primary:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-button-primary-fill-hover);
+}
+
+.primary:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-button-primary-fill-pressed);
 }
 
 .secondary {
-  background-color: var(--surface-fill-control);
-  border-color: var(--semantic-border-default);
   color: var(--semantic-text-primary);
 }
 
-.secondary:hover:not(:disabled):not([aria-disabled="true"]) {
+.secondary .visualSurface {
+  background-color: var(--surface-fill-control);
+  border-color: var(--semantic-border-default);
+}
+
+.secondary:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface {
   background-color: var(--semantic-surface-subtle);
   border-color: var(--semantic-border-strong);
 }
 
-.secondary:active:not(:disabled):not([aria-disabled="true"]) {
+.secondary:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
   background-color: var(--semantic-surface-elevated);
 }
 
 .danger {
-  background-color: var(--semantic-action-danger);
-  color: var(--semantic-text-inverse);
+  /* component/button/danger/background — a dedicated, Figma-verified
+     Button-danger fill (#e5484d), distinct from the generic
+     --semantic-action-danger (#d92d3e) used elsewhere (Alert/Toast/focus
+     rings). See --component-danger-fill in styles/tokens.css. */
+  color: var(--component-surface-content, var(--semantic-text-inverse));
 }
 
-.danger:hover:not(:disabled):not([aria-disabled="true"]) {
-  background-color: var(--semantic-action-danger-hover);
+.danger .visualSurface {
+  background-color: var(--component-danger-fill);
 }
 
-.danger:active:not(:disabled):not([aria-disabled="true"]) {
-  background-color: var(--semantic-action-danger-pressed);
+.danger:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-danger-fill-hover);
+}
+
+.danger:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-danger-fill-pressed);
+}
+
+/* component/button/primary/background and component/button/danger/
+   background — Glass only (2026-08-11). The explicit backdrop declarations
+   retain the same verified 16px component/surface/blur value already
+   applied by the shared Button rule. */
+[data-skrewww-surface="glass"] .primary .visualSurface {
+  background-color: var(--component-brand-fill-glass);
+  backdrop-filter: var(--glass-backdrop-filter-lg);
+}
+
+[data-skrewww-surface="glass"] .primary:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-button-primary-fill-hover-glass);
+}
+
+[data-skrewww-surface="glass"] .primary:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-button-primary-fill-pressed-glass);
+}
+
+[data-skrewww-surface="glass"] .secondary .visualSurface {
+  background-color: var(--component-button-secondary-fill-glass);
+  backdrop-filter: var(--glass-backdrop-filter-lg);
+}
+
+[data-skrewww-surface="glass"] .secondary:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface,
+[data-skrewww-surface="glass"] .secondary:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-button-secondary-fill-elevated-glass);
+}
+
+[data-skrewww-surface="glass"] .danger .visualSurface {
+  background-color: var(--component-danger-fill-glass);
+  backdrop-filter: var(--glass-backdrop-filter-lg);
+}
+
+[data-skrewww-surface="glass"] .danger:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-danger-fill-hover-glass);
+}
+
+[data-skrewww-surface="glass"] .danger:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+  background-color: var(--component-danger-fill-pressed-glass);
+}
+
+/* Figma's one-pixel linear stroke uses a three-stop gradient at
+   0%/50%/100%, on an axis equivalent to 17.526deg in CSS. A masked
+   pseudo-element preserves the control radius; border-image would not. */
+[data-skrewww-surface="glass"] .primary .visualSurface::before,
+[data-skrewww-surface="glass"] .danger .visualSurface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  background-origin: border-box;
+  background-clip: border-box;
+  mask:
+    linear-gradient(#000 0 0) padding-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+[data-skrewww-surface="glass"] .primary .visualSurface::before {
+  background-image: linear-gradient(
+    17.526deg,
+    var(--component-button-primary-border-start) 0%,
+    var(--component-button-primary-border-mid) 50%,
+    var(--component-button-primary-border-end) 100%
+  );
+}
+
+[data-skrewww-surface="glass"] .danger .visualSurface::before {
+  background-image: linear-gradient(
+    17.526deg,
+    var(--component-button-danger-border-start) 0%,
+    var(--component-button-danger-border-mid) 50%,
+    var(--component-button-danger-border-end) 100%
+  );
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .primary .visualSurface {
+    background-color: var(--component-button-primary-fill);
+  }
+
+  [data-skrewww-surface="glass"] .secondary .visualSurface {
+    background-color: var(--semantic-surface-default);
+  }
+
+  [data-skrewww-surface="glass"] .danger .visualSurface {
+    background-color: var(--component-danger-fill);
+  }
+
+  [data-skrewww-surface="glass"] .primary:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+    background-color: var(--component-button-primary-fill-hover);
+  }
+
+  [data-skrewww-surface="glass"] .primary:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+    background-color: var(--component-button-primary-fill-pressed);
+  }
+
+  [data-skrewww-surface="glass"] .secondary:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface,
+  [data-skrewww-surface="glass"] .secondary:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+    background-color: var(--semantic-surface-elevated);
+  }
+
+  [data-skrewww-surface="glass"] .danger:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+    background-color: var(--component-danger-fill-hover);
+  }
+
+  [data-skrewww-surface="glass"] .danger:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
+    background-color: var(--component-danger-fill-pressed);
+  }
 }
 
 .icon {

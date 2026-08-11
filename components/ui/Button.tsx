@@ -87,6 +87,24 @@ function ButtonContent({
   );
 }
 
+function ButtonLayers({
+  loading,
+  leadingIcon,
+  trailingIcon,
+  children,
+}: Pick<SharedButtonProps, "loading" | "leadingIcon" | "trailingIcon" | "children">) {
+  return (
+    <>
+      <span className={styles.visualSurface} aria-hidden="true" />
+      <span className={styles.content}>
+        <ButtonContent loading={loading} leadingIcon={leadingIcon} trailingIcon={trailingIcon}>
+          {children}
+        </ButtonContent>
+      </span>
+    </>
+  );
+}
+
 function useButtonClasses(
   variant: ButtonVariant,
   size: ButtonSize,
@@ -126,9 +144,9 @@ function DisabledLink({
       aria-label={ariaLabel}
       tabIndex={-1}
     >
-      <ButtonContent loading={loading} leadingIcon={leadingIcon} trailingIcon={trailingIcon}>
+      <ButtonLayers loading={loading} leadingIcon={leadingIcon} trailingIcon={trailingIcon}>
         {children}
-      </ButtonContent>
+      </ButtonLayers>
     </span>
   );
 }
@@ -199,13 +217,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonComponentProps>(functi
           aria-label={ariaLabel}
           {...anchorRest}
         >
-          <ButtonContent
+          <ButtonLayers
             loading={loading}
             leadingIcon={leadingIcon}
             trailingIcon={trailingIcon}
           >
             {children}
-          </ButtonContent>
+          </ButtonLayers>
         </a>
       );
     }
@@ -220,13 +238,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonComponentProps>(functi
         aria-label={ariaLabel}
         {...anchorRest}
       >
-        <ButtonContent
+        <ButtonLayers
           loading={loading}
           leadingIcon={leadingIcon}
           trailingIcon={trailingIcon}
         >
           {children}
-        </ButtonContent>
+        </ButtonLayers>
       </Link>
     );
   }
@@ -257,9 +275,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonComponentProps>(functi
       aria-label={ariaLabel}
       {...buttonRest}
     >
-      <ButtonContent loading={loading} leadingIcon={leadingIcon} trailingIcon={trailingIcon}>
+      <ButtonLayers loading={loading} leadingIcon={leadingIcon} trailingIcon={trailingIcon}>
         {children}
-      </ButtonContent>
+      </ButtonLayers>
     </button>
   );
 });

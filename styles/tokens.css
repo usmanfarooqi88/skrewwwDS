@@ -64,6 +64,45 @@
   --component-radius-control: 6px; /* component/radius/control — Rounded mode default */
   --component-radius-container: 12px; /* component/radius/container — Rounded mode default */
 
+  /* [VERIFIED] Button's Rounded master binds component/radius/control to
+     radius/sm = 4px. Scoped to Button so controls that still intentionally
+     consume the older shared 6px placeholder do not change geometry. */
+  --component-button-radius-control: 4px;
+
+  /* [VERIFIED] component/button/primary interaction family. Kept separate
+     from the generic brand primitives so correcting Button does not change
+     another component that consumes semantic/action/primary interaction. */
+  --component-button-primary-fill: #6c4cf2;
+  --component-button-primary-fill-hover: #5638d6;
+  --component-button-primary-fill-pressed: #4229ad;
+
+  /* [VERIFIED] component/button/danger/background (Flat/Gradient) — Figma's
+     dedicated Button-danger fill, confirmed via master-component inspection
+     2026-08-11 (node 2012:7742). Deliberately distinct from the generic
+     --semantic-action-danger (#d92d3e) used for Alert/Toast/focus rings —
+     Button's own component-level token is a lighter, separate value, not a
+     drift bug. Only Button's Danger variant references this; the shared
+     brand/primary family below reuses --semantic-action-primary directly
+     since that value already matches component/button/primary/background
+     exactly, so no parallel --component-brand-fill was needed. */
+  --component-danger-fill: #e5484d;
+  /* [VERIFIED] Button Danger interaction fills — component-scoped on
+     purpose. The generic semantic/action/danger family remains unchanged
+     for Alert, Toast, and other feedback consumers. */
+  --component-danger-fill-hover: #cc3b37;
+  --component-danger-fill-pressed: #b3261e;
+
+  /* [VERIFIED] Separate Primary and Danger three-stop stroke families.
+     Focused masters use them at 0%/50%/100% with OUTSIDE alignment. Figma
+     resolves every stop to transparent in Flat/Gradient; Glass overrides
+     these same semantic variables with their visible values below. */
+  --component-button-primary-border-start: rgb(255 255 255 / 0);
+  --component-button-primary-border-mid: rgb(108 76 242 / 0);
+  --component-button-primary-border-end: rgb(108 76 242 / 0);
+  --component-button-danger-border-start: rgb(255 255 255 / 0);
+  --component-button-danger-border-mid: rgb(229 72 77 / 0);
+  --component-button-danger-border-end: rgb(229 72 77 / 0);
+
   /* ── Brand [ALIASED] ── */
   --brand-action-primary: var(--semantic-action-primary);
 
@@ -581,22 +620,26 @@
 [data-skrewww-shape="sharp"] {
   --shape-radius-control: 0px; /* [VERIFIED] Sharp mode intent */
   --shape-radius-container: 0px; /* [VERIFIED] Sharp mode intent */
+  --component-button-radius-control: 0px;
 }
 
 [data-skrewww-shape="rounded"] {
   --shape-radius-control: 6px; /* [TEMPORARY] */
   --shape-radius-container: 12px; /* [TEMPORARY] */
+  --component-button-radius-control: 4px; /* [VERIFIED] Button master */
 }
 
 [data-skrewww-shape="pill"] {
   --shape-radius-control: 9999px; /* [VERIFIED] Pill control intent */
   /* [EXPERIMENTAL] Container stays capped — full pill geometry is inappropriate for Card */
   --shape-radius-container: 16px; /* [TEMPORARY] capped container radius for Card */
+  --component-button-radius-control: 9999px;
 }
 
 [data-skrewww-shape="squircle"] {
   --shape-radius-control: 8px; /* [VERIFIED] Squircle control intent */
   --shape-radius-container: 16px; /* [VERIFIED] Squircle container intent */
+  --component-button-radius-control: 8px;
 
   /*
    * Real superellipse corner geometry, not an approximated border-radius.
@@ -803,6 +846,12 @@
 [data-skrewww-surface="glass"] {
   --surface-fill-default: rgb(255 255 255 / 0.72);
   --surface-fill-control: rgb(255 255 255 / 0.85);
+  --component-button-primary-border-start: rgb(255 255 255 / 0.8);
+  --component-button-primary-border-mid: rgb(108 76 242 / 0.6);
+  --component-button-primary-border-end: rgb(108 76 242 / 0.15);
+  --component-button-danger-border-start: rgb(255 255 255 / 0.8);
+  --component-button-danger-border-mid: rgb(229 72 77 / 0.6);
+  --component-button-danger-border-end: rgb(229 72 77 / 0.15);
 
   /*
    * Shared blur/opacity tokens for every Glass-mode component — previously
@@ -835,6 +884,62 @@
    */
   --glass-backdrop-filter-sm: blur(var(--glass-blur-sm));
   --glass-backdrop-filter-md: blur(var(--glass-blur-md));
+
+  /*
+   * [VERIFIED] component/surface/blur — a third tier, confirmed 2026-08-11
+   * via master-component inspection (Button, Avatar, Calendar Day Selected,
+   * Page Item Current all resolve to 16px in Glass, 0 in Flat/Gradient).
+   * Distinct from the sm/md tiers above: this is specifically for solid
+   * brand/danger-family fills (Button Primary/Danger, Avatar, Calendar Day
+   * Selected, Pagination Current), not the neutral surface-fill cascade.
+   */
+  --glass-blur-lg: 16px;
+  --glass-backdrop-filter-lg: blur(var(--glass-blur-lg));
+
+  /*
+   * [VERIFIED] Shared brand/danger-family Glass fills and content color,
+   * confirmed 2026-08-11 via master-component inspection. Deliberately two
+   * separate fill tokens (never one shared name) so Primary and Danger's
+   * semantic distinction stays visible in the architecture even though
+   * each is only ever a single family's color — per
+   * component/button/primary/background and component/button/danger/
+   * background respectively. Named component-scoped rather than
+   * button-scoped: Avatar, Calendar Day Selected, and Pagination Current
+   * all reuse --component-brand-fill-glass too, and none of them should
+   * carry a literal dependency on "Button" in their token name.
+   *
+   * component/button/primary/background — Glass: #6C4CF22E / 18% alpha.
+   * color-mix toward transparent (not white) — a tinted glass fill that
+   * keeps the brand hue, not a lightened/whitened one.
+   */
+  --component-brand-fill-glass: color-mix(in srgb, var(--semantic-action-primary) 18%, transparent);
+  --component-button-primary-fill-hover-glass: rgb(86 56 214 / 0.24);
+  --component-button-primary-fill-pressed-glass: rgb(66 41 173 / 0.3);
+  --component-button-secondary-fill-glass: rgb(255 255 255 / 0.12);
+  --component-button-secondary-fill-elevated-glass: rgb(255 255 255 / 0.2);
+  /* component/button/danger/background — Glass: #E5484D94 / 58% alpha. */
+  --component-danger-fill-glass: color-mix(in srgb, var(--component-danger-fill) 58%, transparent);
+  --component-danger-fill-hover-glass: color-mix(
+    in srgb,
+    var(--component-danger-fill-hover) 64%,
+    transparent
+  );
+  --component-danger-fill-pressed-glass: color-mix(
+    in srgb,
+    var(--component-danger-fill-pressed) 70%,
+    transparent
+  );
+
+  /*
+   * component/surface/content — Glass only; undefined outside Glass on
+   * purpose, so every call site uses var(--component-surface-content,
+   * var(--semantic-text-inverse)) and gets the correct white content in
+   * Flat/Gradient automatically, with zero Flat/Gradient-scoped rules
+   * needed anywhere. Confirmed distinct from --semantic-text-primary
+   * (#131316) — #17181B is Figma's own dedicated Glass-content value, not
+   * a reuse of the existing dark-text token.
+   */
+  --component-surface-content: #17181b;
 }
 
 /*
@@ -861,5 +966,12 @@
     /* Safe opaque fallback when transparency is reduced */
     --surface-fill-default: var(--semantic-surface-default);
     --surface-fill-control: var(--semantic-surface-default);
+    /* Same treatment for the brand/danger-family Glass fills — reuse the
+       already-approved solid Flat values rather than a lower opacity, so
+       nothing new is invented for this accessibility path. */
+    --component-brand-fill-glass: var(--semantic-action-primary);
+    --component-danger-fill-glass: var(--component-danger-fill);
+    --component-danger-fill-hover-glass: var(--component-danger-fill-hover);
+    --component-danger-fill-pressed-glass: var(--component-danger-fill-pressed);
   }
 }

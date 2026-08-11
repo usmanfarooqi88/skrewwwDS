@@ -275,7 +275,7 @@ describe("Dialog overlay dismissal", () => {
     const user = userEvent.setup();
     render(<BasicDialog closeOnOverlayClick />);
     await user.click(screen.getByRole("button", { name: "Open dialog" }));
-    const backdrop = document.querySelector('[aria-hidden="true"]');
+    const backdrop = screen.getByRole("dialog").previousElementSibling;
     expect(backdrop).toBeTruthy();
     await act(async () => {
       fireEvent.mouseDown(backdrop!);
