@@ -4,7 +4,7 @@
   justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
-  border: 1px solid var(--avatar-border);
+  border: 0;
   background: var(--avatar-background);
   color: var(--avatar-text);
   border-radius: var(--avatar-radius);
@@ -15,13 +15,13 @@
 .sm {
   width: var(--avatar-size-sm);
   height: var(--avatar-size-sm);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
 }
 
 .md {
   width: var(--avatar-size-md);
   height: var(--avatar-size-md);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
 }
 
 .lg {
@@ -43,4 +43,19 @@
 /* Avatar identity shape stays circular regardless of global shape mode */
 [data-skrewww-shape] .root {
   border-radius: var(--avatar-radius);
+}
+
+/* component/button/primary/background family + component/surface/blur —
+   Glass only (2026-08-11, node 2044:26027). Harmless when a real image
+   fills .root (the .image child paints over the background entirely), so
+   applied unconditionally rather than only for the initials fallback. */
+[data-skrewww-surface="glass"] .root {
+  background: var(--component-brand-fill-glass);
+  backdrop-filter: var(--glass-backdrop-filter-lg);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .root {
+    background: var(--component-button-primary-fill);
+  }
 }

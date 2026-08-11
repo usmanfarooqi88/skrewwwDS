@@ -133,9 +133,9 @@ export function Example() {
     supportedVariants: ["image", "initials", "icon"],
     supportedSizes: ["sm", "md", "lg"],
     tokensUsed: [
-      "semantic/action/primary",
-      "semantic/text/inverse",
-      "semantic/border/default",
+      "component/button/primary/background",
+      "component/surface/content",
+      "component/surface/blur",
       "radius/full",
     ],
     relatedComponents: [
@@ -143,10 +143,18 @@ export function Example() {
       { label: "Badge — status metadata, not identity", href: "/components/badge" },
     ],
     relatedTokens: [
-      { label: "semantic/action/primary", href: "/foundations" },
+      { label: "component/button/primary/background", href: "/foundations" },
+      { label: "component/surface/content", href: "/foundations" },
+      { label: "component/surface/blur", href: "/foundations" },
       { label: "radius/full", href: "/foundations" },
     ],
-    relatedConcepts: [sharedConcepts.shape],
+    // Genuine Surface participant, confirmed via Figma master-component
+    // inspection 2026-08-11 (node 2044:26027) — the initials-fallback
+    // background and content color both respond to Surface mode
+    // (component/button/primary/background family + component/surface/
+    // content). Previously omitted here; that was a real metadata gap,
+    // not an intentional Flat-only exclusion.
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
       "Avatar Group overflow behavior is not confirmed — deferred.",
       "Status indicator ring on Avatar is not confirmed in Figma.",

@@ -40,6 +40,20 @@ describe("component registry — cssTokens accuracy", () => {
   });
 });
 
+describe("component registry — Avatar Figma bindings", () => {
+  const avatar = componentRegistry.find((entry) => entry.slug === "avatar");
+
+  it("records the verified master bindings without an Avatar border dependency", () => {
+    expect(avatar?.tokensUsed).toEqual([
+      "component/button/primary/background",
+      "component/surface/content",
+      "component/surface/blur",
+      "radius/full",
+    ]);
+    expect(avatar?.tokensUsed).not.toContain("semantic/border/default");
+  });
+});
+
 describe("component registry — Card distribution metadata", () => {
   const card = componentRegistry.find((entry) => entry.slug === "card");
 

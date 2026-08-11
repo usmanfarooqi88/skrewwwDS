@@ -480,14 +480,16 @@
   --tag-icon-size: 0.875rem;
   --tag-remove-size: 1.25rem;
 
-  /* ── Avatar geometry [VERIFIED + TEMPORARY] ── */
-  --avatar-size-sm: 1.75rem;
-  --avatar-size-md: 2.5rem;
+  /* ── Avatar geometry [VERIFIED] ── */
+  --avatar-size-sm: 1.5rem;
+  --avatar-size-md: 2rem;
   --avatar-size-lg: 3rem;
-  --avatar-background: var(--semantic-action-primary);
-  --avatar-text: var(--semantic-text-inverse);
-  --avatar-border: var(--semantic-border-default);
-  --avatar-radius: var(--radius-full); /* [VERIFIED] Always circular */
+  --avatar-background: var(--component-button-primary-fill);
+  /* [VERIFIED] component/surface/content participant, confirmed 2026-08-11
+     (node 2044:26027) — falls back to the existing white value outside
+     Glass, so this is the only line that changed. */
+  --avatar-text: var(--component-surface-content, var(--semantic-text-inverse));
+  --avatar-radius: 9999px; /* [VERIFIED] radius/full — always circular */
   --avatar-image-fit: cover;
 
   /* ── Divider geometry [VERIFIED] ── */
