@@ -1,3 +1,7 @@
+.leadingIcon {
+  color: var(--component-surface-content-muted);
+}
+
 .clearButton {
   display: inline-flex;
   align-items: center;

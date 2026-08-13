@@ -1,6 +1,6 @@
 "use client";
 
-import { MagnifyingGlass, X } from "@phosphor-icons/react";
+import { MagnifyingGlass, XCircle } from "@phosphor-icons/react";
 import {
   forwardRef,
   useId,
@@ -17,6 +17,12 @@ import { useControllableState } from "@/lib/use-controllable";
 import styles from "@/components/ui/search-field.module.css";
 
 export type SearchFieldSize = TextInputControlProps["size"];
+
+const iconSizeByControlSize = {
+  sm: 16,
+  md: 20,
+  lg: 20,
+} as const;
 
 export type SearchFieldProps = Omit<TextInputControlProps, "type" | "value" | "defaultValue"> & {
   label: string;
@@ -107,7 +113,13 @@ export const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(functi
           readOnly={readOnly}
           aria-invalid={invalid || undefined}
           aria-describedby={describedBy}
-          leadingIcon={<MagnifyingGlass size={16} weight="bold" />}
+          leadingIcon={
+            <MagnifyingGlass
+              className={styles.leadingIcon}
+              size={iconSizeByControlSize[size]}
+              weight="regular"
+            />
+          }
           trailingAction={
             canClear ? (
               <button
@@ -117,7 +129,11 @@ export const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(functi
                 aria-label="Clear search"
                 onClick={clearSearch}
               >
-                <X size={14} weight="bold" aria-hidden="true" />
+                <XCircle
+                  size={iconSizeByControlSize[size]}
+                  weight="regular"
+                  aria-hidden="true"
+                />
               </button>
             ) : undefined
           }

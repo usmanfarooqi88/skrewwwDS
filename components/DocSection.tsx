@@ -20,7 +20,9 @@ export function DocSection({
       <h3 className="mb-1.5 font-mono text-[11px] font-medium uppercase tracking-wide text-ink-400">
         {label}
       </h3>
-      <div className="text-sm leading-relaxed text-ink-700">{children}</div>
+      <div className="min-w-0 max-w-full text-sm leading-relaxed text-ink-700 [overflow-wrap:anywhere]">
+        {children}
+      </div>
     </section>
   );
 }

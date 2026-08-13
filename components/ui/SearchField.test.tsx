@@ -49,4 +49,28 @@ describe("SearchField", () => {
     expect(wrap).toContainElement(screen.getByRole("searchbox"));
     expect(wrap).toContainElement(screen.getByRole("button", { name: "Clear search" }));
   });
+
+  it.each([
+    ["sm", 16],
+    ["md", 20],
+    ["lg", 20],
+  ] as const)("renders Figma-parity icons for the %s size", (size, iconSize) => {
+    render(
+      <SearchField
+        label={`${size} search`}
+        size={size}
+        defaultValue="components"
+      />,
+    );
+
+    const input = screen.getByRole("searchbox", { name: `${size} search` });
+    const wrap = input.parentElement;
+    const icons = wrap?.querySelectorAll("svg");
+
+    expect(icons).toHaveLength(2);
+    expect(icons?.[0]).toHaveAttribute("width", String(iconSize));
+    expect(icons?.[0]).toHaveAttribute("height", String(iconSize));
+    expect(icons?.[1]).toHaveAttribute("width", String(iconSize));
+    expect(icons?.[1]).toHaveAttribute("height", String(iconSize));
+  });
 });
