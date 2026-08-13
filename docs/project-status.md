@@ -640,6 +640,28 @@ drift remains open; the exact live icon colors are intentionally scoped to the
 Alert/Toast component contract rather than changing global semantic feedback
 tokens in this batch.
 
+**Batch C correction — 2026-08-13:** live master re-verification and React
+browser parity are complete for File Upload (`2024:2649`; Empty `2024:2644`,
+Dragging `2024:2645`, Error `2024:2646`, Disabled `2024:2647`, Filled
+`2024:2648`) and List Item (`2044:26095`; Default `2044:26093`, Hover
+`2044:26094`). File Upload now consumes the shared Card surface/border and
+16px Glass blur contracts for its normal states, preserves the verified
+feedback borders, uses the dedicated dragging surface, and applies Disabled's
+40% opacity to the whole dropzone without substituting disabled container
+colors. Its Filled file list uses the Card shell and Figma-style row dividers;
+React intentionally keeps the replacement dropzone visible above that list as
+an interaction-first extension. List Item Default is transparent with no blur,
+border, or elevation; only Hover consumes `component/menu/item-hover` and the
+16px Glass blur, while subtitle/meta content follows the Surface-aware muted
+cascade. The existing Flat-equivalent Gradient behavior is preserved; the
+separate Gradient-direction decision is not part of Batch C. This closes Batch
+C only, not Layer 3 Surface overall. The shared Menu-hover correction was
+independently checked against live Menu Item Hover `2024:3012` and Selected
+`2024:3013`: `component/menu/item-hover` (`2142:210`) resolves `#F7F7F8` in
+Flat/Gradient and `#FFFFFF33` (20%) in Glass. Rendered coverage across Menu,
+List Item, and Tree Item consumers passed 9/9, and the complete focused Menu
+behavior suite passed 14/14 with no deterministic Menu or Tree regression.
+
 Marked not-applicable:
 - Link — zero fill across all 45 variants, nothing to cascade
 - Tooltip — user decision: stays fixed-dark always, doesn't participate in

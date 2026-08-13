@@ -9,9 +9,11 @@
   place-items: center;
   min-height: var(--file-upload-min-height);
   padding: var(--file-upload-padding);
-  border: 1px var(--file-upload-border-style) var(--file-upload-border);
+  border: 1.5px var(--file-upload-border-style) var(--file-upload-border);
   border-radius: var(--file-upload-radius);
   background: var(--file-upload-surface);
+  box-shadow: none;
+  backdrop-filter: var(--component-surface-backdrop-filter);
   transition:
     border-color 120ms ease,
     background-color 120ms ease,
@@ -25,17 +27,34 @@
 
 .dropzoneDragging {
   border-color: var(--file-upload-border-dragging);
-  background: var(--semantic-surface-subtle);
+  background: var(--file-upload-dragging-surface);
+}
+
+.dropzoneDragging .icon {
+  color: var(--semantic-action-primary);
+}
+
+.dropzoneDragging .title {
+  color: var(--semantic-text-primary);
 }
 
 .dropzoneError {
   border-color: var(--file-upload-border-error);
 }
 
+.dropzoneError .icon,
+.dropzoneError .title {
+  color: var(--file-upload-border-error);
+}
+
 .dropzoneDisabled {
-  background: var(--semantic-surface-disabled);
-  border-color: var(--semantic-border-disabled);
   cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+
+.dropzoneDisabled .title,
+.dropzoneDisabled .description {
+  color: var(--semantic-text-disabled);
 }
 
 .nativeInput {
@@ -81,9 +100,15 @@
 
 .fileList {
   display: grid;
-  gap: var(--file-upload-list-gap);
+  gap: 0;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--file-upload-item-border);
+  border-radius: var(--file-upload-radius);
+  background: var(--file-upload-item-surface);
+  box-shadow: none;
+  backdrop-filter: var(--component-surface-backdrop-filter);
   list-style: none;
 }
 
@@ -93,9 +118,14 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding: var(--file-upload-item-padding);
-  border: 1px solid var(--file-upload-item-border);
-  border-radius: var(--file-upload-item-radius);
-  background: var(--file-upload-item-surface);
+  border: 0;
+  border-bottom: 1px solid var(--semantic-border-default);
+  border-radius: 0;
+  background: transparent;
+}
+
+.fileItem:last-child {
+  border-bottom: 0;
 }
 
 .fileMeta {
@@ -126,7 +156,7 @@
   border: 0;
   border-radius: var(--shape-radius-control);
   background: transparent;
-  color: var(--semantic-text-secondary);
+  color: var(--component-surface-content-muted);
   cursor: pointer;
 }
 

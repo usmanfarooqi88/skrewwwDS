@@ -5,7 +5,7 @@ import {
 } from "@/lib/combobox-figma-metadata";
 import {
   FILE_UPLOAD_FIGMA_FILE_URL,
-  FILE_UPLOAD_FIGMA_START_NODE_ID,
+  FILE_UPLOAD_FIGMA_COMPONENT_SET_NODE_ID,
 } from "@/lib/file-upload-figma-metadata";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
@@ -862,17 +862,20 @@ export function Example() {
     reactLastUpdated: REACT_DATE,
     figmaReference: "Forms / File Upload — State (Empty/Dragging/Filled/Error/Disabled)",
     figmaSourceUrl: FILE_UPLOAD_FIGMA_FILE_URL,
-    figmaNodeId: FILE_UPLOAD_FIGMA_START_NODE_ID,
+    figmaNodeId: FILE_UPLOAD_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
     documentationUrl: getComponentDocumentationUrl("file-upload"),
     supportedVariants: ["empty", "dragging", "filled", "error", "disabled"],
     supportedSizes: [],
     tokensUsed: [
-      "semantic/border/default",
+      "component/card/surface",
+      "component/card/border",
+      "component/file-upload/dragging-surface",
+      "component/surface/blur",
+      "component/surface/content-muted",
+      "opacity/disabled",
       "semantic/action/primary",
       "semantic/action/danger",
-      "semantic/surface/elevated",
-      "file-upload-surface",
-      "file-upload-border-dragging",
+      "semantic/text/primary",
     ],
     relatedComponents: [
       { label: "Form Field — label and validation wrapper", href: "/components/form-field" },
@@ -881,14 +884,14 @@ export function Example() {
       { label: "Button — not duplicated; remove uses native button styling", href: "/components/button" },
     ],
     relatedTokens: [
-      { label: "semantic/border/default", href: "/foundations" },
+      { label: "component/card/surface", href: "/foundations" },
+      { label: "component/card/border", href: "/foundations" },
+      { label: "component/file-upload/dragging-surface", href: "/foundations" },
       { label: "semantic/action/primary", href: "/foundations" },
       { label: "semantic/action/danger", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
-      "Figma component-set node ID unresolved — live MCP verification pending.",
-      "Temporary file-upload tokens await Figma variable confirmation.",
       "Controlled files prop is intentionally unsupported in this MVP.",
       "Upload progress, retry, preview, and async behavior are deferred.",
     ],

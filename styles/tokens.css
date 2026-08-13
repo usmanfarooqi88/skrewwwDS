@@ -427,26 +427,27 @@
   --combobox-empty-min-height: 2.25rem;
   --combobox-empty-text: var(--semantic-text-secondary);
 
-  /* ── File Upload [TEMPORARY — Figma MCP verification pending] ── */
-  --file-upload-surface: var(--semantic-surface-default);
-  --file-upload-border: var(--semantic-border-default);
+  /* ── File Upload [VERIFIED] — Forms/File Upload 2024:2649 ── */
+  --file-upload-surface: var(--component-card-surface);
+  --file-upload-border: var(--component-card-border);
+  --file-upload-dragging-surface: var(--semantic-surface-elevated);
   --file-upload-border-style: dashed;
   --file-upload-border-dragging: var(--semantic-action-primary);
-  --file-upload-border-error: var(--semantic-action-danger);
+  --file-upload-border-error: var(--component-danger-fill);
   --file-upload-radius: var(--shape-radius-container);
   --file-upload-padding: 1.25rem;
   --file-upload-min-height: 8rem;
   --file-upload-icon-size: 1.75rem;
-  --file-upload-icon: var(--semantic-icon-muted);
-  --file-upload-title-text: var(--semantic-text-primary);
-  --file-upload-description-text: var(--semantic-text-secondary);
+  --file-upload-icon: var(--component-surface-content-muted);
+  --file-upload-title-text: var(--component-surface-content-muted);
+  --file-upload-description-text: var(--component-surface-content-muted);
   --file-upload-list-gap: 0.5rem;
-  --file-upload-item-surface: var(--semantic-surface-elevated);
-  --file-upload-item-border: var(--semantic-border-default);
+  --file-upload-item-surface: var(--component-card-surface);
+  --file-upload-item-border: var(--component-card-border);
   --file-upload-item-radius: var(--shape-radius-control);
   --file-upload-item-padding: 0.625rem 0.75rem;
   --file-upload-file-name-text: var(--semantic-text-primary);
-  --file-upload-metadata-text: var(--semantic-text-secondary);
+  --file-upload-metadata-text: var(--component-surface-content-muted);
   --file-upload-remove-size: 2rem;
 
   /* ── Table [TEMPORARY — React-first foundation; Figma MCP verification pending] ── */
@@ -530,17 +531,17 @@
   --divider-spacing-x: 0.75rem;
   --divider-vertical-min-height: 2rem;
 
-  /* ── List Item geometry [TEMPORARY] ── */
+  /* ── List Item geometry [VERIFIED] — Content/List Item 2044:26095 ── */
   --list-item-min-height: 3.5rem;
   --list-item-padding-x: 0.875rem;
   --list-item-padding-y: 0.625rem;
   --list-item-gap: 0.75rem;
   --list-item-leading-size: 2.5rem;
-  --list-item-surface: var(--semantic-surface-elevated);
-  --list-item-hover-surface: color-mix(in srgb, var(--semantic-surface-elevated) 88%, var(--semantic-border-default));
+  --list-item-surface: transparent;
+  --list-item-hover-surface: var(--menu-item-hover-surface);
   --list-item-title-text: var(--semantic-text-primary);
-  --list-item-description-text: var(--semantic-text-secondary);
-  --list-item-metadata-text: var(--semantic-text-secondary);
+  --list-item-description-text: var(--component-surface-content-muted);
+  --list-item-metadata-text: var(--component-surface-content-muted);
   --list-item-radius: var(--shape-radius-control);
 
   /* ── Tree Item geometry [VERIFIED] — Content/Tree Item component set,
@@ -902,6 +903,8 @@
   --component-card-border-highlight-2: rgb(223 224 228 / 0.5);
   --component-card-border-highlight-3: rgb(223 224 228 / 0.15);
   --component-surface-content-muted: var(--semantic-text-primary);
+  --menu-item-hover-surface: rgb(255 255 255 / 0.2);
+  --file-upload-dragging-surface: rgb(255 255 255 / 0.2);
   --feedback-info-surface: rgb(220 238 254 / 0.45);
   --feedback-success-surface: rgb(223 245 230 / 0.45);
   --feedback-warning-surface: rgb(254 243 214 / 0.45);
@@ -1034,6 +1037,8 @@
     --component-card-border-highlight-2: var(--semantic-border-default);
     --component-card-border-highlight-3: var(--semantic-border-default);
     --component-surface-content-muted: var(--semantic-icon-muted);
+    --menu-item-hover-surface: var(--semantic-surface-elevated);
+    --file-upload-dragging-surface: var(--semantic-surface-elevated);
     --component-surface-backdrop-filter: none;
     /* Same treatment for the brand/danger-family Glass fills — reuse the
        already-approved solid Flat values rather than a lower opacity, so

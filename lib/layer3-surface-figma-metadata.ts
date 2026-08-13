@@ -404,6 +404,70 @@ export const LAYER3_SURFACE_BATCH_B_EVIDENCE = {
   },
 } as const;
 
+export const LAYER3_SURFACE_BATCH_C_EVIDENCE = {
+  verifiedAt: "2026-08-13",
+  fileUpload: {
+    componentSet: "2024:2649",
+    masters: {
+      empty: "2024:2644",
+      dragging: "2024:2645",
+      error: "2024:2646",
+      disabled: "2024:2647",
+      filled: "2024:2648",
+    },
+    normalSurface: {
+      name: "component/card/surface",
+      id: "VariableID:2128:1499",
+      resolved: { flat: "#FFFFFF", gradient: "#FFFFFF", glass: "#FFFFFF1F (12%)" },
+      states: ["Empty", "Error", "Disabled", "Filled"],
+    },
+    normalBorder: {
+      name: "component/card/border",
+      id: "VariableID:2128:1500",
+      resolved: { flat: "#DFE0E4", gradient: "#DFE0E4", glass: "#FFFFFF3D (24%)" },
+      geometry: "1.5px INSIDE dashed on Empty/Disabled; 1px INSIDE solid on Filled",
+    },
+    dragging: {
+      surface: { name: "component/file-upload/dragging-surface", id: "VariableID:2145:1371", resolved: { flat: "#F7F7F8", gradient: "#F7F7F8", glass: "#FFFFFF33 (20%)" } },
+      border: "semantic/action/primary (VariableID:2002:2467), 1.5px INSIDE dashed",
+      content: "semantic/text/primary + semantic/action/primary icon",
+    },
+    error: "Card surface + semantic/action/danger #E5484D border/content",
+    disabled: "Card bindings remain intact; opacity/disabled (VariableID:2012:7105) applies 40% to the component root",
+    filled: "Card container with File Row bottom dividers bound to semantic/border/default",
+    shared: { blur: SHARED_SURFACE_VARIABLES.blur, contentMuted: "component/surface/content-muted (VariableID:2259:2)" },
+    elevation: "No shadow on any master",
+    reactFirstBehavior: "React keeps the replacement dropzone visible above the selected-file Card list; file selection/removal semantics are unchanged",
+  },
+  listItem: {
+    componentSet: "2044:26095",
+    masters: { default: "2044:26093", hover: "2044:26094" },
+    default: "Transparent; no fill, border, blur, or elevation",
+    hover: {
+      surface: { name: "component/menu/item-hover", id: "VariableID:2142:210", resolved: { flat: "#F7F7F8", gradient: "#F7F7F8", glass: "#FFFFFF33 (20%)" } },
+      blur: SHARED_SURFACE_VARIABLES.blur,
+      borderAndElevation: "None",
+    },
+    content: {
+      title: "semantic/text/primary (VariableID:2002:2462)",
+      subtitleAndMeta: "component/surface/content-muted (VariableID:2259:2)",
+      leading: "Nested Avatar retains its own Surface-aware component bindings; no generic leading/trailing icon property exists on these masters",
+    },
+    radius: "component/radius/control (VariableID:2012:9573)",
+  },
+  sharedMenuHoverBlastRadius: {
+    token: { name: "component/menu/item-hover", id: "VariableID:2142:210", resolved: { flat: "#F7F7F8", gradient: "#F7F7F8", glass: "#FFFFFF33 (20%)" } },
+    liveMenuMasters: { hover: "2024:3012", selected: "2024:3013" },
+    reactConsumers: ["Menu Item Hover", "List Item Hover", "Tree Item Hover", "Tree Item Selected"],
+    verification: "Batch C rendered checks 9/9 PASS; focused Menu behavioral Playwright 14/14 PASS; no deterministic Menu or Tree regression",
+  },
+  reactParity: {
+    status: "Batch C implementation closed by focused browser verification",
+    gradientDecision: "Existing Flat-equivalent Gradient contract preserved; future Gradient direction work explicitly excluded",
+    explicitExclusion: "Does not claim full Layer 3 Surface completion",
+  },
+} as const;
+
 export const COMPOSITION_ONLY_EVIDENCE = {
   paginationTrail: {
     trail: "2024:2897",
