@@ -1,20 +1,25 @@
 import { type ReactNode } from "react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/cn";
+import { PreviewSandbox } from "@/components/docs/PreviewMode";
 
 export function ComponentPreview({
   title,
   description,
   children,
+  controls,
   className,
+  testId,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
+  controls?: ReactNode;
   className?: string;
+  testId?: string;
 }) {
   return (
-    <Card elevation="flat" className={cn("overflow-visible", className)}>
+    <Card elevation="flat" className={cn("overflow-visible", className)} data-testid={testId}>
       <div className="border-b border-ink-200 px-5 py-4">
         <h2 className="font-mono text-[11px] font-medium uppercase tracking-wide text-ink-400">
           {title}
@@ -23,7 +28,10 @@ export function ComponentPreview({
           <p className="mt-1 text-sm text-ink-500">{description}</p>
         ) : null}
       </div>
-      <div className="px-5 py-6">{children}</div>
+      <div className="px-5 py-6">
+        {controls}
+        <PreviewSandbox>{children}</PreviewSandbox>
+      </div>
     </Card>
   );
 }

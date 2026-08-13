@@ -4,13 +4,32 @@ import {
   hexToRgba,
   resolvedRgba,
   rgbaStringToRgba,
-  setSurfaceMode,
   test,
 } from "./fixtures";
 import type { Locator } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 function visualSurface(button: Locator) {
   return button.locator('[aria-hidden="true"]').first();
+}
+
+async function setButtonSurfaceMode(page: Page, mode: "flat" | "gradient" | "glass") {
+  await page.evaluate(() => {
+    if (!document.getElementById("__e2e-disable-transitions")) {
+      const style = document.createElement("style");
+      style.id = "__e2e-disable-transitions";
+      style.textContent =
+        "*, *::before, *::after { transition: none !important; animation: none !important; }";
+      document.head.appendChild(style);
+    }
+  });
+  const controls = page.getByTestId("button-preview-mode-controls");
+  await controls.getByRole("button", { name: new RegExp(`^${mode}$`, "i") }).click();
+  await expect(page.locator('[data-skrewww-preview-sandbox=""]').first()).toHaveAttribute(
+    "data-skrewww-surface",
+    mode,
+  );
+  await page.locator('[data-skrewww-preview-sandbox=""]').first().evaluate((node) => void node.clientWidth);
 }
 
 /**
@@ -87,25 +106,103 @@ test.describe("Button browser behavior", () => {
     await expect(flat).toHaveAttribute("aria-pressed", "true");
     await expect(glass).toHaveAttribute("aria-pressed", "false");
     await expect(rounded).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("html")).toHaveAttribute("data-skrewww-surface", "flat");
+    const sandboxes = page.locator('[data-skrewww-preview-sandbox=""]');
+    await expect(sandboxes).toHaveCount(4);
+    await expect(sandboxes.first()).toHaveAttribute("data-skrewww-surface", "flat");
 
     await glass.click();
     await expect(glass).toHaveAttribute("aria-pressed", "true");
     await expect(flat).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("html")).toHaveAttribute("data-skrewww-surface", "glass");
+    await expect(sandboxes.first()).toHaveAttribute("data-skrewww-surface", "glass");
+    await expect(page.locator("html")).toHaveAttribute("data-skrewww-surface", "flat");
     await expect(page.getByTestId("button-glass-qa-backdrop")).toBeVisible();
     expect(await visualSurface(secondary).evaluate((el) => getComputedStyle(el).backdropFilter)).toBe("blur(16px)");
 
     await gradient.click();
     await expect(gradient).toHaveAttribute("aria-pressed", "true");
     await expect(glass).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("html")).toHaveAttribute("data-skrewww-surface", "gradient");
+    await expect(sandboxes.first()).toHaveAttribute("data-skrewww-surface", "gradient");
     expect(await visualSurface(secondary).evaluate((el) => getComputedStyle(el).backdropFilter)).toBe("none");
 
     await squircle.click();
     await expect(squircle).toHaveAttribute("aria-pressed", "true");
     await expect(rounded).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("html")).toHaveAttribute("data-skrewww-shape", "squircle");
+    await expect(sandboxes.first()).toHaveAttribute("data-skrewww-shape", "squircle");
+    await expect(page.locator("html")).toHaveAttribute("data-skrewww-shape", "rounded");
+  });
+
+  test("isolates all shape and surface modes from documentation cards", async ({ page }) => {
+    const controls = page.getByTestId("button-preview-mode-controls");
+    const cards = page.locator('[data-testid^="button-preview-"][data-testid$="-card"]');
+    const sizesButton = page.getByRole("button", { name: "Small", exact: true });
+    const primary = page.getByRole("button", { name: "Primary", exact: true });
+    const initialCards = await cards.evaluateAll((nodes) => nodes.map((node) => {
+      const style = getComputedStyle(node);
+      return { radius: style.borderRadius, background: style.backgroundColor, border: style.borderColor };
+    }));
+    const initialPrimaryBox = await primary.boundingBox();
+
+    for (const shape of ["Sharp", "Rounded", "Pill", "Squircle"]) {
+      await controls.getByRole("button", { name: shape }).click();
+      await expect(page.locator('[data-skrewww-preview-sandbox=""]').first()).toHaveAttribute(
+        "data-skrewww-shape",
+        shape.toLowerCase(),
+      );
+      expect(await cards.evaluateAll((nodes) => nodes.map((node) => {
+        const style = getComputedStyle(node);
+        return { radius: style.borderRadius, background: style.backgroundColor, border: style.borderColor };
+      }))).toEqual(initialCards);
+      expect(await sizesButton.evaluate((node) => getComputedStyle(node).getPropertyValue("--component-button-radius-control").trim()))
+        .toBe(shape === "Sharp" ? "0px" : shape === "Rounded" ? "4px" : shape === "Pill" ? "9999px" : "8px");
+    }
+
+    for (const surface of ["Flat", "Gradient", "Glass"]) {
+      await controls.getByRole("button", { name: surface }).click();
+      await expect(page.locator('[data-skrewww-preview-sandbox=""]').first()).toHaveAttribute(
+        "data-skrewww-surface",
+        surface.toLowerCase(),
+      );
+      expect(await cards.evaluateAll((nodes) => nodes.map((node) => {
+        const style = getComputedStyle(node);
+        return { radius: style.borderRadius, background: style.backgroundColor, border: style.borderColor };
+      }))).toEqual(initialCards);
+    }
+
+    const finalPrimaryBox = await primary.boundingBox();
+    expect(finalPrimaryBox?.width).toBe(initialPrimaryBox?.width);
+    expect(finalPrimaryBox?.height).toBe(initialPrimaryBox?.height);
+    await expect(page.locator("html")).toHaveAttribute("data-skrewww-surface", "flat");
+    await expect(page.locator("html")).toHaveAttribute("data-skrewww-shape", "rounded");
+  });
+
+  test("does not leak mode state through client-side navigation", async ({ page }) => {
+    const controls = page.getByTestId("button-preview-mode-controls");
+    await controls.getByRole("button", { name: "Glass" }).click();
+    await controls.getByRole("button", { name: "Squircle" }).click();
+    await page.getByRole("link", { name: "Search Field", exact: true }).first().click();
+    await expect(page).toHaveURL(/\/components\/search-field$/);
+    await expect(page.locator('[data-skrewww-preview-sandbox=""]')).toHaveCount(0);
+    await expect(page.locator("html")).toHaveAttribute("data-skrewww-surface", "flat");
+    await expect(page.locator("html")).toHaveAttribute("data-skrewww-shape", "rounded");
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/components\/button$/);
+    await expect(page.getByTestId("button-preview-mode-controls").getByRole("button", { name: "Flat" }))
+      .toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByTestId("button-preview-mode-controls").getByRole("button", { name: "Rounded" }))
+      .toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("keeps scoped preview controls and content contained on mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const controls = page.getByTestId("button-preview-mode-controls");
+    await controls.getByRole("button", { name: "Glass" }).click();
+    await controls.getByRole("button", { name: "Squircle" }).click();
+
+    await expect(page.getByTestId("button-preview-live-card")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+    await expect(page.locator("html")).toHaveAttribute("data-skrewww-surface", "flat");
+    await expect(page.locator("html")).toHaveAttribute("data-skrewww-shape", "rounded");
   });
 });
 
@@ -124,7 +221,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     await expect(primary).toBeVisible();
 
     for (const mode of ["flat", "gradient"] as const) {
-      await setSurfaceMode(page, mode);
+      await setButtonSurfaceMode(page, mode);
       expectColorClose(await resolvedRgba(visualSurface(primary), "backgroundColor"), hexToRgba("#6C4CF2"), `${mode} background`);
       expectColorClose(await resolvedRgba(primary, "color"), hexToRgba("#FFFFFF"), `${mode} content`);
       expect(await visualSurface(primary).evaluate((el) => getComputedStyle(el).backdropFilter), `${mode} backdrop-filter`).toBe(
@@ -132,7 +229,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
       );
     }
 
-    await setSurfaceMode(page, "glass");
+    await setButtonSurfaceMode(page, "glass");
     expectColorClose(await resolvedRgba(visualSurface(primary), "backgroundColor"), hexToRgba("#6C4CF2", 0.18), "glass background");
     expectColorClose(await resolvedRgba(primary, "color"), hexToRgba("#17181B"), "glass content");
     expect(await visualSurface(primary).evaluate((el) => getComputedStyle(el).backdropFilter), "glass backdrop-filter").toBe(
@@ -145,7 +242,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     await expect(danger).toBeVisible();
 
     for (const mode of ["flat", "gradient"] as const) {
-      await setSurfaceMode(page, mode);
+      await setButtonSurfaceMode(page, mode);
       expectColorClose(await resolvedRgba(visualSurface(danger), "backgroundColor"), hexToRgba("#E5484D"), `${mode} background`);
       expectColorClose(await resolvedRgba(danger, "color"), hexToRgba("#FFFFFF"), `${mode} content`);
       expect(await visualSurface(danger).evaluate((el) => getComputedStyle(el).backdropFilter), `${mode} backdrop-filter`).toBe(
@@ -153,7 +250,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
       );
     }
 
-    await setSurfaceMode(page, "glass");
+    await setButtonSurfaceMode(page, "glass");
     expectColorClose(await resolvedRgba(visualSurface(danger), "backgroundColor"), hexToRgba("#E5484D", 0.58), "glass background");
     expectColorClose(await resolvedRgba(danger, "color"), hexToRgba("#17181B"), "glass content");
     expect(await visualSurface(danger).evaluate((el) => getComputedStyle(el).backdropFilter), "glass backdrop-filter").toBe(
@@ -164,7 +261,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
   test("Primary and Danger stay semantically distinct in Glass mode", async ({ page }) => {
     const primary = page.getByRole("button", { name: "Primary", exact: true });
     const danger = page.getByRole("button", { name: "Danger", exact: true });
-    await setSurfaceMode(page, "glass");
+    await setButtonSurfaceMode(page, "glass");
 
     const [primaryBg, dangerBg] = await Promise.all([
       resolvedRgba(visualSurface(primary), "backgroundColor"),
@@ -180,13 +277,13 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
 
   test("Secondary uses the master-bound component Surface blur", async ({ page }) => {
     const secondary = page.getByRole("button", { name: "Secondary", exact: true });
-    await setSurfaceMode(page, "glass");
+    await setButtonSurfaceMode(page, "glass");
     const backdrop = await visualSurface(secondary).evaluate((el) => getComputedStyle(el).backdropFilter);
     expect(backdrop).toBe("blur(16px)");
   });
 
   test("Primary and Danger expose their separate verified Glass border gradients", async ({ page }) => {
-    await setSurfaceMode(page, "glass");
+    await setButtonSurfaceMode(page, "glass");
     const primary = page.getByRole("button", { name: "Primary", exact: true });
     const danger = page.getByRole("button", { name: "Danger", exact: true });
     const [primaryBorder, dangerBorder] = await Promise.all([
@@ -230,7 +327,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     const danger = page.getByRole("button", { name: "Danger", exact: true });
 
     for (const mode of ["flat", "gradient"] as const) {
-      await setSurfaceMode(page, mode);
+      await setButtonSurfaceMode(page, mode);
       await danger.hover();
       expectColorClose(await resolvedRgba(visualSurface(danger), "backgroundColor"), hexToRgba("#CC3B37"), `${mode} hover`);
       await page.mouse.down();
@@ -238,7 +335,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
       await page.mouse.up();
     }
 
-    await setSurfaceMode(page, "glass");
+    await setButtonSurfaceMode(page, "glass");
     await danger.hover();
     expectColorClose(await resolvedRgba(visualSurface(danger), "backgroundColor"), hexToRgba("#CC3B37", 0.64), "glass hover");
     await page.mouse.down();
@@ -251,7 +348,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     expect(await danger.evaluate((el) => getComputedStyle(el).opacity)).toBe("0.4");
 
     for (const mode of ["flat", "gradient"] as const) {
-      await setSurfaceMode(page, mode);
+      await setButtonSurfaceMode(page, mode);
       expectColorClose(await resolvedRgba(visualSurface(danger), "backgroundColor"), hexToRgba("#E5484D"), `${mode} disabled fill`);
       expectColorClose(await resolvedRgba(danger, "color"), hexToRgba("#FFFFFF"), `${mode} disabled content`);
     }
@@ -261,14 +358,14 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     const primary = page.getByRole("button", { name: "Primary", exact: true });
     const surface = visualSurface(primary);
 
-    await setSurfaceMode(page, "flat");
+    await setButtonSurfaceMode(page, "flat");
     await primary.hover();
     expectColorClose(await resolvedRgba(surface, "backgroundColor"), hexToRgba("#5638D6"), "flat hover");
     await page.mouse.down();
     expectColorClose(await resolvedRgba(surface, "backgroundColor"), hexToRgba("#4229AD"), "flat pressed");
     await page.mouse.up();
 
-    await setSurfaceMode(page, "glass");
+    await setButtonSurfaceMode(page, "glass");
     await page.mouse.move(0, 0);
     expectColorClose(await resolvedRgba(surface, "backgroundColor"), hexToRgba("#6C4CF2", 0.18), "glass default");
     await primary.hover();
@@ -286,7 +383,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
   test("Secondary keeps Figma Glass base bindings through Disabled", async ({ page }) => {
     const secondary = page.getByRole("button", { name: "Secondary", exact: true });
     const surface = visualSurface(secondary);
-    await setSurfaceMode(page, "glass");
+    await setButtonSurfaceMode(page, "glass");
 
     expectColorClose(await resolvedRgba(surface, "backgroundColor"), hexToRgba("#FFFFFF", 0.12), "glass default");
     expectColorClose(await resolvedRgba(secondary, "color"), hexToRgba("#131316"), "glass content");
@@ -306,7 +403,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     const variants = ["Primary", "Secondary", "Danger"] as const;
 
     for (const mode of ["flat", "gradient", "glass"] as const) {
-      await setSurfaceMode(page, mode);
+      await setButtonSurfaceMode(page, mode);
 
       for (let variantIndex = 0; variantIndex < variants.length; variantIndex += 1) {
         const name = variants[variantIndex];

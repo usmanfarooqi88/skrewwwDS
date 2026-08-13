@@ -4,85 +4,84 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ChevronRightIcon, PlusIcon } from "@/components/ui/icons";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
-
-const surfaceModes = ["flat", "gradient", "glass"] as const;
-const shapeModes = ["sharp", "rounded", "pill", "squircle"] as const;
+import {
+  PreviewModeProvider,
+  previewShapeModes,
+  previewSurfaceModes,
+  usePreviewMode,
+} from "@/components/docs/PreviewMode";
 
 function modeLabel(mode: string) {
   return mode.charAt(0).toUpperCase() + mode.slice(1);
 }
 
-export function ButtonPreview() {
+function ButtonModeControls() {
+  const { surface, shape, setSurface, setShape } = usePreviewMode();
+
+  return (
+    <div className="mb-5 flex flex-wrap gap-5" data-testid="button-preview-mode-controls">
+      <fieldset>
+        <legend className="mb-2 font-mono text-[11px] font-medium uppercase tracking-wide text-ink-500">
+          Surface
+        </legend>
+        <div className="inline-flex rounded-lg border border-ink-200 bg-white p-1" aria-label="Surface mode">
+          {previewSurfaceModes.map((mode) => {
+            const active = surface === mode;
+            return (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={active}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                  active ? "bg-ink-900 text-white" : "text-ink-600 hover:bg-ink-100"
+                }`}
+                onClick={() => setSurface(mode)}
+              >
+                {modeLabel(mode)}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="mb-2 font-mono text-[11px] font-medium uppercase tracking-wide text-ink-500">
+          Shape
+        </legend>
+        <div className="inline-flex flex-wrap rounded-lg border border-ink-200 bg-white p-1" aria-label="Shape mode">
+          {previewShapeModes.map((mode) => {
+            const active = shape === mode;
+            return (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={active}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                  active ? "bg-ink-900 text-white" : "text-ink-600 hover:bg-ink-100"
+                }`}
+                onClick={() => setShape(mode)}
+              >
+                {modeLabel(mode)}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+    </div>
+  );
+}
+
+function ButtonExamples() {
   const [loading, setLoading] = useState(false);
-  const [surface, setSurface] = useState<(typeof surfaceModes)[number]>("flat");
-  const [shape, setShape] = useState<(typeof shapeModes)[number]>("rounded");
-
-  function selectSurface(mode: (typeof surfaceModes)[number]) {
-    document.documentElement.setAttribute("data-skrewww-surface", mode);
-    setSurface(mode);
-  }
-
-  function selectShape(mode: (typeof shapeModes)[number]) {
-    document.documentElement.setAttribute("data-skrewww-shape", mode);
-    setShape(mode);
-  }
 
   return (
     <div className="space-y-8">
       <ComponentPreview
         title="Live preview"
-        description="Interactive Button instances using Skrewww tokens. Shape and surface are controlled globally through CSS custom properties — not separate component files."
+        description="Interactive Button instances using scoped Skrewww tokens. Shape and surface apply to the examples without changing the documentation shell."
+        controls={<ButtonModeControls />}
+        testId="button-preview-live-card"
       >
-        <div className="mb-5 flex flex-wrap gap-5" data-testid="button-preview-mode-controls">
-          <fieldset>
-            <legend className="mb-2 font-mono text-[11px] font-medium uppercase tracking-wide text-ink-500">
-              Surface
-            </legend>
-            <div className="inline-flex rounded-lg border border-ink-200 bg-white p-1" aria-label="Surface mode">
-              {surfaceModes.map((mode) => {
-                const active = surface === mode;
-                return (
-                  <button
-                    key={mode}
-                    type="button"
-                    aria-pressed={active}
-                    className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                      active ? "bg-ink-900 text-white" : "text-ink-600 hover:bg-ink-100"
-                    }`}
-                    onClick={() => selectSurface(mode)}
-                  >
-                    {modeLabel(mode)}
-                  </button>
-                );
-              })}
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend className="mb-2 font-mono text-[11px] font-medium uppercase tracking-wide text-ink-500">
-              Shape
-            </legend>
-            <div className="inline-flex flex-wrap rounded-lg border border-ink-200 bg-white p-1" aria-label="Shape mode">
-              {shapeModes.map((mode) => {
-                const active = shape === mode;
-                return (
-                  <button
-                    key={mode}
-                    type="button"
-                    aria-pressed={active}
-                    className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                      active ? "bg-ink-900 text-white" : "text-ink-600 hover:bg-ink-100"
-                    }`}
-                    onClick={() => selectShape(mode)}
-                  >
-                    {modeLabel(mode)}
-                  </button>
-                );
-              })}
-            </div>
-          </fieldset>
-        </div>
-
         <div
           className="relative isolate overflow-hidden rounded-xl border border-ink-200 bg-gradient-to-br from-brand-50 via-white to-ink-100 px-6 py-10"
           data-testid="button-glass-qa-backdrop"
@@ -116,7 +115,7 @@ export function ButtonPreview() {
         </div>
       </ComponentPreview>
 
-      <ComponentPreview title="Sizes">
+      <ComponentPreview title="Sizes" testId="button-preview-sizes-card">
         <PreviewGroup label="Small / Medium / Large">
           <Button size="sm">Small</Button>
           <Button size="md">Medium</Button>
@@ -124,7 +123,7 @@ export function ButtonPreview() {
         </PreviewGroup>
       </ComponentPreview>
 
-      <ComponentPreview title="States">
+      <ComponentPreview title="States" testId="button-preview-states-card">
         <PreviewGroup label="Default / Disabled / Loading">
           <Button>Default</Button>
           <Button disabled>Disabled</Button>
@@ -140,7 +139,7 @@ export function ButtonPreview() {
         </PreviewGroup>
       </ComponentPreview>
 
-      <ComponentPreview title="Icons & layout">
+      <ComponentPreview title="Icons & layout" testId="button-preview-icons-card">
         <PreviewGroup label="Leading icon / Trailing icon / Full width">
           <Button leadingIcon={<PlusIcon />}>With icon</Button>
           <Button trailingIcon={<ChevronRightIcon />}>Continue</Button>
@@ -150,5 +149,13 @@ export function ButtonPreview() {
         </PreviewGroup>
       </ComponentPreview>
     </div>
+  );
+}
+
+export function ButtonPreview() {
+  return (
+    <PreviewModeProvider>
+      <ButtonExamples />
+    </PreviewModeProvider>
   );
 }

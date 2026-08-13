@@ -2,6 +2,27 @@
 
 Last verified: **2026-08-11** (Layer 3 parity reconciliation; implementation counts remain registry-derived)
 
+## Documentation preview mode scoping (2026-08-13, additive)
+
+The Button documentation preview no longer writes its Surface and Shape
+selection to `<html>`. A reusable `PreviewModeProvider` now owns deterministic
+page-local state (Flat/Rounded by default), while `PreviewSandbox` applies the
+corresponding data attributes only around component example content. This keeps
+all Button example sections synchronized without allowing Squircle or Glass
+selectors to restyle documentation Cards, navigation, or other application
+chrome, and prevents mode state from leaking across client-side navigation.
+
+This is infrastructure for scoped preview modes, not the final Preview
+Inspector UI. Portal-rendered examples still mount to `document.body` through
+the existing internal Portal default and therefore sit outside a local sandbox;
+a future Inspector pass must provide a documentation-owned portal target or an
+equivalent private adapter before applying scoped modes to Dialog, Drawer,
+Popover/Menu/Select, Toast, or Tooltip previews. No public component API,
+Gradient behavior, Dark mode, or Brand Shape support changed in this correction.
+The final right-side Preview Inspector, Search Field icon salience, Calendar
+Grid mobile overflow, Dark-mode preview controls, Brand Shape, and the future
+Gradient foundation remain separate open work.
+
 See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.md)
 
 ## React implementation status
