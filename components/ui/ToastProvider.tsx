@@ -106,6 +106,7 @@ function ToastItem({
       }}
     >
       <FeedbackSurface
+        surface="toast"
         status={toast.type ?? "info"}
         title={toast.title}
         description={toast.description}

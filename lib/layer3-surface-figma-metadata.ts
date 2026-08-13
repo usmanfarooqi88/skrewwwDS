@@ -355,6 +355,55 @@ export const LAYER3_SURFACE_BATCH_A_EVIDENCE = {
   },
 } as const;
 
+export const LAYER3_SURFACE_BATCH_B_EVIDENCE = {
+  verifiedAt: "2026-08-13",
+  componentSets: { toast: "2034:25468", alert: "2034:25402" },
+  masters: {
+    toast: { info: "2034:25464", success: "2034:25465", warning: "2034:25466", error: "2034:25467" },
+    alert: { info: "2034:25398", success: "2034:25399", warning: "2034:25400", error: "2034:25401" },
+  },
+  shared: {
+    blur: SHARED_SURFACE_VARIABLES.blur,
+    contentPrimary: "semantic/text/primary (VariableID:2002:2462)",
+    contentMuted: {
+      name: "component/surface/content-muted",
+      id: "VariableID:2259:2",
+      resolved: { flat: "#A0A3AC", gradient: "#A0A3AC", glass: "#17181B" },
+    },
+    opacity: "100% on every master; no Disabled or alternate-opacity variants",
+    elevation: "No live drop shadow on any Toast or Alert master",
+  },
+  toast: {
+    contract: "Card surface + Card border + 16px Glass blur; status changes icon semantics only",
+    surface: { name: "component/card/surface", id: "VariableID:2128:1499", resolved: { flat: "#FFFFFF", gradient: "#FFFFFF", glass: "#FFFFFF1F (12%)" } },
+    border: { name: "component/card/border", id: "VariableID:2128:1500", geometry: "1px INSIDE", resolved: { flat: "#DFE0E4", gradient: "#DFE0E4", glass: "#FFFFFF3D (24%)" } },
+    message: "semantic/text/primary",
+    close: "component/surface/content-muted",
+  },
+  alert: {
+    contract: "Feedback-specific tinted surface + 16px Glass blur; no border",
+    surfaces: {
+      info: { name: "component/feedback/info/surface", id: "VariableID:2140:2", resolved: { flat: "#DCEEFE", gradient: "#DCEEFE", glass: "#DCEEFE73 (45%)" } },
+      success: { name: "component/feedback/success/surface", id: "VariableID:2140:3", resolved: { flat: "#DFF5E6", gradient: "#DFF5E6", glass: "#DFF5E673 (45%)" } },
+      warning: { name: "component/feedback/warning/surface", id: "VariableID:2140:4", resolved: { flat: "#FEF3D6", gradient: "#FEF3D6", glass: "#FEF3D673 (45%)" } },
+      danger: { name: "component/feedback/danger/surface", id: "VariableID:2140:5", resolved: { flat: "#FDE2E1", gradient: "#FDE2E1", glass: "#FDE2E173 (45%)" } },
+    },
+    title: "semantic/text/primary",
+    descriptionAndClose: "component/surface/content-muted",
+    icons: {
+      info: "semantic/feedback/info #3B82F6",
+      success: "semantic/feedback/success #30A46C",
+      warning: "semantic/feedback/warning #F5A524",
+      error: "semantic/action/danger #E5484D",
+    },
+  },
+  reactParity: {
+    status: "Batch B implementation closed by focused browser verification",
+    architecture: "Shared FeedbackSurface structure with distinct internal Alert and Toast surface roles",
+    explicitExclusion: "Does not claim full Layer 3 Surface completion",
+  },
+} as const;
+
 export const COMPOSITION_ONLY_EVIDENCE = {
   paginationTrail: {
     trail: "2024:2897",

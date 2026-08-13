@@ -624,6 +624,22 @@ remains recorded rather than hidden locally: React semantic primary is
 `#131316` vs live Figma `#17181B`, and React icon-muted is `#A0A2AC` vs live
 Figma `#A0A3AC`.
 
+**Batch B correction — 2026-08-13:** live master re-verification and React
+browser parity are complete for Toast (`2034:25468`, masters
+`2034:25464–2034:25467`) and Alert (`2034:25402`, masters
+`2034:25398–2034:25401`). Toast now consumes the shared Card surface,
+Card border, and 16px Glass blur contract; its status changes only the icon,
+not the container. Alert remains intentionally distinct, using its four
+feedback-tinted surfaces (45% tint in Glass), 16px Glass blur, and no border.
+Both use semantic primary content plus the Surface-aware muted cascade where
+bound. Neither live component family has elevation or alternate opacity.
+React retains one shared structural `FeedbackSurface`, with separate internal
+surface roles rather than duplicating the layout or public APIs. This closes
+Batch B only, not Layer 3 Surface overall. Broader semantic feedback-color
+drift remains open; the exact live icon colors are intentionally scoped to the
+Alert/Toast component contract rather than changing global semantic feedback
+tokens in this batch.
+
 Marked not-applicable:
 - Link — zero fill across all 45 variants, nothing to cascade
 - Tooltip — user decision: stays fixed-dark always, doesn't participate in

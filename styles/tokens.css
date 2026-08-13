@@ -197,22 +197,29 @@
   --feedback-padding: 1rem;
   --feedback-content-gap: 0.75rem;
   --feedback-radius: var(--shape-radius-container);
-  --feedback-info-surface: rgb(37 99 199 / 0.08);
+  /* [VERIFIED] Feedback/Alert Surface family. Flat and Gradient use the
+     feedback-100 fills; Glass keeps each hue at 45% opacity. Toast does
+     not consume these aliases — its live masters use the Card contract. */
+  --feedback-info-surface: #dceefe;
   --feedback-info-border: rgb(37 99 199 / 0.24);
-  --feedback-info-text: var(--semantic-text-primary);
-  --feedback-info-title: #1e4f9c;
-  --feedback-success-surface: rgb(26 139 76 / 0.08);
+  --feedback-info-text: var(--component-surface-content-muted);
+  --feedback-info-title: var(--semantic-text-primary);
+  --feedback-info-icon: #3b82f6;
+  --feedback-success-surface: #dff5e6;
   --feedback-success-border: rgb(26 139 76 / 0.24);
-  --feedback-success-text: var(--semantic-text-primary);
-  --feedback-success-title: #156b3f;
-  --feedback-warning-surface: rgb(179 106 0 / 0.1);
+  --feedback-success-text: var(--component-surface-content-muted);
+  --feedback-success-title: var(--semantic-text-primary);
+  --feedback-success-icon: #30a46c;
+  --feedback-warning-surface: #fef3d6;
   --feedback-warning-border: rgb(179 106 0 / 0.28);
-  --feedback-warning-text: var(--semantic-text-primary);
-  --feedback-warning-title: #8a4f00;
-  --feedback-error-surface: rgb(217 45 62 / 0.08);
+  --feedback-warning-text: var(--component-surface-content-muted);
+  --feedback-warning-title: var(--semantic-text-primary);
+  --feedback-warning-icon: #f5a524;
+  --feedback-error-surface: #fde2e1;
   --feedback-error-border: rgb(217 45 62 / 0.24);
-  --feedback-error-text: var(--semantic-text-primary);
-  --feedback-error-title: #9f1f2d;
+  --feedback-error-text: var(--component-surface-content-muted);
+  --feedback-error-title: var(--semantic-text-primary);
+  --feedback-error-icon: #e5484d;
   --toast-max-width: 24rem;
   --toast-viewport-offset: 1rem;
   --progress-track-height: 0.5rem;
@@ -895,6 +902,10 @@
   --component-card-border-highlight-2: rgb(223 224 228 / 0.5);
   --component-card-border-highlight-3: rgb(223 224 228 / 0.15);
   --component-surface-content-muted: var(--semantic-text-primary);
+  --feedback-info-surface: rgb(220 238 254 / 0.45);
+  --feedback-success-surface: rgb(223 245 230 / 0.45);
+  --feedback-warning-surface: rgb(254 243 214 / 0.45);
+  --feedback-error-surface: rgb(253 226 225 / 0.45);
   --component-button-primary-border-start: rgb(255 255 255 / 0.8);
   --component-button-primary-border-mid: rgb(108 76 242 / 0.6);
   --component-button-primary-border-end: rgb(108 76 242 / 0.15);

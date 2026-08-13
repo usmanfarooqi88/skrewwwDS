@@ -12,7 +12,6 @@
 
 .toast {
   pointer-events: auto;
-  box-shadow: var(--surface-shadow-elevated);
 }
 
 @media (prefers-reduced-motion: reduce) {

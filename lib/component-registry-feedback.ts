@@ -37,6 +37,13 @@ export const feedbackRegistryEntries: ComponentRegistryEntry[] = [
     supportedSizes: [],
     tokensUsed: [
       "component/radius/container",
+      "component/feedback/info/surface",
+      "component/feedback/success/surface",
+      "component/feedback/warning/surface",
+      "component/feedback/danger/surface",
+      "component/surface/blur",
+      "component/surface/content-muted",
+      "semantic/text/primary",
       "semantic/feedback/info",
       "semantic/feedback/success",
       "semantic/feedback/warning",
@@ -107,7 +114,11 @@ export function Example() {
     supportedSizes: [],
     tokensUsed: [
       "component/radius/container",
-      "semantic/surface/default",
+      "component/card/surface",
+      "component/card/border",
+      "component/surface/blur",
+      "component/surface/content-muted",
+      "semantic/text/primary",
       "semantic/feedback/info",
       "semantic/feedback/success",
     ],
@@ -117,7 +128,7 @@ export function Example() {
     ],
     relatedTokens: [
       { label: "component/radius/container", href: "/foundations" },
-      { label: "semantic/surface/default", href: "/foundations" },
+      { label: "component/card/surface", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.surface],
     openQuestions: [

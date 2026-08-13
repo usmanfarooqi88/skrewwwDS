@@ -10,6 +10,7 @@ import { resolveFeedbackLiveRegion } from "@/components/ui/internal/feedback-typ
 import styles from "@/components/ui/internal/feedback-surface.module.css";
 
 export type FeedbackSurfaceProps = {
+  surface?: "alert" | "toast";
   status: FeedbackStatus;
   title?: string;
   description?: ReactNode;
@@ -23,6 +24,7 @@ export type FeedbackSurfaceProps = {
 };
 
 export function FeedbackSurface({
+  surface = "alert",
   status,
   title,
   description,
@@ -38,7 +40,7 @@ export function FeedbackSurface({
 
   return (
     <div
-      className={cn(styles.feedback, styles[status], className)}
+      className={cn(styles.feedback, styles[status], styles[surface], className)}
       role={liveRegion.role}
       aria-live={liveRegion.ariaLive}
     >
