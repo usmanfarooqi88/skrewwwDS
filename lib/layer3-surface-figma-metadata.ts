@@ -38,6 +38,30 @@ export const BUTTON_FIGMA_EVIDENCE = {
     primaryMediumDefault: "2012:7712",
     dangerMediumDefault: "2012:7742",
   },
+  /** Medium-size per-state masters, confirmed 2026-08-11. */
+  stateMasters: {
+    primaryMediumHover: "2012:7713",
+    primaryMediumPressed: "2012:7714",
+    primaryMediumFocused: "2012:7715",
+    dangerMediumHover: "2012:7743",
+    dangerMediumPressed: "2012:7744",
+    dangerMediumFocused: "2012:7745",
+    dangerMediumDisabled: "2012:7746",
+  },
+  repairedFocusContract: {
+    repairedAcrossAllVariants: 45,
+    representativeFocusedNodeIds: {
+      primaryMedium: "2012:7715",
+      dangerMedium: "2012:7745",
+    },
+    token: {
+      name: "semantic/focus-ring",
+      id: "VariableID:2002:2472",
+      resolved: { light: "#6C4CF2", dark: "#8770F6" },
+    },
+    stroke: { width: "2px", alignment: "OUTSIDE", offset: "0px", surfaceDependent: false },
+    glassRim: { width: "1px", alignment: "INSIDE", independentFromFocus: true },
+  },
   verifiedSizes: ["Small", "Medium", "Large"],
   primary: {
     verifiedStates: ["Default", "Hover", "Pressed", "Focused", "Disabled"],
@@ -50,12 +74,12 @@ export const BUTTON_FIGMA_EVIDENCE = {
       hover: {
         name: "component/button/primary/background-hover",
         id: "VariableID:2127:1381",
-        resolved: { flat: "#5638D6", gradient: "#5638D6", glass: "#6C4CF2 / 24%" },
+        resolved: { flat: "#5638D6", gradient: "#5638D6", glass: "#5638D63D (24%)" },
       },
       pressed: {
         name: "component/button/primary/background-pressed",
         id: "VariableID:2127:1382",
-        resolved: { flat: "#4229AD", gradient: "#4229AD", glass: "#6C4CF2 / 30%" },
+        resolved: { flat: "#4229AD", gradient: "#4229AD", glass: "#4229AD4D (30%)" },
       },
     },
     content: SHARED_SURFACE_VARIABLES.content,
@@ -85,22 +109,54 @@ export const BUTTON_FIGMA_EVIDENCE = {
       hover: {
         name: "component/button/danger/background-hover",
         id: "VariableID:2127:1383",
-        resolved: { flat: "#CC3B37", gradient: "#CC3B37", glass: "#E5484D / 64%" },
+        resolved: { flat: "#CC3B37", gradient: "#CC3B37", glass: "#CC3B37A3 (64%)" },
       },
       pressed: {
         name: "component/button/danger/background-pressed",
         id: "VariableID:2127:1384",
-        resolved: { flat: "#B3261E", gradient: "#B3261E", glass: "#E5484D / 70%" },
+        resolved: { flat: "#B3261E", gradient: "#B3261E", glass: "#B3261EB2 (70%)" },
       },
     },
     content: SHARED_SURFACE_VARIABLES.content,
   },
-  focusBorders: {
-    scope: "Focused Primary and Danger",
+  /**
+   * These three-stop gradient families drive only the always-on Glass rim,
+   * drawn strokeAlign INSIDE. The repaired Focused masters independently
+   * use the solid semantic/focus-ring contract recorded above.
+   */
+  borderGradient: {
     width: "1px",
-    alignment: "OUTSIDE",
-    directionCssDegrees: 17.526,
-    stopPositions: [0, 0.5, 1],
+    strokeAlignNonFocused: "INSIDE",
+    stopPositions: [0, 0.231, 0.462],
+    /**
+     * Raw Figma handles at full precision, normalized PER-AXIS to the node
+     * bounding box (x / width, y / height) as [start, end, width].
+     */
+    gradientHandlePositions: [
+      [0, 0],
+      [0.3022670192495956, 0.9571788442445038],
+      [-0.4785894221222519, 0.1511335096247978],
+    ],
+    /**
+     * Shipped CSS is a PRACTICAL APPROXIMATION, not exact parity. Per-axis
+     * normalization makes the true angle aspect-ratio dependent, and Button
+     * is hug-content, so its width tracks its label — the real Figma angle
+     * drifts ~29 degrees between a 113px and a 400px Medium button.
+     * Reproducing that needs width-dependent runtime geometry, which is not
+     * justified for a decorative 1px rim. One fixed angle is shipped,
+     * derived for the Medium master box (113x36):
+     *   dx = 0.3022670192495956 * 113 = 34.156
+     *   dy = 0.9571788442445038 * 36  = 34.458
+     *   atan2(dx, -dy) = 180 - atan(34.156/34.458) = 135.25deg
+     * Practical CSS stops are 0% / 23.1% / 46.2%, with the end colour
+     * repeated at 100% so it holds after 46.2%.
+     */
+    shippedCss: {
+      angleDegrees: 135.25,
+      stopPercentages: [0, 23.1, 46.2, 100],
+      basis: "Medium master box 113x36",
+      classification: "practical approximation — NOT exact mathematical parity",
+    },
     surfaceResolution: {
       flat: ["transparent", "transparent", "transparent"],
       gradient: ["transparent", "transparent", "transparent"],

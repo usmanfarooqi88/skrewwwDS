@@ -92,10 +92,9 @@
   --component-danger-fill-hover: #cc3b37;
   --component-danger-fill-pressed: #b3261e;
 
-  /* [VERIFIED] Separate Primary and Danger three-stop stroke families.
-     Focused masters use them at 0%/50%/100% with OUTSIDE alignment. Figma
-     resolves every stop to transparent in Flat/Gradient; Glass overrides
-     these same semantic variables with their visible values below. */
+  /* [VERIFIED] Separate Primary and Danger three-stop Glass-rim families.
+     They are transparent outside Glass and are intentionally independent
+     from Button's Surface-independent --semantic-focus-ring treatment. */
   --component-button-primary-border-start: rgb(255 255 255 / 0);
   --component-button-primary-border-mid: rgb(108 76 242 / 0);
   --component-button-primary-border-end: rgb(108 76 242 / 0);

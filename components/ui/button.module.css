@@ -51,53 +51,12 @@
   outline: none;
 }
 
-.secondary:focus-visible {
+.button:focus-visible {
   outline: 2px solid var(--semantic-focus-ring);
-  outline-offset: 2px;
-}
-
-/* Primary and Danger Focused masters use the same verified three-stop
-   semantic stroke families as their Glass borders, aligned 1px OUTSIDE.
-   The native root stays unclipped so this decorative ring remains visible
-   in Squircle mode; the clipped fill/blur lives on .visualSurface. */
-.primary:focus-visible::before,
-.danger:focus-visible::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: 2;
-  border: 1px solid transparent;
-  border-radius: calc(var(--component-button-radius-control) + 1px);
-  background-origin: border-box;
-  background-clip: border-box;
-  pointer-events: none;
-  mask:
-    linear-gradient(#000 0 0) padding-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-
-[data-skrewww-shape="squircle"] .primary:focus-visible::before,
-[data-skrewww-shape="squircle"] .danger:focus-visible::before {
-  clip-path: var(--squircle-clip-path-control);
-}
-
-.primary:focus-visible::before {
-  background-image: linear-gradient(
-    17.526deg,
-    var(--component-button-primary-border-start) 0%,
-    var(--component-button-primary-border-mid) 50%,
-    var(--component-button-primary-border-end) 100%
-  );
-}
-
-.danger:focus-visible::before {
-  background-image: linear-gradient(
-    17.526deg,
-    var(--component-button-danger-border-start) 0%,
-    var(--component-button-danger-border-mid) 50%,
-    var(--component-button-danger-border-end) 100%
-  );
+  /* CSS outline is painted outside the border edge and does not affect box
+     geometry. Zero offset is intentional: the canonical Figma contract has
+     no gap between Button and its 2px semantic focus ring. */
+  outline-offset: 0;
 }
 
 .button:disabled,
@@ -245,9 +204,39 @@
   background-color: var(--component-danger-fill-pressed-glass);
 }
 
-/* Figma's one-pixel linear stroke uses a three-stop gradient at
-   0%/50%/100%, on an axis equivalent to 17.526deg in CSS. A masked
-   pseudo-element preserves the control radius; border-image would not. */
+/*
+ * GLASS RIM GRADIENT — PRACTICAL APPROXIMATION, NOT EXACT PARITY.
+ * Do not "correct" this back toward a naive angle; read this first.
+ *
+ * Figma stores this 1px stroke (strokeAlign INSIDE on all non-Focused
+ * states) as a 3-stop gradient whose handles are normalized PER-AXIS to
+ * the node's bounding box (x divided by width, y divided by height):
+ *   start  (0, 0)
+ *   end    (0.3022670192495956, 0.9571788442445038)
+ *   width  (-0.4785894221222519, 0.1511335096247978)
+ *
+ * Because that normalization is non-uniform, the rendered angle depends on
+ * the element's aspect ratio. Button is hug-content (width = padding +
+ * label), so its width tracks the label text: the true Figma angle drifts
+ * roughly 29 degrees between a 113px and a 400px Medium button. Matching
+ * that exactly would need width-dependent runtime geometry, which is not
+ * justified for a decorative 1px rim.
+ *
+ * We therefore ship one fixed angle, derived for the Medium master box
+ * (113x36) and accepted as an approximation across all sizes:
+ *   dx = 0.3022670192495956 * 113 = 34.156
+ *   dy = 0.9571788442445038 * 36  = 34.458
+ *   CSS uses 0deg = up, increasing clockwise, while Figma's Y axis points
+ *   down, so angle = atan2(dx, -dy)
+ *        = 180 - atan(34.156 / 34.458) = 180 - 44.748 = 135.25deg
+ *
+ * The practical CSS stop positions are 0% / 23.1% / 46.2%. The final colour
+ * is repeated at 100% so it holds after 46.2% rather than stretching the
+ * third transition across the rest of a variable-width Button.
+ *
+ * The mask/mask-composite technique below is what keeps this a true INSIDE
+ * 1px border while preserving border-radius; border-image would not.
+ */
 [data-skrewww-surface="glass"] .primary .visualSurface::before,
 [data-skrewww-surface="glass"] .danger .visualSurface::before {
   content: "";
@@ -266,18 +255,20 @@
 
 [data-skrewww-surface="glass"] .primary .visualSurface::before {
   background-image: linear-gradient(
-    17.526deg,
+    135.25deg,
     var(--component-button-primary-border-start) 0%,
-    var(--component-button-primary-border-mid) 50%,
+    var(--component-button-primary-border-mid) 23.1%,
+    var(--component-button-primary-border-end) 46.2%,
     var(--component-button-primary-border-end) 100%
   );
 }
 
 [data-skrewww-surface="glass"] .danger .visualSurface::before {
   background-image: linear-gradient(
-    17.526deg,
+    135.25deg,
     var(--component-button-danger-border-start) 0%,
-    var(--component-button-danger-border-mid) 50%,
+    var(--component-button-danger-border-mid) 23.1%,
+    var(--component-button-danger-border-end) 46.2%,
     var(--component-button-danger-border-end) 100%
   );
 }

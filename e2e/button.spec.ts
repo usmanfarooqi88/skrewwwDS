@@ -1,8 +1,39 @@
-import { expect, expectColorClose, hexToRgba, resolvedRgba, setSurfaceMode, test } from "./fixtures";
+import {
+  expect,
+  expectColorClose,
+  hexToRgba,
+  resolvedRgba,
+  rgbaStringToRgba,
+  setSurfaceMode,
+  test,
+} from "./fixtures";
 import type { Locator } from "@playwright/test";
 
 function visualSurface(button: Locator) {
   return button.locator('[aria-hidden="true"]').first();
+}
+
+/**
+ * Parses a computed `linear-gradient(...)` into its angle and stops so tests
+ * can assert real rendered geometry instead of matching a substring. A plain
+ * `toContain("135.25deg")` would still pass if the axis were mirrored or the
+ * stop order reversed, which is exactly the class of regression the Glass rim
+ * work was correcting.
+ */
+function parseLinearGradient(image: string) {
+  const angle = Number.parseFloat(/linear-gradient\(\s*([\d.]+)deg/.exec(image)?.[1] ?? "NaN");
+  const stopPattern = /(rgba?\([^)]*\))\s+([\d.]+)%/g;
+  const stops: Array<{ color: string; position: number }> = [];
+  let match = stopPattern.exec(image);
+  while (match !== null) {
+    stops.push({ color: match[1], position: Number.parseFloat(match[2]) });
+    match = stopPattern.exec(image);
+  }
+  // CSS angles are measured with 0deg pointing up and increasing clockwise,
+  // while screen space has y growing downward — so this is the direction the
+  // gradient actually travels across the element.
+  const radians = (angle * Math.PI) / 180;
+  return { angle, stops, dx: Math.sin(radians), dy: -Math.cos(radians) };
 }
 
 test.describe("Button browser behavior", () => {
@@ -163,12 +194,35 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
       visualSurface(danger).evaluate((el) => getComputedStyle(el, "::before").backgroundImage),
     ]);
 
-    expect(primaryBorder).toContain("17.526deg");
-    expect(primaryBorder).toContain("rgba(255, 255, 255, 0.8) 0%");
-    expect(primaryBorder).toContain("50%");
-    expect(primaryBorder).toContain("100%");
-    expect(dangerBorder).toContain("17.526deg");
-    expect(dangerBorder).toContain("rgba(255, 255, 255, 0.8) 0%");
+    const cases = [
+      { label: "Primary", image: primaryBorder, midHex: "#6C4CF2" },
+      { label: "Danger", image: dangerBorder, midHex: "#E5484D" },
+    ] as const;
+
+    for (const { label, image, midHex } of cases) {
+      const gradient = parseLinearGradient(image);
+
+      // Shipped Glass rim axis — a deliberate fixed-angle approximation of
+      // Figma's aspect-ratio-dependent handles, derived for the Medium
+      // master box. See the derivation comment in button.module.css.
+      expect(gradient.angle, `${label} rim angle`).toBeCloseTo(135.25, 2);
+
+      // Direction correctness: the rim must travel down-and-right. The
+      // previous 17.526deg value pointed up-and-right, mirroring the rim so
+      // the bright white stop landed on the wrong edge. Asserting the vector
+      // catches that even if the angle string were to change form.
+      expect(gradient.dx, `${label} rim travels rightward`).toBeGreaterThan(0);
+      expect(gradient.dy, `${label} rim travels downward`).toBeGreaterThan(0);
+
+      expect(gradient.stops.map((stop) => stop.position), `${label} rim stops`).toEqual([0, 23.1, 46.2, 100]);
+
+      expectColorClose(rgbaStringToRgba(gradient.stops[0].color), hexToRgba("#FFFFFF", 0.8), `${label} rim stop 0`);
+      expectColorClose(rgbaStringToRgba(gradient.stops[1].color), hexToRgba(midHex, 0.6), `${label} rim stop 1`);
+      expectColorClose(rgbaStringToRgba(gradient.stops[2].color), hexToRgba(midHex, 0.15), `${label} rim stop 2`);
+      expectColorClose(rgbaStringToRgba(gradient.stops[3].color), hexToRgba(midHex, 0.15), `${label} rim held end colour`);
+    }
+
+    // Primary and Danger keep permanently separate token families.
     expect(dangerBorder).not.toBe(primaryBorder);
   });
 
@@ -248,61 +302,73 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     expect(await secondary.evaluate((el) => getComputedStyle(el).opacity)).toBe("0.4");
   });
 
-  test("Focused Primary and Danger resolve Surface-aware outside gradients without layout shift", async ({ page }) => {
-    const variants = [
-      {
-        name: "Primary",
-        tokens: [
-          "--component-button-primary-border-start",
-          "--component-button-primary-border-mid",
-          "--component-button-primary-border-end",
-        ],
-        glassStops: ["rgba(255, 255, 255, 0.8) 0%", "rgba(108, 76, 242, 0.6) 50%", "rgba(108, 76, 242, 0.15) 100%"],
-      },
-      {
-        name: "Danger",
-        tokens: [
-          "--component-button-danger-border-start",
-          "--component-button-danger-border-mid",
-          "--component-button-danger-border-end",
-        ],
-        glassStops: ["rgba(255, 255, 255, 0.8) 0%", "rgba(229, 72, 77, 0.6) 50%", "rgba(229, 72, 77, 0.15) 100%"],
-      },
-    ] as const;
+  test("keyboard focus uses one solid semantic outside ring across variants and Surfaces", async ({ page }) => {
+    const variants = ["Primary", "Secondary", "Danger"] as const;
 
-    for (const variant of variants) {
-      const { name, tokens, glassStops } = variant;
-      const button = page.getByRole("button", { name, exact: true });
-      const before = await button.boundingBox();
+    for (const mode of ["flat", "gradient", "glass"] as const) {
+      await setSurfaceMode(page, mode);
 
-      for (const mode of ["flat", "gradient"] as const) {
-        await setSurfaceMode(page, mode);
-        await button.focus();
-        const values = await button.evaluate((el, names) => {
+      for (let variantIndex = 0; variantIndex < variants.length; variantIndex += 1) {
+        const name = variants[variantIndex];
+        const button = page.getByRole("button", { name, exact: true });
+        const before = await button.boundingBox();
+
+        // Begin from a known preceding control, then use Tab so Chromium—not
+        // script focus—decides that :focus-visible matches.
+        await page.getByRole("button", { name: "Squircle", exact: true }).focus();
+        for (let tab = 0; tab <= variantIndex; tab += 1) await page.keyboard.press("Tab");
+        await expect(button).toBeFocused();
+        expect(await button.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
+
+        const focus = await button.evaluate((el) => {
           const style = getComputedStyle(el);
-          return names.map((token) => style.getPropertyValue(token).trim());
-        }, tokens);
-        expect(values, `${name} ${mode} focus stops`).toEqual([
-          "#fff0",
-          name === "Primary" ? "#6c4cf200" : "#e5484d00",
-          name === "Primary" ? "#6c4cf200" : "#e5484d00",
-        ]);
-      }
+          return {
+            style: style.outlineStyle,
+            width: style.outlineWidth,
+            offset: style.outlineOffset,
+            color: style.outlineColor,
+          };
+        });
+        expect(focus.style).toBe("solid");
+        expect(focus.width).toBe("2px");
+        expect(focus.offset).toBe("0px");
+        expectColorClose(rgbaStringToRgba(focus.color), hexToRgba("#6C4CF2"), `${name} ${mode} focus colour`);
 
-      await setSurfaceMode(page, "glass");
+        if (mode === "glass" && name !== "Secondary") {
+          const rim = await visualSurface(button).evaluate(
+            (el) => getComputedStyle(el, "::before").backgroundImage,
+          );
+          expect(parseLinearGradient(rim).stops).toHaveLength(4);
+        }
+
+        const after = await button.boundingBox();
+        expect(after?.width).toBe(before?.width);
+        expect(after?.height).toBe(before?.height);
+      }
+    }
+  });
+
+  test("focus ring keeps size and Button radius aliases across sizes and implemented Shape modes", async ({ page }) => {
+    for (const name of ["Small", "Medium", "Large"] as const) {
+      const button = page.getByRole("button", { name, exact: true });
       await button.focus();
-      await expect(button).toBeFocused();
-      const focusStroke = await button.evaluate((el) => {
-        const style = getComputedStyle(el, "::before");
-        return { backgroundImage: style.backgroundImage, inset: style.inset, pointerEvents: style.pointerEvents };
+      expect(await button.evaluate((el) => getComputedStyle(el).outlineWidth)).toBe("2px");
+    }
+
+    const controls = page.getByTestId("button-preview-mode-controls");
+    const primary = page.getByRole("button", { name: "Primary", exact: true });
+    for (const [mode, radius] of [["Sharp", "0px"], ["Rounded", "4px"], ["Pill", "9999px"], ["Squircle", "8px"]] as const) {
+      await controls.getByRole("button", { name: mode }).click();
+      for (let tab = 0; tab < 5 && !(await primary.evaluate((el) => el === document.activeElement)); tab += 1) {
+        await page.keyboard.press("Tab");
+      }
+      await expect(primary).toBeFocused();
+      expect(await primary.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
+      const computed = await primary.evaluate((el) => {
+        const style = getComputedStyle(el);
+        return { radius: style.borderRadius, outline: style.outlineWidth };
       });
-      expect(focusStroke.backgroundImage).toContain("17.526deg");
-      for (const stop of glassStops) expect(focusStroke.backgroundImage).toContain(stop);
-      expect(focusStroke.inset).toBe("-1px");
-      expect(focusStroke.pointerEvents).toBe("none");
-      const after = await button.boundingBox();
-      expect(after?.width).toBe(before?.width);
-      expect(after?.height).toBe(before?.height);
+      expect(computed).toEqual({ radius, outline: "2px" });
     }
   });
 

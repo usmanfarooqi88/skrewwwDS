@@ -68,6 +68,24 @@ export function hexToRgba(hex: string, alpha = 1): { r: number; g: number; b: nu
 }
 
 /**
+ * Parses an `rgb()`/`rgba()` string into the same {r,g,b,a} shape as
+ * resolvedRgba and hexToRgba. resolvedRgba reads a live element property, so
+ * it cannot reach colors that only exist as stops *inside* a computed
+ * `linear-gradient(...)` value; this covers that case without giving any
+ * spec its own private color-comparison logic.
+ */
+export function rgbaStringToRgba(color: string): { r: number; g: number; b: number; a: number } {
+  const parts = /rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,/\s]+([\d.]+))?\s*\)/.exec(color);
+  if (!parts) throw new Error(`Unparseable rgb/rgba color: ${color}`);
+  return {
+    r: Number(parts[1]),
+    g: Number(parts[2]),
+    b: Number(parts[3]),
+    a: parts[4] === undefined ? 1 : Number(parts[4]),
+  };
+}
+
+/**
  * Tolerant color comparison — a color-mix()/oklab round-trip through the
  * canvas premultiplied-alpha conversion in resolvedRgba introduces a few
  * units of 8-bit rounding error per channel, so exact equality is the

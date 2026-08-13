@@ -508,6 +508,75 @@ exclusions live in `lib/layer3-surface-figma-metadata.ts`.
   canonical Previous/Next parity is claimed; their disabled Figma
   presentation remains unverified.
 
+## Layer 3 Glass rim and focus correction — Button (2026-08-13, additive)
+
+Appended per this file's correction convention; the entries above are left
+as written.
+
+**Glass rim gradient angle corrected, and explicitly classified as an
+approximation.** The Glass rim on Button Primary/Danger shipped at
+`17.526deg` with the wrong stop distribution. That angle was the raw
+`atan(dx/dy)` of Figma's handles, taken without converting for Figma's
+downward Y axis, so the rim rendered mirrored — the bright `#FFFFFF` 80%
+stop landed on the bottom edge instead of the top. It is now `135.25deg`
+with practical CSS stops `0% / 23.1% / 46.2%`; the end colour is repeated
+at `100%` so it holds after `46.2%`.
+
+Figma normalizes this gradient's handles **per-axis** to the node bounding
+box, so the true angle depends on the element's aspect ratio. Button is
+hug-content, so its width tracks its label: the real Figma angle drifts
+about 29 degrees between a 113px and a 400px Medium button. Matching that
+would require width-dependent runtime geometry, which is not justified for
+a decorative 1px rim. **One fixed angle is shipped, derived for the Medium
+master box (113x36), and is a practical approximation — not exact
+mathematical parity.** The full derivation, raw handles, and a warning
+against "correcting" it back toward a naive angle live in
+`components/ui/button.module.css` and `lib/layer3-surface-figma-metadata.ts`.
+
+Unchanged in this pass, because live browser verification confirmed they
+were already correct: all Surface fill/content/blur tokens, Danger
+Flat/Gradient hover/pressed (`#CC3B37` / `#B3261E`), Secondary's Glass fill
+(`#FFFFFF1F`) and its 16px blur, and the mask/`mask-composite` inside-border
+technique. The predicted Secondary 8px blur gap does not exist.
+
+### Button focus parity repair
+
+Figma's Button masters are repaired across all 45 variants. Representative
+Focused nodes are Primary Medium `2012:7715` and Danger Medium `2012:7745`.
+Their canonical treatment is a solid `2px` OUTSIDE stroke with no gap,
+bound to `semantic/focus-ring` (`VariableID:2002:2472`; Light `#6C4CF2`,
+Dark `#8770F6`) and independent of Surface mode.
+
+React now uses that semantic outline for Primary, Secondary, and Danger in
+Flat, Gradient, and Glass. The previous Primary/Danger focus pseudo-element
+reused the Glass gradient families; because those tokens intentionally
+resolve transparent outside Glass, Flat and Gradient had no visible focus
+indicator. The pseudo-element responsibility has been removed. The Glass
+rim remains a separate `1px` INSIDE masked gradient on the visual-surface
+layer, so rim and focus ring remain visible simultaneously without changing
+Button layout. React Button focus parity is closed by the passing focused
+real-browser keyboard/computed-style suite; repository-wide gate results are
+reported separately and are not implied by that component-level status.
+
+Open parity limitations, intentionally not implemented in this pass:
+
+- React has no Dark theme token-switching mode or test harness, so the Figma
+  Dark `semantic/focus-ring` value `#8770F6` is not implemented in React.
+- Brand Shape is named in the foundations documentation, but React has no
+  Brand Shape token mode or Button preview control. Its geometry remains an
+  open design-system implementation gap.
+- Broader Layer 3 Surface audit items recorded elsewhere in this status file
+  remain open; this Button repair does not claim full Layer 3 completion.
+
+Verification for this React batch: lint passed with the existing 26-warning
+allowance; typecheck passed; Vitest passed 688/688; focused Button Playwright
+passed 15/15; the previously failing Drawer, Empty State, and Line Chart
+focused serial rerun passed 17/17; the production build and
+`git diff --check` passed. The full Playwright suite is **not green**: its
+final serial run was 188/194, with five environment/offline-resource
+`net::ERR_INTERNET_DISCONNECTED` console failures and one existing
+nondeterministic Menu keyboard-focus failure. It is not reported as passed.
+
 ## Layer 3 Surface audit — Batches 1-3 complete
 
 Extends the Button/Card/Text Input baseline above to the rest of the
