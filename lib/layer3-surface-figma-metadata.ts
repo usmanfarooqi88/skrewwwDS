@@ -288,6 +288,73 @@ export const PAGINATION_PAGE_ITEM_FIGMA_EVIDENCE = {
   closingCommit: "5cfb4e6",
 } as const;
 
+export const MENU_PANEL_FIGMA_EVIDENCE = {
+  sectionId: "2024:3057",
+  panelComponentId: "2181:216",
+  menuItemComponentSetId: "2024:3015",
+  status: "private Figma building block; not automatically a public React component",
+  surface: { name: "component/menu/panel-surface", id: "VariableID:2142:208" },
+  border: { name: "component/menu/panel-border", id: "VariableID:2142:209", width: "1px", alignment: "INSIDE" },
+  blur: { name: "component/surface/blur", id: "VariableID:2057:13", resolved: { flat: "0px", gradient: "0px", glass: "16px" } },
+  futureCleanup: [
+    "Dropdown Menu panel adoption/consolidation",
+    "Combobox Listbox Panel token-family consolidation",
+    "Command Menu private floating-panel alignment",
+  ],
+} as const;
+
+export const LAYER3_SURFACE_BATCH_A_EVIDENCE = {
+  verifiedAt: "2026-08-13",
+  masters: {
+    dialog: "2044:25869",
+    drawer: "2044:25965",
+    accordionSet: "2044:25807",
+    accordionCollapsed: "2044:25805",
+    accordionExpanded: "2044:25806",
+    emptyState: "2044:26158",
+  },
+  sharedContract: {
+    surface: {
+      name: "component/card/surface",
+      id: "VariableID:2128:1499",
+      resolved: { flat: "#FFFFFF", gradient: "#FFFFFF", glass: "#FFFFFF1F (12%)" },
+    },
+    border: {
+      name: "component/card/border",
+      id: "VariableID:2128:1500",
+      resolved: { flat: "#DFE0E4", gradient: "#DFE0E4", glass: "#FFFFFF3D (24%)" },
+    },
+    dialogBorderHighlights: [
+      { name: "component/card/border-highlight-1", id: "VariableID:2268:218", glass: "#FFFFFFCC (80%)" },
+      { name: "component/card/border-highlight-2", id: "VariableID:2268:219", glass: "#DFE0E480 (50%)" },
+      { name: "component/card/border-highlight-3", id: "VariableID:2268:220", glass: "#DFE0E426 (15%)" },
+    ],
+    borderGeometry: "1px INSIDE; Dialog linear stops 0% / 50% / 100%",
+    blur: SHARED_SURFACE_VARIABLES.blur,
+    contentPrimary: "semantic/text/primary (VariableID:2002:2462)",
+    contentMuted: {
+      name: "component/surface/content-muted",
+      id: "VariableID:2259:2",
+      resolved: { flat: "#A0A3AC", gradient: "#A0A3AC", glass: "#17181B" },
+    },
+  },
+  componentContracts: {
+    dialog: "Card surface + three-stop Card highlight border + blur; no live drop shadow",
+    drawer: "Card surface + blur; no bound border and no live drop shadow",
+    accordion: "Card surface + Card border + blur in both variants; no elevation",
+    emptyState: "Card surface + blur; no border and no elevation",
+  },
+  reactParity: {
+    status: "Batch A implementation closed by focused browser verification",
+    scope: ["Dialog", "Drawer", "Accordion", "Empty State"],
+    explicitExclusion: "Does not claim full Layer 3 Surface completion",
+    broaderTokenDrift: [
+      "React semantic/text/primary resolves #131316; live Figma Light resolves #17181B",
+      "React semantic/icon/muted resolves #A0A2AC; live Figma Light resolves #A0A3AC",
+    ],
+  },
+} as const;
+
 export const COMPOSITION_ONLY_EVIDENCE = {
   paginationTrail: {
     trail: "2024:2897",

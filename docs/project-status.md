@@ -600,10 +600,29 @@ Fixed:
   "danger" token family, not a literal "error" key
 - Toast — reused Card's tokens (a different visual style from Alert despite
   being in the same category)
-- Menu — Panel + Item hover fixed, but flagged: no reusable master "Panel"
-  component exists, so the fix lives only on the example frame — the same
-  structural gap as Combobox's listbox
+- Menu — Panel + Item hover fixed. **Corrected 2026-08-13:** the private
+  reusable `Navigation/Menu Panel` master does exist (`2181:216`), alongside
+  the Menu Item set (`2024:3015`). It owns
+  `component/menu/panel-surface` (`2142:208`),
+  `component/menu/panel-border` (`2142:209`), and
+  `component/surface/blur` (`2057:13`). Earlier wording that the treatment
+  lived only on an example frame was stale. This private Figma building
+  block does not automatically imply a public React Panel component.
 - Popover, Dialog, Drawer — all reused Card's tokens
+
+**Batch A correction — 2026-08-13:** live master re-verification and React
+browser parity are complete for Dialog (`2044:25869`), Drawer
+(`2044:25965`), Accordion (`2044:25807`, variants `2044:25805` /
+`2044:25806`), and Empty State (`2044:26158`). React now consumes one shared
+Card-family contract: solid Card surface in Flat/Gradient, 12% white in
+Glass, 16px Glass blur, Card border where present, and Surface-aware muted
+content. Dialog uses the live three-stop Card highlight border; Drawer and
+Empty State have no container border. Decorative React-only elevation was
+removed because none of the four live masters contains a drop shadow. This
+closes Batch A only, not Layer 3 Surface overall. A broader foundation drift
+remains recorded rather than hidden locally: React semantic primary is
+`#131316` vs live Figma `#17181B`, and React icon-muted is `#A0A2AC` vs live
+Figma `#A0A3AC`.
 
 Marked not-applicable:
 - Link — zero fill across all 45 variants, nothing to cascade
@@ -668,8 +687,9 @@ Calendar Grid: no separate component exists — already covered by the same
 panel fixed for Date Picker in Batch 2.
 
 **Open items carried forward** (not closed by this audit):
-1. Menu has no reusable master "Panel" component — the Surface fix lives
-   only on the example frame (Batch 1)
+1. Dropdown Menu / Combobox / Command Menu floating-panel consolidation is
+   future cleanup, not part of the Menu Panel correction. The reusable
+   private Menu Panel master itself is confirmed present and correct.
 2. Badge and Alert/Toast maintain duplicate tint tokens with identical
    values under different names — a future consolidation opportunity, not a
    correctness bug (Batch 1)

@@ -22,11 +22,14 @@
   width: min(100%, var(--dialog-width));
   max-height: min(var(--dialog-max-height), calc(100vh - 2rem));
   overflow: hidden;
-  border: 1px solid var(--dialog-border);
+  border: 1px solid transparent;
   border-radius: var(--dialog-radius);
-  background: var(--dialog-surface);
-  color: var(--dialog-text);
-  box-shadow: var(--dialog-elevation);
+  background:
+    linear-gradient(var(--component-card-surface), var(--component-card-surface)) padding-box,
+    var(--component-card-border-gradient) border-box;
+  color: var(--semantic-text-primary);
+  box-shadow: none;
+  backdrop-filter: var(--component-surface-backdrop-filter);
   outline: none;
 }
 
@@ -44,7 +47,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.35;
-  color: var(--dialog-text);
+  color: var(--semantic-text-primary);
 }
 
 .close {
@@ -53,10 +56,10 @@
   justify-content: center;
   width: var(--dialog-close-size);
   height: var(--dialog-close-size);
-  border: 1px solid var(--dialog-border);
+  border: 0;
   border-radius: min(var(--shape-radius-control), 9999px);
   background: transparent;
-  color: var(--dialog-text);
+  color: var(--component-surface-content-muted);
   cursor: pointer;
 }
 
@@ -71,12 +74,13 @@
   padding-top: var(--dialog-body-gap);
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--semantic-text-secondary);
+  color: var(--component-surface-content-muted);
 }
 
 .body {
   padding: var(--dialog-padding);
   overflow-y: auto;
+  color: var(--component-surface-content-muted);
 }
 
 .footer {
@@ -85,7 +89,7 @@
   justify-content: flex-end;
   gap: 0.5rem;
   padding: var(--dialog-padding);
-  border-top: 1px solid var(--dialog-border);
+  border-top: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -97,17 +101,6 @@
 @media (prefers-reduced-transparency: reduce) {
   .overlayBackdrop {
     background: var(--dialog-overlay-background-opaque);
-  }
-}
-
-[data-skrewww-surface="glass"] .content {
-  background: color-mix(in srgb, var(--dialog-surface) var(--glass-mix-md), white);
-  backdrop-filter: var(--glass-backdrop-filter-md);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-surface="glass"] .content {
-    background: color-mix(in srgb, var(--dialog-surface) var(--glass-mix-md-fallback), white);
   }
 }
 

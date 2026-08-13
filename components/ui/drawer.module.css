@@ -19,10 +19,11 @@
   height: 100%;
   max-height: 100dvh;
   overflow: hidden;
-  border: 1px solid var(--drawer-border);
-  background: var(--drawer-surface);
-  color: var(--drawer-text);
-  box-shadow: var(--drawer-elevation);
+  border: 0;
+  background: var(--component-card-surface);
+  color: var(--semantic-text-primary);
+  box-shadow: none;
+  backdrop-filter: var(--component-surface-backdrop-filter);
   outline: none;
 }
 
@@ -41,14 +42,9 @@
   animation: drawer-enter-left var(--drawer-open-duration) var(--drawer-motion-easing);
 }
 
-/*
- * Same box-shadow-vs-clip-path split as Card (see card.module.css) — .panel
- * keeps its own elevation box-shadow unclipped, using its existing
- * (approximate) border-radius above for the shadow's silhouette; the exact
- * squircle curve applies to a ::before fill layer instead. Only .left needs
- * this today: its exposed corners are the right two only, so it uses the
- * right-corners-only curve rather than the general 4-corner one.
- */
+/* Keep the exact squircle curve on a dedicated fill layer. The live Drawer
+   master has neither a border nor elevation, so this layer owns only the
+   Card-family surface and its mode-resolved backdrop blur. */
 [data-skrewww-shape="squircle"] .left {
   background: none;
   border-color: transparent;
@@ -60,27 +56,9 @@
   inset: 0;
   z-index: -1;
   clip-path: var(--squircle-clip-path-container-right);
-  background: var(--drawer-surface);
-  backdrop-filter: var(--glass-backdrop-filter-md, none);
-  border: 1px solid var(--drawer-border);
-  border-left: none;
-}
-
-/*
- * Squircle's ::before is a different element than .panel below, so the
- * plain Glass rule on .panel never reaches it — without this, Glass+
- * Squircle combined would silently lose the tint (falling back to
- * .left::before's plain, unblurred --drawer-surface above) even though
- * each mode works fine on its own.
- */
-[data-skrewww-shape="squircle"][data-skrewww-surface="glass"] .left::before {
-  background: color-mix(in srgb, var(--drawer-surface) var(--glass-mix-md), white);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-shape="squircle"][data-skrewww-surface="glass"] .left::before {
-    background: color-mix(in srgb, var(--drawer-surface) var(--glass-mix-md-fallback), white);
-  }
+  background: var(--component-card-surface);
+  backdrop-filter: var(--component-surface-backdrop-filter);
+  border: 0;
 }
 
 .header {
@@ -97,7 +75,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.35;
-  color: var(--drawer-text);
+  color: var(--semantic-text-primary);
 }
 
 .close {
@@ -106,13 +84,13 @@
   justify-content: center;
   width: var(--drawer-close-size);
   height: var(--drawer-close-size);
-  border: 1px solid var(--drawer-border);
+  border: 0;
   border-radius: min(var(--shape-radius-control), 9999px);
   /* min(..., 9999px) is effectively just --shape-radius-control since
      9999px never wins, so the plain -control token is correct here. */
   clip-path: var(--squircle-clip-path-control, none);
   background: transparent;
-  color: var(--drawer-text);
+  color: var(--component-surface-content-muted);
   cursor: pointer;
 }
 
@@ -132,7 +110,7 @@
   padding-top: var(--drawer-body-gap);
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--semantic-text-secondary);
+  color: var(--component-surface-content-muted);
 }
 
 .body {
@@ -140,6 +118,7 @@
   padding: var(--drawer-padding);
   overflow-y: auto;
   overscroll-behavior: contain;
+  color: var(--component-surface-content-muted);
 }
 
 .footer {
@@ -148,7 +127,7 @@
   justify-content: flex-end;
   gap: 0.5rem;
   padding: var(--drawer-padding);
-  border-top: 1px solid var(--drawer-border);
+  border-top: 0;
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -160,17 +139,6 @@
 @media (prefers-reduced-motion: reduce) {
   .left {
     animation: drawer-enter-reduced var(--drawer-open-duration) var(--drawer-motion-easing);
-  }
-}
-
-[data-skrewww-surface="glass"] .panel {
-  background: color-mix(in srgb, var(--drawer-surface) var(--glass-mix-md), white);
-  backdrop-filter: var(--glass-backdrop-filter-md);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-surface="glass"] .panel {
-    background: color-mix(in srgb, var(--drawer-surface) var(--glass-mix-md-fallback), white);
   }
 }
 

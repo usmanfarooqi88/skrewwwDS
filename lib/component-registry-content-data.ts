@@ -1097,9 +1097,10 @@ export function Example() {
     supportedVariants: ["first-use", "no-results", "informational"],
     supportedSizes: [],
     tokensUsed: [
-      "semantic/icon/muted",
+      "component/card/surface",
+      "component/surface/blur",
+      "component/surface/content-muted",
       "semantic/text/primary",
-      "semantic/text/secondary",
     ],
     relatedComponents: [
       { label: "Alert — persistent inline feedback, not empty collections", href: "/components/alert" },
@@ -1108,8 +1109,8 @@ export function Example() {
       { label: "Link — secondary navigation actions", href: "/components/link" },
     ],
     relatedTokens: [
-      { label: "semantic/icon/muted", href: "/foundations" },
-      { label: "semantic/text/secondary", href: "/foundations" },
+      { label: "component/card/surface", href: "/foundations" },
+      { label: "component/surface/content-muted", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.surface],
     openQuestions: [

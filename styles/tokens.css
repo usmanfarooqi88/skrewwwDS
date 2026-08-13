@@ -113,6 +113,22 @@
   --surface-fill-default: var(--semantic-surface-default);
   --surface-fill-control: var(--semantic-surface-default);
   --surface-border-default: var(--semantic-border-default);
+  /* [VERIFIED] Shared Card-family Surface contract. Unlike the broader
+     experimental --surface-fill-default cascade, Figma keeps Flat and
+     Gradient identical for these containers and switches only Glass. */
+  --component-card-surface: var(--semantic-surface-default);
+  --component-card-border: var(--semantic-border-default);
+  --component-card-border-highlight-1: var(--semantic-border-default);
+  --component-card-border-highlight-2: var(--semantic-border-default);
+  --component-card-border-highlight-3: var(--semantic-border-default);
+  --component-card-border-gradient: linear-gradient(
+    162.47deg,
+    var(--component-card-border-highlight-1) 0%,
+    var(--component-card-border-highlight-2) 50%,
+    var(--component-card-border-highlight-3) 100%
+  );
+  --component-surface-content-muted: var(--semantic-icon-muted);
+  --component-surface-backdrop-filter: none;
   /* [TEMPORARY] raised Card shadow — offset/spread pending Figma shadow tokens */
   --surface-shadow-raised: 0 var(--primitive-shadow-blur-3) var(--primitive-shadow-blur-3)
     var(--primitive-shadow-color-3);
@@ -873,6 +889,12 @@
 [data-skrewww-surface="glass"] {
   --surface-fill-default: rgb(255 255 255 / 0.72);
   --surface-fill-control: rgb(255 255 255 / 0.85);
+  --component-card-surface: rgb(255 255 255 / 0.12);
+  --component-card-border: rgb(255 255 255 / 0.24);
+  --component-card-border-highlight-1: rgb(255 255 255 / 0.8);
+  --component-card-border-highlight-2: rgb(223 224 228 / 0.5);
+  --component-card-border-highlight-3: rgb(223 224 228 / 0.15);
+  --component-surface-content-muted: var(--semantic-text-primary);
   --component-button-primary-border-start: rgb(255 255 255 / 0.8);
   --component-button-primary-border-mid: rgb(108 76 242 / 0.6);
   --component-button-primary-border-end: rgb(108 76 242 / 0.15);
@@ -922,6 +944,7 @@
    */
   --glass-blur-lg: 16px;
   --glass-backdrop-filter-lg: blur(var(--glass-blur-lg));
+  --component-surface-backdrop-filter: var(--glass-backdrop-filter-lg);
 
   /*
    * [VERIFIED] Shared brand/danger-family Glass fills and content color,
@@ -985,6 +1008,7 @@
   [data-skrewww-surface="glass"] {
     --surface-fill-default: rgb(255 255 255 / 0.92);
     --surface-fill-control: rgb(255 255 255 / 0.97);
+    --component-card-surface: rgb(255 255 255 / 0.92);
   }
 }
 
@@ -993,6 +1017,13 @@
     /* Safe opaque fallback when transparency is reduced */
     --surface-fill-default: var(--semantic-surface-default);
     --surface-fill-control: var(--semantic-surface-default);
+    --component-card-surface: var(--semantic-surface-default);
+    --component-card-border: var(--semantic-border-default);
+    --component-card-border-highlight-1: var(--semantic-border-default);
+    --component-card-border-highlight-2: var(--semantic-border-default);
+    --component-card-border-highlight-3: var(--semantic-border-default);
+    --component-surface-content-muted: var(--semantic-icon-muted);
+    --component-surface-backdrop-filter: none;
     /* Same treatment for the brand/danger-family Glass fills — reuse the
        already-approved solid Flat values rather than a lower opacity, so
        nothing new is invented for this accessibility path. */

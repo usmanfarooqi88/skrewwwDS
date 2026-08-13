@@ -1,14 +1,16 @@
 .root {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--accordion-item-border);
+  border: 1px solid var(--component-card-border);
   border-radius: var(--accordion-radius);
   overflow: hidden;
-  background: var(--accordion-item-surface);
+  background: var(--component-card-surface);
+  box-shadow: none;
+  backdrop-filter: var(--component-surface-backdrop-filter);
 }
 
 .item + .item {
-  border-top: 1px solid var(--accordion-item-border);
+  border-top: 1px solid var(--component-card-border);
 }
 
 .heading {
@@ -25,7 +27,7 @@
   padding: var(--accordion-trigger-padding);
   border: 0;
   background: transparent;
-  color: var(--accordion-trigger-text);
+  color: var(--semantic-text-primary);
   font: inherit;
   font-weight: 600;
   text-align: left;
@@ -47,7 +49,7 @@
 
 .icon {
   flex-shrink: 0;
-  color: var(--semantic-icon-muted);
+  color: var(--component-surface-content-muted);
   transition: transform var(--accordion-motion-duration) var(--accordion-motion-easing);
 }
 
@@ -56,7 +58,7 @@
 }
 
 .panel {
-  color: var(--accordion-panel-text);
+  color: var(--component-surface-content-muted);
 }
 
 .panelInner {
@@ -72,15 +74,4 @@
 
 [data-skrewww-shape="pill"] .root {
   border-radius: min(var(--accordion-radius), 1.25rem);
-}
-
-[data-skrewww-surface="glass"] .root {
-  background: color-mix(in srgb, var(--accordion-item-surface) var(--glass-mix-md), white);
-  backdrop-filter: var(--glass-backdrop-filter-md);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-surface="glass"] .root {
-    background: color-mix(in srgb, var(--accordion-item-surface) var(--glass-mix-md-fallback), white);
-  }
 }

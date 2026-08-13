@@ -37,9 +37,11 @@ export const containersRegistryEntries: ComponentRegistryEntry[] = [
     supportedVariants: ["single", "multiple"],
     supportedSizes: [],
     tokensUsed: [
-      "semantic/border/default",
+      "component/card/surface",
+      "component/card/border",
+      "component/surface/blur",
+      "component/surface/content-muted",
       "semantic/text/primary",
-      "semantic/icon/muted",
       "component/radius/container",
       "semantic/focus-ring",
     ],
@@ -138,10 +140,14 @@ export function Example() {
     supportedVariants: ["modal"],
     supportedSizes: [],
     tokensUsed: [
-      "semantic/surface/default",
+      "component/card/surface",
+      "component/card/border-highlight-1",
+      "component/card/border-highlight-2",
+      "component/card/border-highlight-3",
+      "component/surface/blur",
+      "component/surface/content-muted",
+      "semantic/text/primary",
       "component/radius/container",
-      "shadow-blur/5",
-      "shadow-color/5",
       "semantic/focus-ring",
     ],
     relatedComponents: [
@@ -151,7 +157,7 @@ export function Example() {
     ],
     relatedTokens: [
       { label: "component/radius/container", href: "/foundations" },
-      { label: "shadow-blur/5", href: "/foundations" },
+      { label: "component/card/surface", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
@@ -368,10 +374,11 @@ export function Example() {
     supportedVariants: ["left"],
     supportedSizes: [],
     tokensUsed: [
-      "semantic/surface/default",
+      "component/card/surface",
+      "component/surface/blur",
+      "component/surface/content-muted",
+      "semantic/text/primary",
       "component/radius/container",
-      "shadow-blur/5",
-      "shadow-color/5",
       "semantic/focus-ring",
     ],
     relatedComponents: [
@@ -381,7 +388,7 @@ export function Example() {
     ],
     relatedTokens: [
       { label: "component/radius/container", href: "/foundations" },
-      { label: "shadow-blur/5", href: "/foundations" },
+      { label: "component/card/surface", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
