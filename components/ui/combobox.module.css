@@ -34,11 +34,16 @@
   overflow: hidden;
   width: auto;
   max-width: none;
-  background: var(--combobox-popup-surface);
+  background-color: var(--combobox-popup-surface);
+  background-image: var(--component-surface-gradient-overlay);
   border: 1px solid var(--combobox-popup-border);
   border-radius: var(--combobox-popup-radius);
   box-shadow: var(--combobox-popup-elevation);
   animation: none;
+}
+
+[data-skrewww-surface="gradient"] .listboxPopover {
+  background-image: var(--component-surface-gradient-overlay);
 }
 
 .listboxBody {
@@ -88,7 +93,12 @@
 
 .optionSelected {
   font-weight: 500;
-  background: var(--combobox-option-selected-surface);
+  background-color: var(--combobox-option-selected-surface);
+  background-image: var(--component-surface-gradient-overlay);
+}
+
+.optionSelected:hover:not(.optionDisabled) {
+  background-image: var(--component-surface-gradient-overlay);
 }
 
 .optionDisabled {

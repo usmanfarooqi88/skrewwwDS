@@ -4,7 +4,8 @@
   border: 1px solid var(--component-card-border);
   border-radius: var(--accordion-radius);
   overflow: hidden;
-  background: var(--component-card-surface);
+  background-color: var(--component-card-surface);
+  background-image: var(--component-surface-gradient-overlay);
   box-shadow: none;
   backdrop-filter: var(--component-surface-backdrop-filter);
 }

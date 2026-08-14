@@ -32,6 +32,55 @@ export const SHARED_SURFACE_VARIABLES = {
   },
 } as const;
 
+export const GRADIENT_FOUNDATION_EVIDENCE = {
+  verifiedAt: "2026-08-14",
+  variables: {
+    start: {
+      name: "component/surface/gradient-overlay-start",
+      id: "VariableID:2329:2914",
+      resolved: { flat: "transparent", gradient: "#FFFFFF14", glass: "transparent" },
+    },
+    end: {
+      name: "component/surface/gradient-overlay-end",
+      id: "VariableID:2329:2915",
+      resolved: { flat: "transparent", gradient: "#0000000A", glass: "transparent" },
+    },
+  },
+  geometry: {
+    css: "linear-gradient(90deg, start 0%, end 100%)",
+    figmaTransform: [[1, 0, 0], [0, 1, 0]],
+    direction: "left-to-right",
+  },
+  architecture: {
+    composition: "existing semantic/base background-color plus one additive lightness overlay",
+    baseFillPreserved: true,
+    bordersUnchanged: true,
+    focusIndependent: true,
+    shapeIndependent: true,
+    directionalApi: false,
+    animation: false,
+  },
+  participation: {
+    yes: ["resting surfaces", "persistent Selected", "persistent Current", "persistent Active"],
+    no: [
+      "transient list/navigation Hover",
+      "File Upload Dragging/Disabled/Error",
+      "Flat-only Table",
+    ],
+  },
+  staleFigmaHygieneDebt: [
+    "component/surface/fill (VariableID:2057:11) Gradient #6C4CF2",
+    "component/surface/fill-secondary (VariableID:2057:12) Gradient #4229AD",
+  ],
+  deferred: [
+    "directional or angle API",
+    "radial Gradient",
+    "animated Gradient",
+    "component-specific arbitrary Gradient recipes",
+    "File Upload Error participation reconsideration during the final Layer 3 sweep",
+  ],
+} as const;
+
 export const BUTTON_FIGMA_EVIDENCE = {
   componentSetId: "2012:7752",
   representativeMasters: {
@@ -463,7 +512,7 @@ export const LAYER3_SURFACE_BATCH_C_EVIDENCE = {
   },
   reactParity: {
     status: "Batch C implementation closed by focused browser verification",
-    gradientDecision: "Existing Flat-equivalent Gradient contract preserved; future Gradient direction work explicitly excluded",
+    gradientDecision: "Superseded by the Stable-v1 additive fixed-90deg Gradient foundation; transient shared Menu/List hover remains excluded",
     explicitExclusion: "Does not claim full Layer 3 Surface completion",
   },
 } as const;
@@ -543,6 +592,7 @@ export const UNVERIFIED_AREAS = {
   paginationPageItem: PAGINATION_PAGE_ITEM_FIGMA_EVIDENCE.unverified,
   paginationComposition: COMPOSITION_ONLY_EVIDENCE.paginationTrail.unverified,
   table: TABLE_FIGMA_EVIDENCE.pending,
+  gradient: GRADIENT_FOUNDATION_EVIDENCE.deferred,
 } as const;
 
 export const AUDIT_STATUS = {
@@ -554,4 +604,5 @@ export const AUDIT_STATUS = {
   calendarDay: { verifiedScopeClosed: true, closingCommit: CALENDAR_DAY_FIGMA_EVIDENCE.closingCommit },
   paginationPageItem: { verifiedScopeClosed: true, closingCommit: PAGINATION_PAGE_ITEM_FIGMA_EVIDENCE.closingCommit },
   table: { verifiedStableV1ScopeClosed: true, closingCommit: null },
+  gradientFoundation: { implementationCandidate: true, focusedParityValidationPending: true },
 } as const;

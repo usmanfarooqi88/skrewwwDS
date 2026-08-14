@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { isSidebarNavLinkActive } from "@/lib/sidebar-nav";
+import styles from "@/components/sidebar-nav-link.module.css";
 
 type SidebarNavLinkProps = {
   href: string;
@@ -32,7 +33,7 @@ export function SidebarNavLink({
       className={cn(
         "block rounded-md border-l-2 px-3 py-1.5 text-sm transition-colors",
         isActive
-          ? "border-brand-500 bg-brand-50 font-medium text-ink-900"
+          ? cn(styles.active, "border-brand-500 bg-brand-50 font-medium text-ink-900")
           : "border-transparent text-ink-600 hover:bg-ink-50 hover:text-ink-900",
       )}
     >

@@ -5,12 +5,17 @@
   width: max-content;
   min-width: var(--menu-min-width);
   max-width: min(var(--menu-max-width), calc(100vw - var(--menu-viewport-padding) * 2));
-  background: var(--menu-surface);
+  background-color: var(--menu-surface);
+  background-image: var(--component-surface-gradient-overlay);
   border: 1px solid var(--menu-border);
   border-radius: var(--menu-radius);
   box-shadow: var(--menu-elevation);
   color: var(--menu-item-text);
   animation: none;
+}
+
+[data-skrewww-surface="gradient"] .content {
+  background-image: var(--component-surface-gradient-overlay);
 }
 
 .body {

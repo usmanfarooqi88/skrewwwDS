@@ -66,6 +66,11 @@
   width: auto;
   max-width: none;
   animation: none;
+  background-image: var(--component-surface-gradient-overlay);
+}
+
+[data-skrewww-surface="gradient"] .listboxPopover {
+  background-image: var(--component-surface-gradient-overlay);
 }
 
 .listboxBody {
@@ -140,8 +145,13 @@
 }
 
 .optionSelected {
-  background: var(--semantic-surface-subtle);
+  background-color: var(--semantic-surface-subtle);
+  background-image: var(--component-surface-gradient-overlay);
   font-weight: 500;
+}
+
+.optionSelected:hover:not(:disabled) {
+  background-image: var(--component-surface-gradient-overlay);
 }
 
 .option:disabled {

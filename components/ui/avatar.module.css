@@ -5,7 +5,8 @@
   flex-shrink: 0;
   overflow: hidden;
   border: 0;
-  background: var(--avatar-background);
+  background-color: var(--avatar-background);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--avatar-text);
   border-radius: var(--avatar-radius);
   font-weight: 600;

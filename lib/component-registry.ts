@@ -249,6 +249,7 @@ export const componentRegistry: ComponentRegistryEntry[] = [
       "--component-danger-fill-pressed",
       "--component-danger-fill-pressed-glass",
       "--component-surface-content",
+      "--component-surface-gradient-overlay",
       "--control-font-size-lg",
       "--control-font-size-md",
       "--control-font-size-sm",
@@ -416,6 +417,7 @@ export function Example() {
     coreDependencies: ["tokens", "shape", "surface"],
     files: ["components/ui/Card.tsx", "components/ui/card.module.css"],
     cssTokens: [
+      "--component-surface-gradient-overlay",
       "--glass-backdrop-filter-md",
       "--semantic-text-primary",
       "--semantic-text-secondary",
@@ -535,6 +537,7 @@ export function Example() {
     coreDependencies: ["tokens", "shape", "surface"],
     files: ["components/ui/TextInput.tsx", "components/ui/text-input.module.css"],
     cssTokens: [
+      "--component-surface-gradient-overlay",
       "--control-font-size-lg",
       "--control-font-size-md",
       "--control-font-size-sm",

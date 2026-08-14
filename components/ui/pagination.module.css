@@ -51,7 +51,8 @@
 }
 
 .current {
-  background: var(--pagination-current-surface);
+  background-color: var(--pagination-current-surface);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--pagination-current-text);
   font-weight: 700;
   cursor: default;

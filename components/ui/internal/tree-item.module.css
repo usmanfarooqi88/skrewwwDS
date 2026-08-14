@@ -22,8 +22,13 @@
 }
 
 .selected {
-  background: var(--tree-item-selected-surface);
+  background-color: var(--tree-item-selected-surface);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--tree-item-selected-text);
+}
+
+.selected:hover {
+  background-image: var(--component-surface-gradient-overlay);
 }
 
 .chevron {

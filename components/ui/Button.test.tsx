@@ -73,6 +73,17 @@ describe("Button", () => {
     expect(screen.getByTestId("trailing")).toBeInTheDocument();
   });
 
+  it("keeps icon-only composition on the same visual-surface contract", () => {
+    render(
+      <Button aria-label="Add item">
+        <PlusIcon />
+      </Button>,
+    );
+    const control = screen.getByRole("button", { name: "Add item" });
+    expect(control.firstElementChild).toHaveAttribute("aria-hidden", "true");
+    expect(control.firstElementChild?.className).toMatch(/visualSurface/);
+  });
+
   it("activates with keyboard", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();

@@ -11,7 +11,8 @@
   padding: var(--file-upload-padding);
   border: 1.5px var(--file-upload-border-style) var(--file-upload-border);
   border-radius: var(--file-upload-radius);
-  background: var(--file-upload-surface);
+  background-color: var(--file-upload-surface);
+  background-image: var(--component-surface-gradient-overlay);
   box-shadow: none;
   backdrop-filter: var(--component-surface-backdrop-filter);
   transition:
@@ -28,6 +29,7 @@
 .dropzoneDragging {
   border-color: var(--file-upload-border-dragging);
   background: var(--file-upload-dragging-surface);
+  background-image: none;
 }
 
 .dropzoneDragging .icon {
@@ -40,6 +42,7 @@
 
 .dropzoneError {
   border-color: var(--file-upload-border-error);
+  background-image: none;
 }
 
 .dropzoneError .icon,
@@ -50,6 +53,7 @@
 .dropzoneDisabled {
   cursor: not-allowed;
   opacity: var(--opacity-disabled);
+  background-image: none;
 }
 
 .dropzoneDisabled .title,
@@ -106,7 +110,8 @@
   overflow: hidden;
   border: 1px solid var(--file-upload-item-border);
   border-radius: var(--file-upload-radius);
-  background: var(--file-upload-item-surface);
+  background-color: var(--file-upload-item-surface);
+  background-image: var(--component-surface-gradient-overlay);
   box-shadow: none;
   backdrop-filter: var(--component-surface-backdrop-filter);
   list-style: none;
@@ -126,6 +131,12 @@
 
 .fileItem:last-child {
   border-bottom: 0;
+}
+
+.dropzoneDragging ~ .fileList,
+.dropzoneError ~ .fileList,
+.dropzoneDisabled ~ .fileList {
+  background-image: none;
 }
 
 .fileMeta {

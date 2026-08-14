@@ -113,6 +113,13 @@
   --surface-fill-default: var(--semantic-surface-default);
   --surface-fill-control: var(--semantic-surface-default);
   --surface-border-default: var(--semantic-border-default);
+  /* [VERIFIED] Stable-v1 Gradient is one additive lightness overlay. The
+     component base color remains a separate background-color; Flat and
+     Glass resolve this image to none. Exact alphas match Figma's 8-bit
+     #FFFFFF14 (20/255) and #0000000A (10/255) values in Gradient mode. */
+  --component-surface-gradient-overlay-start: transparent;
+  --component-surface-gradient-overlay-end: transparent;
+  --component-surface-gradient-overlay: none;
   /* [VERIFIED] Shared Card-family Surface contract. Unlike the broader
      experimental --surface-fill-default cascade, Figma keeps Flat and
      Gradient identical for these containers and switches only Glass. */
@@ -884,19 +891,27 @@
 [data-skrewww-surface="flat"] {
   --surface-fill-default: var(--semantic-surface-default);
   --surface-fill-control: var(--semantic-surface-default);
+  --component-surface-gradient-overlay-start: transparent;
+  --component-surface-gradient-overlay-end: transparent;
+  --component-surface-gradient-overlay: none;
 }
 
 [data-skrewww-surface="gradient"] {
-  /* [EXPERIMENTAL] Gradient stops pending Figma Surface collection */
-  --surface-fill-default: linear-gradient(
-    180deg,
-    var(--semantic-surface-default) 0%,
-    var(--semantic-surface-elevated) 100%
-  );
+  --surface-fill-default: var(--semantic-surface-default);
   --surface-fill-control: var(--semantic-surface-default);
+  --component-surface-gradient-overlay-start: #ffffff14;
+  --component-surface-gradient-overlay-end: #0000000a;
+  --component-surface-gradient-overlay: linear-gradient(
+    90deg,
+    var(--component-surface-gradient-overlay-start) 0%,
+    var(--component-surface-gradient-overlay-end) 100%
+  );
 }
 
 [data-skrewww-surface="glass"] {
+  --component-surface-gradient-overlay-start: transparent;
+  --component-surface-gradient-overlay-end: transparent;
+  --component-surface-gradient-overlay: none;
   --surface-fill-default: rgb(255 255 255 / 0.72);
   --surface-fill-control: rgb(255 255 255 / 0.85);
   --component-card-surface: rgb(255 255 255 / 0.12);

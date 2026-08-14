@@ -7,7 +7,8 @@
   padding: 0 var(--tag-padding-x);
   border: 1px solid var(--tag-border);
   border-radius: var(--tag-radius);
-  background: var(--tag-surface);
+  background-color: var(--tag-surface);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--tag-text);
   font-size: 0.8125rem;
   line-height: 1.2;

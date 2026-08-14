@@ -34,8 +34,8 @@ const collections = [
   {
     name: "Surface",
     modes: ["Flat", "Gradient", "Glass"],
-    count: 4,
-    desc: "Mode-per-personality fill/border/blur/content tokens — validated on Button, Card, and Text Input.",
+    count: 6,
+    desc: "Mode-per-personality fill/border/blur/content tokens plus the Stable-v1 fixed 90deg Gradient overlay — semantic base fills remain unchanged.",
   },
 ];
 

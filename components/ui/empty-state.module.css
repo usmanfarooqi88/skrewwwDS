@@ -6,7 +6,8 @@
   margin-inline: auto;
   padding: var(--empty-state-padding-y) var(--empty-state-padding-x);
   border: 0;
-  background: var(--component-card-surface);
+  background-color: var(--component-card-surface);
+  background-image: var(--component-surface-gradient-overlay);
   box-shadow: none;
   backdrop-filter: var(--component-surface-backdrop-filter);
   text-align: center;

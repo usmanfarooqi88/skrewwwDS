@@ -25,6 +25,7 @@
   border: 1px solid transparent;
   border-radius: var(--dialog-radius);
   background:
+    var(--component-surface-gradient-overlay) padding-box,
     linear-gradient(var(--component-card-surface), var(--component-card-surface)) padding-box,
     var(--component-card-border-gradient) border-box;
   color: var(--semantic-text-primary);

@@ -12,6 +12,7 @@
   line-height: 1.2;
   white-space: nowrap;
   vertical-align: middle;
+  background-image: var(--component-surface-gradient-overlay);
 }
 
 .sm {
@@ -59,31 +60,31 @@
 }
 
 .neutral {
-  background: var(--badge-neutral-surface);
+  background-color: var(--badge-neutral-surface);
   border-color: var(--badge-neutral-border);
   color: var(--badge-neutral-text);
 }
 
 .info {
-  background: var(--badge-info-surface);
+  background-color: var(--badge-info-surface);
   border-color: var(--badge-info-border);
   color: var(--badge-info-text);
 }
 
 .success {
-  background: var(--badge-success-surface);
+  background-color: var(--badge-success-surface);
   border-color: var(--badge-success-border);
   color: var(--badge-success-text);
 }
 
 .warning {
-  background: var(--badge-warning-surface);
+  background-color: var(--badge-warning-surface);
   border-color: var(--badge-warning-border);
   color: var(--badge-warning-text);
 }
 
 .error {
-  background: var(--badge-error-surface);
+  background-color: var(--badge-error-surface);
   border-color: var(--badge-error-border);
   color: var(--badge-error-text);
 }

@@ -86,6 +86,8 @@ Feedback uses shared internal presentation primitives (not public API). **Alert*
 
 Source-of-truth hierarchy: [`docs/architecture/source-of-truth.md`](docs/architecture/source-of-truth.md)
 
+Stable-v1 Gradient contract: [`docs/architecture/gradient-foundation.md`](docs/architecture/gradient-foundation.md)
+
 ## Distribution Model (Target Architecture)
 
 **Status: Target Architecture · Under Active Development**

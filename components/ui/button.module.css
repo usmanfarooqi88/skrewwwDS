@@ -34,6 +34,7 @@
   border-radius: inherit;
   clip-path: var(--squircle-clip-path-control, none);
   backdrop-filter: var(--glass-backdrop-filter-lg, none);
+  background-image: var(--component-surface-gradient-overlay);
   pointer-events: none;
 }
 

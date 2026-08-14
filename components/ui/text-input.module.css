@@ -14,7 +14,8 @@
      like Button/Checkbox/Drawer's close button — same bug, fixed the same
      way, found while auditing the other 5. */
   clip-path: var(--squircle-clip-path-control, none);
-  background: var(--surface-fill-control);
+  background-color: var(--surface-fill-control);
+  background-image: var(--component-surface-gradient-overlay);
   backdrop-filter: var(--glass-backdrop-filter-sm, none);
   color: var(--semantic-text-primary);
   font-family: inherit;
@@ -54,12 +55,12 @@
   pointer-events: none;
   color: var(--semantic-text-disabled);
   border-color: var(--semantic-border-disabled);
-  background: var(--semantic-surface-disabled);
+  background-color: var(--semantic-surface-disabled);
   opacity: var(--opacity-disabled);
 }
 
 .input:read-only:not(:disabled) {
-  background: var(--semantic-surface-subtle);
+  background-color: var(--semantic-surface-subtle);
   cursor: default;
 }
 

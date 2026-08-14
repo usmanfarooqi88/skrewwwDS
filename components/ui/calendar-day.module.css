@@ -28,7 +28,8 @@
 }
 
 .selected {
-  background: var(--calendar-day-selected-surface);
+  background-color: var(--calendar-day-selected-surface);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--calendar-day-selected-text);
 }
 
@@ -82,13 +83,15 @@
 }
 
 .rangeStart {
-  background: var(--calendar-day-selected-surface);
+  background-color: var(--calendar-day-selected-surface);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--calendar-day-selected-text);
   border-color: var(--calendar-day-selected-surface);
 }
 
 .rangeEnd {
-  background: var(--calendar-day-selected-surface);
+  background-color: var(--calendar-day-selected-surface);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--calendar-day-selected-text);
   border-color: var(--calendar-day-selected-surface);
 }
@@ -115,6 +118,7 @@
 .rangeStart:hover:not(:disabled),
 .rangeEnd:hover:not(:disabled) {
   background: var(--calendar-day-selected-hover-surface);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--calendar-day-selected-text);
   border-color: var(--calendar-day-selected-hover-surface);
 }

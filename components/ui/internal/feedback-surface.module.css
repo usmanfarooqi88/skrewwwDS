@@ -5,7 +5,8 @@
   padding: var(--feedback-padding);
   border: 0;
   border-radius: var(--feedback-radius);
-  background: var(--feedback-surface);
+  background-color: var(--feedback-surface);
+  background-image: var(--component-surface-gradient-overlay);
   color: var(--feedback-text);
   box-shadow: none;
   backdrop-filter: var(--component-surface-backdrop-filter);
