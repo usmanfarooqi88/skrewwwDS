@@ -38,7 +38,7 @@ async function verifySearchFieldRendering(page: Page) {
 
       expectColorClose(
         await resolvedRgba(leading, "color"),
-        hexToRgba(surface === "glass" ? "#131316" : "#a0a2ac"),
+        hexToRgba(surface === "glass" ? "#17181B" : "#a0a2ac"),
         `${surface} ${size.label} leading icon`,
       );
       expectColorClose(

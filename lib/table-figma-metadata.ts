@@ -43,7 +43,6 @@ export const TABLE_STABLE_V1_CONTRACT = {
   dataTableBehavior: "separate",
   knownFoundationDrift: [
     "Figma component/surface/content-muted resolves #A0A3AC; React semantic/icon/muted resolves #A0A2AC",
-    "Figma semantic/text/primary resolves #17181B; React resolves #131316",
   ],
 } as const;
 

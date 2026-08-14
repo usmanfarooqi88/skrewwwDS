@@ -104,7 +104,7 @@ test.describe("Table browser behavior", () => {
     expect(styles.headerCell.borderBottom).toBe("1px solid rgb(223, 224, 228)");
     expect(styles.body.backgroundColor).toBe("rgb(255, 255, 255)");
     expect(styles.firstBodyCell).toMatchObject({
-      color: "rgb(19, 19, 22)",
+      color: "rgb(23, 24, 27)",
       paddingBlock: "12px",
       paddingInline: "16px",
       fontSize: "14px",
@@ -113,7 +113,7 @@ test.describe("Table browser behavior", () => {
       overflowWrap: "anywhere",
     });
     expect(styles.rowHeader).toMatchObject({
-      color: "rgb(19, 19, 22)",
+      color: "rgb(23, 24, 27)",
       fontWeight: "400",
     });
     expect(styles.firstBodyCell.borderBottom).toBe("1px solid rgb(223, 224, 228)");

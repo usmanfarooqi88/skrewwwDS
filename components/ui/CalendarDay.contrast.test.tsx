@@ -17,9 +17,9 @@ import {
 const TOKENS = {
   brand500: "#6c4cf2",
   brand600: "#5738c7",
-  textPrimary: "#131316",
+  textPrimary: "#17181b",
   textInverse: "#ffffff",
-  textMuted: "#52545c",
+  textMuted: "#5b5f68",
   textDisabled: "#a0a2ac",
   hoverSurface: "#ededf0",
 } as const;

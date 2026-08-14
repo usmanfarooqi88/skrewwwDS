@@ -386,7 +386,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     await setButtonSurfaceMode(page, "glass");
 
     expectColorClose(await resolvedRgba(surface, "backgroundColor"), hexToRgba("#FFFFFF", 0.12), "glass default");
-    expectColorClose(await resolvedRgba(secondary, "color"), hexToRgba("#131316"), "glass content");
+    expectColorClose(await resolvedRgba(secondary, "color"), hexToRgba("#17181B"), "glass content");
     expect(await surface.evaluate((el) => getComputedStyle(el).backdropFilter)).toBe("blur(16px)");
     await secondary.hover();
     expectColorClose(await resolvedRgba(surface, "backgroundColor"), hexToRgba("#FFFFFF", 0.2), "glass hover");
@@ -395,7 +395,7 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     await page.mouse.up();
     await secondary.evaluate((el) => el.setAttribute("disabled", ""));
     expectColorClose(await resolvedRgba(surface, "backgroundColor"), hexToRgba("#FFFFFF", 0.12), "glass disabled base");
-    expectColorClose(await resolvedRgba(secondary, "color"), hexToRgba("#131316"), "glass disabled content");
+    expectColorClose(await resolvedRgba(secondary, "color"), hexToRgba("#17181B"), "glass disabled content");
     expect(await secondary.evaluate((el) => getComputedStyle(el).opacity)).toBe("0.4");
   });
 

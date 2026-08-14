@@ -643,9 +643,9 @@ content. Dialog uses the live three-stop Card highlight border; Drawer and
 Empty State have no container border. Decorative React-only elevation was
 removed because none of the four live masters contains a drop shadow. This
 closes Batch A only, not Layer 3 Surface overall. A broader foundation drift
-remains recorded rather than hidden locally: React semantic primary is
-`#131316` vs live Figma `#17181B`, and React icon-muted is `#A0A2AC` vs live
-Figma `#A0A3AC`.
+remains recorded rather than hidden locally: React icon-muted is `#A0A2AC` vs
+live Figma `#A0A3AC`. Foundation primary/secondary are now synced to the live
+values (`#17181B` / `#5B5F68`).
 
 **Batch B correction — 2026-08-13:** live master re-verification and React
 browser parity are complete for Toast (`2034:25468`, masters

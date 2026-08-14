@@ -14,13 +14,14 @@ const expected = {
     glass: hexToRgba("#ffffff", 0.24),
   },
   // These components intentionally consume React's semantic-primary token.
-  // Its repository-wide #131316 -> live-Figma #17181B drift is broader than
-  // Batch A and must not be hidden behind a component-only duplicate token.
-  primary: hexToRgba("#131316"),
+  // The former repository-wide #131316 vs live-Figma #17181B drift was closed
+  // at the Foundation layer (color/neutral/900), so this value is inherited,
+  // never a component-only duplicate token.
+  primary: hexToRgba("#17181B"),
   muted: {
     flat: hexToRgba("#a0a3ac"),
     gradient: hexToRgba("#a0a3ac"),
-    glass: hexToRgba("#131316"),
+    glass: hexToRgba("#17181B"),
   },
 };
 

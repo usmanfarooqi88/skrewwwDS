@@ -24,8 +24,18 @@
   --primitive-color-neutral-300: #c5c6cc;
   --primitive-color-neutral-400: #a0a2ac;
   --primitive-color-neutral-500: #71737c;
-  --primitive-color-neutral-600: #52545c;
-  --primitive-color-neutral-900: #131316;
+  /* [VERIFIED 2026-08-15] Synced to the live Figma Foundation audit.
+     color/neutral/600 resolves #5B5F68 and color/neutral/900 resolves
+     #17181B there; React had drifted to #52545c / #131316. Corrected at the
+     primitive layer rather than at the semantic aliases or any consumer,
+     because each of these primitives has exactly one consumer
+     (--semantic-text-secondary and --semantic-text-primary respectively),
+     so the whole semantic contract inherits the fix with no component
+     edits. neutral/400 is deliberately NOT touched here — its #A0A3AC
+     drift and the Table-header contrast question it feeds are a separate,
+     unresolved consumer decision. */
+  --primitive-color-neutral-600: #5b5f68;
+  --primitive-color-neutral-900: #17181b;
 
   /* ── Primitive: opacity [VERIFIED] ── */
   --primitive-opacity-disabled: 0.4; /* opacity/disabled */
@@ -1020,7 +1030,7 @@
    * var(--semantic-text-inverse)) and gets the correct white content in
    * Flat/Gradient automatically, with zero Flat/Gradient-scoped rules
    * needed anywhere. Confirmed distinct from --semantic-text-primary
-   * (#131316) — #17181B is Figma's own dedicated Glass-content value, not
+   * (#17181B) — this is Figma's own dedicated Glass-content value, not
    * a reuse of the existing dark-text token.
    */
   --component-surface-content: #17181b;

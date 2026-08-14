@@ -75,7 +75,7 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       expect(disabledStyles.backgroundImage).toBe("none");
       expect(errorStyles.pointerEvents).toBe("auto");
       expect(errorStyles.zIndex).toBe("auto");
-      const muted = hexToRgba(mode === "glass" ? "#131316" : "#a0a3ac");
+      const muted = hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac");
       expectColorClose(await resolvedRgba(empty.locator("p").first(), "color"), muted);
       expectColorClose(await resolvedRgba(empty.locator("p").nth(1), "color"), muted);
       expectColorClose(await resolvedRgba(empty.locator("svg"), "color"), muted);
@@ -104,7 +104,7 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       );
       expectColorClose(await resolvedRgba(dragging, "borderColor"), hexToRgba("#6c4cf2"));
       expectBlur(mode, draggingStyles.backdropFilter);
-      expectColorClose(await resolvedRgba(dragging.locator("p").first(), "color"), hexToRgba("#131316"));
+      expectColorClose(await resolvedRgba(dragging.locator("p").first(), "color"), hexToRgba("#17181B"));
       expectColorClose(await resolvedRgba(dragging.locator("svg"), "color"), hexToRgba("#6c4cf2"));
 
       await page.locator('input[name="profile-photo"]').setInputFiles({
@@ -131,7 +131,7 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       } else {
         expect(filledStyles.backgroundImage).toBe("none");
       }
-      expectColorClose(await resolvedRgba(filled.getByText("avatar.png"), "color"), hexToRgba("#131316"));
+      expectColorClose(await resolvedRgba(filled.getByText("avatar.png"), "color"), hexToRgba("#17181B"));
       expectColorClose(await resolvedRgba(filled.getByRole("button"), "color"), muted);
 
       if (mode === "gradient") {
@@ -182,7 +182,7 @@ test.describe("Layer 3 Batch C Surface parity", () => {
         expectColorClose(await resolvedRgba(errorList, "borderColor"), hexToRgba("#dfe0e4"));
         expectColorClose(
           await resolvedRgba(errorList.getByText("error.pdf"), "color"),
-          hexToRgba("#131316"),
+          hexToRgba("#17181B"),
         );
 
         const errorStateClass = (await error.getAttribute("class"))
@@ -230,20 +230,20 @@ test.describe("Layer 3 Batch C Surface parity", () => {
 
       expectColorClose(
         await resolvedRgba(page.getByText("Usman Farooqi", { exact: true }), "color"),
-        hexToRgba("#131316"),
+        hexToRgba("#17181B"),
       );
       const description = page.getByText("Updated Button documentation", { exact: true });
       const metadata = page.getByText("2h ago", { exact: true });
       for (const content of [description, metadata]) {
         expectColorClose(
           await resolvedRgba(content, "color"),
-          hexToRgba(mode === "glass" ? "#131316" : "#a0a3ac"),
+          hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac"),
         );
       }
       const folderRow = page.getByText("Design tokens", { exact: true }).locator("xpath=../..");
       expectColorClose(
         await resolvedRgba(folderRow.locator('[class*="leading"]'), "color"),
-        hexToRgba(mode === "glass" ? "#131316" : "#a0a3ac"),
+        hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac"),
       );
     });
 

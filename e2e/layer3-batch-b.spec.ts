@@ -63,10 +63,10 @@ test.describe("Layer 3 Batch B Surface parity", () => {
         expect(styles.borderWidth).toBe("1px");
         expect(styles.boxShadow).toBe("none");
         expectBlur(mode, styles.backdropFilter);
-        expectColorClose(await resolvedRgba(titleNode, "color"), hexToRgba("#131316"));
+        expectColorClose(await resolvedRgba(titleNode, "color"), hexToRgba("#17181B"));
         expectColorClose(
           await resolvedRgba(toast.getByRole("button"), "color"),
-          hexToRgba(mode === "glass" ? "#131316" : "#a0a3ac"),
+          hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac"),
         );
       }
     });
@@ -89,10 +89,10 @@ test.describe("Layer 3 Batch B Surface parity", () => {
         expect(styles.borderWidth).toBe("0px");
         expect(styles.boxShadow).toBe("none");
         expectBlur(mode, styles.backdropFilter);
-        expectColorClose(await resolvedRgba(title, "color"), hexToRgba("#131316"));
+        expectColorClose(await resolvedRgba(title, "color"), hexToRgba("#17181B"));
         expectColorClose(
           await resolvedRgba(description, "color"),
-          hexToRgba(mode === "glass" ? "#131316" : "#a0a3ac"),
+          hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac"),
         );
         expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(iconColor[status]));
       }
@@ -101,7 +101,7 @@ test.describe("Layer 3 Batch B Surface parity", () => {
       const dismissibleAlert = dismissibleTitle.locator("xpath=../..");
       expectColorClose(
         await resolvedRgba(dismissibleAlert.getByRole("button", { name: "Dismiss alert" }), "color"),
-        hexToRgba(mode === "glass" ? "#131316" : "#a0a3ac"),
+        hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac"),
       );
     });
   }
