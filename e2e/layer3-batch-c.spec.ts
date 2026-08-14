@@ -7,16 +7,27 @@ async function visualStyles(locator: import("@playwright/test").Locator) {
     const style = getComputedStyle(element);
     return {
       backdropFilter: style.backdropFilter,
+      backgroundImage: style.backgroundImage,
+      borderRadius: style.borderRadius,
       borderStyle: style.borderStyle,
       borderWidth: style.borderWidth,
       boxShadow: style.boxShadow,
       opacity: style.opacity,
+      pointerEvents: style.pointerEvents,
+      zIndex: style.zIndex,
     };
   });
 }
 
 function expectBlur(mode: (typeof modes)[number], value: string) {
   expect(value).toBe(mode === "glass" ? "blur(16px)" : "none");
+}
+
+function expectStableGradient(image: string) {
+  expect(image.match(/linear-gradient/g)).toHaveLength(1);
+  expect(image).toContain("linear-gradient(90deg");
+  expect(image).toMatch(/#ffffff14|rgba\(255, 255, 255, 0\.08\)/);
+  expect(image).toMatch(/#0000000a|rgba\(0, 0, 0, 0\.04\)/);
 }
 
 test.describe("Layer 3 Batch C Surface parity", () => {
@@ -51,6 +62,19 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       );
       expectColorClose(await resolvedRgba(error, "borderColor"), hexToRgba("#e5484d"));
       expect((await visualStyles(disabled)).opacity).toBe("0.4");
+      const emptyStyles = await visualStyles(empty);
+      const errorStyles = await visualStyles(error);
+      const disabledStyles = await visualStyles(disabled);
+      if (mode === "gradient") {
+        expectStableGradient(emptyStyles.backgroundImage);
+        expectStableGradient(errorStyles.backgroundImage);
+      } else {
+        expect(emptyStyles.backgroundImage).toBe("none");
+        expect(errorStyles.backgroundImage).toBe("none");
+      }
+      expect(disabledStyles.backgroundImage).toBe("none");
+      expect(errorStyles.pointerEvents).toBe("auto");
+      expect(errorStyles.zIndex).toBe("auto");
       const muted = hexToRgba(mode === "glass" ? "#131316" : "#a0a3ac");
       expectColorClose(await resolvedRgba(empty.locator("p").first(), "color"), muted);
       expectColorClose(await resolvedRgba(empty.locator("p").nth(1), "color"), muted);
@@ -61,6 +85,10 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       );
       expectColorClose(await resolvedRgba(error.locator("p").first(), "color"), hexToRgba("#e5484d"));
       expectColorClose(await resolvedRgba(error.locator("svg"), "color"), hexToRgba("#e5484d"));
+      expectColorClose(
+        await resolvedRgba(page.getByText("The server could not process these files."), "color"),
+        hexToRgba("#d92d3e"),
+      );
 
       await dragging.evaluate((element) => {
         element.dispatchEvent(
@@ -69,6 +97,7 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       });
       await expect(dragging).toHaveClass(/dropzoneDragging/);
       const draggingStyles = await visualStyles(dragging);
+      expect(draggingStyles.backgroundImage).toBe("none");
       expectColorClose(
         await resolvedRgba(dragging, "backgroundColor"),
         hexToRgba(mode === "glass" ? "#ffffff" : "#f7f7f8", mode === "glass" ? 0.2 : 1),
@@ -97,8 +126,81 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       expect(filledStyles.borderStyle).toBe("solid");
       expect(filledStyles.boxShadow).toBe("none");
       expectBlur(mode, filledStyles.backdropFilter);
+      if (mode === "gradient") {
+        expectStableGradient(filledStyles.backgroundImage);
+      } else {
+        expect(filledStyles.backgroundImage).toBe("none");
+      }
       expectColorClose(await resolvedRgba(filled.getByText("avatar.png"), "color"), hexToRgba("#131316"));
       expectColorClose(await resolvedRgba(filled.getByRole("button"), "color"), muted);
+
+      if (mode === "gradient") {
+        const expectedRadii = {
+          sharp: "0px",
+          rounded: "12px",
+          pill: "16px",
+          squircle: "16px",
+        } as const;
+        for (const [shape, expectedRadius] of Object.entries(expectedRadii)) {
+          await page.locator("html").evaluate((element, value) => {
+            element.setAttribute("data-skrewww-shape", value);
+          }, shape);
+          const shapedError = await visualStyles(error);
+          expect(shapedError.borderRadius).toBe(expectedRadius);
+          expectStableGradient(shapedError.backgroundImage);
+          expect(shapedError.boxShadow).toBe("none");
+        }
+
+        await error.evaluate((element) => {
+          element.dispatchEvent(
+            new DragEvent("dragenter", { bubbles: true, dataTransfer: new DataTransfer() }),
+          );
+        });
+        await expect(error).toHaveClass(/dropzoneDragging/);
+        const draggingError = await visualStyles(error);
+        expect(draggingError.backgroundImage).toBe("none");
+        expectColorClose(await resolvedRgba(error, "backgroundColor"), hexToRgba("#f7f7f8"));
+        expectColorClose(await resolvedRgba(error, "borderColor"), hexToRgba("#e5484d"));
+        await error.evaluate((element) => {
+          element.dispatchEvent(
+            new DragEvent("dragleave", { bubbles: true, dataTransfer: new DataTransfer() }),
+          );
+        });
+        await expect(error).not.toHaveClass(/dropzoneDragging/);
+        expectStableGradient((await visualStyles(error)).backgroundImage);
+
+        await page.getByLabel("Upload with server error").setInputFiles({
+          name: "error.pdf",
+          mimeType: "application/pdf",
+          buffer: Buffer.from("pdf"),
+        });
+        const errorList = error.locator("xpath=..").getByRole("list", {
+          name: "Selected files",
+        });
+        expectStableGradient((await visualStyles(error)).backgroundImage);
+        expectStableGradient((await visualStyles(errorList)).backgroundImage);
+        expectColorClose(await resolvedRgba(errorList, "borderColor"), hexToRgba("#dfe0e4"));
+        expectColorClose(
+          await resolvedRgba(errorList.getByText("error.pdf"), "color"),
+          hexToRgba("#131316"),
+        );
+
+        const errorStateClass = (await error.getAttribute("class"))
+          ?.split(/\s+/)
+          .find((className) => className.includes("dropzoneError"));
+        expect(errorStateClass).toBeTruthy();
+        await disabled.evaluate((element, className) => {
+          element.classList.add(className);
+        }, errorStateClass!);
+        const disabledError = await visualStyles(disabled);
+        expect(disabledError.backgroundImage).toBe("none");
+        expect(disabledError.opacity).toBe("0.4");
+        expectColorClose(
+          await resolvedRgba(disabled, "backgroundColor"),
+          hexToRgba("#ffffff"),
+        );
+        await expect(page.getByLabel("Disabled upload")).toBeDisabled();
+      }
     });
 
     test(`List Item keeps Default transparent and applies Surface only on hover in ${mode}`, async ({ page }) => {

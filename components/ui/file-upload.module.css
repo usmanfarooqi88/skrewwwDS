@@ -42,7 +42,6 @@
 
 .dropzoneError {
   border-color: var(--file-upload-border-error);
-  background-image: none;
 }
 
 .dropzoneError .icon,
@@ -134,7 +133,6 @@
 }
 
 .dropzoneDragging ~ .fileList,
-.dropzoneError ~ .fileList,
 .dropzoneDisabled ~ .fileList {
   background-image: none;
 }

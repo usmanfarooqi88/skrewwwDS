@@ -377,7 +377,7 @@ No new industry-specific tokens were introduced — every token used aliases to 
 - Calendar Grid composed range-picker input (two independently-typable start/end text fields + shared calendar, analogous to Date Picker) — judged non-trivial in scope (comparable to rebuilding Date Picker), not built; see [`calendar-foundation.md`](architecture/calendar-foundation.md#composed-range-picker-input--explicitly-out-of-scope)
 - ~~Timeline~~ — Tree View, Charts, and Timeline (all three Layer 2 code-side gaps) are now implemented (see Recently shipped). Tree View and Charts' Figma node IDs were confirmed 2026-07-18; Timeline's node ID was confirmed 2026-07-24 (see Figma status above) — no open Figma-verification item remains across all three
 - Advanced overlay patterns beyond current Dialog/Drawer/Popover/Menu stack
-- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface substantially resolved 2026-07-17 in Figma**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass (see the Layer 3 Surface baseline section below), and the Surface/content-cascade audit across the remaining registry (3 batches, 23 components) is now complete, with 2 flagged items still open rather than closed — Menu's Surface fix has no reusable master "Panel" component to live on, and Badge/Alert/Toast carry duplicate tint tokens pending a future consolidation pass (see the Layer 3 Surface audit section below). **React parity for Button/Avatar/Calendar Day/Pagination was a separate, later fix (2026-08-11)** — the Figma verification above did not mean the React implementation matched it; see the "Layer 3 React parity fix" section below for what was actually missing and what's now fixed. **Stable-v1 Gradient was implemented 2026-08-14** as the approved additive fixed `90deg` overlay; directional Gradient behavior, File Upload Error participation, and broader Foundation color drift remain open.
+- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface substantially resolved 2026-07-17 in Figma**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass (see the Layer 3 Surface baseline section below), and the Surface/content-cascade audit across the remaining registry (3 batches, 23 components) is now complete, with 2 flagged items still open rather than closed — Menu's Surface fix has no reusable master "Panel" component to live on, and Badge/Alert/Toast carry duplicate tint tokens pending a future consolidation pass (see the Layer 3 Surface audit section below). **React parity for Button/Avatar/Calendar Day/Pagination was a separate, later fix (2026-08-11)** — the Figma verification above did not mean the React implementation matched it; see the "Layer 3 React parity fix" section below for what was actually missing and what's now fixed. **Stable-v1 Gradient was implemented 2026-08-14** as the approved additive fixed `90deg` overlay; File Upload Error participation was resolved later that day, while directional Gradient behavior and broader Foundation color drift remain open.
 
 ## Layer 3 Surface baseline
 
@@ -701,6 +701,16 @@ role-specific rule: input/control Glass surfaces can use translucent fill plus
 blur. Sidebar also follows the shared control Shape radius (`0px` Sharp,
 `6px` Rounded, `8px` Squircle) rather than owning a fixed Rounded radius. No
 Foundation or Gradient token changed in this follow-up.
+
+**File Upload Error Gradient correction — 2026-08-14:** live Figma Error
+master `2024:2646` keeps the neutral `component/card/surface`
+(`2128:1499`) base and shared `component/surface/blur` (`2057:13`), while
+danger border `2002:2468` and danger content carry the error semantics. Error
+therefore now participates in the same fixed `90deg` additive Gradient as
+Empty and Filled without replacing the neutral base or introducing an
+error-specific recipe. The canonical matrix is Gradient YES for Empty,
+Filled, and Error; NO for transient Dragging and dimmed Disabled. Flat and
+Glass remain visually unchanged.
 
 Marked not-applicable:
 - Link — zero fill across all 45 variants, nothing to cascade

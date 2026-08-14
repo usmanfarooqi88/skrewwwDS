@@ -247,7 +247,7 @@ test.describe("Stable-v1 Gradient foundation", () => {
     expect((await visual(sidebarHover)).backgroundImage).toBe("none");
   });
 
-  test("limits File Upload Gradient to Empty and Filled", async ({ page }) => {
+  test("limits File Upload Gradient to Empty, Filled, and Error", async ({ page }) => {
     await page.goto("/components/file-upload");
     await setSurfaceMode(page, "gradient");
 
@@ -271,7 +271,7 @@ test.describe("Stable-v1 Gradient foundation", () => {
 
     const error = page.getByLabel("Upload with server error").locator("xpath=..");
     const disabled = page.getByLabel("Disabled upload").locator("xpath=..");
-    expect((await visual(error)).backgroundImage).toBe("none");
+    expectStableOverlay((await visual(error)).backgroundImage);
     expect((await visual(disabled)).backgroundImage).toBe("none");
 
     await emptyInput.setInputFiles({

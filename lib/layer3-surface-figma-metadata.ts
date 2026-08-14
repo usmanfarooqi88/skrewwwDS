@@ -61,10 +61,16 @@ export const GRADIENT_FOUNDATION_EVIDENCE = {
     animation: false,
   },
   participation: {
-    yes: ["resting surfaces", "persistent Selected", "persistent Current", "persistent Active"],
+    yes: [
+      "resting surfaces",
+      "persistent Selected",
+      "persistent Current",
+      "persistent Active",
+      "File Upload Empty/Filled/Error",
+    ],
     no: [
       "transient list/navigation Hover",
-      "File Upload Dragging/Disabled/Error",
+      "File Upload Dragging/Disabled",
       "Flat-only Table",
     ],
   },
@@ -77,7 +83,6 @@ export const GRADIENT_FOUNDATION_EVIDENCE = {
     "radial Gradient",
     "animated Gradient",
     "component-specific arbitrary Gradient recipes",
-    "File Upload Error participation reconsideration during the final Layer 3 sweep",
   ],
 } as const;
 
@@ -528,7 +533,18 @@ export const LAYER3_SURFACE_BATCH_C_EVIDENCE = {
       border: "semantic/action/primary (VariableID:2002:2467), 1.5px INSIDE dashed",
       content: "semantic/text/primary + semantic/action/primary icon",
     },
-    error: "Card surface + semantic/action/danger #E5484D border/content",
+    error: {
+      master: "2024:2646",
+      surface: { name: "component/card/surface", id: "VariableID:2128:1499" },
+      border: { name: "semantic/action/danger", id: "VariableID:2002:2468" },
+      blur: SHARED_SURFACE_VARIABLES.blur,
+      content: "Danger icon/content remains independent from the neutral Card-family base",
+      gradient: "Participates through the shared fixed 90deg overlay in Gradient only",
+    },
+    gradientParticipation: {
+      yes: ["Empty", "Filled", "Error"],
+      no: ["Dragging", "Disabled"],
+    },
     disabled: "Card bindings remain intact; opacity/disabled (VariableID:2012:7105) applies 40% to the component root",
     filled: "Card container with File Row bottom dividers bound to semantic/border/default",
     shared: { blur: SHARED_SURFACE_VARIABLES.blur, contentMuted: "component/surface/content-muted (VariableID:2259:2)" },
