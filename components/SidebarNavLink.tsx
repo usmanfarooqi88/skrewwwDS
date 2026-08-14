@@ -31,10 +31,11 @@ export function SidebarNavLink({
       aria-current={isActive ? "page" : undefined}
       onClick={() => onNavigate?.()}
       className={cn(
-        "block rounded-md border-l-2 px-3 py-1.5 text-sm transition-colors",
+        styles.root,
+        "block border-l-2 px-3 py-1.5 text-sm transition-colors",
         isActive
-          ? cn(styles.active, "border-brand-500 bg-brand-50 font-medium text-ink-900")
-          : "border-transparent text-ink-600 hover:bg-ink-50 hover:text-ink-900",
+          ? cn(styles.active, "border-brand-500 font-medium text-ink-900")
+          : cn(styles.inactive, "border-transparent text-ink-600 hover:text-ink-900"),
       )}
     >
       {children}

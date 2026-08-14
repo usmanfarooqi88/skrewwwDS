@@ -26,4 +26,4 @@ React has no distinct public Credit Card Field or Dropdown Trigger implementatio
 - Advanced directional Gradient behavior
 - File Upload Error participation reconsideration in the final Layer 3 sweep
 - Canonical Foundation color drift: Figma primary `#17181B` versus React `#131316`, and Figma muted `#A0A3AC` versus React `#A0A2AC`
-- Stale Figma experimental values `component/surface/fill` (`2057:11`, Gradient `#6C4CF2`) and `component/surface/fill-secondary` (`2057:12`, Gradient `#4229AD`); these are hygiene debt, not the canonical Gradient contract
+- `component/surface/fill` (`2057:11`) and `component/surface/fill-secondary` (`2057:12`) require a separate consumer/classification review. Current live modes no longer match the earlier purple-value report, so that report is not canonical Gradient evidence; cleanup remains deferred.

@@ -1,3 +1,13 @@
+.root {
+  border-radius: var(--menu-item-radius);
+}
+
 .active {
+  background-color: var(--menu-item-hover-surface);
   background-image: var(--component-surface-gradient-overlay);
+}
+
+.inactive:hover {
+  background-color: var(--menu-item-hover-surface);
+  background-image: none;
 }

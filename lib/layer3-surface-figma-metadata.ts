@@ -68,9 +68,9 @@ export const GRADIENT_FOUNDATION_EVIDENCE = {
       "Flat-only Table",
     ],
   },
-  staleFigmaHygieneDebt: [
-    "component/surface/fill (VariableID:2057:11) Gradient #6C4CF2",
-    "component/surface/fill-secondary (VariableID:2057:12) Gradient #4229AD",
+  surfaceVariableClassificationDeferred: [
+    "component/surface/fill (VariableID:2057:11): Flat aliases semantic/surface/default, Gradient aliases VariableID:2002:2391, and Glass is raw #FFFFFF1F",
+    "component/surface/fill-secondary (VariableID:2057:12): Flat aliases semantic/surface/default, Gradient aliases VariableID:2002:2393, and Glass is raw #FFFFFF1F",
   ],
   deferred: [
     "directional or angle API",
@@ -79,6 +79,53 @@ export const GRADIENT_FOUNDATION_EVIDENCE = {
     "component-specific arbitrary Gradient recipes",
     "File Upload Error participation reconsideration during the final Layer 3 sweep",
   ],
+} as const;
+
+export const GLASS_PARITY_BATCH_1_EVIDENCE = {
+  verifiedAt: "2026-08-14",
+  architecture: {
+    rule: "Glass translucency and blur follow component role; not every Glass surface uses blur",
+    inputAndControlSurfaces: "translucent component surface plus 16px blur",
+    navigationHighlights: "20% white translucent highlight with no blur",
+    foundationTokensChanged: false,
+    gradientFoundationChanged: false,
+  },
+  creditCardField: {
+    nodeIds: ["2024:2710", "2024:2711", "2024:2712", "2024:2713"],
+    surface: {
+      name: "component/text-input/surface",
+      id: "VariableID:2128:1862",
+      resolved: { flat: "#FFFFFF", gradient: "#FFFFFF", glass: "rgba(255,255,255,0.12)" },
+    },
+    blur: { name: "component/surface/blur", id: "VariableID:2057:13" },
+    reactEquivalent: "No distinct public React Credit Card Field",
+  },
+  dropdownTrigger: {
+    nodeIds: ["2025:3339", "2025:3340", "2025:3341", "2025:3342"],
+    surface: {
+      name: "component/button/secondary/background",
+      id: "VariableID:2127:571",
+      resolved: { flat: "#FFFFFF", gradient: "#FFFFFF", glass: "rgba(255,255,255,0.12)" },
+    },
+    blur: { name: "component/surface/blur", id: "VariableID:2057:13" },
+    reactEquivalent: "MenuTrigger composition using the existing Secondary Button contract",
+  },
+  sidebarNavItem: {
+    nodeIds: { hover: "2025:3512", active: "2025:3513" },
+    reactEquivalent: "Direct: components/SidebarNavLink.tsx",
+    surface: {
+      name: "component/menu/item-hover",
+      id: "VariableID:2142:210",
+      resolved: { flat: "#F7F7F8", gradient: "#F7F7F8", glass: "#FFFFFF33" },
+    },
+    blur: "none",
+    gradient: { hover: false, active: true },
+    shape: {
+      contract: "participates in the shared control Shape architecture",
+      radius: "component/radius/control",
+      representativeResolved: { sharp: "0px", rounded: "6px", squircle: "8px" },
+    },
+  },
 } as const;
 
 export const BUTTON_FIGMA_EVIDENCE = {
@@ -605,4 +652,5 @@ export const AUDIT_STATUS = {
   paginationPageItem: { verifiedScopeClosed: true, closingCommit: PAGINATION_PAGE_ITEM_FIGMA_EVIDENCE.closingCommit },
   table: { verifiedStableV1ScopeClosed: true, closingCommit: null },
   gradientFoundation: { implementationCandidate: true, focusedParityValidationPending: true },
+  glassParityBatch1: { figmaScopeClosed: true, reactParityCandidate: true, closingCommit: null },
 } as const;

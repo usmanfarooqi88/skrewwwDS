@@ -685,6 +685,23 @@ Flat/Gradient and `#FFFFFF33` (20%) in Glass. Rendered coverage across Menu,
 List Item, and Tree Item consumers passed 9/9, and the complete focused Menu
 behavior suite passed 14/14 with no deterministic Menu or Tree regression.
 
+**Glass parity follow-up Batch 1 — 2026-08-14:** Figma replaced direct
+semantic-surface bindings on Credit Card Field (`2024:2710–2024:2713`) with
+`component/text-input/surface` plus the shared 16px Glass blur, and on Dropdown
+Trigger (`2025:3339–2025:3342`) with the Secondary Button surface plus that
+same blur. React has no distinct Credit Card Field, while Dropdown Trigger is
+composition through `MenuTrigger` and an existing Secondary Button, so neither
+requires a new public primitive or duplicate Glass recipe. Sidebar Nav Hover
+(`2025:3512`) and Active (`2025:3513`) now use the shared Menu Item Hover
+surface: `#F7F7F8` in Flat/Gradient and 20% white in Glass, always without
+blur. Hover remains Gradient-free because it is transient; Active retains the
+shared Gradient overlay because it is persistent. This records the
+role-specific rule: input/control Glass surfaces can use translucent fill plus
+16px blur, while Menu/Sidebar navigation highlights are translucent without
+blur. Sidebar also follows the shared control Shape radius (`0px` Sharp,
+`6px` Rounded, `8px` Squircle) rather than owning a fixed Rounded radius. No
+Foundation or Gradient token changed in this follow-up.
+
 Marked not-applicable:
 - Link — zero fill across all 45 variants, nothing to cascade
 - Tooltip — user decision: stays fixed-dark always, doesn't participate in
