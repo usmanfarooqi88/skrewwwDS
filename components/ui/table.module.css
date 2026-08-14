@@ -1,23 +1,37 @@
-/* TEMPORARY — React-first Table foundation; Figma verification pending */
+/* Canonical visual anatomy: Content/Table 2321:1964. React keeps native table semantics. */
 
 .scrollArea {
+  /* Figma locks the Table shell and rows to Surface=Flat. Rebind only the
+     shared contracts Table consumes so Gradient/Glass ancestors cannot make
+     the shell translucent or change its muted header content. */
+  --component-card-surface: var(--semantic-surface-default);
+  --component-card-border: var(--semantic-border-default);
+  --component-surface-content-muted: var(--semantic-icon-muted);
+  --component-surface-backdrop-filter: none;
+  --table-surface: var(--component-card-surface);
+  --table-border: var(--component-card-border);
+  --table-header-text: var(--component-surface-content-muted);
+
   box-sizing: border-box;
   /* Shrink correctly in flex/grid parents; own horizontal overflow locally. */
   width: 100%;
   max-width: 100%;
   min-width: 0;
   overflow-x: auto;
+  overflow-y: hidden;
   border: 1px solid var(--table-border);
   border-radius: var(--table-radius);
   color: var(--table-text);
+  box-shadow: none;
+  backdrop-filter: var(--component-surface-backdrop-filter);
   -webkit-overflow-scrolling: touch;
   /* Edge fades reveal more columns without claiming columns are hidden. */
   background-color: var(--table-surface);
   background-image:
-    linear-gradient(to inline-end, var(--table-surface), transparent),
-    linear-gradient(to inline-start, var(--table-surface), transparent),
-    linear-gradient(to inline-end, var(--table-scroll-shadow), transparent),
-    linear-gradient(to inline-start, var(--table-scroll-shadow), transparent);
+    linear-gradient(to right, var(--table-surface), transparent),
+    linear-gradient(to left, var(--table-surface), transparent),
+    linear-gradient(to right, var(--table-scroll-shadow), transparent),
+    linear-gradient(to left, var(--table-scroll-shadow), transparent);
   background-position:
     0 0,
     100% 0,
@@ -48,7 +62,7 @@
   background: transparent;
   color: var(--table-text);
   font-size: 0.875rem;
-  line-height: 1.4;
+  line-height: 1.2;
   text-align: start;
 }
 
@@ -88,19 +102,19 @@
   background: var(--table-header-surface);
 }
 
+.body {
+  background: var(--table-body-surface);
+}
+
 .head {
   padding-block: var(--table-cell-padding-block);
   padding-inline: var(--table-cell-padding-inline);
   border-bottom: 1px solid var(--table-header-border);
   color: var(--table-header-text);
-  font-weight: 600;
+  font-weight: 700;
   text-align: start;
-  vertical-align: bottom;
+  vertical-align: middle;
   overflow-wrap: anywhere;
-}
-
-.header .head {
-  white-space: nowrap;
 }
 
 .body .row:not(:last-child) .cell,
@@ -112,9 +126,15 @@
   padding-block: var(--table-cell-padding-block);
   padding-inline: var(--table-cell-padding-inline);
   color: var(--table-text);
+  font-weight: 400;
   text-align: start;
-  vertical-align: top;
+  vertical-align: middle;
   overflow-wrap: anywhere;
+}
+
+.body .head {
+  color: var(--table-text);
+  font-weight: 400;
 }
 
 .cell[data-table-wrap="nowrap"],
@@ -131,6 +151,10 @@
 .footer .head {
   border-top: 1px solid var(--table-header-border);
   font-weight: 600;
+}
+
+.footer .head {
+  color: var(--table-text);
 }
 
 .row {

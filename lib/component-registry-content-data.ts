@@ -1,7 +1,7 @@
 import type { ComponentRegistryEntry } from "@/lib/component-registry";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 import {
-  TABLE_FIGMA_COMPONENT_SET_NODE_ID,
+  TABLE_FIGMA_COMPONENT_NODE_ID,
   TABLE_FIGMA_SOURCE_URL,
 } from "@/lib/table-figma-metadata";
 import {
@@ -36,7 +36,7 @@ const sharedConcepts = {
 
 const REACT_DATE = "2026-07-13";
 const DOCS_DATE = "2026-06-01";
-const TABLE_DOCS_DATE = "2026-07-13";
+const TABLE_DOCS_DATE = "2026-08-14";
 
 export const contentDataRegistryEntries: ComponentRegistryEntry[] = [
   {
@@ -380,15 +380,16 @@ export function Example() {
     status: "beta",
     version: "0.1.1-beta",
     reactAvailability: "available",
-    figmaAvailability: "unavailable",
+    figmaAvailability: "available",
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/content-data.ts",
     documentationLastUpdated: TABLE_DOCS_DATE,
     reactLastUpdated: TABLE_DOCS_DATE,
-    figmaReference: "React-first Table foundation — Figma component set unverified; MCP audit pending",
+    figmaReference:
+      "Canonical reusable basic Table architecture: Content/Table shell 2321:1964; Content/Table Header Row 2321:1903; Content/Table Body Row 2321:1920; Content/Table Cell 2321:1872. Stable-v1 is Flat-only with no Surface property and Rounded-only at radius/lg 12px with cornerSmoothing=0 and no Shape property. Historical example 2044:26192 is reference evidence, not canonical.",
     figmaSourceUrl: TABLE_FIGMA_SOURCE_URL,
-    figmaNodeId: TABLE_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
+    figmaNodeId: TABLE_FIGMA_COMPONENT_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("table"),
     supportedVariants: ["layout-auto", "layout-fixed"],
     supportedSizes: [],
@@ -397,7 +398,10 @@ export function Example() {
       "semantic/surface/elevated",
       "semantic/border/default",
       "semantic/text/primary",
-      "semantic/text/secondary",
+      "component/card/surface",
+      "component/card/border",
+      "component/surface/content-muted",
+      "radius/lg",
       "semantic/focus-ring",
       "table-surface",
       "table-cell-padding-inline",
@@ -421,8 +425,11 @@ export function Example() {
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
-      "Figma component-set node ID unresolved — live MCP verification pending.",
-      "Temporary table geometry and scroll-shadow tokens await Figma confirmation.",
+      "Canonical Caption and Footer visual treatments are still pending in Figma; React preserves its semantic caption/footer API without claiming visual parity for those parts.",
+      "Stable-v1 Table is intentionally Rounded-only at radius/lg (12px), with Figma cornerSmoothing=0 and no Shape property. Controlled Table Shape mapping is deferred; global Sharp/Pill/Squircle contexts do not alter the shell.",
+      "The responsive TableScrollArea edge-fade treatment remains React-only; Figma documents horizontal overflow as composition rather than native Table anatomy.",
+      "Broader Foundation drift remains open and unchanged: Figma muted #A0A3AC vs React #A0A2AC; Figma primary #17181B vs React #131316.",
+      "Table presentation QA remains separate: budget/date wrapping, column presentation, Pagination number visibility, Table/Pagination spacing, and interactive-cell alignment are still open.",
       "Data Table (implemented 2026-07-15) composes Table for the narrow MVP scope approved 2026-07-13 — sorting only, external Pagination; selection, sticky headers, and density remain excluded from v1.",
     ],
     hasImplementation: true,

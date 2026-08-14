@@ -450,22 +450,24 @@
   --file-upload-metadata-text: var(--component-surface-content-muted);
   --file-upload-remove-size: 2rem;
 
-  /* ── Table [TEMPORARY — React-first foundation; Figma MCP verification pending] ── */
-  --table-surface: var(--semantic-surface-default); /* [ALIASED] */
-  --table-border: var(--semantic-border-default); /* [ALIASED] */
-  --table-radius: var(--shape-radius-container); /* [ALIASED] container-capped for Pill */
+  /* ── Table [VERIFIED] — Content/Table 2321:1964 ── */
+  --table-surface: var(--component-card-surface); /* [ALIASED] locally locked to Flat */
+  --table-border: var(--component-card-border); /* [ALIASED] locally locked to Flat */
+  /* Figma binds radius/lg (12px), not the Shape-aware container radius. */
+  --table-radius: 12px;
   --table-text: var(--semantic-text-primary); /* [ALIASED] */
   --table-muted-text: var(--semantic-text-secondary); /* [ALIASED] */
   --table-header-surface: var(--semantic-surface-elevated); /* [ALIASED] */
-  --table-header-text: var(--semantic-text-primary); /* [ALIASED] */
+  --table-body-surface: var(--semantic-surface-default); /* [ALIASED] */
+  --table-header-text: var(--component-surface-content-muted); /* [ALIASED] locally locked to Flat */
   --table-header-border: var(--semantic-border-default); /* [ALIASED] */
   --table-row-border: var(--semantic-border-default); /* [ALIASED] */
-  --table-cell-padding-inline: 0.75rem; /* TEMPORARY — React-first Table foundation; Figma verification pending */
-  --table-cell-padding-block: 0.625rem; /* TEMPORARY — React-first Table foundation; Figma verification pending */
+  --table-cell-padding-inline: 1rem; /* [VERIFIED] spacing/16 */
+  --table-cell-padding-block: 0.75rem; /* [VERIFIED] spacing/12 */
   --table-caption-text: var(--semantic-text-secondary); /* [ALIASED] */
-  --table-caption-gap: 0.5rem; /* TEMPORARY — React-first Table foundation; Figma verification pending */
+  --table-caption-gap: 0.5rem; /* TEMPORARY — canonical Figma caption visual pending */
   --table-footer-surface: var(--semantic-surface-subtle); /* [ALIASED] */
-  /* TEMPORARY — React-first Table foundation; Figma verification pending */
+  /* TEMPORARY — responsive edge-fade treatment is React-only. */
   --table-scroll-shadow: var(--primitive-shadow-color-5);
   --table-scroll-fade-size: 1.25rem;
 

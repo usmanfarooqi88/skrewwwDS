@@ -70,17 +70,20 @@ export const contentDataComponents: ComponentDoc[] = [
     commonMistakes:
       "Treating Table as Data Table; making entire rows clickable; omitting captions; duplicating caption text as the scroll-region label; using role=\"grid\" for ordinary tabular UI; transforming rows into cards on mobile; forcing tabIndex={0} on every small table; truncating critical data behind Tooltip-only access.",
     tokensUsed: [
+      "component/card/surface",
+      "component/card/border",
+      "component/surface/content-muted",
       "semantic/surface/default",
       "semantic/surface/elevated",
       "semantic/border/default",
       "semantic/text/primary",
-      "semantic/text/secondary",
+      "radius/lg",
       "semantic/focus-ring",
     ],
     properties:
       "Compound API: Table, TableCaption, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableScrollArea. layout auto|fixed. Caption visibility visible|screen-reader. Cell/head align start|center|end. data-table-wrap=nowrap for action cells. Empty/loading/error via composition only.",
     knownLimitation:
-      "React-first foundation audited 2026-07-13. Live Figma verification pending — no component-set node ID. Selection, sticky headers, density, and striped rows remain deferred (sorting is now available via the Data Table pattern). See docs/architecture/table-foundation.md.",
+      "Canonical reusable Figma anatomy is now verified (Table 2321:1964; Header Row 2321:1903; Body Row 2321:1920; Cell 2321:1872). Stable-v1 is Flat-only with no Surface property and Rounded-only at 12px with cornerSmoothing=0 and no Shape property. Caption/Footer visuals and controlled Table Shape mapping remain pending; sorting is provided separately by Data Table. See docs/architecture/table-foundation.md.",
   },
   {
     slug: "data-table",

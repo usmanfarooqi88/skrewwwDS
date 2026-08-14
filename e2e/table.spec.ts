@@ -41,6 +41,158 @@ test.describe("Table browser behavior", () => {
     await expect(page.getByRole("grid")).toHaveCount(0);
   });
 
+  test("matches the canonical Flat and Rounded Table visual contract", async ({ page }) => {
+    const styles = await page.getByRole("table", { name: "Active projects" }).evaluate((table) => {
+      const shell = table.closest("[data-table-scroll]") as HTMLElement;
+      const header = table.querySelector("thead") as HTMLElement;
+      const headerCell = table.querySelector("thead th") as HTMLElement;
+      const body = table.querySelector("tbody") as HTMLElement;
+      const firstBodyCell = table.querySelector("tbody tr:first-child td") as HTMLElement;
+      const rowHeader = table.querySelector("tbody tr:first-child th") as HTMLElement;
+      const lastBodyCell = table.querySelector("tbody tr:last-child td") as HTMLElement;
+      const read = (node: HTMLElement) => {
+        const computed = getComputedStyle(node);
+        return {
+          backgroundColor: computed.backgroundColor,
+          color: computed.color,
+          borderBottom: computed.borderBottom,
+          borderBottomWidth: computed.borderBottomWidth,
+          borderRadius: computed.borderRadius,
+          paddingBlock: computed.paddingBlock,
+          paddingInline: computed.paddingInline,
+          fontSize: computed.fontSize,
+          fontWeight: computed.fontWeight,
+          lineHeight: computed.lineHeight,
+          overflowWrap: computed.overflowWrap,
+          overflowX: computed.overflowX,
+          overflowY: computed.overflowY,
+          backdropFilter: computed.backdropFilter,
+          boxShadow: computed.boxShadow,
+        };
+      };
+
+      return {
+        shell: read(shell),
+        header: read(header),
+        headerCell: read(headerCell),
+        body: read(body),
+        firstBodyCell: read(firstBodyCell),
+        rowHeader: read(rowHeader),
+        lastBodyCell: read(lastBodyCell),
+      };
+    });
+
+    expect(styles.shell).toMatchObject({
+      backgroundColor: "rgb(255, 255, 255)",
+      borderRadius: "12px",
+      overflowX: "auto",
+      overflowY: "hidden",
+      backdropFilter: "none",
+      boxShadow: "none",
+    });
+    expect(styles.shell.borderBottom).toBe("1px solid rgb(223, 224, 228)");
+    expect(styles.header.backgroundColor).toBe("rgb(247, 247, 248)");
+    expect(styles.headerCell).toMatchObject({
+      color: "rgb(160, 162, 172)",
+      paddingBlock: "12px",
+      paddingInline: "16px",
+      fontSize: "14px",
+      fontWeight: "700",
+      lineHeight: "16.8px",
+      overflowWrap: "anywhere",
+    });
+    expect(styles.headerCell.borderBottom).toBe("1px solid rgb(223, 224, 228)");
+    expect(styles.body.backgroundColor).toBe("rgb(255, 255, 255)");
+    expect(styles.firstBodyCell).toMatchObject({
+      color: "rgb(19, 19, 22)",
+      paddingBlock: "12px",
+      paddingInline: "16px",
+      fontSize: "14px",
+      fontWeight: "400",
+      lineHeight: "16.8px",
+      overflowWrap: "anywhere",
+    });
+    expect(styles.rowHeader).toMatchObject({
+      color: "rgb(19, 19, 22)",
+      fontWeight: "400",
+    });
+    expect(styles.firstBodyCell.borderBottom).toBe("1px solid rgb(223, 224, 228)");
+    expect(styles.lastBodyCell.borderBottomWidth).toBe("0px");
+  });
+
+  test("stays Flat in every parent Surface context", async ({ page }) => {
+    const table = page.getByRole("table", { name: "Glass surface sample" });
+    const surfaceHost = table.locator("xpath=ancestor::*[@data-skrewww-surface][1]");
+
+    for (const mode of ["flat", "gradient", "glass"]) {
+      await surfaceHost.evaluate((node, value) => {
+        (node as HTMLElement).dataset.skrewwwSurface = value;
+      }, mode);
+
+      const computed = await table.evaluate((node) => {
+        const shell = node.closest("[data-table-scroll]") as HTMLElement;
+        const header = node.querySelector("thead") as HTMLElement;
+        const headerCell = node.querySelector("thead th") as HTMLElement;
+        const shellStyle = getComputedStyle(shell);
+        return {
+          backgroundColor: shellStyle.backgroundColor,
+          borderColor: shellStyle.borderColor,
+          backdropFilter: shellStyle.backdropFilter,
+          boxShadow: shellStyle.boxShadow,
+          headerBackground: getComputedStyle(header).backgroundColor,
+          headerColor: getComputedStyle(headerCell).color,
+        };
+      });
+
+      expect(computed).toEqual({
+        backgroundColor: "rgb(255, 255, 255)",
+        borderColor: "rgb(223, 224, 228)",
+        backdropFilter: "none",
+        boxShadow: "none",
+        headerBackground: "rgb(247, 247, 248)",
+        headerColor: "rgb(160, 162, 172)",
+      });
+    }
+  });
+
+  test("keeps radius/lg in every parent Shape context", async ({ page }) => {
+    const table = page.getByRole("table", { name: "Pill container sample" });
+    const shapeHost = table.locator("xpath=ancestor::*[@data-skrewww-shape][1]");
+
+    for (const mode of ["sharp", "rounded", "pill", "squircle"]) {
+      await shapeHost.evaluate((node, value) => {
+        (node as HTMLElement).dataset.skrewwwShape = value;
+      }, mode);
+
+      const computed = await table.evaluate((node) => {
+        const shell = node.closest("[data-table-scroll]") as HTMLElement;
+        const style = getComputedStyle(shell);
+        return {
+          borderRadius: style.borderRadius,
+          clipPath: style.clipPath,
+          overflowX: style.overflowX,
+          overflowY: style.overflowY,
+        };
+      });
+      expect(computed).toEqual({
+        borderRadius: "12px",
+        clipPath: "none",
+        overflowX: "auto",
+        overflowY: "hidden",
+      });
+    }
+  });
+
+  test("does not add a row hover or selected treatment", async ({ page }) => {
+    const row = page.getByRole("table", { name: "Active projects" }).locator("tbody tr").first();
+    const before = await row.evaluate((node) => getComputedStyle(node as HTMLElement).backgroundColor);
+    await row.hover();
+    const after = await row.evaluate((node) => getComputedStyle(node as HTMLElement).backgroundColor);
+    expect(before).toBe("rgba(0, 0, 0, 0)");
+    expect(after).toBe(before);
+    await expect(row).not.toHaveAttribute("aria-selected");
+  });
+
   test("keeps project links and action menus keyboard operable", async ({ page }) => {
     await expect(page.getByRole("link", { name: "Atlas" }).first()).toBeVisible();
     await openMenuFromControl(
@@ -111,12 +263,34 @@ test.describe("Table browser behavior", () => {
   });
 
   test("owns horizontal overflow at 375px", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 700 });
+    await page.setViewportSize({ width: 375, height: 812 });
     const region = page.getByRole("region", { name: "Scrollable projects table" });
-    const scrollable = await region.evaluate(
-      (node) => (node as HTMLElement).scrollWidth > (node as HTMLElement).clientWidth,
-    );
-    expect(scrollable).toBe(true);
+    const metrics = await region.evaluate((node) => {
+      const area = node as HTMLElement;
+      const computed = getComputedStyle(area);
+      return {
+        scrollable: area.scrollWidth > area.clientWidth,
+        clientWidth: area.clientWidth,
+        scrollWidth: area.scrollWidth,
+        documentClientWidth: document.documentElement.clientWidth,
+        documentScrollWidth: document.documentElement.scrollWidth,
+        edgeFadeLayers: computed.backgroundImage.match(/linear-gradient/g)?.length ?? 0,
+        backgroundAttachment: computed.backgroundAttachment,
+      };
+    });
+    expect(metrics.scrollable).toBe(true);
+    expect(metrics.clientWidth).toBeLessThan(metrics.scrollWidth);
+    expect(metrics.documentScrollWidth).toBe(metrics.documentClientWidth);
+    expect(metrics.edgeFadeLayers).toBe(4);
+    expect(metrics.backgroundAttachment).toBe("local, local, scroll, scroll");
+
+    await region.evaluate((node) => {
+      const area = node as HTMLElement;
+      area.scrollLeft = area.scrollWidth;
+    });
+    const finalColumn = page.getByRole("button", { name: "Actions for Atlas" }).first();
+    await bringTableControlIntoView(finalColumn);
+    await expect(finalColumn).toBeVisible();
   });
 
   test("keeps scroll-area focus policy consumer-controlled", async ({ page }) => {

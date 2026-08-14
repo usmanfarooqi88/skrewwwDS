@@ -156,7 +156,7 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 - **Temporary Combobox tokens** — several popup/option values await Figma variable confirmation
 - **Multi-select Combobox** — deferred
 - **File Upload** — React Beta implemented; live Figma MCP verification, progress UI, and preview thumbnails remain deferred
-- **Table** — React-first native HTML table foundation (usability audit complete); Figma verification pending
+- **Table** — native HTML table foundation aligned to reusable Figma Table/Row/Cell masters; Flat-only and 12px Rounded-only for Stable-v1, with Caption/Footer visuals still pending
 - **Data Table** (named "Data Grid" during discovery; canonical name finalized 2026-07-13) — implemented 2026-07-15 at the approved narrow MVP scope (DataTableSortHeader + useDataTableSort sorting, external Pagination, composes Table); Figma verification pending, no component set exists yet
 - **Tree View** — implemented 2026-07-18, built against a real, well-documented Figma reference (Content/Tree Item component set + the "Tree View (example)" composed demo); single-select only (multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are deferred)
 - **Bar Chart, Line Chart** — implemented 2026-07-18 on recharts; single-series and static only for v1 (no multi-series, no hover tooltips/legend interactivity, no Y-axis/gridlines beyond Bar Chart's existing month labels) — see the registry `openQuestions` for what's deliberately deferred

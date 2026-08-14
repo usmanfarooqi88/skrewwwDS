@@ -15,9 +15,11 @@ import {
 } from "@/components/ui/Table";
 import { getImplementedComponentCount, getRegistryEntry } from "@/lib/component-registry";
 import {
-  TABLE_FIGMA_COMPONENT_SET_NODE_ID,
+  TABLE_FIGMA_COMPONENT_NODE_ID,
+  TABLE_FIGMA_RELATED_NODE_IDS,
   TABLE_FIGMA_VERIFICATION,
   TABLE_IMPLEMENTATION_ORIGIN,
+  TABLE_STABLE_V1_CONTRACT,
   TABLE_USABILITY_AUDIT_STATUS,
 } from "@/lib/table-figma-metadata";
 import { DATA_TABLE_IMPLEMENTATION_GATE } from "@/lib/data-table-figma-metadata";
@@ -389,7 +391,8 @@ describe("Table architecture and registry", () => {
   it("registers Table and Data Table without a data-grid or subcomponent registry entry", () => {
     const entry = getRegistryEntry("table");
     expect(entry?.hasImplementation).toBe(true);
-    expect(entry?.figmaAvailability).toBe("unavailable");
+    expect(entry?.figmaAvailability).toBe("available");
+    expect(entry?.figmaNodeId).toBe("2321:1964");
     expect(entry?.summary).toMatch(/not the interactive data table pattern/i);
     expect(entry?.keyboardBehavior).toMatch(/tabIndex is consumer-controlled/i);
 
@@ -403,8 +406,22 @@ describe("Table architecture and registry", () => {
     expect(getImplementedComponentCount()).toBe(47);
     expect(DATA_TABLE_IMPLEMENTATION_GATE).toBe("implemented-react-first");
     expect(TABLE_IMPLEMENTATION_ORIGIN).toBe("react-first");
-    expect(TABLE_FIGMA_VERIFICATION).toBe("pending");
-    expect(TABLE_FIGMA_COMPONENT_SET_NODE_ID).toBeNull();
+    expect(TABLE_FIGMA_VERIFICATION).toBe("verified-2026-08-14");
+    expect(TABLE_FIGMA_COMPONENT_NODE_ID).toBe("2321:1964");
+    expect(TABLE_FIGMA_RELATED_NODE_IDS).toEqual({
+      headerRow: "2321:1903",
+      bodyRow: "2321:1920",
+      cell: "2321:1872",
+    });
+    expect(TABLE_STABLE_V1_CONTRACT).toMatchObject({
+      surface: "flat-only",
+      surfaceProperty: false,
+      shape: "rounded-only-12px",
+      shapeProperty: false,
+      cornerSmoothing: 0,
+      captionAndFooterVisuals: "pending",
+      dataTableBehavior: "separate",
+    });
     expect(TABLE_USABILITY_AUDIT_STATUS).toBe("completed-2026-07-13");
   });
 

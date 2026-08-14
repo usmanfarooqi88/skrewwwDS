@@ -10,7 +10,7 @@ export const FIGMA_SOURCE = {
   fileKey: "U6KUuNf7DF4CP9QBOkLSUx",
   fileUrl: "https://www.figma.com/design/U6KUuNf7DF4CP9QBOkLSUx/Skrewww---Design-System",
   lockedSourceOfTruth: true,
-  auditDate: "2026-08-11",
+  auditDate: "2026-08-14",
 } as const;
 
 export const SHARED_SURFACE_VARIABLES = {
@@ -468,6 +468,62 @@ export const LAYER3_SURFACE_BATCH_C_EVIDENCE = {
   },
 } as const;
 
+export const TABLE_FIGMA_EVIDENCE = {
+  verifiedAt: "2026-08-14",
+  canonicalNodes: {
+    table: "2321:1964",
+    headerRow: "2321:1903",
+    bodyRow: "2321:1920",
+    cell: "2321:1872",
+  },
+  historicalExample: {
+    nodeId: "2044:26192",
+    canonical: false,
+  },
+  shell: {
+    surface: { name: "component/card/surface", id: "VariableID:2128:1499" },
+    border: {
+      name: "component/card/border",
+      id: "VariableID:2128:1500",
+      geometry: "1px INSIDE",
+    },
+    blur: SHARED_SURFACE_VARIABLES.blur,
+    radius: { name: "radius/lg", id: "VariableID:2002:2428", resolved: "12px" },
+    cornerSmoothing: 0,
+    clipping: true,
+    padding: "0px",
+    gap: "0px",
+    elevation: "none",
+  },
+  rows: {
+    geometry: "12px block / 16px inline padding; 16px composition gap",
+    header: {
+      surface: "semantic/surface/elevated (VariableID:2002:2460)",
+      content: "component/surface/content-muted (VariableID:2259:2)",
+      typography: "Inter 14px / 700 / 120%",
+    },
+    body: {
+      surface: "semantic/surface/default (VariableID:2002:2459)",
+      content: "semantic/text/primary (VariableID:2002:2462)",
+      typography: "Inter 14px / 400 / 120%",
+    },
+    divider: "semantic/border/default (VariableID:2002:2465); omitted after the final body row",
+  },
+  stableV1: {
+    surface: "Flat-only; explicit local Surface mode 2057:0 on shell and row/cell anatomy; no Surface component property",
+    shape: "Rounded-only at radius/lg 12px with cornerSmoothing=0; no Shape component property",
+    excluded: ["Gradient", "Glass", "Sharp", "Pill", "Squircle", "Brand Shape", "Dark mode"],
+  },
+  reactMapping:
+    "Figma Table / Row / Cell describe visual composition; React preserves native Table, caption, thead/tbody/tfoot, row, th/td, and scroll-area semantics rather than forcing one-to-one exports.",
+  pending: [
+    "Canonical Caption visual treatment",
+    "Canonical Footer visual treatment",
+    "Controlled Table Shape mapping",
+    "Broader Foundation audit: Figma muted #A0A3AC vs React #A0A2AC; Figma primary #17181B vs React #131316",
+  ],
+} as const;
+
 export const COMPOSITION_ONLY_EVIDENCE = {
   paginationTrail: {
     trail: "2024:2897",
@@ -486,14 +542,16 @@ export const UNVERIFIED_AREAS = {
   calendarDay: [...CALENDAR_DAY_FIGMA_EVIDENCE.codeOnlyUnverified, ...CALENDAR_DAY_FIGMA_EVIDENCE.unverified],
   paginationPageItem: PAGINATION_PAGE_ITEM_FIGMA_EVIDENCE.unverified,
   paginationComposition: COMPOSITION_ONLY_EVIDENCE.paginationTrail.unverified,
+  table: TABLE_FIGMA_EVIDENCE.pending,
 } as const;
 
 export const AUDIT_STATUS = {
-  auditDate: "2026-08-11",
+  auditDate: "2026-08-14",
   fullLayer3ParityClaimed: false,
   fullDesignSystemParityClaimed: false,
   button: { verifiedScopeClosed: true, closingCommit: BUTTON_FIGMA_EVIDENCE.closingCommit },
   avatar: { verifiedScopeClosed: true, closingCommit: AVATAR_FIGMA_EVIDENCE.closingCommit },
   calendarDay: { verifiedScopeClosed: true, closingCommit: CALENDAR_DAY_FIGMA_EVIDENCE.closingCommit },
   paginationPageItem: { verifiedScopeClosed: true, closingCommit: PAGINATION_PAGE_ITEM_FIGMA_EVIDENCE.closingCommit },
+  table: { verifiedStableV1ScopeClosed: true, closingCommit: null },
 } as const;

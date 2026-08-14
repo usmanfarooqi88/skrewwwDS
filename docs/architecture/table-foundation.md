@@ -1,17 +1,17 @@
 # Table foundation
 
-Last updated: **2026-07-13** (usability / a11y / composition audit)
+Last updated: **2026-08-14** (canonical Figma parity)
 
 ## Implementation status
 
-**TABLE FOUNDATION APPROVED — REACT-FIRST**
+**TABLE FOUNDATION APPROVED — REACT-FIRST SEMANTICS + CANONICAL FIGMA VISUAL PARITY**
 
 - Public component: **Table** (`/components/table`)
 - Category: Content & Data
-- Origin: React-first (HTML semantics)
-- Figma verification: **Pending** (`TABLE_FIGMA_COMPONENT_SET_NODE_ID = null`)
-- Figma MCP (audit pass): **Failed** — servers unavailable at tool discovery; no invented node IDs
-- Data Table (named "Data Grid" during discovery; canonical name finalized as "Data Table" on 2026-07-13): **approved for narrow MVP scope** (sorting only + external Pagination) — not yet implemented, a deliberate separate pass — see [`data-table-discovery.md`](data-table-discovery.md)
+- Origin: React-first native HTML semantics; visual anatomy now aligned to reusable Figma masters
+- Figma verification: **Verified 2026-08-14** — Table `2321:1964`, Header Row `2321:1903`, Body Row `2321:1920`, Cell `2321:1872`
+- Historical Table example `2044:26192` is retained as evidence but is not canonical
+- Data Table (named "Data Grid" during discovery; canonical name finalized as "Data Table" on 2026-07-13): **implemented at the narrow MVP scope** (sorting only + external Pagination) and remains separate — see [`data-table-discovery.md`](data-table-discovery.md)
 
 Metadata: `lib/table-figma-metadata.ts`
 
@@ -23,13 +23,13 @@ Table provides native HTML tabular structure and restrained token-driven present
 
 ## 2. Table versus Data Table
 
-| | Table | Data Table (approved scope, not yet implemented) |
+| | Table | Data Table (implemented narrow MVP) |
 |--|-------|---------------------|
 | Role | Semantic + visual foundation | Higher-level interaction pattern |
 | Markup | Native `<table>` | Composes Table (confirmed) |
 | Sorting / selection | Unsupported | Sorting approved for MVP; selection deferred to a later pass |
 | Keyboard | Native table + descendant controls | No `role="grid"` — deliberately excluded from scope |
-| Status | React Beta | Approved (narrow MVP scope) — implementation not started |
+| Status | React Beta + canonical Figma visual parity | React Beta (sorting + external Pagination) |
 
 ## 3. Native semantic model
 
@@ -201,7 +201,7 @@ Table has **no** empty, loading, or error props.
 {/* Error — Alert before the table, or a full-width row; caption/headers may remain */}
 ```
 
-Why composition instead of Table props: ownership of fetch/retry/empty messaging belongs to the product surface or Data Table (approved MVP scope, not yet implemented).
+Why composition instead of Table props: ownership of fetch/retry/empty messaging belongs to the product surface or the separately implemented Data Table interaction layer.
 
 ## 16. Footer and totals
 
@@ -223,23 +223,26 @@ In `@media print`, `TableScrollArea` sets `overflow: visible`, removes clipping 
 
 | Token | Classification |
 |-------|----------------|
-| `--table-surface` | Alias → semantic surface |
-| `--table-border` | Alias |
-| `--table-radius` | Alias → `--shape-radius-container` |
+| `--table-surface` | Alias → Card surface, locally rebound to Flat |
+| `--table-border` | Alias → Card border, locally rebound to Flat |
+| `--table-radius` | Verified `radius/lg` value, fixed at 12px for Stable-v1 |
 | `--table-text` / `--table-muted-text` | Alias |
-| `--table-header-*` / `--table-footer-surface` / `--table-row-border` | Alias |
+| `--table-header-*` / `--table-body-surface` / `--table-row-border` | Verified semantic/shared aliases |
+| `--table-footer-surface` | Existing React alias; canonical Figma Footer visual pending |
 | `--table-caption-text` | Alias |
-| `--table-cell-padding-*` / `--table-caption-gap` | **Temporary** geometry |
+| `--table-cell-padding-*` | Verified 12px block / 16px inline geometry |
+| `--table-caption-gap` | **Temporary**; canonical Figma Caption visual pending |
 | `--table-scroll-shadow` / `--table-scroll-fade-size` | **Temporary** |
 | Focus ring on scroll area | Uses `--semantic-focus-ring` (Alias) |
 
-No raw semantic colors in `table.module.css`. Squircle remains Experimental via global shape system.
+No raw color values are introduced in `table.module.css`; the shell locally rebinds existing shared contracts to their Flat semantic aliases.
 
 ## 20. Shape and surface behavior
 
-- Scroll area uses `--table-radius` → container-capped (Pill is not a capsule).
-- Do not apply pill radius to individual cells.
-- Flat / Gradient / Glass must keep header, body, footer, and dividers readable; reduced-transparency remains opaque.
+- Stable-v1 Table is Rounded-only: the shell keeps `radius/lg` (12px) with ordinary circular corners (`cornerSmoothing=0` in Figma) under Sharp, Rounded, Pill, and Squircle ancestors.
+- Rows and cells do not own outer corner geometry; the scroll shell clips their fills.
+- Stable-v1 Table is Flat-only: scoped token rebinding keeps Card surface/border opaque, blur at `none`, header elevated, and body default under Flat, Gradient, and Glass ancestors.
+- Table exposes no Surface or Shape property. Controlled Table Shape mapping is deferred.
 
 ## 21. Mobile behavior
 
@@ -248,11 +251,11 @@ No raw semantic colors in `table.module.css`. Squircle remains Experimental via 
 - Final columns remain reachable via horizontal scroll.
 - Menu triggers in action columns remain operable.
 
-## 22. React-first decisions
+## 22. React-first semantic decisions retained after Figma parity
 
 | Decision | Rationale |
 |----------|-----------|
-| Proceed without Figma | Native table semantics are HTML-standardized |
+| Preserve native compound semantics | Figma visual composition is not a one-to-one React export map |
 | No sorting/selection APIs | Data Table concerns — sorting approved for the Data Table MVP; selection deferred |
 | Compound API | Matches caption/header/body/footer structure |
 | Presentational only | Consumer owns data |
@@ -260,11 +263,13 @@ No raw semantic colors in `table.module.css`. Squircle remains Experimental via 
 
 ## 23. Figma parity status
 
-MCP unavailable on foundation and audit passes (2026-07-13). Component-set node ID **null**. Visual geometry Temporary.
+Reusable visual anatomy was verified live on 2026-08-14: Table `2321:1964`, Header Row `2321:1903`, Body Row `2321:1920`, and Cell `2321:1872`. The shell is Flat-only with no Surface property, 12px Rounded-only with `cornerSmoothing=0` and no Shape property, clipped, shadowless, and uses Card surface/border plus zero blur. Header/body typography, color, padding, and dividers are verified. Caption and Footer visual contracts remain intentionally pending; the historical example `2044:26192` is not canonical.
+
+Presentation QA remains a separate backlog: budget/date wrapping, column presentation, Pagination number visibility, Table/Pagination spacing, and interactive-cell alignment are not claimed as closed by this visual-anatomy parity pass.
 
 ## 24. Data Table capabilities beyond Table
 
-Approved for the Data Table MVP (not yet implemented): sorting only, external Pagination composition, loading/empty/error presentation helpers over Table.
+Implemented for the Data Table MVP: sorting only via `DataTableSortHeader` + `useDataTableSort`, with external Pagination composition over Table.
 
 Excluded from v1 / deferred: selection (deferred to a later pass), sticky headers, density, stripes, embedded pagination ownership, editing, virtualization, `role="grid"`, arrow-key cell navigation.
 
@@ -287,17 +292,17 @@ Excluded from v1 / deferred: selection (deferred to a later pass), sticky header
 |------|----------------------|----------------|--------------|
 | Markup | HTML table elements | Matching compound components | Not applicable |
 | Nesting | Valid table model | Documented; not fully runtime-enforced | Not applicable |
-| Caption | `<caption>` names table | `visibility` visible / screen-reader | Pending |
+| Caption | `<caption>` names table | `visibility` visible / screen-reader | Visual contract pending |
 | Region label | Optional landmark | Only when named; distinct from caption | Pending |
-| Column headers | `<th scope="col">` | Consumer supplies scope | Pending |
-| Row headers | `<th scope="row">` | Consumer supplies scope | Pending |
+| Column headers | `<th scope="col">` | Consumer supplies scope | Visual cell anatomy verified |
+| Row headers | `<th scope="row">` | Consumer supplies scope | Visual body-cell anatomy verified |
 | Multi-level | colspan/rowspan/headers | Native attrs pass through | Pending |
-| Alignment | CSS text-align | `align` prop → logical CSS | Pending |
-| Overflow | Scroll container | `TableScrollArea` + Temporary edge fades | Pending |
+| Alignment | CSS text-align | `align` prop → logical CSS | Start/Center/End verified |
+| Overflow | Scroll container | `TableScrollArea` + Temporary edge fades | Figma composition + React behavior verified |
 | Scroll focus | Author choice | Consumer `tabIndex`; docs recommend for known overflow | Not applicable |
 | Keyboard | Tab to controls | No grid navigation | Not applicable |
 | Empty/loading/error | Author composition | Documented patterns only | Not applicable |
 | Print | UA print CSS | Overflow visible; no clip | Not applicable |
-| Sorting | N/A | Unsupported on Table | Approved for Data Table MVP (not yet implemented) |
+| Sorting | N/A | Unsupported on Table | Implemented separately in Data Table MVP |
 | Selection | N/A | Unsupported on Table | Deferred to a later Data Table pass |
-| Tokens | N/A | Semantic aliases + Temporary geometry | Pending |
+| Tokens | N/A | Shared aliases + verified geometry | Shell/row/cell verified; Caption/Footer pending |
