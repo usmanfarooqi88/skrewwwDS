@@ -50,7 +50,7 @@ export function BankingBalanceSummaryPreview() {
         description="Each time-range tab owns its own Bar Chart data — switching tabs swaps the visualization, not just the axis scale."
       >
         <PreviewGroup label="7D / 30D / 90D">
-          <div className="max-w-lg">
+          <div className="w-full max-w-lg">
             <BankingBalanceSummary
               title="Spending overview"
               totalLabel="Total spent"
@@ -66,7 +66,7 @@ export function BankingBalanceSummaryPreview() {
         description="Composes the existing Skeleton/SkeletonLoading primitives — no new loading-state pattern."
       >
         <PreviewGroup label="Toggle loading">
-          <div className="max-w-lg space-y-3">
+          <div className="w-full max-w-lg space-y-3">
             <Button type="button" size="sm" variant="secondary" onClick={() => setLoading((v) => !v)}>
               {loading ? "Show content" : "Show loading state"}
             </Button>

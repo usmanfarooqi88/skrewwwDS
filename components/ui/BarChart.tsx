@@ -45,6 +45,7 @@ export function BarChart({ data, label, height = 240, className }: BarChartProps
             <RechartsBarChart data={data}>
               <XAxis
                 dataKey="label"
+                interval={0}
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "var(--bar-chart-axis-text)", fontSize: 12 }}

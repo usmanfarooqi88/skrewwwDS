@@ -57,12 +57,13 @@ describe("BarChart", () => {
     expect(img.getAttribute("aria-describedby")).toBe(table.id);
   });
 
-  it("renders month labels on the x-axis", () => {
+  it("renders every supplied category label on the x-axis", () => {
     const { container } = render(<BarChart data={sampleData} label="Monthly signups" />);
     const tickText = container.querySelectorAll(".recharts-xAxis .recharts-cartesian-axis-tick");
     expect(tickText).toHaveLength(sampleData.length);
-    expect(container.textContent).toContain("Jan");
-    expect(container.textContent).toContain("Jun");
+    for (const datum of sampleData) {
+      expect(container.textContent).toContain(datum.label);
+    }
   });
 
   it("renders no y-axis, gridlines, legend, or tooltip", () => {

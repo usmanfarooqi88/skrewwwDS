@@ -330,7 +330,10 @@
   --pagination-font-size: 1rem;
   --pagination-page-radius: 4px;
   --pagination-text: var(--semantic-text-secondary);
-  --pagination-page-content: var(--component-surface-content, #ffffff);
+  /* [VERIFIED] Navigation/Page Item Default (2024:2890, label 2024:2883)
+     is transparent and uses semantic/text/secondary in every Surface mode.
+     Current keeps the separate Surface-aware inverse-content contract below. */
+  --pagination-page-content: var(--semantic-text-secondary);
   --pagination-page-hover-surface: #f7f7f8;
   --pagination-page-hover-content: #17181b;
   /* [VERIFIED] Updated 2026-08-11 to match the approved Figma Page Item

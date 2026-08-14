@@ -99,21 +99,24 @@ test.describe("Pagination browser behavior", () => {
     }
   });
 
-  test("Default has no fill, stroke, or blur and uses component/surface/content", async ({ page }) => {
+  test("Default stays transparent and uses readable semantic secondary content", async ({ page }) => {
     const { other } = paginationLocators(page);
     await expect(other).toBeVisible();
+    const semanticSecondary = await other.evaluate((el) =>
+      getComputedStyle(el).getPropertyValue("--semantic-text-secondary").trim(),
+    );
 
-    for (const mode of ["flat", "gradient"] as const) {
+    for (const mode of ["flat", "gradient", "glass"] as const) {
       await setSurfaceMode(page, mode);
       expect((await resolvedRgba(other, "backgroundColor")).a, `${mode} background alpha`).toBe(0);
-      expectColorClose(await resolvedRgba(other, "color"), hexToRgba("#FFFFFF"), `${mode} content`);
+      expectColorClose(
+        await resolvedRgba(other, "color"),
+        hexToRgba(semanticSecondary),
+        `${mode} content`,
+      );
+      expect(await other.evaluate((el) => getComputedStyle(el).backgroundImage)).toBe("none");
       expect(await other.evaluate((el) => getComputedStyle(el).backdropFilter)).toBe("none");
     }
-
-    await setSurfaceMode(page, "glass");
-    expect((await resolvedRgba(other, "backgroundColor")).a, "Glass background alpha").toBe(0);
-    expectColorClose(await resolvedRgba(other, "color"), hexToRgba("#17181B"), "Glass content");
-    expect(await other.evaluate((el) => getComputedStyle(el).backdropFilter)).toBe("none");
 
     const metrics = await other.evaluate((el) => {
       const style = getComputedStyle(el);

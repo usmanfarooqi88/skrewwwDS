@@ -1,4 +1,53 @@
+import type { Locator } from "@playwright/test";
 import { expect, test } from "./fixtures";
+
+const xAxisTickSelector = "text.recharts-cartesian-axis-tick-value";
+
+async function expectReadableXAxis(chart: Locator, expectedLabels: string[]) {
+  const ticks = chart.locator(xAxisTickSelector);
+  await expect(ticks).toHaveCount(expectedLabels.length);
+  expect(await ticks.allTextContents()).toEqual(expectedLabels);
+  await expect(chart.locator(".recharts-bar-rectangle path")).toHaveCount(expectedLabels.length);
+
+  const geometry = await chart.evaluate((root, selector) => {
+    const svg = root.querySelector("svg");
+    const card = root.closest('[class*="card"]');
+    if (!svg || !card) throw new Error("Rendered Bar Chart bounds were not found");
+    const svgRect = svg.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const tickRects = Array.from(root.querySelectorAll(selector)).map((node) => {
+      const rect = node.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+    });
+    return {
+      svg: { left: svgRect.left, right: svgRect.right, top: svgRect.top, bottom: svgRect.bottom },
+      card: {
+        left: cardRect.left,
+        right: cardRect.right,
+        top: cardRect.top,
+        bottom: cardRect.bottom,
+      },
+      tickRects,
+      documentWidth: document.documentElement.scrollWidth,
+      viewportWidth: document.documentElement.clientWidth,
+    };
+  }, xAxisTickSelector);
+
+  for (const rect of geometry.tickRects) {
+    expect(rect.left).toBeGreaterThanOrEqual(geometry.svg.left - 0.5);
+    expect(rect.right).toBeLessThanOrEqual(geometry.svg.right + 0.5);
+    expect(rect.top).toBeGreaterThanOrEqual(geometry.svg.top - 0.5);
+    expect(rect.bottom).toBeLessThanOrEqual(geometry.svg.bottom + 0.5);
+    expect(rect.left).toBeGreaterThanOrEqual(geometry.card.left - 0.5);
+    expect(rect.right).toBeLessThanOrEqual(geometry.card.right + 0.5);
+  }
+  for (let index = 1; index < geometry.tickRects.length; index += 1) {
+    expect(geometry.tickRects[index].left).toBeGreaterThanOrEqual(
+      geometry.tickRects[index - 1].right - 0.5,
+    );
+  }
+  expect(geometry.documentWidth).toBe(geometry.viewportWidth);
+}
 
 test.describe("Bar Chart browser behavior", () => {
   test.beforeEach(async ({ page }) => {
@@ -33,6 +82,17 @@ test.describe("Bar Chart browser behavior", () => {
     expect(heights[5]).toBeGreaterThan(heights[0]);
     expect(heights.indexOf(Math.max(...heights))).toBe(5);
     expect(heights.indexOf(Math.min(...heights))).toBe(0);
+  });
+
+  test("renders every supplied month label without collisions", async ({ page }) => {
+    const expectedLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    const chart = page.getByRole("img", { name: "Monthly signups" });
+
+    await page.setViewportSize({ width: 1280, height: 1000 });
+    await expectReadableXAxis(chart, expectedLabels);
+
+    await page.setViewportSize({ width: 375, height: 812 });
+    await expectReadableXAxis(chart, expectedLabels);
   });
 
   test("exposes the underlying data via a visually-hidden table", async ({ page }) => {
