@@ -72,7 +72,7 @@ export function DataTablePreview() {
         description="DataTableSortHeader replaces TableHead on sortable columns. useDataTableSort tracks which column and direction; Pagination composes separately, driven by the same page state the consumer already owns."
       >
         <PreviewGroup label="Projects (client-side sorted and paginated)">
-          <div className="w-full space-y-4">
+          <div className="w-full space-y-6">
             <TableScrollArea accessibleLabel="Scrollable sortable projects table" tabIndex={0}>
               <Table data-testid="data-table-preview">
                 <TableCaption>Projects</TableCaption>
@@ -113,11 +113,15 @@ export function DataTablePreview() {
                 </TableBody>
               </Table>
             </TableScrollArea>
-            <Pagination
-              aria-label="Projects pagination"
-              items={buildPaginationItems({ currentPage, totalPages })}
-              onPageChange={setPage}
-            />
+            <div className="flex justify-center sm:justify-end">
+              <div className="w-fit max-w-full">
+                <Pagination
+                  aria-label="Projects pagination"
+                  items={buildPaginationItems({ currentPage, totalPages })}
+                  onPageChange={setPage}
+                />
+              </div>
+            </div>
           </div>
         </PreviewGroup>
       </ComponentPreview>

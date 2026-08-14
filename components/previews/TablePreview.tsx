@@ -94,18 +94,26 @@ export function TablePreview() {
             accessibleLabel="Scrollable projects table"
             tabIndex={0}
           >
-            <Table data-testid="table-projects">
+            <Table data-testid="table-projects" style={{ minWidth: "48rem" }}>
               <TableCaption>Active projects</TableCaption>
+              <colgroup>
+                <col />
+                <col style={{ width: "9rem" }} />
+                <col style={{ width: "7rem" }} />
+                <col style={{ width: "8rem" }} />
+                <col style={{ width: "7rem" }} />
+                <col style={{ width: "5rem" }} />
+              </colgroup>
               <TableHeader>
                 <TableRow>
                   <TableHead scope="col">Project</TableHead>
-                  <TableHead scope="col">Owner</TableHead>
-                  <TableHead scope="col">Status</TableHead>
-                  <TableHead scope="col">Updated</TableHead>
-                  <TableHead scope="col" align="end">
+                  <TableHead scope="col" data-table-wrap="nowrap">Owner</TableHead>
+                  <TableHead scope="col" data-table-wrap="nowrap">Status</TableHead>
+                  <TableHead scope="col" data-table-wrap="nowrap">Updated</TableHead>
+                  <TableHead scope="col" align="end" data-table-wrap="nowrap">
                     Budget
                   </TableHead>
-                  <TableHead scope="col">
+                  <TableHead scope="col" align="center" data-table-wrap="nowrap">
                     <span className="sr-only">Actions</span>
                   </TableHead>
                 </TableRow>
@@ -116,11 +124,11 @@ export function TablePreview() {
                     <TableHead scope="row">
                       <Link href={project.href}>{project.name}</Link>
                     </TableHead>
-                    <TableCell>{project.owner}</TableCell>
-                    <TableCell>{statusBadge(project.status)}</TableCell>
-                    <TableCell>{project.updated}</TableCell>
-                    <TableCell align="end">{project.budget}</TableCell>
-                    <TableCell data-table-wrap="nowrap">
+                    <TableCell data-table-wrap="nowrap">{project.owner}</TableCell>
+                    <TableCell data-table-wrap="nowrap">{statusBadge(project.status)}</TableCell>
+                    <TableCell data-table-wrap="nowrap">{project.updated}</TableCell>
+                    <TableCell align="end" data-table-wrap="nowrap">{project.budget}</TableCell>
+                    <TableCell align="center" data-table-wrap="nowrap">
                       <RowActions projectName={project.name} />
                     </TableCell>
                   </TableRow>
@@ -130,7 +138,7 @@ export function TablePreview() {
                 <TableRow>
                   <TableHead scope="row">Total</TableHead>
                   <TableCell colSpan={3} />
-                  <TableCell align="end">$51,750</TableCell>
+                  <TableCell align="end" data-table-wrap="nowrap">$51,750</TableCell>
                   <TableCell />
                 </TableRow>
               </TableFooter>
@@ -225,37 +233,49 @@ export function TablePreview() {
         description="Compose Checkbox, Link, Badge, and Menu inside cells. The row stays a non-interactive tr."
       >
         <PreviewGroup label="Review queue">
-          <Table data-testid="table-interactive">
-            <TableCaption>Items awaiting review</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead scope="col">
-                  <span className="sr-only">Select</span>
-                </TableHead>
-                <TableHead scope="col">Item</TableHead>
-                <TableHead scope="col">Status</TableHead>
-                <TableHead scope="col">
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell data-table-wrap="nowrap">
-                  <Checkbox label="Select Atlas for review" />
-                </TableCell>
-                <TableHead scope="row">
-                  <Link href="/components/table#atlas">Atlas</Link>
-                </TableHead>
-                <TableCell>
-                  <Badge variant="info">Needs review</Badge>
-                </TableCell>
-                <TableCell data-table-wrap="nowrap">
-                  <RowActions projectName="Atlas review" />
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <TableScrollArea accessibleLabel="Scrollable review queue table" tabIndex={0}>
+            <Table data-testid="table-interactive">
+              <TableCaption>Items awaiting review</TableCaption>
+              <colgroup>
+                <col style={{ width: "4rem" }} />
+                <col />
+                <col style={{ width: "10rem" }} />
+                <col style={{ width: "5rem" }} />
+              </colgroup>
+              <TableHeader>
+                <TableRow>
+                  <TableHead scope="col" align="center" data-table-wrap="nowrap">
+                    <span className="sr-only">Select</span>
+                  </TableHead>
+                  <TableHead scope="col">Item</TableHead>
+                  <TableHead scope="col" data-table-wrap="nowrap">Status</TableHead>
+                  <TableHead scope="col" align="center" data-table-wrap="nowrap">
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell align="center" data-table-wrap="nowrap">
+                    <Checkbox
+                      label=""
+                      aria-label="Select Atlas for review"
+                      className="[&>span]:hidden"
+                    />
+                  </TableCell>
+                  <TableHead scope="row">
+                    <Link href="/components/table#atlas">Atlas</Link>
+                  </TableHead>
+                  <TableCell data-table-wrap="nowrap">
+                    <Badge variant="info">Needs review</Badge>
+                  </TableCell>
+                  <TableCell align="center" data-table-wrap="nowrap">
+                    <RowActions projectName="Atlas review" />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableScrollArea>
         </PreviewGroup>
       </ComponentPreview>
 

@@ -42,7 +42,7 @@ test.describe("Table browser behavior", () => {
   });
 
   test("matches the canonical Flat and Rounded Table visual contract", async ({ page }) => {
-    const styles = await page.getByRole("table", { name: "Active projects" }).evaluate((table) => {
+    const styles = await page.getByTestId("table-sr-caption").evaluate((table) => {
       const shell = table.closest("[data-table-scroll]") as HTMLElement;
       const header = table.querySelector("thead") as HTMLElement;
       const headerCell = table.querySelector("thead th") as HTMLElement;
@@ -216,6 +216,132 @@ test.describe("Table browser behavior", () => {
     await link.focus();
     await page.keyboard.press("ArrowDown");
     await expect(link).toBeFocused();
+  });
+
+  test("keeps project metadata and numeric columns readable through schema-owned sizing", async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 1280, height: 1000 },
+      { width: 375, height: 812 },
+    ]) {
+      await page.setViewportSize(viewport);
+      const table = page.getByTestId("table-projects");
+      const result = await table.evaluate((node) => {
+        const shell = node.closest("[data-table-scroll]") as HTMLElement;
+        const headerCells = Array.from(node.querySelectorAll("thead th"));
+        const bodyCells = Array.from(node.querySelectorAll("tbody tr:first-child > th, tbody tr:first-child > td"));
+        const footerCells = Array.from(node.querySelectorAll("tfoot tr > th, tfoot tr > td"));
+        const read = (cell: Element) => {
+          const rect = cell.getBoundingClientRect();
+          const style = getComputedStyle(cell);
+          return {
+            left: rect.left,
+            right: rect.right,
+            width: rect.width,
+            whiteSpace: style.whiteSpace,
+            textAlign: style.textAlign,
+            fontVariantNumeric: style.fontVariantNumeric,
+          };
+        };
+        return {
+          tableWidth: node.getBoundingClientRect().width,
+          shellClientWidth: shell.clientWidth,
+          shellScrollWidth: shell.scrollWidth,
+          header: headerCells.map(read),
+          body: bodyCells.map(read),
+          footer: footerCells.map(read),
+          documentWidth: document.documentElement.scrollWidth,
+          viewportWidth: document.documentElement.clientWidth,
+        };
+      });
+
+      expect(result.tableWidth).toBe(768);
+      expect(result.header.map((cell) => cell.width)).toEqual([192, 144, 112, 128, 112, 80]);
+      for (const column of [1, 2, 3, 4, 5]) {
+        expect(result.header[column].whiteSpace).toBe("nowrap");
+        expect(result.body[column].whiteSpace).toBe("nowrap");
+      }
+      expect(result.body[4]).toMatchObject({
+        textAlign: "end",
+        fontVariantNumeric: "tabular-nums",
+      });
+      expect(result.footer[2].left).toBe(result.body[4].left);
+      expect(result.footer[2].right).toBe(result.body[4].right);
+      expect(result.shellScrollWidth).toBe(result.tableWidth);
+      expect(result.documentWidth).toBe(result.viewportWidth);
+      if (viewport.width === 375) {
+        expect(result.shellClientWidth).toBeLessThan(result.shellScrollWidth);
+      }
+    }
+  });
+
+  test("keeps Interactive Cells compact, accessible, and locally scrollable", async ({ page }) => {
+    const checkbox = page.getByRole("checkbox", { name: "Select Atlas for review", exact: true });
+    await expect(checkbox).toBeVisible();
+    await expect(page.getByText("Select Atlas for review", { exact: true })).toHaveCount(0);
+
+    const checkboxGeometry = await checkbox.evaluate((input) => {
+      const control = input.closest("label") as HTMLElement;
+      const labelText = control.querySelector("span") as HTMLElement;
+      return {
+        inputWidth: input.getBoundingClientRect().width,
+        controlWidth: control.getBoundingClientRect().width,
+        labelText: labelText.textContent,
+        labelDisplay: getComputedStyle(labelText).display,
+        labelWidth: labelText.getBoundingClientRect().width,
+      };
+    });
+    expect(checkboxGeometry).toEqual({
+      inputWidth: 16,
+      controlWidth: 16,
+      labelText: "",
+      labelDisplay: "none",
+      labelWidth: 0,
+    });
+
+    await checkbox.focus();
+    await expect(checkbox).toBeFocused();
+    expect(await checkbox.evaluate((input) => getComputedStyle(input).outlineWidth)).toBe("2px");
+    await page.keyboard.press(" ");
+    await expect(checkbox).toBeChecked();
+    await page.keyboard.press(" ");
+    await expect(checkbox).not.toBeChecked();
+
+    await page.setViewportSize({ width: 1280, height: 1000 });
+    const table = page.getByTestId("table-interactive");
+    expect(
+      await table.locator("thead th").evaluateAll((cells) =>
+        cells.map((cell) => cell.getBoundingClientRect().width),
+      ),
+    ).toEqual([64, 316, 160, 80]);
+
+    await page.setViewportSize({ width: 375, height: 812 });
+    const region = page.getByRole("region", { name: "Scrollable review queue table" });
+    const mobile = await region.evaluate((node) => {
+      const area = node as HTMLElement;
+      const table = area.querySelector("table") as HTMLTableElement;
+      return {
+        tableWidth: table.getBoundingClientRect().width,
+        clientWidth: area.clientWidth,
+        scrollWidth: area.scrollWidth,
+        columns: Array.from(table.querySelectorAll("thead th")).map(
+          (cell) => cell.getBoundingClientRect().width,
+        ),
+        documentWidth: document.documentElement.scrollWidth,
+        viewportWidth: document.documentElement.clientWidth,
+      };
+    });
+    expect(mobile.tableWidth).toBe(576);
+    expect(mobile.columns).toEqual([64, 272, 160, 80]);
+    expect(mobile.scrollWidth).toBeGreaterThan(mobile.clientWidth);
+    expect(mobile.documentWidth).toBe(mobile.viewportWidth);
+    await expect(region).toHaveAttribute("tabindex", "0");
+
+    await region.evaluate((node) => {
+      (node as HTMLElement).scrollLeft = (node as HTMLElement).scrollWidth;
+    });
+    await expect(page.getByRole("button", { name: "Actions for Atlas review" })).toBeVisible();
   });
 
   test("owns horizontal overflow on narrow viewports and reaches the final column", async ({

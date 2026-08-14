@@ -105,4 +105,50 @@ test.describe("Data Table browser behavior", () => {
     await page.getByRole("button", { name: "Project" }).click();
     await expect(currentPage).toHaveText("1");
   });
+
+  test("spaces and aligns external Pagination responsively without page overflow", async ({ page }) => {
+    const pagination = page.getByRole("navigation", { name: "Projects pagination" });
+
+    for (const expected of [
+      { viewport: { width: 1280, height: 1000 }, justifyContent: "flex-end", mobile: false },
+      { viewport: { width: 768, height: 812 }, justifyContent: "flex-end", mobile: false },
+      { viewport: { width: 375, height: 812 }, justifyContent: "center", mobile: true },
+    ]) {
+      await page.setViewportSize(expected.viewport);
+      const layout = await pagination.evaluate((nav) => {
+        const sizingWrapper = nav.parentElement as HTMLElement;
+        const alignmentWrapper = sizingWrapper.parentElement as HTMLElement;
+        const tableScrollArea = alignmentWrapper.previousElementSibling as HTMLElement;
+        const navRect = nav.getBoundingClientRect();
+        const alignmentRect = alignmentWrapper.getBoundingClientRect();
+        const tableRect = tableScrollArea.getBoundingClientRect();
+        return {
+          gap: alignmentRect.top - tableRect.bottom,
+          justifyContent: getComputedStyle(alignmentWrapper).justifyContent,
+          navLeft: navRect.left,
+          navRight: navRect.right,
+          alignmentLeft: alignmentRect.left,
+          alignmentRight: alignmentRect.right,
+          tableScrollable: tableScrollArea.scrollWidth > tableScrollArea.clientWidth,
+          documentWidth: document.documentElement.scrollWidth,
+          viewportWidth: document.documentElement.clientWidth,
+        };
+      });
+
+      expect(layout.gap).toBe(24);
+      expect(layout.justifyContent).toBe(expected.justifyContent);
+      expect(layout.navLeft).toBeGreaterThanOrEqual(layout.alignmentLeft - 0.5);
+      expect(layout.navRight).toBeLessThanOrEqual(layout.alignmentRight + 0.5);
+      expect(layout.documentWidth).toBe(layout.viewportWidth);
+      if (!expected.mobile) {
+        expect(layout.navRight).toBeCloseTo(layout.alignmentRight, 0);
+      } else {
+        expect(layout.tableScrollable).toBe(true);
+        expect(layout.navLeft - layout.alignmentLeft).toBeCloseTo(
+          layout.alignmentRight - layout.navRight,
+          0,
+        );
+      }
+    }
+  });
 });
