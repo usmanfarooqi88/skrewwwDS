@@ -450,7 +450,7 @@ export const LAYER3_SURFACE_BATCH_A_EVIDENCE = {
     scope: ["Dialog", "Drawer", "Accordion", "Empty State"],
     explicitExclusion: "Does not claim full Layer 3 Surface completion",
     broaderTokenDrift: [
-      "React semantic/icon/muted resolves #A0A2AC; live Figma Light resolves #A0A3AC",
+      "React semantic/icon/muted and live Figma Light both resolve #A0A3AC; React semantic/border-strong remains a separate neutral/300 alias follow-up",
     ],
   },
 } as const;
@@ -631,7 +631,7 @@ export const TABLE_FIGMA_EVIDENCE = {
     "Canonical Caption visual treatment",
     "Canonical Footer visual treatment",
     "Controlled Table Shape mapping",
-    "Foundation primary/secondary sync is complete (#17181B / #5B5F68); muted-content drift remains open: Figma #A0A3AC vs React #A0A2AC",
+    "Foundation primary/secondary and neutral/400 sync are complete (#17181B / #5B5F68 / #A0A3AC); semantic/border-strong remains a separate React/Figma alias-parity follow-up",
   ],
 } as const;
 

@@ -38,12 +38,12 @@ async function verifySearchFieldRendering(page: Page) {
 
       expectColorClose(
         await resolvedRgba(leading, "color"),
-        hexToRgba(surface === "glass" ? "#17181B" : "#a0a2ac"),
+        hexToRgba(surface === "glass" ? "#17181B" : "#a0a3ac"),
         `${surface} ${size.label} leading icon`,
       );
       expectColorClose(
         await resolvedRgba(clear, "color"),
-        hexToRgba("#a0a2ac"),
+        hexToRgba("#a0a3ac"),
         `${surface} ${size.label} clear icon`,
       );
     }

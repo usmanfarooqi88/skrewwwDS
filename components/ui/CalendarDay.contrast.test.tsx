@@ -20,7 +20,7 @@ const TOKENS = {
   textPrimary: "#17181b",
   textInverse: "#ffffff",
   textMuted: "#5b5f68",
-  textDisabled: "#a0a2ac",
+  textDisabled: "#a0a3ac",
   hoverSurface: "#ededf0",
 } as const;
 

@@ -42,7 +42,7 @@ export const TABLE_STABLE_V1_CONTRACT = {
   controlledShapeMapping: "deferred",
   dataTableBehavior: "separate",
   knownFoundationDrift: [
-    "Figma component/surface/content-muted resolves #A0A3AC; React semantic/icon/muted resolves #A0A2AC",
+    "Figma component/surface/content-muted and React Flat/Gradient semantic/icon/muted now resolve #A0A3AC; React Glass content-muted remains Surface-specific",
   ],
 } as const;
 

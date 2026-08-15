@@ -22,7 +22,7 @@
   --primitive-color-neutral-100: #ededf0;
   --primitive-color-neutral-200: #dfe0e4;
   --primitive-color-neutral-300: #c5c6cc;
-  --primitive-color-neutral-400: #a0a2ac;
+  --primitive-color-neutral-400: #a0a3ac;
   --primitive-color-neutral-500: #71737c;
   /* [VERIFIED 2026-08-15] Synced to the live Figma Foundation audit.
      color/neutral/600 resolves #5B5F68 and color/neutral/900 resolves
@@ -31,9 +31,8 @@
      because each of these primitives has exactly one consumer
      (--semantic-text-secondary and --semantic-text-primary respectively),
      so the whole semantic contract inherits the fix with no component
-     edits. neutral/400 is deliberately NOT touched here — its #A0A3AC
-     drift and the Table-header contrast question it feeds are a separate,
-     unresolved consumer decision. */
+     edits. neutral/400 is now synced independently; semantic/border/strong
+     remains a separate neutral/300 alias and follow-up parity question. */
   --primitive-color-neutral-600: #5b5f68;
   --primitive-color-neutral-900: #17181b;
 
