@@ -1,4 +1,6 @@
-import { expect, test } from "@playwright/test";
+import { expect, expectColorClose, hexToRgba, resolvedRgba, setSurfaceMode, test } from "./fixtures";
+
+const surfaceModes = ["flat", "gradient", "glass"] as const;
 
 test.describe("Menu keyboard model", () => {
   test.beforeEach(async ({ page }) => {
@@ -116,5 +118,42 @@ test.describe("Menu keyboard model", () => {
     await page.keyboard.press("Escape");
     await expect(page.getByRole("menu")).toHaveCount(0);
     await expect(page.getByRole("dialog")).toBeVisible();
+  });
+
+  test("enabled shortcut text stays secondary across states and Surface modes", async ({ page }) => {
+    for (const mode of surfaceModes) {
+      await page.goto("/components/menu");
+      await setSurfaceMode(page, mode);
+      await page.getByRole("button", { name: "Project actions" }).click();
+
+      const menu = page.getByRole("menu", { name: "Project actions" });
+      const item = menu.getByRole("menuitem", { name: "Edit profile" });
+      const shortcut = item.locator('[class*="itemShortcut"]');
+      const panel = menu.locator("xpath=ancestor::*[contains(@class, '__popover')][1]");
+
+      expectColorClose(await resolvedRgba(shortcut, "color"), hexToRgba("#5B5F68"), `${mode} default shortcut`);
+      expect(await item.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe("none");
+      // Keep the panel relationship observable without turning the known
+      // React-vs-Figma Glass paint/blur difference into a B3 contract.
+      await expect(panel).toHaveCount(1);
+
+      if (mode === "gradient") {
+        const image = await panel.evaluate((element) => getComputedStyle(element).backgroundImage);
+        expect((image.match(/linear-gradient/g) ?? []).length).toBe(1);
+      } else {
+        expect(await panel.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe("none");
+      }
+
+      await item.hover();
+      expectColorClose(await resolvedRgba(shortcut, "color"), hexToRgba("#5B5F68"), `${mode} hover shortcut`);
+      expect(await item.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe("none");
+
+      await item.focus();
+      expectColorClose(await resolvedRgba(shortcut, "color"), hexToRgba("#5B5F68"), `${mode} focused shortcut`);
+
+      // React Menu has no selected/aria-selected state or public selected prop;
+      // the keyboard-highlighted focus state is covered by the existing tests.
+      expect(await menu.locator('[aria-selected="true"]').count()).toBe(0);
+    }
   });
 });

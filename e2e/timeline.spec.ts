@@ -1,4 +1,6 @@
-import { expect, test } from "./fixtures";
+import { expect, expectColorClose, hexToRgba, resolvedRgba, setSurfaceMode, test } from "./fixtures";
+
+const surfaceModes = ["flat", "gradient", "glass"] as const;
 
 test.describe("Timeline browser behavior", () => {
   test.beforeEach(async ({ page }) => {
@@ -42,5 +44,26 @@ test.describe("Timeline browser behavior", () => {
     await expect(highlightedItem).toContainText("fraud detection system");
     // Not the last item, so it must still have a connector despite the long description.
     await expect(highlightedItem.locator('[class*="connector"]')).toHaveCount(1);
+  });
+
+  test("keeps Default and Highlighted supporting text on semantic secondary across Surface modes", async ({ page }) => {
+    for (const mode of surfaceModes) {
+      await page.goto("/components/timeline");
+      await setSurfaceMode(page, mode);
+
+      const list = page.getByRole("list").filter({ hasText: "Order placed" });
+      const items = list.getByRole("listitem");
+      const defaultItem = items.nth(0);
+      const highlightedItem = items.nth(1);
+      const secondary = hexToRgba("#5B5F68");
+      const primary = hexToRgba("#17181B");
+
+      for (const item of [defaultItem, highlightedItem]) {
+        expectColorClose(await resolvedRgba(item.locator('[class*="timestamp"]'), "color"), secondary, `${mode} timestamp`);
+        expectColorClose(await resolvedRgba(item.locator('[class*="description"]'), "color"), secondary, `${mode} description`);
+        expectColorClose(await resolvedRgba(item.locator('[class*="title"]'), "color"), primary, `${mode} title`);
+      }
+
+    }
   });
 });
