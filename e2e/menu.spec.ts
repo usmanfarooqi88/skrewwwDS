@@ -43,6 +43,7 @@ test.describe("Menu keyboard model", () => {
 
   test("navigates with arrow keys, Home, and End", async ({ page }) => {
     await page.getByRole("button", { name: "More actions" }).click();
+    await expect(page.getByRole("menuitem", { name: "Archive" })).toBeFocused();
     await page.keyboard.press("End");
     await expect(page.getByRole("menuitem", { name: "Share link" })).toBeFocused();
     await page.keyboard.press("Home");
@@ -150,6 +151,15 @@ test.describe("Menu keyboard model", () => {
 
       await item.focus();
       expectColorClose(await resolvedRgba(shortcut, "color"), hexToRgba("#5B5F68"), `${mode} focused shortcut`);
+
+      await page.keyboard.press("Escape");
+      await page.getByRole("button", { name: "More actions" }).click();
+      const disabledItem = page.getByRole("menuitem", { name: /Export \(disabled\)/ });
+      const disabledShortcut = disabledItem.locator('[class*="itemShortcut"]');
+      const disabledLabel = disabledItem.locator('[class*="itemLabel"]');
+      expectColorClose(await resolvedRgba(disabledShortcut, "color"), hexToRgba("#A0A3AC"), `${mode} disabled shortcut`);
+      expectColorClose(await resolvedRgba(disabledLabel, "color"), hexToRgba("#A0A3AC"), `${mode} disabled label`);
+      await expect(disabledItem).toHaveAttribute("aria-disabled", "true");
 
       // React Menu has no selected/aria-selected state or public selected prop;
       // the keyboard-highlighted focus state is covered by the existing tests.

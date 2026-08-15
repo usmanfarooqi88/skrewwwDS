@@ -90,7 +90,7 @@ export function MenuPreview() {
           </MenuTrigger>
           <MenuContent>
             <MenuItem onSelect={() => setLastAction("Archive")}>Archive</MenuItem>
-            <MenuItem disabled onSelect={() => setLastAction("Should not run")}>
+            <MenuItem disabled shortcut="⌘X" onSelect={() => setLastAction("Should not run")}>
               Export (disabled)
             </MenuItem>
             <MenuItem onSelect={() => setLastAction("Share link")}>Share link</MenuItem>

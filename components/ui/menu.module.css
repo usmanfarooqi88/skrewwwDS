@@ -116,6 +116,10 @@
   letter-spacing: 0.02em;
 }
 
+.itemDisabled .itemShortcut {
+  color: var(--semantic-text-disabled);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .item {
     transition: none;
