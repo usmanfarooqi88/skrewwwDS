@@ -42,7 +42,7 @@
   margin: 0.5rem 0 0;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--component-surface-content-muted);
+  color: var(--empty-state-description-text);
 }
 
 .actions {

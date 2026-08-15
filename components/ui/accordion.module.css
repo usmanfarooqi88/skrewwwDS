@@ -59,7 +59,7 @@
 }
 
 .panel {
-  color: var(--component-surface-content-muted);
+  color: var(--accordion-panel-text);
 }
 
 .panelInner {

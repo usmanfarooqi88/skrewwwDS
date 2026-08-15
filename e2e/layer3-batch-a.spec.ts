@@ -18,6 +18,11 @@ const expected = {
   // at the Foundation layer (color/neutral/900), so this value is inherited,
   // never a component-only duplicate token.
   primary: hexToRgba("#17181B"),
+  supporting: {
+    flat: hexToRgba("#5B5F68"),
+    gradient: hexToRgba("#5B5F68"),
+    glass: hexToRgba("#5B5F68"),
+  },
   muted: {
     flat: hexToRgba("#a0a3ac"),
     gradient: hexToRgba("#a0a3ac"),
@@ -62,7 +67,7 @@ test.describe("Layer 3 Batch A Surface parity", () => {
       expect(styles.backgroundImage).toContain("linear-gradient");
       expect(styles.backgroundImage).toContain(mode === "glass" ? "0.12" : "rgb(255, 255, 255)");
       expectColorClose(await resolvedRgba(title, "color"), expected.primary);
-      expectColorClose(await resolvedRgba(body, "color"), expected.muted[mode]);
+      expectColorClose(await resolvedRgba(body, "color"), expected.supporting[mode]);
       expectColorClose(await resolvedRgba(close, "color"), expected.muted[mode]);
     });
 
@@ -82,7 +87,7 @@ test.describe("Layer 3 Batch A Surface parity", () => {
       expect(styles.boxShadow).toBe("none");
       expectBlur(mode, styles.backdropFilter);
       expectColorClose(await resolvedRgba(title, "color"), expected.primary);
-      expectColorClose(await resolvedRgba(body, "color"), expected.muted[mode]);
+      expectColorClose(await resolvedRgba(body, "color"), expected.supporting[mode]);
       expectColorClose(await resolvedRgba(close, "color"), expected.muted[mode]);
     });
 
@@ -102,7 +107,7 @@ test.describe("Layer 3 Batch A Surface parity", () => {
       expect(styles.boxShadow).toBe("none");
       expectBlur(mode, styles.backdropFilter);
       expectColorClose(await resolvedRgba(trigger, "color"), expected.primary);
-      expectColorClose(await resolvedRgba(panel, "color"), expected.muted[mode]);
+      expectColorClose(await resolvedRgba(panel, "color"), expected.supporting[mode]);
       expectColorClose(await resolvedRgba(icon, "color"), expected.muted[mode]);
     });
 
@@ -121,8 +126,32 @@ test.describe("Layer 3 Batch A Surface parity", () => {
       expect(styles.boxShadow).toBe("none");
       expectBlur(mode, styles.backdropFilter);
       expectColorClose(await resolvedRgba(title, "color"), expected.primary);
-      expectColorClose(await resolvedRgba(description, "color"), expected.muted[mode]);
+      expectColorClose(await resolvedRgba(description, "color"), expected.supporting[mode]);
       expectColorClose(await resolvedRgba(icon, "color"), expected.muted[mode]);
+    });
+
+    test(`Card supporting text uses semantic secondary in ${mode}`, async ({ page }) => {
+      await page.goto("/components/card");
+      await setSurfaceMode(page, mode);
+
+      const title = page.getByRole("heading", { name: "Project overview" });
+      const body = page.getByText("Group related content, metadata, and actions in a bounded surface.");
+
+      expectColorClose(await resolvedRgba(title, "color"), expected.primary);
+      expectColorClose(await resolvedRgba(body, "color"), expected.supporting[mode]);
+    });
+
+    test(`Popover supporting text uses semantic secondary in ${mode}`, async ({ page }) => {
+      await page.goto("/components/popover");
+      await setSurfaceMode(page, mode);
+      await page.getByRole("button", { name: "View details" }).click();
+
+      const popover = page.getByRole("dialog", { name: "Documentation status" });
+      const title = popover.getByRole("heading", { name: "Documentation status" });
+      const description = popover.getByText("Popover supplements the page without blocking background interaction.");
+
+      expectColorClose(await resolvedRgba(title, "color"), expected.primary);
+      expectColorClose(await resolvedRgba(description, "color"), expected.supporting[mode]);
     });
   }
 });

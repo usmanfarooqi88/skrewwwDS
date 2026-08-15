@@ -75,13 +75,13 @@
   padding-top: var(--dialog-body-gap);
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--component-surface-content-muted);
+  color: var(--semantic-text-secondary);
 }
 
 .body {
   padding: var(--dialog-padding);
   overflow-y: auto;
-  color: var(--component-surface-content-muted);
+  color: var(--semantic-text-secondary);
 }
 
 .footer {

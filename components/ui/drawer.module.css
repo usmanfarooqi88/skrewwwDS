@@ -112,7 +112,7 @@
   padding-top: var(--drawer-body-gap);
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--component-surface-content-muted);
+  color: var(--semantic-text-secondary);
 }
 
 .body {
@@ -120,7 +120,7 @@
   padding: var(--drawer-padding);
   overflow-y: auto;
   overscroll-behavior: contain;
-  color: var(--component-surface-content-muted);
+  color: var(--semantic-text-secondary);
 }
 
 .footer {
