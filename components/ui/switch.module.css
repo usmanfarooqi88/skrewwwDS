@@ -11,6 +11,7 @@
 }
 
 .switch {
+  box-sizing: border-box;
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -18,12 +19,12 @@
   width: var(--control-switch-track-width);
   height: var(--control-switch-track-height);
   padding: 0;
-  border: 1px solid var(--semantic-border-strong);
+  border: none;
   border-radius: min(var(--shape-radius-control), 9999px);
-  background: var(--semantic-surface-subtle);
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
+  /* Off/default track fill — Figma has no stroke anywhere on Switch; the
+     track boundary itself is communicated by this fill, not a border. */
+  background: var(--semantic-border-strong);
+  transition: background-color 0.15s ease;
 }
 
 .switch:focus {
@@ -37,14 +38,12 @@
 
 .switchOn {
   background: var(--semantic-action-primary);
-  border-color: var(--semantic-action-primary);
 }
 
 .switchDisabled {
   pointer-events: none;
   opacity: var(--opacity-disabled);
   background: var(--semantic-surface-disabled);
-  border-color: var(--semantic-border-disabled);
 }
 
 .thumb {

@@ -323,6 +323,67 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     expect(dangerBorder).not.toBe(primaryBorder);
   });
 
+  test("Secondary boundary follows the Card highlight contract, not semantic-border-strong, and Hover keeps the same boundary", async ({ page }) => {
+    const secondary = page.getByRole("button", { name: "Secondary", exact: true });
+    const surface = visualSurface(secondary);
+
+    for (const mode of ["flat", "gradient"] as const) {
+      await setButtonSurfaceMode(page, mode);
+      // component/card/border-highlight-1 resolves the same solid value as
+      // semantic/border/default in Flat and Gradient — a uniform boundary.
+      expectColorClose(await resolvedRgba(surface, "borderColor"), hexToRgba("#DFE0E4"), `${mode} default boundary`);
+
+      await secondary.hover();
+      // Hover must not switch the boundary to a stronger/darker color —
+      // it stays identical to Default; only the fill changes.
+      expectColorClose(await resolvedRgba(surface, "borderColor"), hexToRgba("#DFE0E4"), `${mode} hover boundary unchanged`);
+      await page.mouse.move(0, 0);
+    }
+
+    await setButtonSurfaceMode(page, "glass");
+    // The solid border-color is neutralized (fully transparent) in Glass —
+    // the ::before rim below is the only visible boundary. Only alpha
+    // matters here; browsers serialize CSS `transparent` as black with
+    // zero alpha, not white, so this checks alpha directly rather than
+    // asserting a specific RGB for a fully invisible color.
+    const glassBorderAlpha = await surface.evaluate((el) => getComputedStyle(el).borderColor);
+    expect(rgbaStringToRgba(glassBorderAlpha).a, "glass base border neutralized").toBe(0);
+
+    const rimImage = await surface.evaluate((el) => getComputedStyle(el, "::before").backgroundImage);
+    const rim = parseLinearGradient(rimImage);
+
+    // Reuses Button's own verified 135.25deg Medium-master-box angle, not
+    // Dialog's Card-specific 162.47deg — Secondary shares Primary/Danger's
+    // exact element geometry.
+    expect(rim.angle, "Secondary rim angle").toBeCloseTo(135.25, 2);
+    expect(rim.stops.map((stop) => stop.position), "Secondary rim stops").toEqual([0, 23.1, 46.2, 100]);
+
+    // component/card/border-highlight-1/2/3 Glass values: ~80% -> 50% -> 15%.
+    expectColorClose(rgbaStringToRgba(rim.stops[0].color), hexToRgba("#FFFFFF", 0.8), "Secondary rim stop 0");
+    expectColorClose(rgbaStringToRgba(rim.stops[1].color), hexToRgba("#DFE0E4", 0.5), "Secondary rim stop 1");
+    expectColorClose(rgbaStringToRgba(rim.stops[2].color), hexToRgba("#DFE0E4", 0.15), "Secondary rim stop 2");
+    expectColorClose(rgbaStringToRgba(rim.stops[3].color), hexToRgba("#DFE0E4", 0.15), "Secondary rim held end colour");
+
+    // Hover in Glass must not replace the rim with a solid strong border.
+    await secondary.hover();
+    const rimImageHover = await surface.evaluate((el) => getComputedStyle(el, "::before").backgroundImage);
+    expect(rimImageHover, "Glass hover keeps the same rim").toBe(rimImage);
+    const glassHoverBorderAlpha = await surface.evaluate((el) => getComputedStyle(el).borderColor);
+    expect(rgbaStringToRgba(glassHoverBorderAlpha).a, "glass hover base border stays neutralized").toBe(0);
+  });
+
+  test("Secondary Hover fill still changes correctly across Surfaces", async ({ page }) => {
+    const secondary = page.getByRole("button", { name: "Secondary", exact: true });
+    const surface = visualSurface(secondary);
+
+    await setButtonSurfaceMode(page, "flat");
+    const before = await resolvedRgba(surface, "backgroundColor");
+    await secondary.hover();
+    const after = await resolvedRgba(surface, "backgroundColor");
+    const delta = Math.abs(before.r - after.r) + Math.abs(before.g - after.g) + Math.abs(before.b - after.b);
+    expect(delta, "hover fill must still change even though the boundary no longer does").toBeGreaterThan(0);
+  });
+
   test("Danger uses verified interaction and disabled values in every Surface mode", async ({ page }) => {
     const danger = page.getByRole("button", { name: "Danger", exact: true });
 

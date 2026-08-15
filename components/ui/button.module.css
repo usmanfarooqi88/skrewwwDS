@@ -133,12 +133,18 @@
 
 .secondary .visualSurface {
   background-color: var(--surface-fill-control);
-  border-color: var(--semantic-border-default);
+  /* component/card/border-highlight-1 — Flat and Gradient resolve this
+     (and -2/-3) to the same solid value, so the first stop alone is the
+     correct single-color boundary here. See the Glass rim below for where
+     the three stops diverge into a real gradient. */
+  border-color: var(--component-card-border-highlight-1);
 }
 
 .secondary:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface {
   background-color: var(--semantic-surface-subtle);
-  border-color: var(--semantic-border-strong);
+  /* Hover is communicated by fill only — the boundary is unchanged from
+     Default, matching the verified Figma contract. Do not reintroduce a
+     border-color override here. */
 }
 
 .secondary:active:not(:disabled):not([aria-disabled="true"]) .visualSurface {
@@ -185,6 +191,10 @@
 [data-skrewww-surface="glass"] .secondary .visualSurface {
   background-color: var(--component-button-secondary-fill-glass);
   backdrop-filter: var(--glass-backdrop-filter-lg);
+  /* The solid Flat/Gradient border-color is replaced by the ::before rim
+     below, exactly like Primary/Danger's Glass boundary — see the rim
+     comment further down. */
+  border-color: transparent;
 }
 
 [data-skrewww-surface="glass"] .secondary:hover:not(:disabled):not([aria-disabled="true"]) .visualSurface,
@@ -239,7 +249,8 @@
  * 1px border while preserving border-radius; border-image would not.
  */
 [data-skrewww-surface="glass"] .primary .visualSurface::before,
-[data-skrewww-surface="glass"] .danger .visualSurface::before {
+[data-skrewww-surface="glass"] .danger .visualSurface::before,
+[data-skrewww-surface="glass"] .secondary .visualSurface::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -271,6 +282,24 @@
     var(--component-button-danger-border-mid) 23.1%,
     var(--component-button-danger-border-end) 46.2%,
     var(--component-button-danger-border-end) 100%
+  );
+}
+
+/* Secondary's Glass rim reuses component/card/border-highlight-1/2/3 (the
+   same token family verified for Card/Dialog) rather than a Button-specific
+   border token, since Secondary's boundary is a Card-family contract, not a
+   Primary/Danger-style brand-colored one. It reuses the 135.25deg angle
+   derived above rather than Dialog's 162.47deg: that angle is Card/Dialog's
+   own wide-panel aspect ratio, while Secondary shares Primary/Danger's exact
+   Medium master box geometry, so the angle already derived for this element
+   shape is the correct one to reuse here, not Dialog's. */
+[data-skrewww-surface="glass"] .secondary .visualSurface::before {
+  background-image: linear-gradient(
+    135.25deg,
+    var(--component-card-border-highlight-1) 0%,
+    var(--component-card-border-highlight-2) 23.1%,
+    var(--component-card-border-highlight-3) 46.2%,
+    var(--component-card-border-highlight-3) 100%
   );
 }
 
