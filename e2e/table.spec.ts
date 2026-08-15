@@ -93,7 +93,7 @@ test.describe("Table browser behavior", () => {
     expect(styles.shell.borderBottom).toBe("1px solid rgb(223, 224, 228)");
     expect(styles.header.backgroundColor).toBe("rgb(247, 247, 248)");
     expect(styles.headerCell).toMatchObject({
-      color: "rgb(160, 162, 172)",
+      color: "rgb(91, 95, 104)",
       paddingBlock: "12px",
       paddingInline: "16px",
       fontSize: "14px",
@@ -112,10 +112,21 @@ test.describe("Table browser behavior", () => {
       lineHeight: "16.8px",
       overflowWrap: "anywhere",
     });
+    expect(styles.rowHeader.color).toBe("rgb(23, 24, 27)");
     expect(styles.rowHeader).toMatchObject({
       color: "rgb(23, 24, 27)",
       fontWeight: "400",
     });
+    expect(
+      await page.getByTestId("table-interactive").locator("thead th").evaluateAll((cells) =>
+        cells.map((cell) => getComputedStyle(cell).color),
+      ),
+    ).toEqual([
+      "rgb(91, 95, 104)",
+      "rgb(91, 95, 104)",
+      "rgb(91, 95, 104)",
+      "rgb(91, 95, 104)",
+    ]);
     expect(styles.firstBodyCell.borderBottom).toBe("1px solid rgb(223, 224, 228)");
     expect(styles.lastBodyCell.borderBottomWidth).toBe("0px");
   });
@@ -150,7 +161,7 @@ test.describe("Table browser behavior", () => {
         backdropFilter: "none",
         boxShadow: "none",
         headerBackground: "rgb(247, 247, 248)",
-        headerColor: "rgb(160, 162, 172)",
+        headerColor: "rgb(91, 95, 104)",
       });
     }
   });

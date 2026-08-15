@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, expectColorClose, hexToRgba, resolvedRgba, test } from "./fixtures";
 
 test.describe("Calendar Grid browser behavior", () => {
   test.beforeEach(async ({ page }) => {
@@ -22,6 +22,22 @@ test.describe("Calendar Grid browser behavior", () => {
   test("changes month from header controls", async ({ page }) => {
     await page.getByRole("button", { name: "Next month" }).first().click();
     await expect(page.getByRole("heading", { name: /August 2026/i }).first()).toBeVisible();
+  });
+
+  test("uses semantic secondary text for all weekday labels", async ({ page }) => {
+    const grid = page.getByRole("grid").first();
+    const weekdays = grid.getByRole("columnheader");
+    await expect(weekdays).toHaveCount(7);
+    await expect(weekdays).toHaveText(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+
+    const calendarBackground = await grid.evaluate((node) => {
+      const root = node.closest('[class*="root"]') as HTMLElement;
+      return getComputedStyle(root).backgroundColor;
+    });
+    expect(calendarBackground).toBe("rgb(255, 255, 255)");
+    for (const weekday of await weekdays.all()) {
+      expectColorClose(await resolvedRgba(weekday, "color"), hexToRgba("#5B5F68"));
+    }
   });
 
   test("selects a date with Enter", async ({ page }) => {

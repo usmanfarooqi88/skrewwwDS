@@ -10,7 +10,7 @@
   --component-surface-backdrop-filter: none;
   --table-surface: var(--component-card-surface);
   --table-border: var(--component-card-border);
-  --table-header-text: var(--component-surface-content-muted);
+  --table-header-text: var(--semantic-text-secondary);
 
   box-sizing: border-box;
   /* Shrink correctly in flex/grid parents; own horizontal overflow locally. */
