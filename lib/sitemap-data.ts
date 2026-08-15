@@ -18,6 +18,7 @@ import {
 } from "@/lib/indexing-policy";
 import { getComponentHref } from "@/lib/routes";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
+import { getSortedChangelogEntries } from "@/content/changelog";
 
 export function buildSitemapEntries(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
@@ -44,6 +45,12 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
       lastModified: siteConfig.documentationPublished,
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    {
+      url: absoluteUrl("/changelog"),
+      lastModified: getSortedChangelogEntries()[0]?.date ?? siteConfig.documentationPublished,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     {
       url: absoluteUrl("/registry.json"),

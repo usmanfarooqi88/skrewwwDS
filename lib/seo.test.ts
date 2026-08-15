@@ -87,6 +87,11 @@ describe("SEO infrastructure", () => {
     }
   });
 
+  it("includes the public changelog in the sitemap", () => {
+    const urls = getSitemapUrls();
+    expect(urls).toContain(absoluteUrl("/changelog"));
+  });
+
   it("generates unique metadata titles and non-empty summaries for implemented components", () => {
     const titles = getImplementedComponentTitles();
     const implemented = getImplementedRegistryEntries();

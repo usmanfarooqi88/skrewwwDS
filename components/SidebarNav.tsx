@@ -29,6 +29,9 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
       <SidebarNavLink href="/foundations" match="foundations" onNavigate={onNavigate}>
         Foundations
       </SidebarNavLink>
+      <SidebarNavLink href="/changelog" onNavigate={onNavigate}>
+        Changelog
+      </SidebarNavLink>
 
       <div className="mt-4 space-y-4">
         {categories.map((category) => {
