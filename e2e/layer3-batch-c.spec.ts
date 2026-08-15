@@ -77,13 +77,18 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       expect(errorStyles.zIndex).toBe("auto");
       const muted = hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac");
       expectColorClose(await resolvedRgba(empty.locator("p").first(), "color"), muted);
-      expectColorClose(await resolvedRgba(empty.locator("p").nth(1), "color"), muted);
+      expectColorClose(await resolvedRgba(empty.locator("p").nth(1), "color"), hexToRgba("#5B5F68"));
       expectColorClose(await resolvedRgba(empty.locator("svg"), "color"), muted);
       expectColorClose(
         await resolvedRgba(disabled.locator("p").first(), "color"),
         hexToRgba("#a0a3ac"),
       );
+      expectColorClose(
+        await resolvedRgba(disabled.locator("p").nth(1), "color"),
+        hexToRgba("#a0a3ac"),
+      );
       expectColorClose(await resolvedRgba(error.locator("p").first(), "color"), hexToRgba("#e5484d"));
+      expectColorClose(await resolvedRgba(error.locator("p").nth(1), "color"), muted);
       expectColorClose(await resolvedRgba(error.locator("svg"), "color"), hexToRgba("#e5484d"));
       expectColorClose(
         await resolvedRgba(page.getByText("The server could not process these files."), "color"),
@@ -105,6 +110,10 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       expectColorClose(await resolvedRgba(dragging, "borderColor"), hexToRgba("#6c4cf2"));
       expectBlur(mode, draggingStyles.backdropFilter);
       expectColorClose(await resolvedRgba(dragging.locator("p").first(), "color"), hexToRgba("#17181B"));
+      expectColorClose(
+        await resolvedRgba(dragging.locator("p").nth(1), "color"),
+        hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac"),
+      );
       expectColorClose(await resolvedRgba(dragging.locator("svg"), "color"), hexToRgba("#6c4cf2"));
 
       await page.locator('input[name="profile-photo"]').setInputFiles({
@@ -133,6 +142,10 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       }
       expectColorClose(await resolvedRgba(filled.getByText("avatar.png"), "color"), hexToRgba("#17181B"));
       expectColorClose(await resolvedRgba(filled.getByRole("button"), "color"), muted);
+      await expect(empty).not.toHaveClass(/dropzoneEmpty/);
+      await page.getByRole("button", { name: "Remove avatar.png" }).click();
+      await expect(empty).toHaveClass(/dropzoneEmpty/);
+      expectColorClose(await resolvedRgba(empty.locator("p").nth(1), "color"), hexToRgba("#5B5F68"));
 
       if (mode === "gradient") {
         const expectedRadii = {

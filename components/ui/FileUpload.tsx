@@ -297,6 +297,7 @@ export function FileUpload({
             <div
               className={cn(
                 styles.dropzone,
+                items.length === 0 && styles.dropzoneEmpty,
                 dragging && styles.dropzoneDragging,
                 (invalid || showRejections) && styles.dropzoneError,
                 disabled && styles.dropzoneDisabled,

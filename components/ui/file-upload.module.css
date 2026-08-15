@@ -49,6 +49,10 @@
   color: var(--file-upload-border-error);
 }
 
+.dropzoneEmpty:not(.dropzoneDragging):not(.dropzoneDisabled):not(.dropzoneError) .description {
+  color: var(--semantic-text-secondary);
+}
+
 .dropzoneDisabled {
   cursor: not-allowed;
   opacity: var(--opacity-disabled);
