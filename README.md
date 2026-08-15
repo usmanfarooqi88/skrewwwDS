@@ -2,6 +2,21 @@
 
 Documentation site for the Skrewww design system — token-driven components, native-first form semantics with accessible custom controls where native HTML cannot represent the confirmed interaction model, server-rendered usage guidance, and Beta React implementations with live previews.
 
+## Getting Started
+
+**New to this repository? Start here: [`docs/getting-started.md`](docs/getting-started.md).**
+
+It covers the architecture, the Figma/React split, how to change a component
+safely, and which verification to run — in roughly ten minutes.
+
+```bash
+npm install
+npm run dev
+```
+
+Requires Node.js `>=20.19.0` (see `.nvmrc`). `npm run dev` prints the local
+URL on startup.
+
 ## Current status
 
 Volatile counts and roadmap live in [`docs/project-status.md`](docs/project-status.md) (derived from the canonical registry).
@@ -88,17 +103,21 @@ Source-of-truth hierarchy: [`docs/architecture/source-of-truth.md`](docs/archite
 
 Stable-v1 Gradient contract: [`docs/architecture/gradient-foundation.md`](docs/architecture/gradient-foundation.md)
 
-## Distribution Model (Target Architecture)
+## Distribution Model
 
-**Status: Target Architecture · Under Active Development**
+**Currently implemented — shadcn-compatible registry distribution.** A
+subset of components can be installed into a consumer project with
+`npx shadcn@latest add @skrewww/<component>`, generated from the canonical
+registry (`lib/component-registry.ts`) via `npm run generate:registry` and
+served as static manifests under `/r/{name}.json`. This is a separate path
+from the `/registry.json` metadata feed below. Scope, mechanism, and
+verified consumer testing:
+[`docs/architecture/shadcn-distribution.md`](docs/architecture/shadcn-distribution.md).
 
-Skrewww has decided on "The Hybrid Registry Model" as its distribution
-architecture. **None of this exists yet** — there is no `@skrewww/core` npm
-package, no `skrewww` CLI, and no publishing pipeline. Every component today
-lives only inside `components/ui/` in this repository, and this docs site
-imports them directly for its own live previews.
-
-The decided (not-yet-built) shape:
+**Future / not yet implemented.** Skrewww has also decided on "The Hybrid
+Registry Model" as a broader, separate distribution architecture. None of
+this exists yet — there is no `@skrewww/core` npm package, no `skrewww`
+CLI, and no publishing pipeline for it:
 
 - **`@skrewww/core`** (npm, Planned) — a centralized token & governance
   package covering Layer 1 (Foundations) and Layer 3 (Style Systems), for
@@ -154,18 +173,18 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 
 ## Known limitations
 
-- **Combobox** — component-set node confirmed via Figma MCP (`2024:2480`, "Forms/Combobox") since 2026-07-13; remaining gap is a single token mapping, not open MCP verification — see `semantic/surface/subtle` in **Temporary Combobox tokens** below and [`combobox-parity.md`](docs/architecture/combobox-parity.md#selected-surface-token-gap)
-- **Temporary Combobox tokens** — several popup/option values await Figma variable confirmation
-- **Multi-select Combobox** — deferred
-- **File Upload** — React Beta implemented; live Figma MCP verification, progress UI, and preview thumbnails remain deferred
-- **Table** — native HTML table foundation aligned to reusable Figma Table/Row/Cell masters; Flat-only and 12px Rounded-only for Stable-v1, with Caption/Footer visuals still pending
-- **Data Table** (named "Data Grid" during discovery; canonical name finalized 2026-07-13) — implemented 2026-07-15 at the approved narrow MVP scope (DataTableSortHeader + useDataTableSort sorting, external Pagination, composes Table); Figma verification pending, no component set exists yet
-- **Tree View** — implemented 2026-07-18, built against a real, well-documented Figma reference (Content/Tree Item component set + the "Tree View (example)" composed demo); single-select only (multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are deferred)
-- **Bar Chart, Line Chart** — implemented 2026-07-18 on recharts; single-series and static only for v1 (no multi-series, no hover tooltips/legend interactivity, no Y-axis/gridlines beyond Bar Chart's existing month labels) — see the registry `openQuestions` for what's deliberately deferred
-- **Timeline** — implemented 2026-07-19, built against a real Figma reference confirmed 2026-07-24 (Content/Timeline Item component set + the "Timeline (example)" composed demo) — closes out all of Layer 2's remaining code-side gaps (Tree View, Charts, Timeline)
+- **Combobox** — multi-select is deferred; several popup/option tokens are temporary, pending Figma variable confirmation — see [`combobox-parity.md`](docs/architecture/combobox-parity.md)
+- **File Upload** — progress UI and preview thumbnails are deferred
+- **Table** — Flat-only and Rounded-only for Stable-v1; Caption/Footer visuals still pending
+- **Data Table** — narrow MVP scope (sorting via a composed Table + external Pagination); no dedicated Figma component set yet
+- **Tree View** — single-select only; multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are deferred
+- **Bar Chart, Line Chart** — single-series and static only; no multi-series, hover tooltips/legend interactivity, or additional axes/gridlines
 - **Advanced overlays** beyond Dialog, Drawer, Popover, Menu — largely deferred
 - **Full Style System rollout** — Shape/Surface personalities partially wired
 - Temporary tokens are marked in `styles/tokens.css` where Figma values are unresolved
+
+For current parity status, verification dates, and Figma references, see
+[`docs/project-status.md`](docs/project-status.md).
 
 ## License
 
