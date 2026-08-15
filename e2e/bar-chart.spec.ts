@@ -1,5 +1,5 @@
 import type { Locator } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import { expect, expectColorClose, hexToRgba, resolvedRgba, test } from "./fixtures";
 
 const xAxisTickSelector = "text.recharts-cartesian-axis-tick-value";
 
@@ -8,6 +8,9 @@ async function expectReadableXAxis(chart: Locator, expectedLabels: string[]) {
   await expect(ticks).toHaveCount(expectedLabels.length);
   expect(await ticks.allTextContents()).toEqual(expectedLabels);
   await expect(chart.locator(".recharts-bar-rectangle path")).toHaveCount(expectedLabels.length);
+  for (const tick of await ticks.all()) {
+    await expectColorClose(await resolvedRgba(tick, "color"), hexToRgba("#5B5F68"));
+  }
 
   const geometry = await chart.evaluate((root, selector) => {
     const svg = root.querySelector("svg");

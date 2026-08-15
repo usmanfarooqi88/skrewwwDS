@@ -1,5 +1,5 @@
 import type { Locator } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import { expect, expectColorClose, hexToRgba, resolvedRgba, test } from "./fixtures";
 
 const xAxisTickSelector = "text.recharts-cartesian-axis-tick-value";
 
@@ -8,6 +8,9 @@ async function expectReadableXAxis(chart: Locator, expectedLabels: string[]) {
   await expect(ticks).toHaveCount(expectedLabels.length);
   expect(await ticks.allTextContents()).toEqual(expectedLabels);
   await expect(chart.locator(".recharts-bar-rectangle path")).toHaveCount(expectedLabels.length);
+  for (const tick of await ticks.all()) {
+    await expectColorClose(await resolvedRgba(tick, "color"), hexToRgba("#5B5F68"));
+  }
 
   const geometry = await chart.evaluate((root, selector) => {
     const svg = root.querySelector("svg");
@@ -47,6 +50,11 @@ async function expectReadableXAxis(chart: Locator, expectedLabels: string[]) {
     );
   }
   expect(geometry.documentWidth).toBe(geometry.viewportWidth);
+}
+
+async function expectNoActiveTicks(chart: Locator, staleLabels: string[]) {
+  const activeLabels = await chart.locator(xAxisTickSelector).allTextContents();
+  expect(activeLabels).not.toEqual(expect.arrayContaining(staleLabels));
 }
 
 test.describe("Banking Balance Summary browser behavior", () => {
@@ -102,16 +110,14 @@ test.describe("Banking Balance Summary browser behavior", () => {
     expect(desktopGeometry.plotWidth).toBeGreaterThanOrEqual(450);
 
     await tablist.getByRole("tab", { name: "30D" }).click();
-    await expectReadableXAxis(
-      page.getByRole("img", { name: "Spending overview — 30D" }).first(),
-      ["Week 1", "Week 2", "Week 3", "Week 4"],
-    );
+    const thirtyDayChart = page.getByRole("img", { name: "Spending overview — 30D" }).first();
+    await expectReadableXAxis(thirtyDayChart, ["Week 1", "Week 2", "Week 3", "Week 4"]);
+    await expectNoActiveTicks(thirtyDayChart, ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
 
     await tablist.getByRole("tab", { name: "90D" }).click();
-    await expectReadableXAxis(
-      page.getByRole("img", { name: "Spending overview — 90D" }).first(),
-      ["Month 1", "Month 2", "Month 3"],
-    );
+    const ninetyDayChart = page.getByRole("img", { name: "Spending overview — 90D" }).first();
+    await expectReadableXAxis(ninetyDayChart, ["Month 1", "Month 2", "Month 3"]);
+    await expectNoActiveTicks(ninetyDayChart, ["Week 1", "Week 2", "Week 3", "Week 4"]);
   });
 
   test("keeps every 7D, 30D, and 90D label readable and contained at 375px", async ({ page }) => {
@@ -123,16 +129,14 @@ test.describe("Banking Balance Summary browser behavior", () => {
     );
 
     await tablist.getByRole("tab", { name: "30D" }).click();
-    await expectReadableXAxis(
-      page.getByRole("img", { name: "Spending overview — 30D" }).first(),
-      ["Week 1", "Week 2", "Week 3", "Week 4"],
-    );
+    const thirtyDayChart = page.getByRole("img", { name: "Spending overview — 30D" }).first();
+    await expectReadableXAxis(thirtyDayChart, ["Week 1", "Week 2", "Week 3", "Week 4"]);
+    await expectNoActiveTicks(thirtyDayChart, ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
 
     await tablist.getByRole("tab", { name: "90D" }).click();
-    await expectReadableXAxis(
-      page.getByRole("img", { name: "Spending overview — 90D" }).first(),
-      ["Month 1", "Month 2", "Month 3"],
-    );
+    const ninetyDayChart = page.getByRole("img", { name: "Spending overview — 90D" }).first();
+    await expectReadableXAxis(ninetyDayChart, ["Month 1", "Month 2", "Month 3"]);
+    await expectNoActiveTicks(ninetyDayChart, ["Week 1", "Week 2", "Week 3", "Week 4"]);
   });
 
   test("supports keyboard arrow navigation between time-range tabs", async ({ page }) => {
