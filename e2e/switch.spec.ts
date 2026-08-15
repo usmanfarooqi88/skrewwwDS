@@ -9,9 +9,8 @@ test.describe("Switch", () => {
     const off = page.getByRole("switch", { name: "Off by default" });
     await expect(off).toBeVisible();
 
-    // Intermediate Phase-1 state: the token still resolves neutral/300
-    // (#C5C6CC) — Phase 2 moves this to neutral/400 separately.
-    expectColorClose(await resolvedRgba(off, "backgroundColor"), hexToRgba("#C5C6CC"), "off track fill");
+    // Canonical Figma value as of Phase 2 — neutral/400 (#A0A3AC).
+    expectColorClose(await resolvedRgba(off, "backgroundColor"), hexToRgba("#A0A3AC"), "off track fill");
 
     const border = await off.evaluate((el) => {
       const style = getComputedStyle(el);
@@ -66,7 +65,7 @@ test.describe("Switch", () => {
     expectColorClose(rgbaStringToRgba(focus.color), hexToRgba("#6C4CF2"), "focus ring colour");
 
     // The track fill itself must be unaffected by focus.
-    expectColorClose(await resolvedRgba(off, "backgroundColor"), hexToRgba("#C5C6CC"), "track fill unchanged on focus");
+    expectColorClose(await resolvedRgba(off, "backgroundColor"), hexToRgba("#A0A3AC"), "track fill unchanged on focus");
   });
 
   test("external track size and thumb geometry are unchanged", async ({ page }) => {

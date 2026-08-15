@@ -32,7 +32,8 @@
      (--semantic-text-secondary and --semantic-text-primary respectively),
      so the whole semantic contract inherits the fix with no component
      edits. neutral/400 is now synced independently; semantic/border/strong
-     remains a separate neutral/300 alias and follow-up parity question. */
+     was a separate neutral/300 alias and follow-up parity question — now
+     closed, see semantic/border/strong below. */
   --primitive-color-neutral-600: #5b5f68;
   --primitive-color-neutral-900: #17181b;
 
@@ -61,7 +62,7 @@
   --semantic-surface-subtle: var(--primitive-color-neutral-50); /* [ALIASED] */
   --semantic-surface-disabled: var(--primitive-color-neutral-100); /* [TEMPORARY] disabled fill */
   --semantic-border-default: var(--primitive-color-neutral-200); /* [ALIASED] */
-  --semantic-border-strong: var(--primitive-color-neutral-300); /* [ALIASED] */
+  --semantic-border-strong: var(--primitive-color-neutral-400); /* [ALIASED] */
   --semantic-border-disabled: var(--primitive-color-neutral-200); /* [TEMPORARY] */
   --semantic-focus-ring: var(--primitive-color-brand-500); /* [ALIASED] semantic/focus-ring */
   --semantic-icon-muted: var(--primitive-color-neutral-400); /* [ALIASED] */

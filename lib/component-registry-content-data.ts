@@ -428,7 +428,6 @@ export function Example() {
       "Canonical Caption and Footer visual treatments are still pending in Figma; React preserves its semantic caption/footer API without claiming visual parity for those parts.",
       "Stable-v1 Table is intentionally Rounded-only at radius/lg (12px), with Figma cornerSmoothing=0 and no Shape property. Controlled Table Shape mapping is deferred; global Sharp/Pill/Squircle contexts do not alter the shell.",
       "The responsive TableScrollArea edge-fade treatment remains React-only; Figma documents horizontal overflow as composition rather than native Table anatomy.",
-      "Foundation primary/secondary and neutral/400 sync are complete (#17181B / #5B5F68 / #A0A3AC). semantic/border-strong remains a separate React/Figma alias-parity follow-up (neutral/300 vs Figma neutral/400).",
       "Table presentation QA remains separate: budget/date wrapping, column presentation, Pagination number visibility, Table/Pagination spacing, and interactive-cell alignment are still open.",
       "Data Table (implemented 2026-07-15) composes Table for the narrow MVP scope approved 2026-07-13 — sorting only, external Pagination; selection, sticky headers, and density remain excluded from v1.",
     ],

@@ -39,7 +39,7 @@ export const tokenColorMap: Record<string, string> = {
   "semantic/surface/default": "#FFFFFF",
   "semantic/surface/elevated": "#F7F7F8",
   "semantic/border/default": "#DFE0E4",
-  "semantic/border/strong": "#C5C6CC",
+  "semantic/border/strong": "#A0A3AC",
   "semantic/focus-ring": "#6C4CF2",
   "semantic/icon/muted": "#A0A3AC",
   "semantic/feedback/success": "#1A8B4C",

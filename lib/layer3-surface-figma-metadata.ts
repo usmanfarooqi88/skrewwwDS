@@ -449,9 +449,9 @@ export const LAYER3_SURFACE_BATCH_A_EVIDENCE = {
     status: "Batch A implementation closed by focused browser verification",
     scope: ["Dialog", "Drawer", "Accordion", "Empty State"],
     explicitExclusion: "Does not claim full Layer 3 Surface completion",
-    broaderTokenDrift: [
-      "React semantic/icon/muted and live Figma Light both resolve #A0A3AC; React semantic/border-strong remains a separate neutral/300 alias follow-up",
-    ],
+    // React semantic/icon/muted and semantic/border/strong both now resolve
+    // #A0A3AC, matching live Figma Light — no remaining drift to report.
+    broaderTokenDrift: [],
   },
 } as const;
 
@@ -631,7 +631,6 @@ export const TABLE_FIGMA_EVIDENCE = {
     "Canonical Caption visual treatment",
     "Canonical Footer visual treatment",
     "Controlled Table Shape mapping",
-    "Foundation primary/secondary and neutral/400 sync are complete (#17181B / #5B5F68 / #A0A3AC); semantic/border-strong remains a separate React/Figma alias-parity follow-up",
   ],
 } as const;
 

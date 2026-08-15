@@ -24,5 +24,5 @@ React has no distinct public Credit Card Field or Dropdown Trigger implementatio
 ## Deferred and intentionally unresolved
 
 - Advanced directional Gradient behavior
-- Foundation primary/secondary and neutral/400 sync are complete (`#17181B` / `#5B5F68` / `#A0A3AC`); semantic/border-strong remains a separate React/Figma alias-parity follow-up (`neutral/300` vs Figma `neutral/400`)
+- Foundation primary/secondary and neutral/400 sync are complete (`#17181B` / `#5B5F68` / `#A0A3AC`); semantic/border-strong now also syncs to Figma `neutral/400` (`#A0A3AC`) — no longer a separate React/Figma alias-parity follow-up
 - `component/surface/fill` (`2057:11`) and `component/surface/fill-secondary` (`2057:12`) require a separate consumer/classification review. Current live modes no longer match the earlier purple-value report, so that report is not canonical Gradient evidence; cleanup remains deferred.
