@@ -11,6 +11,12 @@
 }
 
 .input {
+  /* Explicit, not assumed: the docs shell gets border-box from Tailwind's
+     Preflight, but Radio must not depend on that ambient reset — under
+     content-box the 1.5px boundary below would push the control to 19x19
+     instead of the canonical 16x16, and the selected 5px ring to 26x26.
+     Same reasoning as Button. */
+  box-sizing: border-box;
   position: relative;
   flex-shrink: 0;
   width: var(--control-radio-size);
@@ -20,7 +26,7 @@
   appearance: none;
   /* Radio stays circular regardless of global shape personality */
   border-radius: 50%;
-  border: 1px solid var(--semantic-border-default);
+  border: 1.5px solid var(--semantic-border-default);
   background: var(--surface-fill-control);
   backdrop-filter: var(--glass-backdrop-filter-sm, none);
   transition:
@@ -28,7 +34,10 @@
     box-shadow 0.15s ease;
 }
 
-.input:hover:not(:disabled) {
+/* Scoped away from :checked on purpose. This rule's specificity (0,3,0)
+   otherwise beats the .input:checked rule below (0,2,0), so hovering a
+   selected Radio recoloured its whole 5px action-primary dot ring grey. */
+.input:hover:not(:disabled):not(:checked) {
   border-color: var(--semantic-border-strong);
 }
 

@@ -11,6 +11,11 @@
 }
 
 .input {
+  /* Explicit, not assumed: the docs shell gets border-box from Tailwind's
+     Preflight, but Checkbox must not depend on that ambient reset — under
+     content-box the 1.5px boundary below would push the control to 19x19
+     instead of the canonical 16x16. Same reasoning as Button. */
+  box-sizing: border-box;
   position: relative;
   display: inline-grid;
   place-content: center;
@@ -20,7 +25,7 @@
   margin: 0;
   margin-top: 0.125rem;
   appearance: none;
-  border: 1px solid var(--semantic-border-default);
+  border: 1.5px solid var(--semantic-border-default);
   /* Preserve checkbox affordance in Pill/Squircle global modes */
   border-radius: min(var(--shape-radius-control), var(--control-checkbox-radius-max));
   /* Same clamp as border-radius above, so the squircle curve never exceeds
@@ -35,7 +40,12 @@
     box-shadow 0.15s ease;
 }
 
-.input:hover:not(:disabled) {
+/* Scoped away from :checked/:indeterminate on purpose. This rule's
+   specificity (0,3,0) otherwise beats the .input:checked rule below (0,2,0),
+   so hovering a selected control painted a grey border-strong ring around
+   the action-primary fill — a boundary Figma does not have on those states
+   at all. */
+.input:hover:not(:disabled):not(:checked):not(:indeterminate) {
   border-color: var(--semantic-border-strong);
 }
 
