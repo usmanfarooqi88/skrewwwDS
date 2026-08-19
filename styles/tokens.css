@@ -16,6 +16,16 @@
   --primitive-color-brand-600: #5738c7; /* color/brand/600 */
   --primitive-color-brand-700: #42299c; /* color/brand/700 */
 
+  /* ── Primitive: color / danger [VERIFIED] ──
+     Sparse status-hue family matching live Figma Primitive collection.
+     Only 100/500/600/700 exist there; do not invent 50/200/300/400/800/900.
+     Phase A declares the names only — existing component/semantic literals
+     are not retargeted in this batch. */
+  --primitive-color-danger-100: #fde2e1; /* color/danger/100 */
+  --primitive-color-danger-500: #e5484d; /* color/danger/500 */
+  --primitive-color-danger-600: #cc3b37; /* color/danger/600 */
+  --primitive-color-danger-700: #b3261e; /* color/danger/700 */
+
   /* ── Primitive: color / neutral [VERIFIED] ── */
   --primitive-color-neutral-0: #ffffff;
   --primitive-color-neutral-50: #f7f7f8;

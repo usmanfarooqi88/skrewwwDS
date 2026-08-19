@@ -102,6 +102,30 @@ describe("project configuration", () => {
     expect(tailwindHex).toBe(tokenHex);
   });
 
+  it("declares the sparse Figma danger primitive family and no extra steps", () => {
+    const tokens = readRootFile("styles/tokens.css");
+    const declared: Record<string, string> = {};
+    const re = /--primitive-color-danger-(\d+):\s*(#[0-9a-fA-F]{6})/g;
+    let match: RegExpExecArray | null = re.exec(tokens);
+    while (match) {
+      declared[match[1]] = match[2].toLowerCase();
+      match = re.exec(tokens);
+    }
+
+    expect(declared).toEqual({
+      "100": "#fde2e1",
+      "500": "#e5484d",
+      "600": "#cc3b37",
+      "700": "#b3261e",
+    });
+    expect(declared).not.toHaveProperty("50");
+    expect(declared).not.toHaveProperty("200");
+    expect(declared).not.toHaveProperty("300");
+    expect(declared).not.toHaveProperty("400");
+    expect(declared).not.toHaveProperty("800");
+    expect(declared).not.toHaveProperty("900");
+  });
+
   it("keeps standing instructions free of stale Calendar/docs-site claims", () => {
     const claude = readRootFile("skrewww-claude-project-instructions.md");
     const figma = readRootFile("skrewww-figma-practices-instructions.md");
