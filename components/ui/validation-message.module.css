@@ -12,7 +12,7 @@
 }
 
 .iconError {
-  color: var(--semantic-action-danger);
+  color: var(--component-validation-message-text);
 }
 
 .iconWarning {
@@ -28,7 +28,7 @@
 }
 
 .error {
-  color: var(--semantic-action-danger);
+  color: var(--component-validation-message-text);
 }
 
 .warning {

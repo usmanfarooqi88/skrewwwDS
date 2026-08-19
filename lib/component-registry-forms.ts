@@ -125,7 +125,7 @@ export function Example() {
     supportedVariants: ["error", "warning", "success", "info"],
     supportedSizes: [],
     tokensUsed: [
-      "semantic/action/danger",
+      "component/validation-message/text",
       "semantic/feedback/warning",
       "semantic/feedback/success",
       "semantic/feedback/info",
@@ -143,7 +143,7 @@ export function Example() {
     coreDependencies: ["tokens"],
     files: ["components/ui/ValidationMessage.tsx", "components/ui/validation-message.module.css"],
     cssTokens: [
-      "--semantic-action-danger",
+      "--component-validation-message-text",
       "--semantic-feedback-info",
       "--semantic-feedback-success",
       "--semantic-feedback-warning",
@@ -153,7 +153,7 @@ export function Example() {
       { label: "Text Input — common consumer of validation output", href: "/components/text-input" },
     ],
     relatedTokens: [
-      { label: "semantic/action/danger", href: "/foundations" },
+      { label: "component/validation-message/text", href: "/foundations" },
       { label: "semantic/feedback/warning", href: "/foundations" },
     ],
     relatedConcepts: [],

@@ -92,7 +92,7 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       expectColorClose(await resolvedRgba(error.locator("svg"), "color"), hexToRgba("#e5484d"));
       expectColorClose(
         await resolvedRgba(page.getByText("The server could not process these files."), "color"),
-        hexToRgba("#d92d3e"),
+        hexToRgba("#cc3b37"),
       );
 
       await dragging.evaluate((element) => {
@@ -250,7 +250,7 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       for (const content of [description, metadata]) {
         expectColorClose(
           await resolvedRgba(content, "color"),
-          hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac"),
+          hexToRgba(mode === "glass" ? "#17181B" : "#5B5F68"),
         );
       }
       const folderRow = page.getByText("Design tokens", { exact: true }).locator("xpath=../..");

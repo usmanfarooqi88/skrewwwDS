@@ -43,6 +43,21 @@ describe("FormField", () => {
     const input = screen.getByRole("textbox");
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input.getAttribute("aria-describedby")).toContain("-error");
+    expect(screen.getByText("Too short.")).toBeInTheDocument();
+    expect(screen.getByText("Too short.").closest("p")?.querySelector("svg")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+  });
+
+  it("replaces supporting text with ValidationMessage when error is set", () => {
+    render(
+      <FormField label="API key" supportingText="Visible to your team." error="Enter a valid API key.">
+        {({ controlId }) => <TextInputControl id={controlId} />}
+      </FormField>,
+    );
+    expect(screen.getByText("Enter a valid API key.")).toBeInTheDocument();
+    expect(screen.queryByText("Visible to your team.")).not.toBeInTheDocument();
   });
 
   it("announces required fields accessibly", () => {

@@ -90,7 +90,7 @@ export const formsComponents: ComponentDoc[] = [
     whenNotToUse: "Page-level or app-level notifications unrelated to a specific field (use Alert or Toast instead).",
     accessibility: "Must be programmatically associated with its field via aria-describedby, not just visually placed nearby.",
     commonMistakes: "Relying on icon/color alone to convey meaning without real explanatory text.",
-    tokensUsed: ["semantic/action/danger", "semantic/feedback/warning", "semantic/feedback/success", "semantic/feedback/info"],
+    tokensUsed: ["component/validation-message/text", "semantic/feedback/warning", "semantic/feedback/success", "semantic/feedback/info"],
     properties: "Type as variants. Message (text).",
     knownLimitation: "Info type currently reuses the WarningCircle icon — Icon/Info now exists and should be swapped in.",
   },

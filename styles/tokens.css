@@ -112,6 +112,12 @@
   --component-danger-fill-hover: #cc3b37;
   --component-danger-fill-pressed: #b3261e;
 
+  /* [VERIFIED] component/validation-message/text — Error helper/message/icon.
+     Aliases color/danger/600 in every Surface mode (Flat/Gradient/Glass).
+     Distinct from --semantic-action-danger, which remains the chrome/fill
+     token for Text Input error strokes, required indicators, and similar. */
+  --component-validation-message-text: var(--primitive-color-danger-600);
+
   /* [VERIFIED] Separate Primary and Danger three-stop Glass-rim families.
      They are transparent outside Glass and are intentionally independent
      from Button's Surface-independent --semantic-focus-ring treatment. */
