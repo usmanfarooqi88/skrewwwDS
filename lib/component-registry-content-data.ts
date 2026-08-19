@@ -297,7 +297,7 @@ export function Example() {
     tokensUsed: [
       "component/menu/item-hover",
       "component/surface/blur",
-      "component/surface/content-muted",
+      "component/list-item/supporting-text",
       "semantic/text/primary",
       "component/radius/control",
       "semantic/focus-ring",
@@ -310,7 +310,7 @@ export function Example() {
     ],
     relatedTokens: [
       { label: "component/menu/item-hover", href: "/foundations" },
-      { label: "component/surface/content-muted", href: "/foundations" },
+      { label: "component/list-item/supporting-text", href: "/foundations" },
       { label: "component/radius/control", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
@@ -342,6 +342,10 @@ export function Example() {
       {
         title: "Which semantics should List Item use?",
         body: "Native li for all modes. Navigational uses anchor/NextLink. Action uses button type=\"button\". No menuitem, option, or listbox roles.",
+      },
+      {
+        title: "Why do Description and Metadata use their own token instead of the shared muted-content token?",
+        body: "component/list-item/supporting-text is List Item's own Surface-aware contract — semantic/text/secondary in Flat/Gradient, semantic/text/primary in Glass. It is intentionally distinct from component/surface/content-muted (used by File Upload, Table, and List Item's own leading icon) to guarantee WCAG AA contrast (4.5:1) for this row's supporting text.",
       },
     ],
     apiProps: [

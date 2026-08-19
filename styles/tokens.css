@@ -562,8 +562,15 @@
   --list-item-surface: transparent;
   --list-item-hover-surface: var(--menu-item-hover-surface);
   --list-item-title-text: var(--semantic-text-primary);
-  --list-item-description-text: var(--component-surface-content-muted);
-  --list-item-metadata-text: var(--component-surface-content-muted);
+  /* component/list-item/supporting-text — a List Item-specific Surface
+     variable (Figma), deliberately distinct from the shared
+     component/surface/content-muted: Default/Hover Subtitle+Meta resolve
+     semantic/text/secondary in Flat/Gradient and semantic/text/primary in
+     Glass (see the Glass override below). Other content-muted consumers
+     (File Upload, Table, List Item's own leading icon) are untouched. */
+  --component-list-item-supporting-text: var(--semantic-text-secondary);
+  --list-item-description-text: var(--component-list-item-supporting-text);
+  --list-item-metadata-text: var(--component-list-item-supporting-text);
   --list-item-radius: var(--shape-radius-control);
 
   /* ── Tree Item geometry [VERIFIED] — Content/Tree Item component set,
@@ -933,6 +940,7 @@
   --component-card-border-highlight-2: rgb(223 224 228 / 0.5);
   --component-card-border-highlight-3: rgb(223 224 228 / 0.15);
   --component-surface-content-muted: var(--semantic-text-primary);
+  --component-list-item-supporting-text: var(--semantic-text-primary);
   --menu-item-hover-surface: rgb(255 255 255 / 0.2);
   --file-upload-dragging-surface: rgb(255 255 255 / 0.2);
   --feedback-info-surface: rgb(220 238 254 / 0.45);
