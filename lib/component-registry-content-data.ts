@@ -1206,7 +1206,7 @@ export function Example() {
     tokensUsed: [
       "semantic/feedback/success",
       "semantic/feedback/warning",
-      "semantic/action/danger",
+      "semantic/text/danger",
       "semantic/text/primary",
       "semantic/text/secondary",
     ],
@@ -1220,7 +1220,7 @@ export function Example() {
     relatedTokens: [
       { label: "semantic/feedback/success", href: "/foundations" },
       { label: "semantic/feedback/warning", href: "/foundations" },
-      { label: "semantic/action/danger", href: "/foundations" },
+      { label: "semantic/text/danger", href: "/foundations" },
     ],
     relatedConcepts: [],
     openQuestions: [

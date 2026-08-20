@@ -67,6 +67,59 @@ describe("BankingTransactionRow", () => {
     expect(container.querySelector('[class*="amount"][class*="warning"]')).not.toBeNull();
   });
 
+  it("keys the danger amount color to status, not to the sign of the amount string", () => {
+    // A: status="error" gets the error class regardless of the amount text.
+    const errorCase = render(
+      <ul>
+        <BankingTransactionRow
+          merchant="Skyline Electronics"
+          date="Jan 10"
+          amount="-$289.00"
+          status="error"
+          statusLabel="Declined"
+          detail={<BankingTransactionDetailRow label="Category" value="Electronics" />}
+        />
+      </ul>,
+    );
+    expect(errorCase.container.querySelector('[class*="amount"][class*="error"]')).not.toBeNull();
+    errorCase.unmount();
+
+    // B: status="success" with a negative amount must NOT pick up the error
+    // class/color — the sign of the amount does not drive danger styling.
+    const negativeSuccess = render(
+      <ul>
+        <BankingTransactionRow
+          merchant="Coffee Collective"
+          date="Jan 12"
+          amount="-$4.75"
+          status="success"
+          statusLabel="Completed"
+          detail={<BankingTransactionDetailRow label="Category" value="Dining" />}
+        />
+      </ul>,
+    );
+    expect(negativeSuccess.container.querySelector('[class*="amount"][class*="error"]')).toBeNull();
+    expect(negativeSuccess.container.querySelector('[class*="amount"][class*="success"]')).not.toBeNull();
+    negativeSuccess.unmount();
+
+    // C: status="success" with a positive amount — success behavior unchanged.
+    const positiveSuccess = render(
+      <ul>
+        <BankingTransactionRow
+          merchant="Acme Payroll Inc."
+          date="Jan 9"
+          amount="+$2,450.00"
+          status="success"
+          statusLabel="Completed"
+          detail={<BankingTransactionDetailRow label="Category" value="Payroll deposit" />}
+        />
+      </ul>,
+    );
+    expect(positiveSuccess.container.querySelector('[class*="amount"][class*="error"]')).toBeNull();
+    expect(positiveSuccess.container.querySelector('[class*="amount"][class*="success"]')).not.toBeNull();
+    positiveSuccess.unmount();
+  });
+
   it("renders as a single interactive row (no nested duplicate buttons)", () => {
     renderRow();
     expect(screen.getAllByRole("button")).toHaveLength(1);

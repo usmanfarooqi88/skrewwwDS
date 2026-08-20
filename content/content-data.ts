@@ -278,11 +278,11 @@ export const contentDataComponents: ComponentDoc[] = [
     accessibility:
       "The whole row is a single native button (List Item's action mode) with aria-expanded/aria-haspopup=\"dialog\"/aria-controls reflecting the anchored Popover's open state — added to List Item itself for this, not layered on top of it.",
     commonMistakes:
-      "Wrapping List Item in PopoverTrigger instead of PopoverAnchor — List Item doesn't forward a ref, so PopoverTrigger's clone-based ref assignment silently fails to attach to a real DOM node. Inventing new status colors instead of reusing the existing semantic/feedback/success, semantic/feedback/warning, and semantic/action/danger tokens Alert already establishes for exactly this purpose.",
+      "Wrapping List Item in PopoverTrigger instead of PopoverAnchor — List Item doesn't forward a ref, so PopoverTrigger's clone-based ref assignment silently fails to attach to a real DOM node. Inventing new status colors instead of reusing the existing semantic/feedback/success, semantic/feedback/warning, and semantic/text/danger tokens established for exactly this purpose.",
     tokensUsed: [
       "semantic/feedback/success",
       "semantic/feedback/warning",
-      "semantic/action/danger",
+      "semantic/text/danger",
       "semantic/text/primary",
       "semantic/text/secondary",
     ],

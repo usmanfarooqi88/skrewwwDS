@@ -75,7 +75,7 @@ export function BankingTransactionRowPreview() {
     <div className="space-y-8">
       <ComponentPreview
         title="Recent activity"
-        description="Click any row to open its detail Popover. Status drives both the Badge variant and the amount's color, using the existing semantic/feedback/success, semantic/feedback/warning, and semantic/action/danger tokens — no new colors."
+        description="Click any row to open its detail Popover. Status drives both the Badge variant and the amount's color, using the existing semantic/feedback/success, semantic/feedback/warning, and semantic/text/danger tokens — no new colors."
       >
         <PreviewGroup label="Everyday Checking •••• 4821">
           <ul className="w-full max-w-lg rounded-lg border border-ink-200 p-1">

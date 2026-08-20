@@ -23,7 +23,12 @@
 }
 
 .error {
-  color: var(--semantic-action-danger);
+  /* This is normal text (a declined-transaction amount), not a
+     call-to-action — semantic/text/danger (#CC3B37) is the accessible
+     danger-text role and passes WCAG AA against this row's real
+     white/Card background. semantic/action/danger (#D92D3E, unchanged
+     elsewhere) is for actions/fills, not text. */
+  color: var(--semantic-text-danger);
 }
 
 .detailRow {
