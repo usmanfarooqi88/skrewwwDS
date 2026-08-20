@@ -126,6 +126,30 @@ describe("project configuration", () => {
     expect(declared).not.toHaveProperty("900");
   });
 
+  it("declares the sparse Figma warning primitive family and no extra steps", () => {
+    const tokens = readRootFile("styles/tokens.css");
+    const declared: Record<string, string> = {};
+    const re = /--primitive-color-warning-(\d+):\s*(#[0-9a-fA-F]{6})/g;
+    let match: RegExpExecArray | null = re.exec(tokens);
+    while (match) {
+      declared[match[1]] = match[2].toLowerCase();
+      match = re.exec(tokens);
+    }
+
+    expect(declared).toEqual({
+      "100": "#fef3d6",
+      "500": "#f5a524",
+      "700": "#b9770e",
+      "800": "#8a4f00",
+    });
+    expect(declared).not.toHaveProperty("50");
+    expect(declared).not.toHaveProperty("200");
+    expect(declared).not.toHaveProperty("300");
+    expect(declared).not.toHaveProperty("400");
+    expect(declared).not.toHaveProperty("600");
+    expect(declared).not.toHaveProperty("900");
+  });
+
   it("keeps standing instructions free of stale Calendar/docs-site claims", () => {
     const claude = readRootFile("skrewww-claude-project-instructions.md");
     const figma = readRootFile("skrewww-figma-practices-instructions.md");

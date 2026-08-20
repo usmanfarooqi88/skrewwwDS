@@ -187,3 +187,25 @@ describe("component registry — Validation Message distribution metadata", () =
     expect(validationMessage?.registryDependencies).toEqual(["@skrewww/foundation"]);
   });
 });
+
+describe("component registry — Badge R1 token documentation", () => {
+  const badge = componentRegistry.find((entry) => entry.slug === "badge");
+
+  it("documents React Badge text tokens and warning/800 without legacy semantic feedback/action danger FGs", () => {
+    expect(badge?.tokensUsed).toEqual([
+      "semantic/surface/elevated",
+      "semantic/text/primary",
+      "semantic/border/default",
+      "--badge-info-text",
+      "--badge-success-text",
+      "--badge-warning-text",
+      "--badge-error-text",
+      "color/warning/800",
+      "component/radius/control",
+    ]);
+    expect(badge?.tokensUsed).not.toContain("semantic/action/danger");
+    expect(badge?.tokensUsed).not.toContain("semantic/feedback/warning");
+    expect(badge?.supportedVariants).not.toContain("primary");
+    expect(badge?.openQuestions?.some((q) => q.includes("color/warning/800"))).toBe(true);
+  });
+});

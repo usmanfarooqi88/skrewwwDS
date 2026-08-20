@@ -26,6 +26,18 @@
   --primitive-color-danger-600: #cc3b37; /* color/danger/600 */
   --primitive-color-danger-700: #b3261e; /* color/danger/700 */
 
+  /* ── Primitive: color / warning [VERIFIED] ──
+     Sparse status-hue family matching live Figma Primitive collection.
+     Only 100/500/700/800 exist there; do not invent 50/200/300/400/600/900.
+     warning/800 exists because earlier warning steps fail normal-text AA on
+     Warning Badge surfaces. Do not retarget --semantic-feedback-warning
+     (or other warning consumers) in this batch — Badge warning text alone
+     aliases warning/800. */
+  --primitive-color-warning-100: #fef3d6; /* color/warning/100 */
+  --primitive-color-warning-500: #f5a524; /* color/warning/500 */
+  --primitive-color-warning-700: #b9770e; /* color/warning/700 */
+  --primitive-color-warning-800: #8a4f00; /* color/warning/800 */
+
   /* ── Primitive: color / neutral [VERIFIED] ── */
   --primitive-color-neutral-0: #ffffff;
   --primitive-color-neutral-50: #f7f7f8;
@@ -292,7 +304,7 @@
   --badge-success-text: #156b3f;
   --badge-warning-surface: rgb(179 106 0 / 0.12);
   --badge-warning-border: rgb(179 106 0 / 0.28);
-  --badge-warning-text: #8a4f00;
+  --badge-warning-text: var(--primitive-color-warning-800); /* [ALIASED] → color/warning/800 */
   --badge-error-surface: rgb(217 45 62 / 0.1);
   --badge-error-border: rgb(217 45 62 / 0.24);
   --badge-error-text: #9f1f2d;

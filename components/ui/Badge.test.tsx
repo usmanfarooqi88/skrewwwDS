@@ -46,4 +46,14 @@ describe("Badge", () => {
     rerender(<Badge variant="error">Error</Badge>);
     expect(screen.getByText("Error")).toBeInTheDocument();
   });
+
+  it("does not accept a Primary variant in the React API", () => {
+    // Compile-time contract is BadgeVariant; runtime prop types omit primary.
+    expectTypeOfBadgeVariant();
+  });
 });
+
+function expectTypeOfBadgeVariant() {
+  const allowed = ["neutral", "info", "success", "warning", "error"] as const;
+  expect(allowed).not.toContain("primary");
+}
