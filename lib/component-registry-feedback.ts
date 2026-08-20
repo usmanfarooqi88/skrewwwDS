@@ -334,6 +334,7 @@ export function Example() {
       "Warning text is shared with Figma: React --badge-warning-text → color/warning/800 (#8A4F00); Figma component/badge/warning/text → color/warning/800 (#8A4F00).",
       "Neutral/Info/Success/Error Badge foregrounds remain accessibility-safe React divergences from Figma component/badge/*/text — do not lighten to the finalized Figma hexes for parity alone.",
       "React has no Primary Badge variant (Figma does). Primary is a future enhancement, not Stable-v1 scope.",
+      "Stable-v1 intentional React extensions (not parity defects): 1px borders, size lg, optional status/leading icons, count mode, and API variant name error (maps to Figma Danger). Figma masters are label-only Small/Medium without borders. React tinted surfaces vs Figma opaque /100 remain a deferred visual sync, not a Stable-v1 blocker.",
     ],
     hasImplementation: true,
     hasPreview: true,

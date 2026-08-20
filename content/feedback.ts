@@ -19,7 +19,7 @@ export const feedbackComponents: ComponentDoc[] = [
       "--badge-warning-text → color/warning/800",
       "--badge-error-text",
     ],
-    properties: "Style × Size as variants. Label (text). Warning text matches Figma (#8A4F00 via warning/800); Neutral/Info/Success/Error foregrounds are accessibility-safe React divergences.",
+    properties: "Style × Size as variants. Label (text). Warning text matches Figma (#8A4F00 via warning/800); Neutral/Info/Success/Error foregrounds are accessibility-safe React divergences. Intentional React extensions: borders, lg, optional icons, count mode, error (vs Figma danger). No Primary in React (future enhancement).",
   },
   {
     slug: "alert",

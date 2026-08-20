@@ -207,5 +207,10 @@ describe("component registry — Badge R1 token documentation", () => {
     expect(badge?.tokensUsed).not.toContain("semantic/feedback/warning");
     expect(badge?.supportedVariants).not.toContain("primary");
     expect(badge?.openQuestions?.some((q) => q.includes("color/warning/800"))).toBe(true);
+    expect(
+      badge?.openQuestions?.some(
+        (q) => q.includes("intentional React extensions") && q.includes("error"),
+      ),
+    ).toBe(true);
   });
 });
