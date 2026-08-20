@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -13,6 +15,11 @@ import {
 } from "@/components/ui/Menu";
 import * as PublicUi from "@/components/ui";
 import { getImplementedComponentCount, getRegistryEntry } from "@/lib/component-registry";
+import {
+  contrastRatio,
+  parseHexColor,
+  WCAG_AA_NORMAL_TEXT,
+} from "@/lib/wcag-contrast";
 
 function BasicMenu({
   onSelect = vi.fn(),
@@ -246,5 +253,57 @@ describe("Menu typeahead", () => {
     });
     await user.keyboard("d");
     expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+  });
+});
+
+describe("Menu destructive text contract", () => {
+  it("aliases menu-item-destructive-text to semantic-text-danger and keeps disabled winning over destructive", () => {
+    const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+    const css = readFileSync(resolve(process.cwd(), "components/ui/menu.module.css"), "utf8");
+
+    expect(tokens).toMatch(/--menu-item-destructive-text:\s*var\(--semantic-text-danger\)/);
+    expect(tokens).not.toMatch(/--menu-item-destructive-text:\s*var\(--semantic-action-danger\)/);
+    expect(tokens).toMatch(/--semantic-text-danger:\s*var\(--primitive-color-danger-600\)/);
+    expect(tokens).toMatch(/--semantic-action-danger:\s*#d92d3e/);
+    expect(css).toMatch(
+      /\.itemDestructive:not\(\.itemDisabled\)\s*\{[^}]*var\(--menu-item-destructive-text\)/,
+    );
+    expect(css).toMatch(/\.itemDisabled\s*\{[^}]*var\(--menu-item-disabled-text\)/);
+    expect(css).toMatch(/\.itemIcon\s*\{[^}]*var\(--menu-item-icon\)/);
+    expect(css).not.toMatch(/\.itemDestructive\s*\{/);
+  });
+
+  it("applies both destructive and disabled classes when both props are set and stays non-interactive", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(
+      <Menu>
+        <MenuTrigger>
+          <Button type="button">Actions</Button>
+        </MenuTrigger>
+        <MenuContent aria-label="Actions">
+          <MenuItem destructive disabled onSelect={onSelect}>
+            Delete (disabled)
+          </MenuItem>
+        </MenuContent>
+      </Menu>,
+    );
+    await user.click(screen.getByRole("button", { name: "Actions" }));
+    const item = screen.getByRole("menuitem", { name: "Delete (disabled)" });
+    expect(item.className).toMatch(/itemDestructive/);
+    expect(item.className).toMatch(/itemDisabled/);
+    expect(item).toHaveAttribute("aria-disabled", "true");
+    await user.click(item);
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it("meets WCAG AA normal-text contrast for danger/600 on white and elevated surfaces", () => {
+    const foreground = parseHexColor("#cc3b37");
+    expect(contrastRatio(foreground, parseHexColor("#ffffff"))).toBeGreaterThanOrEqual(
+      WCAG_AA_NORMAL_TEXT,
+    );
+    expect(contrastRatio(foreground, parseHexColor("#f7f7f8"))).toBeGreaterThanOrEqual(
+      WCAG_AA_NORMAL_TEXT,
+    );
   });
 });

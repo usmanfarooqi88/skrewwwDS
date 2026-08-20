@@ -331,6 +331,7 @@ export function Example() {
       "menu/item-text",
       "menu/item-hover-surface",
       "menu/item-destructive-text",
+      "semantic/text/danger",
       "semantic/focus-ring",
     ],
     relatedComponents: [
@@ -341,6 +342,8 @@ export function Example() {
     ],
     relatedTokens: [
       { label: "popover/surface", href: "/foundations" },
+      { label: "menu/item-destructive-text", href: "/foundations" },
+      { label: "semantic/text/danger", href: "/foundations" },
       { label: "semantic/focus-ring", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
@@ -348,6 +351,7 @@ export function Example() {
       "Checkbox and radio menu items are not confirmed in Figma — deferred.",
       "Submenus and Context Menu are separate future components.",
       "Dropdown Menu is documented as a usage pattern, not a duplicate public component.",
+      "Destructive MenuItem styling is a React-only product contract — Figma Menu Item has no verified destructive variant.",
     ],
     hasImplementation: true,
     hasPreview: true,

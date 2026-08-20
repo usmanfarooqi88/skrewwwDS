@@ -86,7 +86,8 @@
   cursor: not-allowed;
 }
 
-.itemDestructive {
+/* Enabled-only: disabled must win over destructive when both classes apply. */
+.itemDestructive:not(.itemDisabled) {
   color: var(--menu-item-destructive-text);
 }
 

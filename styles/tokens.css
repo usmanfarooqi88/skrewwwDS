@@ -432,7 +432,7 @@
   --menu-item-hover-surface: var(--semantic-surface-elevated);
   --menu-item-focused-surface: var(--semantic-surface-subtle);
   --menu-item-disabled-text: var(--semantic-text-disabled);
-  --menu-item-destructive-text: var(--semantic-action-danger);
+  --menu-item-destructive-text: var(--semantic-text-danger);
   --menu-item-destructive-hover-surface: var(--semantic-surface-subtle);
   --menu-label-text: var(--semantic-text-secondary);
   --menu-label-padding: 0.375rem 0.625rem 0.25rem;

@@ -99,7 +99,7 @@ export const navigationComponents: ComponentDoc[] = [
       "menu/item-text",
       "menu/item-hover-surface",
       "semantic/focus-ring",
-      "semantic/action/danger",
+      "semantic/text/danger",
     ],
     properties:
       "Compound API: Menu, MenuTrigger, MenuContent, MenuItem, MenuGroup, MenuLabel, MenuSeparator. MenuItem supports icon, shortcut, destructive styling, disabled state, and onSelect.",

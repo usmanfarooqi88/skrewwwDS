@@ -93,6 +93,14 @@ export function MenuPreview() {
             <MenuItem disabled shortcut="⌘X" onSelect={() => setLastAction("Should not run")}>
               Export (disabled)
             </MenuItem>
+            <MenuItem
+              destructive
+              disabled
+              icon={<Trash size={16} weight="bold" />}
+              onSelect={() => setLastAction("Should not run destructive")}
+            >
+              Delete (disabled)
+            </MenuItem>
             <MenuItem onSelect={() => setLastAction("Share link")}>Share link</MenuItem>
           </MenuContent>
         </Menu>
