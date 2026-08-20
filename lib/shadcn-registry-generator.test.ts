@@ -128,6 +128,14 @@ describe("shadcn registry generator", () => {
     expect(css).not.toMatch(/--semantic-text-danger:[^;]*#/);
   });
 
+  it("includes semantic-icon-danger aliased to danger-500 in Foundation CSS", () => {
+    const css = extractFoundationCss();
+    expect(css).toMatch(/--semantic-icon-danger:\s*var\(--primitive-color-danger-500\)/);
+    expect(css).toMatch(/--semantic-icon-muted:\s*var\(--primitive-color-neutral-400\)/);
+    expect(css).not.toMatch(/--semantic-icon-default:/);
+    expect(css).not.toMatch(/--semantic-icon-danger:[^;]*#/);
+  });
+
   it("includes the sparse warning primitive family in Foundation CSS without inventing steps", () => {
     const css = extractFoundationCss();
     expect(css).toMatch(/--primitive-color-warning-100:\s*#fef3d6/i);

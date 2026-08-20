@@ -43,6 +43,7 @@ export const tokenColorMap: Record<string, string> = {
   "semantic/border/strong": "#A0A3AC",
   "semantic/focus-ring": "#6C4CF2",
   "semantic/icon/muted": "#A0A3AC",
+  "semantic/icon/danger": "#E5484D",
   "semantic/feedback/success": "#1A8B4C",
   "semantic/feedback/warning": "#B36A00",
   "semantic/feedback/info": "#2563C7",
