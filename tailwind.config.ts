@@ -37,8 +37,12 @@ const config: Config = {
         info: "#2563C7",
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+        // next/font/google exposes the self-hosted family via this CSS
+        // variable (set on <html> in app/layout.tsx) — same Inter/JetBrains
+        // Mono families as before, just no longer loaded via an external
+        // render-blocking @import.
+        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-jetbrains-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
     },
   },
