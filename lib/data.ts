@@ -36,6 +36,7 @@ export const tokenColorMap: Record<string, string> = {
   "semantic/text/secondary": "#5B5F68",
   "semantic/text/inverse": "#FFFFFF",
   "semantic/text/disabled": "#A0A3AC",
+  "semantic/text/danger": "#CC3B37",
   "semantic/surface/default": "#FFFFFF",
   "semantic/surface/elevated": "#F7F7F8",
   "semantic/border/default": "#DFE0E4",

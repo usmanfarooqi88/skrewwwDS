@@ -104,7 +104,7 @@ export const formsComponents: ComponentDoc[] = [
     whenNotToUse: "Standalone Checkbox, Radio, or Switch instances that already include an inline label. Do not treat Form Field as a visual input.",
     accessibility: "Associates label text with the nested control through htmlFor/id or fieldset/legend patterns. Validation messages must be linked with aria-describedby.",
     commonMistakes: "Embedding label and error logic inside every control instead of composing FormField. Using Form Field as if it were a text input.",
-    tokensUsed: ["semantic/text/primary", "semantic/text/secondary", "semantic/action/danger"],
+    tokensUsed: ["semantic/text/primary", "semantic/text/secondary", "semantic/text/danger"],
     properties: "Label (text). Required (boolean). Helper Text (text). Control supplied as child render function.",
   },
   {
@@ -117,7 +117,7 @@ export const formsComponents: ComponentDoc[] = [
     whenNotToUse: "More than ~6 options (use Select). Multiple independent selections (use Checkbox).",
     accessibility: "Uses fieldset and legend for the group label. Each option is a native radio input sharing the same name. Arrow keys follow native radio group behavior within the set.",
     commonMistakes: "Forgetting a group label/legend. Giving each radio a different name attribute.",
-    tokensUsed: ["semantic/surface/default", "semantic/border/default", "semantic/action/primary", "semantic/focus-ring", "semantic/action/danger"],
+    tokensUsed: ["semantic/surface/default", "semantic/border/default", "semantic/action/primary", "semantic/focus-ring", "semantic/action/danger", "semantic/text/danger"],
     properties: "Group label (text). Options (value + label). Required, disabled, helper, and error supported at group level.",
   },
   {
@@ -196,7 +196,7 @@ export const formsComponents: ComponentDoc[] = [
     whenNotToUse: "N/A — this is the standard pattern for file upload.",
     accessibility: "The dropzone must remain a real, labeled file input under the hood — drag-and-drop alone excludes keyboard and screen-reader users.",
     commonMistakes: "Building drag-and-drop as the only interaction path, with no accessible fallback.",
-    tokensUsed: ["semantic/border/default", "semantic/action/primary", "semantic/action/danger", "semantic/surface/elevated"],
+    tokensUsed: ["semantic/border/default", "semantic/action/primary", "semantic/text/danger", "semantic/surface/elevated"],
     properties: "State as variants. File Name (text, only meaningful on the Filled variant).",
     knownLimitation:
       "React Beta implemented (2026-07-13) with native multipart submission, drag-and-drop, advisory validation, and selected-file removal. Live Figma MCP verification, progress UI, preview thumbnails, and controlled files remain deferred. See docs/architecture/file-upload-discovery.md.",

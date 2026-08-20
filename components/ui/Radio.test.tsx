@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
@@ -79,5 +81,26 @@ describe("RadioGroup", () => {
     );
     expect(screen.getByRole("group")).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByText("Select a method.")).toBeInTheDocument();
+  });
+
+  it("announces required groups accessibly", () => {
+    render(
+      <RadioGroup
+        label="Channel"
+        required
+        options={[{ value: "email", label: "Email" }]}
+      />,
+    );
+    expect(screen.getByText("(required)")).toHaveClass("sr-only");
+    expect(screen.getByText("*")).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByRole("group")).toHaveAttribute("aria-required", "true");
+  });
+
+  it("binds the visible required indicator to semantic-text-danger and keeps invalid chrome on action-danger", () => {
+    const css = readFileSync(resolve(process.cwd(), "components/ui/radio.module.css"), "utf8");
+
+    expect(css).toMatch(/\.required\s*\{[^}]*var\(--semantic-text-danger\)/);
+    expect(css).not.toMatch(/\.required\s*\{[^}]*var\(--semantic-action-danger\)/);
+    expect(css).toMatch(/\.input\[aria-invalid="true"\]\s*\{[^}]*var\(--semantic-action-danger\)/);
   });
 });

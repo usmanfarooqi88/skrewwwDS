@@ -67,6 +67,7 @@
   --semantic-text-secondary: var(--primitive-color-neutral-600); /* [ALIASED] */
   --semantic-text-inverse: var(--primitive-color-neutral-0); /* [ALIASED] */
   --semantic-text-disabled: var(--primitive-color-neutral-400); /* [ALIASED] */
+  --semantic-text-danger: var(--primitive-color-danger-600); /* [ALIASED] semantic/text/danger */
   --semantic-surface-default: var(--primitive-color-neutral-0); /* [ALIASED] */
   --semantic-surface-elevated: var(--primitive-color-neutral-50); /* [ALIASED] */
   --semantic-surface-subtle: var(--primitive-color-neutral-50); /* [ALIASED] */

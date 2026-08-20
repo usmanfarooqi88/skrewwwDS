@@ -14,7 +14,7 @@
 
 .required {
   margin-left: 0.125rem;
-  color: var(--semantic-action-danger);
+  color: var(--semantic-text-danger);
 }
 
 .srOnly {

@@ -38,6 +38,7 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
     tokensUsed: [
       "semantic/text/secondary",
       "semantic/action/primary",
+      "semantic/text/danger",
       "semantic/action/danger",
       "semantic/focus-ring",
     ],

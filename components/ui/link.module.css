@@ -48,7 +48,15 @@
   color: var(--semantic-action-danger);
 }
 
+.danger .label {
+  color: var(--semantic-text-danger);
+}
+
 .danger:hover {
+  color: var(--semantic-action-danger-hover);
+}
+
+.danger:hover .label {
   color: var(--semantic-action-danger-hover);
 }
 

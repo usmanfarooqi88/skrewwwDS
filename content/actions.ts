@@ -37,7 +37,7 @@ export const actionsComponents: ComponentDoc[] = [
     whenNotToUse: "For the primary action in a form or flow — use Button. Links carry less visual weight and shouldn't be the only way to complete an important task.",
     accessibility: "Renders as a real <a>, not a <button> or <span>. Always underlined by default — a fixed baseline, not a toggle — so link-vs-plain-text is never conveyed by color alone. This was a deliberate accessibility decision made after an earlier draft included a non-functional underline toggle property.",
     commonMistakes: "Using Link where Button is semantically correct (e.g. a form submit action) — affects both code semantics and user expectation.",
-    tokensUsed: ["semantic/text/secondary", "semantic/action/primary", "semantic/action/danger", "color/brand/600", "color/brand/700", "semantic/focus-ring"],
+    tokensUsed: ["semantic/text/secondary", "semantic/action/primary", "semantic/text/danger", "semantic/action/danger", "color/brand/600", "color/brand/700", "semantic/focus-ring"],
     properties: "Style × Size × State as variants. Label (text). Show trailing icon (boolean) + Trailing Icon (instance-swap).",
   },
   {

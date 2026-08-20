@@ -30,6 +30,17 @@ export function RadioPreview() {
             className="max-w-sm"
           />
         </PreviewGroup>
+        <PreviewGroup label="Required group">
+          <RadioGroup
+            label="Notification channel"
+            required
+            options={[
+              { value: "email", label: "Email" },
+              { value: "sms", label: "SMS" },
+            ]}
+            className="max-w-sm"
+          />
+        </PreviewGroup>
       </ComponentPreview>
 
       <ComponentPreview title="Group error">

@@ -18,6 +18,13 @@ export function LinkPreview() {
           >
             External reference
           </Link>
+          <Link
+            href="/components/button"
+            variant="danger"
+            trailingIcon={<ArrowSquareOut size={14} />}
+          >
+            Delete this resource
+          </Link>
         </PreviewGroup>
         <p className="mt-4 text-sm text-ink-600">
           Links stay underlined by default so they are never identified by color alone. Use{" "}

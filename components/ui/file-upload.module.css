@@ -196,7 +196,7 @@
 .rejectionList {
   margin: 0;
   padding-left: 1.125rem;
-  color: var(--semantic-action-danger);
+  color: var(--semantic-text-danger);
   font-size: 0.8125rem;
 }
 

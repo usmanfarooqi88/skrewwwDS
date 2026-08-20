@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -227,5 +229,23 @@ describe("FileUpload registry", () => {
     expect(getRegistryEntry("file-upload")?.hasImplementation).toBe(true);
     expect(getImplementedComponentCount()).toBe(47);
     expect(getRegistryEntry("dropzone")).toBeUndefined();
+  });
+});
+
+describe("FileUpload danger-text contract", () => {
+  it("binds rejection copy to semantic-text-danger and keeps dropzone error chrome on the existing error border token", () => {
+    const css = readFileSync(
+      resolve(process.cwd(), "components/ui/file-upload.module.css"),
+      "utf8",
+    );
+    const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+
+    expect(css).toMatch(/\.rejectionList\s*\{[^}]*var\(--semantic-text-danger\)/);
+    expect(css).not.toMatch(/\.rejectionList\s*\{[^}]*var\(--semantic-action-danger\)/);
+    expect(css).toMatch(/\.dropzoneError\s*\{[^}]*var\(--file-upload-border-error\)/);
+    expect(css).toMatch(/\.dropzoneError \.icon,\s*\.dropzoneError \.title\s*\{[^}]*var\(--file-upload-border-error\)/);
+    expect(tokens).toMatch(/--file-upload-border-error:\s*var\(--component-danger-fill\)/);
+    expect(tokens).toMatch(/--component-danger-fill:\s*#e5484d/);
+    expect(tokens).toMatch(/--semantic-action-danger:\s*#d92d3e/);
   });
 });

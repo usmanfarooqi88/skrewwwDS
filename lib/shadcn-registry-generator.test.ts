@@ -118,6 +118,14 @@ describe("shadcn registry generator", () => {
     expect(css).toContain(".sr-only");
   });
 
+  it("includes semantic-text-danger in extracted Foundation CSS without retargeting action-danger", () => {
+    const css = extractFoundationCss();
+    expect(css).toMatch(/--semantic-text-danger:\s*var\(--primitive-color-danger-600\)/);
+    expect(css).toMatch(/--primitive-color-danger-600:\s*#cc3b37/);
+    expect(css).toMatch(/--semantic-action-danger:\s*#d92d3e/);
+    expect(css).not.toMatch(/--semantic-text-danger:[^;]*#/);
+  });
+
   it("throws when a Foundation extraction marker is missing", () => {
     expect(() => extractFoundationCssFromSource("body { color: red; }", ".sr-only {}")).toThrow(
       /extraction marker not found/,
@@ -198,6 +206,10 @@ describe("shadcn registry generator", () => {
     const actualPaths = manifest.files.map((file) => file.path).sort();
     expect(actualPaths).toEqual(["components/ui/FormField.tsx", "components/ui/form-field.module.css", "lib/cn.ts"]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/validation-message", "@skrewww/foundation"]);
+    expect(manifest.files.find((file) => file.path.endsWith("form-field.module.css"))?.content).toContain(
+      "--semantic-text-danger",
+    );
+    expect(extractFoundationCss()).toMatch(/--semantic-text-danger:\s*var\(--primitive-color-danger-600\)/);
   });
 
   it("transports exactly ValidationMessage.tsx + validation-message.module.css + lib/cn.ts, and declares @phosphor-icons/react as its real npm dependency", () => {

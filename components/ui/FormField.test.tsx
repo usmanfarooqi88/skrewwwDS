@@ -1,8 +1,15 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { FormField } from "@/components/ui/FormField";
 import { TextInput } from "@/components/ui/TextInput";
 import { TextInputControl } from "@/components/ui/TextInputControl";
+import {
+  contrastRatio,
+  parseHexColor,
+  WCAG_AA_NORMAL_TEXT,
+} from "@/lib/wcag-contrast";
 
 describe("FormField", () => {
   it("links label and control", () => {
@@ -67,6 +74,31 @@ describe("FormField", () => {
       </FormField>,
     );
     expect(screen.getByText("(required)")).toHaveClass("sr-only");
+    expect(screen.getByText("*")).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("binds the visible required indicator to semantic-text-danger", () => {
+    const css = readFileSync(
+      resolve(process.cwd(), "components/ui/form-field.module.css"),
+      "utf8",
+    );
+    const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+
+    expect(css).toMatch(/\.required\s*\{[^}]*var\(--semantic-text-danger\)/);
+    expect(css).not.toMatch(/\.required\s*\{[^}]*var\(--semantic-action-danger\)/);
+    expect(tokens).toMatch(/--semantic-text-danger:\s*var\(--primitive-color-danger-600\)/);
+    expect(tokens).toMatch(/--primitive-color-danger-600:\s*#cc3b37/);
+    expect(tokens).toMatch(/--semantic-action-danger:\s*#d92d3e/);
+  });
+
+  it("meets WCAG AA normal-text contrast for semantic-text-danger on white and elevated surfaces", () => {
+    const foreground = parseHexColor("#cc3b37");
+    expect(contrastRatio(foreground, parseHexColor("#ffffff"))).toBeGreaterThanOrEqual(
+      WCAG_AA_NORMAL_TEXT,
+    );
+    expect(contrastRatio(foreground, parseHexColor("#f7f7f8"))).toBeGreaterThanOrEqual(
+      WCAG_AA_NORMAL_TEXT,
+    );
   });
 
   it("uses stable control ids when provided", () => {

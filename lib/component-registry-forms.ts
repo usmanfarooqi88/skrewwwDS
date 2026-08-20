@@ -46,7 +46,7 @@ export const formsRegistryEntries: ComponentRegistryEntry[] = [
     tokensUsed: [
       "semantic/text/primary",
       "semantic/text/secondary",
-      "semantic/action/danger",
+      "semantic/text/danger",
     ],
     // Real dependency contract, verified against actual source (2026-08-09):
     // FormField.tsx imports and renders ValidationMessage directly for its
@@ -59,7 +59,7 @@ export const formsRegistryEntries: ComponentRegistryEntry[] = [
     registryDependencies: ["@skrewww/validation-message", "@skrewww/foundation"],
     coreDependencies: ["tokens"],
     files: ["components/ui/FormField.tsx", "components/ui/form-field.module.css"],
-    cssTokens: ["--semantic-action-danger", "--semantic-text-primary", "--semantic-text-secondary"],
+    cssTokens: ["--semantic-text-danger", "--semantic-text-primary", "--semantic-text-secondary"],
     relatedComponents: [
       { label: "Validation Message — typed inline feedback", href: "/components/validation-message" },
       { label: "Text Input — control composed with FormField", href: "/components/text-input" },
@@ -70,7 +70,7 @@ export const formsRegistryEntries: ComponentRegistryEntry[] = [
     ],
     relatedTokens: [
       { label: "semantic/text/primary", href: "/foundations" },
-      { label: "semantic/action/danger", href: "/foundations" },
+      { label: "semantic/text/danger", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape],
     openQuestions: [
@@ -326,6 +326,7 @@ export function Example() {
       "semantic/action/primary",
       "semantic/focus-ring",
       "semantic/action/danger",
+      "semantic/text/danger",
     ],
     relatedComponents: [
       { label: "Radio — individual option control", href: "/components/radio" },
@@ -874,7 +875,7 @@ export function Example() {
       "component/surface/content-muted",
       "opacity/disabled",
       "semantic/action/primary",
-      "semantic/action/danger",
+      "semantic/text/danger",
       "semantic/text/primary",
     ],
     relatedComponents: [
@@ -888,7 +889,7 @@ export function Example() {
       { label: "component/card/border", href: "/foundations" },
       { label: "component/file-upload/dragging-surface", href: "/foundations" },
       { label: "semantic/action/primary", href: "/foundations" },
-      { label: "semantic/action/danger", href: "/foundations" },
+      { label: "semantic/text/danger", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
