@@ -269,7 +269,9 @@
   --feedback-error-border: rgb(217 45 62 / 0.24);
   --feedback-error-text: var(--component-surface-content-muted);
   --feedback-error-title: var(--semantic-text-primary);
-  --feedback-error-icon: #e5484d;
+  /* [ALIASED] Alert/Toast error status icons via FeedbackSurface.
+     Resolves semantic-icon-danger → danger-500 → #E5484D (zero visual delta). */
+  --feedback-error-icon: var(--semantic-icon-danger);
   --toast-max-width: 24rem;
   --toast-viewport-offset: 1rem;
   --progress-track-height: 0.5rem;

@@ -53,9 +53,8 @@ describe("semantic-icon-danger (D2 foundation)", () => {
     expect(contrastRatio(fg, parseHexColor("#f7f7f8"))).toBeGreaterThanOrEqual(WCAG_AA_UI_COMPONENT);
   });
 
-  it("does not migrate runtime consumers onto semantic-icon-danger in this batch", () => {
-    expect(tokens).toMatch(/--feedback-error-icon:\s*#e5484d/i);
-    expect(tokens).not.toMatch(/--feedback-error-icon:\s*var\(--semantic-icon-danger\)/);
+  it("D3: feedback-error-icon is the sole runtime consumer of semantic-icon-danger", () => {
+    expect(tokens).toMatch(/--feedback-error-icon:\s*var\(--semantic-icon-danger\)/);
 
     const root = process.cwd();
     const cssFiles = [
@@ -67,9 +66,17 @@ describe("semantic-icon-danger (D2 foundation)", () => {
     const hits: string[] = [];
     for (const file of cssFiles) {
       const rel = file.slice(root.length + 1);
-      if (rel === "styles/tokens.css") continue;
       const content = readFileSync(file, "utf8");
-      if (content.includes("var(--semantic-icon-danger)")) hits.push(rel);
+      for (const line of content.split("\n")) {
+        if (!line.includes("var(--semantic-icon-danger)")) continue;
+        if (
+          rel === "styles/tokens.css" &&
+          /--feedback-error-icon:\s*var\(--semantic-icon-danger\)/.test(line)
+        ) {
+          continue;
+        }
+        hits.push(rel);
+      }
     }
     expect(hits).toEqual([]);
   });
