@@ -51,10 +51,9 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
     expect(toastSrc).toMatch(/surface="toast"/);
   });
 
-  it("does not migrate File Upload, Link, Menu, ValidationMessage, or Button onto icon-danger", () => {
+  it("does not migrate Link, Menu, ValidationMessage, Button, or Text Input onto icon-danger", () => {
     const root = process.cwd();
     const forbidden = [
-      "components/ui/file-upload.module.css",
       "components/ui/link.module.css",
       "components/ui/menu.module.css",
       "components/ui/validation-message.module.css",
@@ -67,6 +66,13 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
       expect(content.includes("var(--semantic-icon-danger)")).toBe(false);
       expect(content.includes("var(--feedback-error-icon)")).toBe(false);
     }
+
+    const fileUpload = readFileSync(
+      join(root, "components/ui/file-upload.module.css"),
+      "utf8",
+    );
+    expect(fileUpload).toMatch(/\.dropzoneError \.icon\s*\{[^}]*var\(--semantic-icon-danger\)/);
+    expect(fileUpload.includes("var(--feedback-error-icon)")).toBe(false);
   });
 
   it("preserves semantic action/text danger and unrelated feedback error tokens", () => {
@@ -85,7 +91,7 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
     expect(tokens).toMatch(/--feedback-info-icon:\s*#3b82f6/i);
   });
 
-  it("limits direct semantic-icon-danger runtime usage to the feedback-error-icon alias", () => {
+  it("limits direct semantic-icon-danger runtime usage to feedback-error-icon and File Upload Error icon", () => {
     const root = process.cwd();
     const cssFiles = [
       ...collectCssFiles(join(root, "components")),
@@ -97,13 +103,23 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
     for (const file of cssFiles) {
       const rel = file.slice(root.length + 1);
       const content = readFileSync(file, "utf8");
-      const lines = content.split("\n");
-      for (const line of lines) {
+      for (const line of content.split("\n")) {
         if (!line.includes("var(--semantic-icon-danger)")) continue;
-        // Allowed: the D3 alias declaration itself in tokens.css
         if (
           rel === "styles/tokens.css" &&
           /--feedback-error-icon:\s*var\(--semantic-icon-danger\)/.test(line)
+        ) {
+          continue;
+        }
+        if (
+          rel === "styles/tokens.css" &&
+          /--semantic-icon-danger:\s*var\(--primitive-color-danger-500\)/.test(line)
+        ) {
+          continue;
+        }
+        if (
+          rel === "components/ui/file-upload.module.css" &&
+          /color:\s*var\(--semantic-icon-danger\)/.test(line)
         ) {
           continue;
         }

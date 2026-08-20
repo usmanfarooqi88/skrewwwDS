@@ -53,7 +53,7 @@ describe("semantic-icon-danger (D2 foundation)", () => {
     expect(contrastRatio(fg, parseHexColor("#f7f7f8"))).toBeGreaterThanOrEqual(WCAG_AA_UI_COMPONENT);
   });
 
-  it("D3: feedback-error-icon is the sole runtime consumer of semantic-icon-danger", () => {
+  it("D3+: feedback-error-icon and File Upload Error icon are the only runtime consumers of semantic-icon-danger", () => {
     expect(tokens).toMatch(/--feedback-error-icon:\s*var\(--semantic-icon-danger\)/);
 
     const root = process.cwd();
@@ -72,6 +72,18 @@ describe("semantic-icon-danger (D2 foundation)", () => {
         if (
           rel === "styles/tokens.css" &&
           /--feedback-error-icon:\s*var\(--semantic-icon-danger\)/.test(line)
+        ) {
+          continue;
+        }
+        if (
+          rel === "styles/tokens.css" &&
+          /--semantic-icon-danger:\s*var\(--primitive-color-danger-500\)/.test(line)
+        ) {
+          continue;
+        }
+        if (
+          rel === "components/ui/file-upload.module.css" &&
+          /color:\s*var\(--semantic-icon-danger\)/.test(line)
         ) {
           continue;
         }

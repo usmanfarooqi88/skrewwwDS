@@ -44,7 +44,12 @@
   border-color: var(--file-upload-border-error);
 }
 
-.dropzoneError .icon,
+/* Error icon uses semantic/icon/danger (same resolved #E5484D as chrome; role decoupled).
+   Title stays on the border/chrome token — text/parity for title is a separate batch. */
+.dropzoneError .icon {
+  color: var(--semantic-icon-danger);
+}
+
 .dropzoneError .title {
   color: var(--file-upload-border-error);
 }

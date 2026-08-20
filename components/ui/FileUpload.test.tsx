@@ -243,9 +243,31 @@ describe("FileUpload danger-text contract", () => {
     expect(css).toMatch(/\.rejectionList\s*\{[^}]*var\(--semantic-text-danger\)/);
     expect(css).not.toMatch(/\.rejectionList\s*\{[^}]*var\(--semantic-action-danger\)/);
     expect(css).toMatch(/\.dropzoneError\s*\{[^}]*var\(--file-upload-border-error\)/);
-    expect(css).toMatch(/\.dropzoneError \.icon,\s*\.dropzoneError \.title\s*\{[^}]*var\(--file-upload-border-error\)/);
+    expect(css).toMatch(/\.dropzoneError \.icon\s*\{[^}]*var\(--semantic-icon-danger\)/);
+    expect(css).toMatch(/\.dropzoneError \.title\s*\{[^}]*var\(--file-upload-border-error\)/);
+    expect(css).not.toMatch(
+      /\.dropzoneError \.icon,\s*\.dropzoneError \.title\s*\{[^}]*var\(--file-upload-border-error\)/,
+    );
     expect(tokens).toMatch(/--file-upload-border-error:\s*var\(--component-danger-fill\)/);
     expect(tokens).toMatch(/--component-danger-fill:\s*#e5484d/);
+    expect(tokens).toMatch(
+      /--semantic-icon-danger:\s*var\(--primitive-color-danger-500\)/,
+    );
+    expect(tokens).toMatch(/--primitive-color-danger-500:\s*#e5484d/i);
     expect(tokens).toMatch(/--semantic-action-danger:\s*var\(--primitive-color-danger-500\)/);
+  });
+
+  it("does not retarget non-Error dropzone icon paths onto semantic-icon-danger", () => {
+    const css = readFileSync(
+      resolve(process.cwd(), "components/ui/file-upload.module.css"),
+      "utf8",
+    );
+    expect(css).toMatch(/\.icon\s*\{[^}]*var\(--file-upload-icon\)/);
+    expect(css).toMatch(/\.dropzoneDragging \.icon\s*\{[^}]*var\(--semantic-action-primary\)/);
+    expect(css).not.toMatch(/\.dropzoneDragging \.icon\s*\{[^}]*var\(--semantic-icon-danger\)/);
+    expect(css).not.toMatch(/\.dropzoneDisabled[^{]*\{[^}]*var\(--semantic-icon-danger\)/);
+    expect(css).not.toMatch(/\.removeIcon\s*\{[^}]*var\(--semantic-icon-danger\)/);
+    // Only one semantic-icon-danger reference, on the Error icon rule
+    expect(css.match(/var\(--semantic-icon-danger\)/g)).toEqual(["var(--semantic-icon-danger)"]);
   });
 });
