@@ -9,7 +9,7 @@ import {
 import type { Locator } from "@playwright/test";
 
 const DANGER_TEXT = "#cc3b37";
-const ACTION_DANGER = "#d92d3e";
+const ACTION_DANGER = "#e5484d";
 const ACTION_DANGER_HOVER = "#b82433";
 const DROPZONE_ERROR = "#e5484d";
 const AA_NORMAL_TEXT = 4.5;
@@ -102,12 +102,15 @@ test.describe("semantic/text/danger consumers", () => {
     page,
   }) => {
     await page.goto("/components/link");
+    await page.addStyleTag({
+      content: "*,*::before,*::after{transition:none!important;animation:none!important}",
+    });
     const link = page.getByRole("link", { name: "Delete this resource" });
     const label = link.locator("span").filter({ hasText: "Delete this resource" });
     const icon = link.locator('[aria-hidden="true"]');
 
     await expectDangerTextContrast(label);
-    // Pre-batch icons inherited root --semantic-action-danger via currentColor.
+    // D3: default icons resolve BASE semantic-action-danger → danger/500.
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(ACTION_DANGER));
     await expect(link).not.toHaveAttribute("aria-disabled");
     expect((await link.evaluate((el) => getComputedStyle(el).opacity))).toBe("1");

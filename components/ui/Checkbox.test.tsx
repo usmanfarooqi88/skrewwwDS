@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -44,5 +46,18 @@ describe("Checkbox", () => {
     const checkbox = screen.getByRole("checkbox");
     expect(checkbox).toHaveAttribute("aria-invalid", "true");
     expect(checkbox).toHaveAttribute("aria-describedby", "permission-error");
+  });
+
+  it("binds invalid border/fill chrome to BASE semantic-action-danger (D3)", () => {
+    const css = readFileSync(resolve(process.cwd(), "components/ui/checkbox.module.css"), "utf8");
+    expect(css).toMatch(
+      /\.input\[aria-invalid="true"\]\s*\{[^}]*border-color:\s*var\(--semantic-action-danger\)/,
+    );
+    expect(css).toMatch(
+      /\.input\[aria-invalid="true"\]:checked[\s\S]*?background:\s*var\(--semantic-action-danger\)/,
+    );
+    expect(css).toMatch(
+      /\.input\[aria-invalid="true"\]:indeterminate[\s\S]*?background:\s*var\(--semantic-action-danger\)/,
+    );
   });
 });

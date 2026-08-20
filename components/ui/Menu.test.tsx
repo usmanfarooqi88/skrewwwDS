@@ -264,7 +264,7 @@ describe("Menu destructive text contract", () => {
     expect(tokens).toMatch(/--menu-item-destructive-text:\s*var\(--semantic-text-danger\)/);
     expect(tokens).not.toMatch(/--menu-item-destructive-text:\s*var\(--semantic-action-danger\)/);
     expect(tokens).toMatch(/--semantic-text-danger:\s*var\(--primitive-color-danger-600\)/);
-    expect(tokens).toMatch(/--semantic-action-danger:\s*#d92d3e/);
+    expect(tokens).toMatch(/--semantic-action-danger:\s*var\(--primitive-color-danger-500\)/);
     expect(css).toMatch(
       /\.itemDestructive:not\(\.itemDisabled\)\s*\{[^}]*var\(--menu-item-destructive-text\)/,
     );

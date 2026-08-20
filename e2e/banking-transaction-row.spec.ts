@@ -106,8 +106,8 @@ test.describe("Banking Transaction Row browser behavior", () => {
 /**
  * D2: the declined-transaction amount is normal text, not a
  * call-to-action, so it uses semantic/text/danger (#CC3B37) rather than
- * semantic/action/danger (#D92D3E) — the latter fails WCAG AA for text at
- * this size against the row's real background. Success/warning colors are
+ * semantic/action/danger (chrome/fill, danger/500) — the latter fails WCAG AA
+ * for text at this size against the row's real background. Success/warning colors are
  * unrelated tokens and must stay unaffected; a negative amount on a
  * status="success" row must stay success-colored — sign is not status.
  */

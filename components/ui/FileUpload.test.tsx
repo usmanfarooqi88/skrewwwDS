@@ -246,6 +246,6 @@ describe("FileUpload danger-text contract", () => {
     expect(css).toMatch(/\.dropzoneError \.icon,\s*\.dropzoneError \.title\s*\{[^}]*var\(--file-upload-border-error\)/);
     expect(tokens).toMatch(/--file-upload-border-error:\s*var\(--component-danger-fill\)/);
     expect(tokens).toMatch(/--component-danger-fill:\s*#e5484d/);
-    expect(tokens).toMatch(/--semantic-action-danger:\s*#d92d3e/);
+    expect(tokens).toMatch(/--semantic-action-danger:\s*var\(--primitive-color-danger-500\)/);
   });
 });

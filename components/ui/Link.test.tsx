@@ -7,6 +7,7 @@ import {
   contrastRatio,
   parseHexColor,
   WCAG_AA_NORMAL_TEXT,
+  WCAG_AA_UI_COMPONENT,
 } from "@/lib/wcag-contrast";
 
 describe("Link", () => {
@@ -41,7 +42,7 @@ describe("Link", () => {
     expect(screen.getByRole("link", { name: "Docs" })).not.toHaveAttribute("role", "link");
   });
 
-  it("binds danger labels to semantic-text-danger while icons keep pre-batch currentColor inheritance", () => {
+  it("binds danger labels to semantic-text-danger while icons keep BASE action-danger currentColor inheritance", () => {
     const css = readFileSync(resolve(process.cwd(), "components/ui/link.module.css"), "utf8");
     const source = readFileSync(resolve(process.cwd(), "components/ui/Link.tsx"), "utf8");
 
@@ -64,6 +65,16 @@ describe("Link", () => {
     );
     expect(contrastRatio(foreground, parseHexColor("#f7f7f8"))).toBeGreaterThanOrEqual(
       WCAG_AA_NORMAL_TEXT,
+    );
+  });
+
+  it("meets WCAG AA non-text contrast for D3 danger icon chrome (#E5484D)", () => {
+    const foreground = parseHexColor("#e5484d");
+    expect(contrastRatio(foreground, parseHexColor("#ffffff"))).toBeGreaterThanOrEqual(
+      WCAG_AA_UI_COMPONENT,
+    );
+    expect(contrastRatio(foreground, parseHexColor("#f7f7f8"))).toBeGreaterThanOrEqual(
+      WCAG_AA_UI_COMPONENT,
     );
   });
 });

@@ -153,9 +153,9 @@
 
 .danger {
   /* component/button/danger/background — a dedicated, Figma-verified
-     Button-danger fill (#e5484d), distinct from the generic
-     --semantic-action-danger (#d92d3e) used elsewhere (Alert/Toast/focus
-     rings). See --component-danger-fill in styles/tokens.css. */
+     Button-danger fill (#e5484d). Bound via --component-danger-fill,
+     separate from --semantic-action-danger (now also danger/500) used
+     elsewhere for Alert/Toast/focus rings. See styles/tokens.css. */
   color: var(--component-surface-content, var(--semantic-text-inverse));
 }
 

@@ -60,7 +60,7 @@
   --semantic-action-primary: var(--primitive-color-brand-500); /* [ALIASED] */
   --semantic-action-primary-hover: var(--primitive-color-brand-600); /* [ALIASED] */
   --semantic-action-primary-pressed: var(--primitive-color-brand-700); /* [ALIASED] */
-  --semantic-action-danger: #d92d3e; /* [VERIFIED] semantic/action/danger */
+  --semantic-action-danger: var(--primitive-color-danger-500); /* [ALIASED] semantic/action/danger → color/danger/500 */
   --semantic-action-danger-hover: #b82433; /* [TEMPORARY] — hover step not documented */
   --semantic-action-danger-pressed: #961d29; /* [TEMPORARY] — pressed step not documented */
   --semantic-text-primary: var(--primitive-color-neutral-900); /* [ALIASED] */
@@ -100,8 +100,8 @@
   /* [VERIFIED] component/button/danger/background (Flat/Gradient) — Figma's
      dedicated Button-danger fill, confirmed via master-component inspection
      2026-08-11 (node 2012:7742). Deliberately distinct from the generic
-     --semantic-action-danger (#d92d3e) used for Alert/Toast/focus rings —
-     Button's own component-level token is a lighter, separate value, not a
+     --semantic-action-danger (danger/500) used for Alert/Toast/focus rings —
+     Button's own component-level token remains a separate binding, not a
      drift bug. Only Button's Danger variant references this; the shared
      brand/primary family below reuses --semantic-action-primary directly
      since that value already matches component/button/primary/background

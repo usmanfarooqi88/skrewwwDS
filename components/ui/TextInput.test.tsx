@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { TextInput } from "@/components/ui/TextInput";
@@ -52,5 +54,18 @@ describe("TextInput", () => {
     const wrap = container.querySelector('[class*="controlWrap"]');
     expect(wrap).toHaveClass("max-w-md");
     expect(wrap).toContainElement(screen.getByRole("textbox"));
+  });
+
+  it("binds invalid border and focus ring to BASE semantic-action-danger (D3 chrome)", () => {
+    const css = readFileSync(resolve(process.cwd(), "components/ui/text-input.module.css"), "utf8");
+    expect(css).toMatch(
+      /\.input\[aria-invalid="true"\]\s*\{[^}]*border-color:\s*var\(--semantic-action-danger\)/,
+    );
+    expect(css).toMatch(
+      /\.input\[aria-invalid="true"\]:focus-visible\s*\{[^}]*box-shadow:[^;]*var\(--semantic-action-danger\)/,
+    );
+    expect(css).not.toMatch(
+      /\.input\[aria-invalid="true"\]\s*\{[^}]*[^-\w]color:\s*var\(--semantic-action-danger\)/,
+    );
   });
 });

@@ -88,7 +88,7 @@ describe("FormField", () => {
     expect(css).not.toMatch(/\.required\s*\{[^}]*var\(--semantic-action-danger\)/);
     expect(tokens).toMatch(/--semantic-text-danger:\s*var\(--primitive-color-danger-600\)/);
     expect(tokens).toMatch(/--primitive-color-danger-600:\s*#cc3b37/);
-    expect(tokens).toMatch(/--semantic-action-danger:\s*#d92d3e/);
+    expect(tokens).toMatch(/--semantic-action-danger:\s*var\(--primitive-color-danger-500\)/);
   });
 
   it("meets WCAG AA normal-text contrast for semantic-text-danger on white and elevated surfaces", () => {

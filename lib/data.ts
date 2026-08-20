@@ -31,7 +31,7 @@ export function getCategoryCounts(): { category: string; count: number }[] {
 // Primitive/Semantic collections (Light mode).
 export const tokenColorMap: Record<string, string> = {
   "semantic/action/primary": "#6C4CF2",
-  "semantic/action/danger": "#D92D3E",
+  "semantic/action/danger": "#E5484D",
   "semantic/text/primary": "#17181B",
   "semantic/text/secondary": "#5B5F68",
   "semantic/text/inverse": "#FFFFFF",

@@ -60,7 +60,7 @@ describe("ValidationMessage", () => {
       /--component-validation-message-text:\s*var\(--primitive-color-danger-600\)/,
     );
     expect(tokens).toMatch(/--primitive-color-danger-600:\s*#cc3b37/);
-    expect(tokens).toMatch(/--semantic-action-danger:\s*#d92d3e/);
+    expect(tokens).toMatch(/--semantic-action-danger:\s*var\(--primitive-color-danger-500\)/);
   });
 
   it("meets WCAG AA normal-text contrast for danger/600 on white and elevated surfaces", () => {

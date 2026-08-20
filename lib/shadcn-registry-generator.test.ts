@@ -118,11 +118,13 @@ describe("shadcn registry generator", () => {
     expect(css).toContain(".sr-only");
   });
 
-  it("includes semantic-text-danger in extracted Foundation CSS without retargeting action-danger", () => {
+  it("includes semantic-text-danger and aliases action-danger to danger-500 in Foundation CSS", () => {
     const css = extractFoundationCss();
     expect(css).toMatch(/--semantic-text-danger:\s*var\(--primitive-color-danger-600\)/);
     expect(css).toMatch(/--primitive-color-danger-600:\s*#cc3b37/);
-    expect(css).toMatch(/--semantic-action-danger:\s*#d92d3e/);
+    expect(css).toMatch(/--primitive-color-danger-500:\s*#e5484d/);
+    expect(css).toMatch(/--semantic-action-danger:\s*var\(--primitive-color-danger-500\)/);
+    expect(css).not.toMatch(/--semantic-action-danger:\s*#d92d3e/);
     expect(css).not.toMatch(/--semantic-text-danger:[^;]*#/);
   });
 

@@ -49,6 +49,8 @@ export function mixBrandOverWhite(brandHex: string, percent: number): { r: numbe
 }
 
 export const WCAG_AA_NORMAL_TEXT = 4.5;
+/** WCAG 2.x AA for non-text UI components / graphical objects (≥ 3:1). */
+export const WCAG_AA_UI_COMPONENT = 3;
 
 export function meetsWcagAaNormalText(
   foreground: { r: number; g: number; b: number },
