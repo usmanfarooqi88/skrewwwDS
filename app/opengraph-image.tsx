@@ -41,7 +41,12 @@ export default function OpenGraphImage() {
           </div>
           <div style={{ fontSize: 28, fontWeight: 600 }}>Skrewww</div>
         </div>
-        <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.05, maxWidth: 900 }}>
             Skrewww Design System
           </div>
