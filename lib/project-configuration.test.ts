@@ -95,6 +95,17 @@ describe("project configuration", () => {
     expect(existsSync(join(root, "docs/architecture/table-foundation.md"))).toBe(true);
   });
 
+  it("keeps canonical developer onboarding and contributing docs linked", () => {
+    expect(existsSync(join(root, "docs/getting-started.md"))).toBe(true);
+    expect(existsSync(join(root, "docs/contributing.md"))).toBe(true);
+    expect(existsSync(join(root, "CONTRIBUTING.md"))).toBe(true);
+    const readme = readRootFile("README.md");
+    expect(readme).toContain("docs/getting-started.md");
+    expect(readme).toContain("docs/contributing.md");
+    expect(readRootFile("CONTRIBUTING.md")).toContain("docs/contributing.md");
+    expect(readRootFile("docs/getting-started.md")).toContain("contributing.md");
+  });
+
   it("guards brand 500/600/700 across tokens.css, Tailwind, and lib/data", () => {
     const tokens = readRootFile("styles/tokens.css");
     const brandPalette = (

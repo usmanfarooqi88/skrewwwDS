@@ -1,6 +1,17 @@
 # Project status
 
-Last verified: **2026-08-21** (Skrewww 1.0 release readiness)
+Last verified: **2026-08-21** (developer onboarding docs; Skrewww 1.0 release remains tagged)
+
+## 2026-08-21 — Developer onboarding documentation
+
+Post-v1 documentation milestone (no runtime/API/token changes):
+
+- Canonical onboarding entry: [`getting-started.md`](getting-started.md)
+- Contribution / Git safety: [`contributing.md`](contributing.md) (+ root `CONTRIBUTING.md` pointer)
+- README documents the onboarding path and docs map without becoming a full manual
+
+Release tags and platform version history remain in the Skrewww 1.0 readiness
+section below; this entry only records the onboarding-doc work.
 
 ## 2026-08-21 — Skrewww 1.0 release readiness
 

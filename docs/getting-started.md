@@ -1,12 +1,28 @@
 # Getting Started with Skrewww
 
-This is the primary guide for developers new to the Skrewww repository. It
-covers what the project is, how to run it, how the design system is put
-together, and how to make and verify a change safely.
+This is the **canonical developer onboarding guide** for the Skrewww
+repository. Read this before deeper architecture notes or contribution rules.
 
-For current implementation status — component inventory, parity progress,
-open gaps — see [`project-status.md`](project-status.md). This guide is kept
-deliberately free of volatile counts so it stays accurate over time.
+It answers, in order:
+
+1. What is Skrewww?
+2. How do I run it locally?
+3. Where is everything in the repository?
+4. How is the design system architected?
+5. What is the source of truth between Figma and React?
+6. How do I modify or add a component?
+7. How do tokens work?
+8. How does the registry / distribution system work?
+9. Which tests must I run?
+10. What Git / release rules must I follow?
+11. Where do I look next?
+
+For volatile implementation status — inventory, parity progress, open gaps —
+see [`project-status.md`](project-status.md). This guide stays free of snapshot
+test counts and release SHAs so it does not go stale.
+
+Contribution and Git safety:
+[`contributing.md`](contributing.md).
 
 ---
 
@@ -55,11 +71,16 @@ accessibility baseline is WCAG 2.2 AA (target).
 
 | Requirement | Value | Source |
 |---|---|---|
-| Node.js | `>=20.19.0` | `engines` in `package.json`, `.nvmrc` |
-| Package manager | npm | `package-lock.json` |
+| Node.js | `>=20.19.0` | `engines` in `package.json`, `.nvmrc`, `.node-version` |
+| Package manager | npm | `package-lock.json` (lockfile is authoritative) |
+| Git | required for clone / contribution | — |
 
-The repository pins a Node version in `.nvmrc`. No other runtime versions are
-specified, so use your normal npm version.
+Confirm the Node runtime matches repository policy:
+
+```bash
+npm run verify:node
+npm run verify:package
+```
 
 ---
 
@@ -76,14 +97,17 @@ Other everyday commands:
 |---|---|
 | `npm run dev` | Start the dev server (writes to `.next`) |
 | `npm run dev:clean` | Remove `.next`, then start dev — use if the build cache looks corrupted |
-| `npm run lint` | ESLint |
+| `npm run verify:node` | Confirm Node satisfies `engines` |
+| `npm run verify:package` | Confirm package / lockfile metadata alignment |
+| `npm run lint` | ESLint (`--max-warnings 26` — ceiling is currently full) |
 | `npm run typecheck` | TypeScript, no emit |
 | `npm test` | Vitest unit tests (single run) |
 | `npm run test:watch` | Vitest in watch mode |
 | `npm run test:browser` | Playwright browser tests |
 | `npm run build` | Production build (regenerates the registry first) |
 | `npm run generate:registry` | Regenerate the distribution manifests only |
-| `npm run test:all` | The full gate chain — see [Testing and verification](#testing-and-verification) |
+| `npm run smoke:consumer` | Clean-consumer install smoke for the `/r` graph |
+| `npm run test:all` | Full gate chain — see [Testing and verification](#testing-and-verification) |
 
 Playwright builds and serves its own isolated output rather than reusing the
 dev server's `.next` directory, so you can keep `npm run dev` running while
@@ -95,22 +119,24 @@ against the same output directory at the same time.
 ## Repository structure
 
 ```
-app/                    Next.js App Router routes, including the registry route
-components/ui/          Public React components (exported via components/ui/index.ts)
+app/                    Next.js App Router routes (pages, registry.json route, OG image)
+components/ui/          Public React components (exports via components/ui/index.ts)
 components/ui/internal/ Internal composition primitives — not public API
-components/previews/    Client-side live previews used by the docs site
-components/docs/        Documentation UI (JSON-LD, API tables, copy actions)
-content/                Figma-derived documentation prose, by category
-styles/                 Design tokens and global styles
-lib/                    Registry, registry generator, SEO, sitemap, indexing, metadata
-scripts/                Registry generation, consumer smoke test, verification scripts
+components/previews/    Client-side live previews for the docs site (not canonical source)
+components/docs/        Documentation UI helpers (API tables, JSON-LD, copy actions)
+content/                Figma-derived documentation prose + public changelog data
+styles/                 Design tokens (`tokens.css`) and foundation/global CSS
+lib/                    Canonical registry, public registry, SEO, sitemap, site config
+lib/*-figma-metadata*   Archived verified Figma evidence (when present)
+scripts/                Registry generation, consumer smoke, verify:node / verify:package
 e2e/                    Playwright browser specs
-docs/                   This guide, architecture notes, project status
-public/r/               Generated distribution manifests — build output, not source
+docs/                   Getting started, contributing, architecture, project status
+public/                 Static assets; public/r/ is generated and gitignored
 ```
 
-Unit tests are colocated next to the code they cover as `*.test.ts` /
-`*.test.tsx` files. Browser tests live separately in `e2e/`.
+Unit tests are colocated as `*.test.ts` / `*.test.tsx`. Browser tests live in
+`e2e/`. Docs previews under `components/previews/` are **not** the source of
+truth for component behavior — `components/ui/` is.
 
 ---
 
@@ -127,9 +153,27 @@ Primitive → Semantic → Component → Brand → Shape → Surface
 
 Read it in that order. A component should consume a **semantic** or
 **component** token rather than a raw primitive or a hardcoded value.
+
+**Brand**, **Shape**, and **Surface** sit alongside that chain:
+
+- **Brand** — brand ramp and brand-facing aliases.
+- **Shape** — radius / personality modes (`sharp`, `rounded`, `pill`, `squircle`).
+- **Surface** — material modes (`flat`, `gradient`, `glass`).
+
 Tokens carry classification comments (`[VERIFIED]`, `[ALIASED]`,
 `[TEMPORARY]`, `[UNRESOLVED]`, `[EXPERIMENTAL]`) — these tell you how much a
 value can be trusted and whether it is still pending design confirmation.
+
+Rules of thumb:
+
+- Prefer the token that owns the **semantic role**, not a nearby hex that
+  merely looks the same.
+- Component-scoped tokens are valid when the meaning is component-specific.
+- Do **not** reuse `[TEMPORARY]` / TEMP aliases merely because they visually
+  match — fix or introduce the correct semantic/component token instead.
+- Keep `styles/tokens.css` and any guarded Tailwind docs-shell duplicates in
+  sync when you change shared primitives (see tests in
+  `lib/project-configuration.test.ts`).
 
 Detail: [`architecture/token-source-of-truth.md`](architecture/token-source-of-truth.md).
 
@@ -172,27 +216,46 @@ distribution layer is generated from it.
 ## Figma and React responsibilities
 
 Skrewww is designed against Figma, but the two are not interchangeable
-sources of truth. The rules that matter day to day:
+sources of truth. Day-to-day rules:
 
-- **Figma is authoritative for approved visual and component behaviour** —
-  when that evidence has actually been inspected and recorded. Verified
-  findings are archived in the repository's Figma metadata files.
-- **React is authoritative for runtime behaviour** — semantics, keyboard
-  interaction, focus management, and the public component API.
+- **Inspect Figma through live Figma MCP** (or archived verified metadata)
+  before claiming parity. Figma is authoritative for approved visual and
+  component behaviour **only when that evidence has actually been inspected**.
+- **Never invent Figma facts** — node IDs, variable IDs, colors, states, or
+  parity claims. If unknown, record it as unknown.
+- **Inspect the master / component set / variables** relevant to the change —
+  not only an example or marketing frame. An example frame is not automatically
+  a canonical component.
+- **React is authoritative for runtime behaviour** — semantics, keyboard,
+  focus management, and the public component API.
 - **Accessibility can override a Figma value.** If a design would produce an
-  inaccessible result, the correct outcome is to raise it and fix it
-  properly — not to copy it into React. Blind parity is not the goal.
-- **React-first does not mean parity.** Several components were built in
-  React before a Figma counterpart existed. Those are marked as such; do not
-  read "implemented" as "matches Figma".
-- **An example frame is not a component.** A demo or illustration frame in
-  Figma is not automatically a canonical, reusable component set.
-- **Do not invent Figma facts.** Node IDs, variables, states, and parity
-  claims belong in the repository only when they have genuinely been
-  verified. If something is unknown, record it as unknown.
+  inaccessible result, raise it and fix it properly — do not copy it into
+  React. Blind parity is not the goal.
+- **Classify differences** — parity gap, intentional non-parity, or deferred
+  Stable-v1 scope. Do not silently normalize either side.
+- **Figma visual parity ≠ React API stability.** Closing a visual gap does not
+  require promoting a component to Stable, and platform `1.0.0` does not mean
+  every component API is frozen as Stable.
+- **React-first does not mean parity.** Some components shipped in React before
+  a Figma counterpart existed; “implemented” is not “matches Figma”.
 
-How conflicts are resolved, in detail:
+### Intentional non-parity (examples)
+
+These are product decisions, not unfinished bugs:
+
+- **Link Subtle (default)** — React accessibility override relative to Figma
+  contrast; treat as intentional unless product revisits it.
+- **Menu Selected** — Figma may show a Selected item treatment; React has
+  **no** generic selected / checkable Menu API for Stable-v1 (command model).
+  Future checkable items would be additive, not a silent retrofit.
+- **Pagination Previous / Next** — React keeps textual boundary controls;
+  aligning to icon-only Figma composition requires an explicit presentation
+  decision.
+
+How conflicts are resolved in detail:
 [`architecture/source-of-truth.md`](architecture/source-of-truth.md).
+
+Agent-oriented Figma safety rules also live in [`../AGENTS.md`](../AGENTS.md).
 
 ---
 
@@ -200,117 +263,201 @@ How conflicts are resolved, in detail:
 
 A practical sequence that matches how changes are made in this repository:
 
-1. **Find the canonical component.** Public components live in
-   `components/ui/` and are exported from `components/ui/index.ts`. Anything
-   under `components/ui/internal/` is a composition primitive, not public API.
-2. **Read its current status.** Check its registry entry and
-   [`project-status.md`](project-status.md) for known gaps, deferrals, and
-   Stable-v1 boundaries before assuming something is a bug.
-3. **Check the design counterpart where one applies** — and note whether the
-   component is React-first with parity still pending.
-4. **Follow the token chain.** Trace the CSS module's custom properties back
-   through `styles/tokens.css`. Fix values at the layer that actually owns
-   them; prefer correcting a shared token over patching one component.
-5. **Make the smallest scoped change** that satisfies the task. Avoid
-   unrelated refactors.
-6. **Preserve the public API** unless changing it is the explicit point of
-   the work.
-7. **Verify the relevant states** — default, hover, focus, active, disabled,
-   error, and any component-specific states.
-8. **Verify the relevant Shape and Surface modes**, but only those the
-   component actually claims to support.
-9. **Add or update focused regression coverage** for the behaviour you
-   changed.
-10. **Run the focused tests**, then the quality gates below.
-11. **Review your own diff** before committing — confirm nothing unrelated
-    was swept in.
+1. **Identify the canonical registry entry** — `lib/component-registry.ts` and
+   category files (`lib/component-registry-*.ts`). Note `status`, `version`,
+   `openQuestions`, `apiProps`, and distribution fields when present.
+2. **Audit the current React implementation** in `components/ui/` (and its
+   CSS module / tests). Public exports are listed in `components/ui/index.ts`.
+   Anything under `components/ui/internal/` is not public API.
+3. **Inspect Figma masters / tokens** when the work is parity-related (live
+   MCP or archived verified metadata). Do not invent evidence.
+4. **Classify** parity gap vs intentional non-parity vs deferred scope before
+   coding — check [`project-status.md`](project-status.md) and the component's
+   `openQuestions`.
+5. **Implement narrowly** — smallest change that satisfies the task. Do not
+   change runtime solely to match Figma when accessibility or an explicit
+   product decision says otherwise.
+6. **Follow the token chain** — prefer semantic/component tokens; avoid
+   unexplained hardcoding and TEMP-alias reuse.
+7. **Update registry metadata / docs** when public props, status notes, or
+   install fields change. Docs previews are not canonical source.
+8. **Add or update focused regression tests** for the behaviour you changed.
+9. **Run focused verification**, then widen gates as appropriate (below).
+10. **Inspect the full diff and selectively stage** — never rely on
+    `git add .` for mixed or release-sensitive work. See
+    [`contributing.md`](contributing.md).
+
+Warnings:
+
+- Do not treat `components/previews/` as the component source of truth.
+- Do not churn public APIs without an explicit decision and docs/registry
+  updates.
+- Do not “fix” a Stable-v1 restriction that is an intentional scope boundary.
 
 ---
 
 ## Testing and verification
 
-Work outward from the change. Run the cheap, targeted checks first, and widen
-only as far as the change warrants.
+Work outward from the change. Run cheap, targeted checks first; widen only as
+far as the change warrants.
 
-**1 — Focused tests.** Run the specific unit or browser tests covering what
-you touched:
+**1 — Focused tests** for the files you touched:
 
 ```bash
 npx vitest run path/to/file.test.ts
-npx playwright test e2e/some-spec.spec.ts
+npx playwright test e2e/some-spec.spec.ts --workers=1
 ```
 
-**2 — Static checks.**
+**2 — Runtime / package policy** (especially after toolchain or metadata edits):
+
+```bash
+npm run verify:node
+npm run verify:package
+```
+
+**3 — Static checks:**
 
 ```bash
 npm run lint
 npm run typecheck
 ```
 
-**3 — Unit tests.**
+**4 — Unit tests:**
 
 ```bash
 npm test
 ```
 
-**4 — Production build.**
+**5 — Production build** (also regenerates `/r` manifests):
 
 ```bash
 npm run build
 ```
 
-**5 — Browser tests**, when the change is observable in a rendered page —
-layout, styling, interaction, focus, or accessibility:
+**6 — Browser tests** when the change is observable in a rendered page
+(layout, styling, interaction, focus, accessibility):
 
 ```bash
 npm run test:browser
 ```
 
-**6 — Everything**, when the change is broad or you want the same chain used
-for release confidence:
+For **full-suite** Playwright confidence (and for release candidates), run with
+a single worker so failures are not masked by parallelism:
+
+```bash
+npx playwright test --workers=1
+```
+
+(`npm run test:browser` uses Playwright’s defaults locally; CI already forces
+`workers: 1`. Prefer `--workers=1` explicitly for release-gate runs.)
+
+**7 — Consumer smoke** when registry dependency transport or install graphs
+may be affected:
+
+```bash
+npm run smoke:consumer -- text-input
+```
+
+**8 — Everything** for broad changes or release confidence:
 
 ```bash
 npm run test:all
 ```
 
-**Focused vs full.** Running the entire browser suite is not required for
-every contribution. A token or CSS change that affects many components
-deserves a wide run; a docs-only or comment change does not. Use judgement,
-and say which checks you actually ran — never report a gate as passing if it
-did not run or did not finish.
-
-**Also check your diff is clean:**
+Also always:
 
 ```bash
 git diff --check
 ```
 
-Browser testing conventions and rationale:
+**Focused vs full.** Docs-only or comment changes do not need the full browser
+suite. Token or CSS changes that touch many surfaces deserve a wide run. Say
+which checks you actually ran — never report a gate as passing if it failed,
+timed out, or did not finish.
+
+**Lint warnings.** ESLint is configured with `--max-warnings 26`. That budget
+is currently fully used; do not add warnings casually, and do not “clean”
+unrelated warnings in an unrelated PR without agreement.
+
+Browser testing conventions:
 [`architecture/browser-interaction-testing.md`](architecture/browser-interaction-testing.md).
 
 ---
 
 ## Registry and distribution
 
-Skrewww exposes a shadcn-compatible distribution layer, generated from the
-same registry the docs site uses.
+Two different numbers matter:
 
-- **Source**: `lib/component-registry.ts` plus the per-category registry
-  files, with the generation logic in `lib/shadcn-registry-generator.ts`.
-- **Generator**: `scripts/generate-shadcn-registry.ts`, run via
-  `npm run generate:registry`. It also runs automatically as part of
-  `npm run build`.
-- **Output**: `public/r/` — one manifest per distributed component.
-- **Runtime metadata route**: `app/registry.json/route.ts`, which serves the
-  registry as JSON from the running site.
+| Surface | Meaning |
+|---|---|
+| **Implemented React components** | All registry entries with `hasImplementation: true` (currently dozens; count is derived at runtime — do not hardcode it in docs). Documented on this site with live previews. |
+| **shadcn `/r` install surface** | The **subset** generated into `public/r/*.json` and installable via `npx shadcn@latest add @skrewww/<name>`. |
 
-**`public/r/` is generated build output, not source.** It is excluded from
-version control. Never hand-edit those files — change the registry source and
-regenerate. If a manifest looks wrong, fix the registry entry or the
-generator, then re-run `npm run generate:registry` and confirm the output.
+**Current supported `/r` items (exactly six):**
 
-Architecture, verified consumer testing, and known follow-ups:
+`foundation`, `button`, `card`, `text-input`, `form-field`, `validation-message`
+
+Other implemented components are **not** part of the current install surface.
+
+### How generation works
+
+- **Canonical source**: `lib/component-registry.ts` + category files.
+- **Generator**: `lib/shadcn-registry-generator.ts`, invoked by
+  `scripts/generate-shadcn-registry.ts` via `npm run generate:registry`
+  (also runs during `npm run build`).
+- **Output**: `public/r/` — **generated and gitignored**. Never hand-edit or
+  force-add these files.
+- **Docs metadata feed**: `/registry.json` (separate from `/r/{name}.json`).
+
+### Dependency semantics (important)
+
+- Registry item `dependencies` lists **third-party npm packages** the install
+  layer should add (not React/Next host packages).
+- Host frameworks belong in canonical `hostRequirements` and are **not**
+  leaked into public `/r` JSON.
+- Having a package in this repo’s `package.json` does **not** prove a consumer
+  receives it — the **generated** item must declare it.
+
+Example graph:
+
+```
+text-input
+  → form-field
+    → validation-message  (npm: @phosphor-icons/react)
+    → foundation
+  → foundation
+```
+
+Prove transport with:
+
+```bash
+npm run smoke:consumer -- text-input
+```
+
+Public `/registry.json` `schemaVersion` is **1.4.0**. The canonical
+`ComponentRegistryEntry` shape is versioned separately
+(`CANONICAL_REGISTRY_SCHEMA_VERSION` = **1.0.0**). See
+[`architecture/versioning.md`](architecture/versioning.md).
+
+Full distribution notes:
 [`architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
+
+---
+
+## Git and contribution safety
+
+Short version — details in [`contributing.md`](contributing.md):
+
+- Audit before write; keep diffs scoped.
+- Inspect the full diff; **selective stage** only intended files.
+- Do **not** use `git add .` for release-sensitive or mixed work.
+- Do **not** stage `public/r/` or other generated/ignored artifacts.
+- Commit only after the verification you claim actually ran.
+- No force-push / history rewrite on shared branches.
+- Release tags must point at explicitly verified commits; do not casually
+  retarget published tags.
+- Platform `1.0.0` and per-component Beta status are independent maturity
+  tracks ([`architecture/versioning.md`](architecture/versioning.md)).
 
 ---
 
@@ -354,7 +501,8 @@ before treating a limitation as a bug to fix.
 - [ ] Browser tests run if the change is visually or behaviourally observable
 - [ ] `git diff --check` passes
 - [ ] Generated registry output regenerated rather than hand-edited, if relevant
-- [ ] Own diff reviewed before committing
+- [ ] Own diff reviewed; only intended files staged (no `git add .` for mixed work)
+- [ ] Generated `public/r/` not hand-edited or force-added
 
 ---
 
@@ -362,21 +510,23 @@ before treating a limitation as a bug to fix.
 
 | Document | What it covers |
 |---|---|
-| [`../README.md`](../README.md) | Project overview, component inventory, site features |
-| [`project-status.md`](project-status.md) | Current status, inventory, open gaps — the volatile state |
+| [`../README.md`](../README.md) | Concise project overview and public status |
+| [`contributing.md`](contributing.md) | Contribution rules, staging, commits, a11y expectations |
+| [`project-status.md`](project-status.md) | Current status, inventory, open gaps |
 | [`architecture/source-of-truth.md`](architecture/source-of-truth.md) | How conflicting claims are resolved |
 | [`architecture/token-source-of-truth.md`](architecture/token-source-of-truth.md) | Token layering and parity labels |
-| [`architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md) | Registry and distribution layer |
+| [`architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md) | Registry and `/r` distribution layer |
+| [`architecture/versioning.md`](architecture/versioning.md) | Platform vs component vs schema versioning |
 | [`architecture/gradient-foundation.md`](architecture/gradient-foundation.md) | Stable-v1 Gradient contract |
 | [`architecture/browser-interaction-testing.md`](architecture/browser-interaction-testing.md) | Browser testing approach |
-| [`architecture/versioning.md`](architecture/versioning.md) | Versioning policy |
+| [`../AGENTS.md`](../AGENTS.md) | Agent guidelines (optional for humans) |
 
-The `docs/architecture/` directory also holds per-component notes — for
-example Table, Calendar, Form Field, Combobox, Data Table, and File Upload.
-Read the note for the component you are working on before changing it.
+The `docs/architecture/` directory also holds per-component notes (Table,
+Calendar, Form Field, Combobox, Data Table, File Upload, …). Read the note for
+the component you are changing before editing it.
 
 ### AI-assisted contributions
 
-If you are working with an AI coding agent, follow the agent guidelines in
-[`../AGENTS.md`](../AGENTS.md) in addition to this guide. Human contributors
-do not need to read it to work in this repository.
+If you use an AI coding agent, follow [`../AGENTS.md`](../AGENTS.md) in
+addition to this guide and [`contributing.md`](contributing.md). Human
+contributors do not need AGENTS.md to work in this repository.

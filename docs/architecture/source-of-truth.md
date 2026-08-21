@@ -37,6 +37,9 @@ Public component CSS modules must use CSS custom properties — not ad hoc hex v
 | Artifact | Role |
 |----------|------|
 | `README.md` | Concise overview, commands, limitations |
+| `docs/getting-started.md` | **Canonical developer onboarding** |
+| `docs/contributing.md` | Contribution, staging, and Git safety |
+| `CONTRIBUTING.md` | Pointer to `docs/contributing.md` |
 | `docs/project-status.md` | Volatile current status and inventory |
 | `docs/architecture/*.md` | Durable architecture and parity notes |
 | Registry-generated routes | `/registry.json`, sitemap, JSON-LD, llms outputs |
@@ -49,10 +52,11 @@ Public component CSS modules must use CSS custom properties — not ad hoc hex v
 | `NEXT_PUBLIC_SITE_URL` | Deployment authority for canonical metadata |
 | `http://localhost:3000` | Local development default |
 | `https://skrewww.dev` | Production fallback when env unset |
-| `skrewww.com` | Reserved brand domain — not assumed deployed |
+| `https://skrewww.com` | Production brand domain when configured via `NEXT_PUBLIC_SITE_URL` |
 | `https://skrewww.test` | Test-only origin in unit tests |
 
-Reserved does not mean deployed. Do not claim the documentation site is unbuilt.
+Do not hardcode assumptions about which domain is live in a given environment —
+canonical URLs follow `NEXT_PUBLIC_SITE_URL` (or the documented fallback).
 
 ## Build directories
 

@@ -8,16 +8,29 @@ Skrewww **1.0** is the platform and documentation release. Individual React comp
 
 **New to this repository? Start here: [`docs/getting-started.md`](docs/getting-started.md).**
 
-It covers the architecture, the Figma/React split, how to change a component
-safely, and which verification to run — in roughly ten minutes.
+That guide is the canonical developer onboarding path (local run, repo map,
+architecture, Figma ↔ React rules, tokens, registry, tests, and Git safety).
+
+Contribution rules: [`docs/contributing.md`](docs/contributing.md) · also
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ```bash
 npm install
+npm run verify:node
 npm run dev
 ```
 
 Requires Node.js `>=20.19.0` (see `.nvmrc`). `npm run dev` prints the local
 URL on startup.
+
+### Documentation map
+
+| Doc | Role |
+|-----|------|
+| [`docs/getting-started.md`](docs/getting-started.md) | **Primary** developer onboarding |
+| [`docs/contributing.md`](docs/contributing.md) | Contribution / Git / staging rules |
+| [`docs/project-status.md`](docs/project-status.md) | Current status and open gaps |
+| [`docs/architecture/`](docs/architecture/) | Deep architecture and component notes |
 
 ## Current status
 
@@ -52,7 +65,7 @@ Documentation-only pages clearly state **Figma documented · React not implement
 
 ## Running locally
 
-Requires **Node.js >=20.19.0**.
+Shortest path (details in [`docs/getting-started.md`](docs/getting-started.md)):
 
 ```bash
 npm install
@@ -66,12 +79,18 @@ npm run dev
 |---------|---------|
 | `npm run dev` | Start Next.js dev server (uses `.next`) |
 | `npm run dev:clean` | Remove `.next` then start dev — use when vendor chunks look corrupted |
+| `npm run verify:node` | Confirm Node satisfies `engines` |
+| `npm run verify:package` | Confirm package / lockfile metadata |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript |
 | `npm test` | Vitest unit tests |
 | `npm run test:browser` | Playwright (isolated `.next-playwright` build on port 3100) |
+| `npm run smoke:consumer` | Clean-consumer `/r` install smoke |
 | `npm run test:all` | verify:node + verify:package + lint + typecheck + unit + browser + production build |
 | `npm run build` | Production build (uses `.next`) |
+| `npm run generate:registry` | Regenerate `/r` manifests only |
+
+For full Playwright release-gate runs, prefer `npx playwright test --workers=1`.
 
 Playwright does **not** modify the active dev `.next` cache. You can keep `npm run dev` running on port 3000 while browser tests use `.next-playwright` on port 3100.
 
