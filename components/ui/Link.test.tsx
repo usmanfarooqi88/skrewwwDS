@@ -103,31 +103,43 @@ describe("Link", () => {
     expect(css).toMatch(/outline-offset:\s*2px/);
   });
 
-  it("binds Primary/default and Subtle :active pressed states after :hover", () => {
+  it("binds Primary/default and Subtle interaction states without sharing Primary hover onto Subtle", () => {
     const css = readFileSync(resolve(process.cwd(), "components/ui/link.module.css"), "utf8");
     const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+    const source = readFileSync(resolve(process.cwd(), "components/ui/Link.tsx"), "utf8");
 
     expect(css).toMatch(/\.default\s*\{[^}]*var\(--link-text-default\)/);
     expect(css).toMatch(/\.default:hover\s*\{[^}]*var\(--link-text-hover\)/);
     expect(css).toMatch(/\.default:active\s*\{[^}]*var\(--primitive-color-brand-700\)/);
     expect(css.indexOf(".default:active")).toBeGreaterThan(css.indexOf(".default:hover"));
 
+    // Subtle Default stays accessible text-secondary (not Figma content-muted #A0A3AC)
     expect(css).toMatch(/\.subtle\s*\{[^}]*var\(--semantic-text-secondary\)/);
-    expect(css).toMatch(/\.subtle:hover\s*\{[^}]*var\(--link-text-hover\)/);
+    expect(tokens).toMatch(/--semantic-text-secondary:\s*var\(--primitive-color-neutral-600\)/);
+    expect(tokens).toMatch(/--primitive-color-neutral-600:\s*#5b5f68/i);
+
+    // R3: Subtle Hover uses text-primary — must not consume Primary's --link-text-hover
+    expect(css).toMatch(/\.subtle:hover\s*\{[^}]*var\(--semantic-text-primary\)/);
+    expect(css).not.toMatch(/\.subtle:hover\s*\{[^}]*var\(--link-text-hover\)/);
+
+    // Subtle Pressed (R2) unchanged
     expect(css).toMatch(/\.subtle:active\s*\{[^}]*var\(--semantic-text-primary\)/);
     expect(css.indexOf(".subtle:active")).toBeGreaterThan(css.indexOf(".subtle:hover"));
 
-    // Live token resolutions (do not invent Figma hex literals that differ from tokens.css)
     expect(tokens).toMatch(/--primitive-color-brand-700:\s*#42299c/i);
     expect(tokens).toMatch(
       /--semantic-text-primary:\s*var\(--primitive-color-neutral-900\)/,
     );
     expect(tokens).toMatch(/--primitive-color-neutral-900:\s*#17181b/i);
 
-    // Danger R1 untouched by Primary/Subtle pressed rules
+    // Danger R1 untouched; focus / underline / API preserved
     expect(css).toMatch(/\.danger:active\s*\{[^}]*var\(--primitive-color-danger-700\)/);
     expect(css).toMatch(/\.danger \.label\s*\{[^}]*var\(--semantic-text-danger\)/);
     expect(css).toMatch(/\.danger\s*\{[^}]*var\(--semantic-icon-danger\)/);
+    expect(css).toMatch(/text-decoration:\s*underline/);
+    expect(css).toMatch(/\.link:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--semantic-focus-ring\)/);
+    expect(css).not.toMatch(/:disabled/);
+    expect(source).not.toMatch(/\bdisabled\b/);
   });
 
   it("meets WCAG AA normal-text contrast for danger labels on white and elevated surfaces", () => {

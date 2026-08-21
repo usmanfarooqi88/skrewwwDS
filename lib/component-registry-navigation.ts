@@ -49,6 +49,8 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
     ],
     relatedTokens: [
       { label: "semantic/action/primary", href: "/foundations" },
+      { label: "semantic/text/secondary", href: "/foundations" },
+      { label: "semantic/text/primary", href: "/foundations" },
       { label: "semantic/focus-ring", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.surface],
@@ -69,6 +71,10 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
       {
         title: "How should external links be identified?",
         body: "Adjacent text should communicate destination when possible. External targets use safe rel defaults with target=\"_blank\".",
+      },
+      {
+        title: "Why does Subtle Default differ from Figma Secondary?",
+        body: "React Subtle Default keeps semantic/text/secondary (#5B5F68) for WCAG AA normal-text contrast. Figma Secondary Default uses content-muted (#A0A3AC), which fails AA on white. Subtle Hover and Pressed use semantic/text/primary (#17181B).",
       },
     ],
     apiProps: [

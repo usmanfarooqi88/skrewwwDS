@@ -7,16 +7,17 @@ import {
 } from "./fixtures";
 
 /**
- * Link R2: Primary/default + Subtle pressed (:active) parity.
- * Danger R1 remains covered in semantic-text-danger / semantic-action-danger specs.
+ * Link R2/R3: Primary pressed + Subtle hover/pressed interaction.
+ * Danger R1 remains covered here and in semantic-*-danger specs.
  *
- * Note: React --primitive-color-brand-700 resolves #42299C (tokens.css),
- * while live Figma brand/700 is #4229AD. R2 uses the React token without
- * changing token definitions.
+ * Primary Pressed uses React --primitive-color-brand-700 (#42299C),
+ * not live Figma brand/700 (#4229AD).
  */
 
+const PRIMARY_HOVER = "#5738c7";
 const PRIMARY_PRESSED = "#42299c";
-const SUBTLE_PRESSED = "#17181b";
+const SUBTLE_DEFAULT = "#5b5f68";
+const SUBTLE_INTERACT = "#17181b";
 const DANGER_TEXT = "#cc3b37";
 const DANGER_ICON = "#e5484d";
 const DANGER_PRESSED = "#b3261e";
@@ -27,8 +28,8 @@ async function settle(page: import("@playwright/test").Page) {
   });
 }
 
-test.describe("Link Primary/Subtle pressed parity (R2)", () => {
-  test("Primary/default :active resolves brand-700 for label + icon while hovered", async ({
+test.describe("Link Primary/Subtle interaction (R2/R3)", () => {
+  test("Primary/default hover stays brand-600; :active resolves brand-700 for label + icon", async ({
     page,
   }) => {
     await page.goto("/components/link");
@@ -38,6 +39,9 @@ test.describe("Link Primary/Subtle pressed parity (R2)", () => {
     const icon = link.locator('[aria-hidden="true"]');
 
     await link.hover();
+    expectColorClose(await resolvedRgba(label, "color"), hexToRgba(PRIMARY_HOVER));
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(PRIMARY_HOVER));
+
     await page.mouse.down();
     await expect
       .poll(async () => {
@@ -54,7 +58,7 @@ test.describe("Link Primary/Subtle pressed parity (R2)", () => {
     await page.mouse.up();
   });
 
-  test("Subtle :active resolves semantic-text-primary for label + icon while hovered", async ({
+  test("Subtle Default stays text-secondary; Hover/Active resolve text-primary for label + icon", async ({
     page,
   }) => {
     await page.goto("/components/link");
@@ -63,12 +67,18 @@ test.describe("Link Primary/Subtle pressed parity (R2)", () => {
     const label = link.locator("span").filter({ hasText: "Subtle documentation link" });
     const icon = link.locator('[aria-hidden="true"]');
 
+    expectColorClose(await resolvedRgba(label, "color"), hexToRgba(SUBTLE_DEFAULT));
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(SUBTLE_DEFAULT));
+
     await link.hover();
+    expectColorClose(await resolvedRgba(label, "color"), hexToRgba(SUBTLE_INTERACT));
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(SUBTLE_INTERACT));
+
     await page.mouse.down();
     await expect
       .poll(async () => {
         const color = await resolvedRgba(label, "color");
-        const expected = hexToRgba(SUBTLE_PRESSED);
+        const expected = hexToRgba(SUBTLE_INTERACT);
         return (
           Math.abs(color.r - expected.r) <= 4 &&
           Math.abs(color.g - expected.g) <= 4 &&
@@ -76,11 +86,11 @@ test.describe("Link Primary/Subtle pressed parity (R2)", () => {
         );
       })
       .toBe(true);
-    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(SUBTLE_PRESSED));
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(SUBTLE_INTERACT));
     await page.mouse.up();
   });
 
-  test("Danger R1 remains Default/Hover/Active after Primary/Subtle pressed shipping", async ({
+  test("Danger R1 remains Default/Hover/Active after Subtle Hover architecture fix", async ({
     page,
   }) => {
     await page.goto("/components/link");

@@ -46,7 +46,8 @@
 }
 
 .subtle:hover {
-  color: var(--link-text-hover);
+  /* Figma Secondary Hover — semantic/text/primary (not Primary's --link-text-hover) */
+  color: var(--semantic-text-primary);
 }
 
 /* After :hover so :active wins while the pointer is also hovered */
