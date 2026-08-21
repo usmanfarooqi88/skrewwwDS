@@ -37,6 +37,7 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
     supportedSizes: ["sm", "md", "lg"],
     tokensUsed: [
       "semantic/text/secondary",
+      "semantic/text/primary",
       "semantic/action/primary",
       "semantic/text/danger",
       "semantic/icon/danger",

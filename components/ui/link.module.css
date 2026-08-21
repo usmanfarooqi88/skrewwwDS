@@ -36,12 +36,22 @@
   color: var(--link-text-hover);
 }
 
+/* After :hover so :active wins while the pointer is also hovered */
+.default:active {
+  color: var(--primitive-color-brand-700);
+}
+
 .subtle {
   color: var(--semantic-text-secondary);
 }
 
 .subtle:hover {
   color: var(--link-text-hover);
+}
+
+/* After :hover so :active wins while the pointer is also hovered */
+.subtle:active {
+  color: var(--semantic-text-primary);
 }
 
 .danger {

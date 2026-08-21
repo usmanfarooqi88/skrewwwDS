@@ -103,14 +103,31 @@ describe("Link", () => {
     expect(css).toMatch(/outline-offset:\s*2px/);
   });
 
-  it("preserves Primary and Subtle state CSS unchanged in R1", () => {
+  it("binds Primary/default and Subtle :active pressed states after :hover", () => {
     const css = readFileSync(resolve(process.cwd(), "components/ui/link.module.css"), "utf8");
+    const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+
     expect(css).toMatch(/\.default\s*\{[^}]*var\(--link-text-default\)/);
     expect(css).toMatch(/\.default:hover\s*\{[^}]*var\(--link-text-hover\)/);
+    expect(css).toMatch(/\.default:active\s*\{[^}]*var\(--primitive-color-brand-700\)/);
+    expect(css.indexOf(".default:active")).toBeGreaterThan(css.indexOf(".default:hover"));
+
     expect(css).toMatch(/\.subtle\s*\{[^}]*var\(--semantic-text-secondary\)/);
     expect(css).toMatch(/\.subtle:hover\s*\{[^}]*var\(--link-text-hover\)/);
-    expect(css).not.toMatch(/\.default:active/);
-    expect(css).not.toMatch(/\.subtle:active/);
+    expect(css).toMatch(/\.subtle:active\s*\{[^}]*var\(--semantic-text-primary\)/);
+    expect(css.indexOf(".subtle:active")).toBeGreaterThan(css.indexOf(".subtle:hover"));
+
+    // Live token resolutions (do not invent Figma hex literals that differ from tokens.css)
+    expect(tokens).toMatch(/--primitive-color-brand-700:\s*#42299c/i);
+    expect(tokens).toMatch(
+      /--semantic-text-primary:\s*var\(--primitive-color-neutral-900\)/,
+    );
+    expect(tokens).toMatch(/--primitive-color-neutral-900:\s*#17181b/i);
+
+    // Danger R1 untouched by Primary/Subtle pressed rules
+    expect(css).toMatch(/\.danger:active\s*\{[^}]*var\(--primitive-color-danger-700\)/);
+    expect(css).toMatch(/\.danger \.label\s*\{[^}]*var\(--semantic-text-danger\)/);
+    expect(css).toMatch(/\.danger\s*\{[^}]*var\(--semantic-icon-danger\)/);
   });
 
   it("meets WCAG AA normal-text contrast for danger labels on white and elevated surfaces", () => {
@@ -138,5 +155,14 @@ describe("Link", () => {
     expect(contrastRatio(foreground, parseHexColor("#ffffff"))).toBeGreaterThanOrEqual(
       WCAG_AA_NORMAL_TEXT,
     );
+  });
+
+  it("meets WCAG AA normal-text contrast for Primary Pressed brand-700 and Subtle Pressed text-primary", () => {
+    expect(
+      contrastRatio(parseHexColor("#42299c"), parseHexColor("#ffffff")),
+    ).toBeGreaterThanOrEqual(WCAG_AA_NORMAL_TEXT);
+    expect(
+      contrastRatio(parseHexColor("#17181b"), parseHexColor("#ffffff")),
+    ).toBeGreaterThanOrEqual(WCAG_AA_NORMAL_TEXT);
   });
 });
