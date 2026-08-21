@@ -134,13 +134,21 @@ test.describe("Menu keyboard model", () => {
 
       expectColorClose(await resolvedRgba(shortcut, "color"), hexToRgba("#5B5F68"), `${mode} default shortcut`);
       expect(await item.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe("none");
-      // Keep the panel relationship observable without turning the known
-      // React-vs-Figma Glass paint/blur difference into a B3 contract.
       await expect(panel).toHaveCount(1);
 
       if (mode === "gradient") {
         const image = await panel.evaluate((element) => getComputedStyle(element).backgroundImage);
         expect((image.match(/linear-gradient/g) ?? []).length).toBe(1);
+      } else if (mode === "glass") {
+        expectColorClose(await resolvedRgba(panel, "backgroundColor"), hexToRgba("#ffffff", 0.12));
+        expectColorClose(await resolvedRgba(panel, "borderColor"), hexToRgba("#ffffff", 0.24));
+        expect(await panel.evaluate((element) => getComputedStyle(element).backdropFilter)).toBe(
+          "blur(16px)",
+        );
+        expect(await panel.evaluate((element) => getComputedStyle(element).boxShadow)).toBe("none");
+        expect(await panel.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe(
+          "none",
+        );
       } else {
         expect(await panel.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe("none");
       }

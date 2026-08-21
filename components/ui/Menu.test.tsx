@@ -256,6 +256,68 @@ describe("Menu typeahead", () => {
   });
 });
 
+describe("Menu Glass panel contract", () => {
+  it("binds Menu panel Glass fill/border/blur independently of Popover md mix", () => {
+    const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+    const menuCss = readFileSync(resolve(process.cwd(), "components/ui/menu.module.css"), "utf8");
+    const popoverCss = readFileSync(resolve(process.cwd(), "components/ui/popover.module.css"), "utf8");
+
+    // Flat panel aliases stay solid semantic surface/border; blur off.
+    expect(tokens).toMatch(/--menu-surface:\s*var\(--semantic-surface-default\)/);
+    expect(tokens).toMatch(/--menu-border:\s*var\(--semantic-border-default\)/);
+    expect(tokens).toMatch(/--menu-backdrop-filter:\s*none/);
+
+    // Glass: exact Figma panel-surface 12% / panel-border 24% / blur lg 16px.
+    expect(tokens).toMatch(
+      /\[data-skrewww-surface="glass"\][\s\S]*?--menu-surface:\s*rgb\(255 255 255 \/ 0\.12\)/,
+    );
+    expect(tokens).toMatch(
+      /\[data-skrewww-surface="glass"\][\s\S]*?--menu-border:\s*rgb\(255 255 255 \/ 0\.24\)/,
+    );
+    expect(tokens).toMatch(
+      /\[data-skrewww-surface="glass"\][\s\S]*?--menu-elevation:\s*none/,
+    );
+    expect(tokens).toMatch(
+      /--glass-backdrop-filter-lg:[\s\S]*?--menu-backdrop-filter:\s*var\(--glass-backdrop-filter-lg\)/,
+    );
+    expect(tokens).toMatch(
+      /\[data-skrewww-surface="glass"\][\s\S]*?--menu-item-hover-surface:\s*rgb\(255 255 255 \/ 0\.2\)/,
+    );
+
+    // Menu shell consumes the Menu tokens (not Card gradient rim).
+    expect(menuCss).toMatch(/background-color:\s*var\(--menu-surface\)/);
+    expect(menuCss).toMatch(/border:\s*1px solid var\(--menu-border\)/);
+    expect(menuCss).toMatch(/backdrop-filter:\s*var\(--menu-backdrop-filter\)/);
+    expect(menuCss).toMatch(
+      /\[data-skrewww-surface="glass"\][\s\S]*?backdrop-filter:\s*var\(--glass-backdrop-filter-lg\)/,
+    );
+    expect(menuCss).toMatch(/\.content\.content/);
+    expect(menuCss).not.toMatch(/component-card-border-highlight/);
+
+    // Hover items must not grow their own blur.
+    expect(menuCss).toMatch(
+      /\.item:hover:not\(\.itemDisabled\)\s*\{[^}]*background:\s*var\(--menu-item-hover-surface\)/,
+    );
+    expect(menuCss).not.toMatch(/\.item[^{]*\{[^}]*backdrop-filter/);
+
+    // Popover Glass recipe stays md/12px color-mix — Menu must not mutate it.
+    expect(popoverCss).toMatch(
+      /\[data-skrewww-surface="glass"\] \.popover\s*\{[^}]*glass-mix-md/,
+    );
+    expect(popoverCss).toMatch(
+      /\[data-skrewww-surface="glass"\] \.popover\s*\{[^}]*glass-backdrop-filter-md/,
+    );
+    expect(popoverCss).not.toMatch(/menu-surface|menu-backdrop-filter|menu-border/);
+  });
+
+  it("does not expose a Selected MenuItem API", () => {
+    const source = readFileSync(resolve(process.cwd(), "components/ui/Menu.tsx"), "utf8");
+    expect(source).toMatch(/export type MenuItemProps/);
+    expect(source).not.toMatch(/selected\??:/);
+    expect(source).not.toMatch(/aria-selected/);
+  });
+});
+
 describe("Menu destructive text contract", () => {
   it("aliases menu-item-destructive-text to semantic-text-danger and keeps disabled winning over destructive", () => {
     const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");

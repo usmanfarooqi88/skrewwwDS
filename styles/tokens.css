@@ -435,10 +435,14 @@
   --popover-close-duration: 120ms;
   --popover-motion-easing: ease;
 
-  /* ── Menu geometry [TEMPORARY — aliases Popover + semantic tokens] ── */
-  --menu-surface: var(--popover-surface);
-  --menu-border: var(--popover-border);
+  /* ── Menu panel (Figma Navigation/Menu Panel 2181:216) ──
+   * Flat/Gradient: solid surface + semantic border; blur off.
+   * Glass: remapped below to panel-surface 12% / panel-border 24% /
+   * component/surface/blur 16px via --menu-backdrop-filter. */
+  --menu-surface: var(--semantic-surface-default);
+  --menu-border: var(--semantic-border-default);
   --menu-elevation: var(--popover-elevation);
+  --menu-backdrop-filter: none;
   --menu-radius: var(--popover-radius);
   --menu-padding: 0.25rem;
   --menu-min-width: 10rem;
@@ -979,6 +983,12 @@
   --component-card-border-highlight-3: rgb(223 224 228 / 0.15);
   --component-surface-content-muted: var(--semantic-text-primary);
   --component-list-item-supporting-text: var(--semantic-text-primary);
+  /* component/menu/panel-surface → surface/fill Glass white @ 12% */
+  --menu-surface: rgb(255 255 255 / 0.12);
+  /* component/menu/panel-border → surface/border Glass white @ 24% */
+  --menu-border: rgb(255 255 255 / 0.24);
+  /* Figma Menu Panel: BACKGROUND_BLUR only — no drop shadow */
+  --menu-elevation: none;
   --menu-item-hover-surface: rgb(255 255 255 / 0.2);
   --file-upload-dragging-surface: rgb(255 255 255 / 0.2);
   --feedback-info-surface: rgb(220 238 254 / 0.45);
@@ -1035,6 +1045,8 @@
   --glass-blur-lg: 16px;
   --glass-backdrop-filter-lg: blur(var(--glass-blur-lg));
   --component-surface-backdrop-filter: var(--glass-backdrop-filter-lg);
+  /* component/surface/blur Glass → 16px — after lg tokens so var() resolves */
+  --menu-backdrop-filter: var(--glass-backdrop-filter-lg);
 
   /*
    * [VERIFIED] Shared brand/danger-family Glass fills and content color,
@@ -1099,6 +1111,8 @@
     --surface-fill-default: rgb(255 255 255 / 0.92);
     --surface-fill-control: rgb(255 255 255 / 0.97);
     --component-card-surface: rgb(255 255 255 / 0.92);
+    --menu-surface: rgb(255 255 255 / 0.92);
+    --menu-backdrop-filter: none;
   }
 }
 
@@ -1113,6 +1127,10 @@
     --component-card-border-highlight-2: var(--semantic-border-default);
     --component-card-border-highlight-3: var(--semantic-border-default);
     --component-surface-content-muted: var(--semantic-icon-muted);
+    --menu-surface: var(--semantic-surface-default);
+    --menu-border: var(--semantic-border-default);
+    --menu-elevation: var(--popover-elevation);
+    --menu-backdrop-filter: none;
     --menu-item-hover-surface: var(--semantic-surface-elevated);
     --file-upload-dragging-surface: var(--semantic-surface-elevated);
     --component-surface-backdrop-filter: none;

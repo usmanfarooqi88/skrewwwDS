@@ -10,12 +10,31 @@
   border: 1px solid var(--menu-border);
   border-radius: var(--menu-radius);
   box-shadow: var(--menu-elevation);
+  /* Flat/Gradient: none. Glass: remapped --menu-backdrop-filter → lg 16px. */
+  backdrop-filter: var(--menu-backdrop-filter);
   color: var(--menu-item-text);
   animation: none;
 }
 
 [data-skrewww-surface="gradient"] .content {
   background-image: var(--component-surface-gradient-overlay);
+}
+
+/*
+ * MenuContent shares the Popover root DOM node (.popover + .content).
+ * Popover Glass still uses color-mix + md/12px blur for generic popovers —
+ * beat that recipe here only so Menu matches Figma panel 12%/24%/16px
+ * without mutating global Popover Glass.
+ * Declare backdrop-filter once (no manual -webkit) so the CSS pipeline keeps
+ * the standard property — hand-writing both was dropping the unprefixed rule
+ * and leaving Popover's blur(12px) as the computed winner.
+ */
+:global([data-skrewww-surface="glass"]) .content.content {
+  background: var(--menu-surface);
+  background-image: none;
+  border: 1px solid var(--menu-border);
+  box-shadow: var(--menu-elevation);
+  backdrop-filter: var(--glass-backdrop-filter-lg);
 }
 
 .body {

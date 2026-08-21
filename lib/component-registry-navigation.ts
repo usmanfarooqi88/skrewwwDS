@@ -336,11 +336,13 @@ export function Example() {
     tokensUsed: [
       "menu/surface",
       "menu/border",
+      "menu/backdrop-filter",
       "menu/item-text",
       "menu/item-hover-surface",
       "menu/item-destructive-text",
       "semantic/text/danger",
       "semantic/focus-ring",
+      "component/surface/blur",
     ],
     relatedComponents: [
       { label: "Popover — supplementary non-command content", href: "/components/popover" },
@@ -349,7 +351,8 @@ export function Example() {
       { label: "Menu Item — Figma building block (compound subcomponent)", href: "/components/menu-item" },
     ],
     relatedTokens: [
-      { label: "popover/surface", href: "/foundations" },
+      { label: "menu/surface (panel-surface)", href: "/foundations" },
+      { label: "menu/border (panel-border)", href: "/foundations" },
       { label: "menu/item-destructive-text", href: "/foundations" },
       { label: "semantic/text/danger", href: "/foundations" },
       { label: "semantic/focus-ring", href: "/foundations" },
