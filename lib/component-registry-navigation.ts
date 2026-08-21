@@ -39,7 +39,7 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
       "semantic/text/secondary",
       "semantic/action/primary",
       "semantic/text/danger",
-      "semantic/action/danger",
+      "semantic/icon/danger",
       "semantic/focus-ring",
     ],
     relatedComponents: [
@@ -74,6 +74,7 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
       { name: "href", type: "string", description: "Destination URL." },
       { name: "variant", type: '"default" | "subtle" | "danger"', default: '"default"', description: "Visual style." },
       { name: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Text size." },
+      { name: "leadingIcon", type: "ReactNode", description: "Decorative leading icon (React extension; Figma exposes trailing only)." },
       { name: "trailingIcon", type: "ReactNode", description: "Decorative trailing icon." },
     ],
     reactExample: `import { Link } from "@/components/ui/Link";

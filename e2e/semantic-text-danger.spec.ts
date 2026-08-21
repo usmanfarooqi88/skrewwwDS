@@ -10,7 +10,7 @@ import type { Locator } from "@playwright/test";
 
 const DANGER_TEXT = "#cc3b37";
 const ACTION_DANGER = "#e5484d";
-const ACTION_DANGER_HOVER = "#b82433";
+const DANGER_PRESSED = "#b3261e";
 const DROPZONE_ERROR = "#e5484d";
 const AA_NORMAL_TEXT = 4.5;
 
@@ -98,7 +98,7 @@ test.describe("semantic/text/danger consumers", () => {
     );
   });
 
-  test("Link danger label uses semantic-text-danger while icons keep pre-batch currentColor inheritance", async ({
+  test("Link Danger Default/Hover/Active match Figma-locked text + icon roles", async ({
     page,
   }) => {
     await page.goto("/components/link");
@@ -110,10 +110,13 @@ test.describe("semantic/text/danger consumers", () => {
     const icon = link.locator('[aria-hidden="true"]');
 
     await expectDangerTextContrast(label);
-    // D3: default icons resolve BASE semantic-action-danger → danger/500.
+    // Default: icon semantic-icon-danger → #E5484D; label text-danger → #CC3B37
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(ACTION_DANGER));
     await expect(link).not.toHaveAttribute("aria-disabled");
     expect((await link.evaluate((el) => getComputedStyle(el).opacity))).toBe("1");
+    expect(
+      await link.evaluate((el) => getComputedStyle(el).textDecorationLine.includes("underline")),
+    ).toBe(true);
 
     await link.focus();
     await expect(link).toBeFocused();
@@ -124,7 +127,7 @@ test.describe("semantic/text/danger consumers", () => {
     await expect
       .poll(async () => {
         const color = await resolvedRgba(label, "color");
-        const expected = hexToRgba(ACTION_DANGER_HOVER);
+        const expected = hexToRgba(DANGER_TEXT);
         return (
           Math.abs(color.r - expected.r) <= 4 &&
           Math.abs(color.g - expected.g) <= 4 &&
@@ -132,6 +135,22 @@ test.describe("semantic/text/danger consumers", () => {
         );
       })
       .toBe(true);
-    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(ACTION_DANGER_HOVER));
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(DANGER_TEXT));
+
+    // :active while hovered — pressed danger/700 for label + icon
+    await page.mouse.down();
+    await expect
+      .poll(async () => {
+        const color = await resolvedRgba(label, "color");
+        const expected = hexToRgba(DANGER_PRESSED);
+        return (
+          Math.abs(color.r - expected.r) <= 4 &&
+          Math.abs(color.g - expected.g) <= 4 &&
+          Math.abs(color.b - expected.b) <= 4
+        );
+      })
+      .toBe(true);
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(DANGER_PRESSED));
+    await page.mouse.up();
   });
 });

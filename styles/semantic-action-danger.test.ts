@@ -12,7 +12,6 @@ const ALLOWED_BASE_CONSUMERS: Record<string, string[]> = {
   "components/ui/checkbox.module.css": ["border/stroke", "fill/background"],
   "components/ui/radio.module.css": ["border/stroke"],
   "components/ui/progress-bar.module.css": ["fill/background"],
-  "components/ui/link.module.css": ["icon/currentColor"],
 };
 
 function collectCssFiles(dir: string): string[] {
@@ -85,15 +84,13 @@ describe("semantic-action-danger (D3)", () => {
     }
 
     const colorLines = hits.filter((h) => /^\s*color\s*:/.test(h.line) || /\{[^}]*color\s*:/.test(h.line));
-    // Only Link root may set `color: var(--semantic-action-danger)` for icon currentColor;
-    // the label override uses --semantic-text-danger.
-    for (const hit of colorLines) {
-      expect(hit.file).toBe("components/ui/link.module.css");
-      expect(hit.line).toMatch(/color:\s*var\(--semantic-action-danger\)/);
-    }
+    // Link Danger icons moved onto --semantic-icon-danger; no BASE action-danger color consumers remain.
+    expect(colorLines).toEqual([]);
 
     const linkCss = readFileSync(resolve(root, "components/ui/link.module.css"), "utf8");
+    expect(linkCss).toMatch(/\.danger\s*\{[^}]*var\(--semantic-icon-danger\)/);
     expect(linkCss).toMatch(/\.danger \.label\s*\{[^}]*var\(--semantic-text-danger\)/);
     expect(linkCss).not.toMatch(/\.danger \.label\s*\{[^}]*var\(--semantic-action-danger\)/);
+    expect(linkCss).not.toMatch(/\bvar\(--semantic-action-danger\)/);
   });
 });

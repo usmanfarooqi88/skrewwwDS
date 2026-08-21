@@ -45,19 +45,31 @@
 }
 
 .danger {
-  color: var(--semantic-action-danger);
+  /* Icon currentColor — semantic/icon/danger → danger/500 → #E5484D */
+  color: var(--semantic-icon-danger);
 }
 
 .danger .label {
+  /* Accessible danger text — semantic/text/danger → danger/600 → #CC3B37 */
   color: var(--semantic-text-danger);
 }
 
 .danger:hover {
-  color: var(--semantic-action-danger-hover);
+  /* Figma Danger Hover converges label + icon to #CC3B37 */
+  color: var(--semantic-text-danger);
 }
 
 .danger:hover .label {
-  color: var(--semantic-action-danger-hover);
+  color: var(--semantic-text-danger);
+}
+
+/* After :hover so :active wins while the pointer is also hovered */
+.danger:active {
+  color: var(--primitive-color-danger-700);
+}
+
+.danger:active .label {
+  color: var(--primitive-color-danger-700);
 }
 
 .icon {

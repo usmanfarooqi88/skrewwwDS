@@ -90,8 +90,9 @@
   --semantic-focus-ring: var(--primitive-color-brand-500); /* [ALIASED] semantic/focus-ring */
   --semantic-icon-muted: var(--primitive-color-neutral-400); /* [ALIASED] */
   /* [VERIFIED] semantic/icon/danger — Figma VariableID:2002:2476 → color/danger/500.
-     Stable-v1 consumers: Alert/Toast via --feedback-error-icon; File Upload Error icon.
-     Deferred / non-consumers: ValidationMessage, Link, Menu, Text Input (no built-in
+     Stable-v1 consumers: Alert/Toast via --feedback-error-icon; File Upload Error icon;
+     Link Danger root/icon currentColor.
+     Deferred / non-consumers: ValidationMessage, Menu, Text Input (no built-in
      error status icon), Button Danger Figma hygiene. */
   --semantic-icon-danger: var(--primitive-color-danger-500); /* [ALIASED] semantic/icon/danger */
   --semantic-feedback-success: #1a8b4c; /* [VERIFIED] */

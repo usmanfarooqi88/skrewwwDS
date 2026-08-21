@@ -51,10 +51,9 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
     expect(toastSrc).toMatch(/surface="toast"/);
   });
 
-  it("does not migrate Link, Menu, ValidationMessage, Button, or Text Input onto icon-danger", () => {
+  it("does not migrate Menu, ValidationMessage, Button, or Text Input onto icon-danger", () => {
     const root = process.cwd();
     const forbidden = [
-      "components/ui/link.module.css",
       "components/ui/menu.module.css",
       "components/ui/validation-message.module.css",
       "components/ui/button.module.css",
@@ -66,6 +65,10 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
       expect(content.includes("var(--semantic-icon-danger)")).toBe(false);
       expect(content.includes("var(--feedback-error-icon)")).toBe(false);
     }
+
+    const link = readFileSync(join(root, "components/ui/link.module.css"), "utf8");
+    expect(link).toMatch(/\.danger\s*\{[^}]*var\(--semantic-icon-danger\)/);
+    expect(link.includes("var(--feedback-error-icon)")).toBe(false);
 
     const fileUpload = readFileSync(
       join(root, "components/ui/file-upload.module.css"),
@@ -91,7 +94,7 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
     expect(tokens).toMatch(/--feedback-info-icon:\s*#3b82f6/i);
   });
 
-  it("limits direct semantic-icon-danger runtime usage to feedback-error-icon and File Upload Error icon", () => {
+  it("limits direct semantic-icon-danger runtime usage to feedback-error-icon, File Upload Error icon, and Link Danger", () => {
     const root = process.cwd();
     const cssFiles = [
       ...collectCssFiles(join(root, "components")),
@@ -119,6 +122,12 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
         }
         if (
           rel === "components/ui/file-upload.module.css" &&
+          /color:\s*var\(--semantic-icon-danger\)/.test(line)
+        ) {
+          continue;
+        }
+        if (
+          rel === "components/ui/link.module.css" &&
           /color:\s*var\(--semantic-icon-danger\)/.test(line)
         ) {
           continue;

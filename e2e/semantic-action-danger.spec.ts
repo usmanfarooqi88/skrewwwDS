@@ -15,7 +15,6 @@ import type { Page } from "@playwright/test";
 
 const ACTION_DANGER = "#e5484d";
 const TEXT_DANGER = "#cc3b37";
-const ACTION_DANGER_HOVER = "#b82433";
 const NON_TEXT_AA = 3;
 
 async function settle(page: Page) {
@@ -99,7 +98,7 @@ test.describe("semantic-action-danger chrome sync (D3)", () => {
     expectColorClose(rgbaStringToRgba(color), hexToRgba(ACTION_DANGER));
   });
 
-  test("Link danger label stays #CC3B37; default icon becomes #E5484D; hover label unchanged", async ({
+  test("Link danger label stays #CC3B37; default icon #E5484D; hover converges to #CC3B37", async ({
     page,
   }) => {
     await page.goto("/components/link");
@@ -119,7 +118,7 @@ test.describe("semantic-action-danger chrome sync (D3)", () => {
     await expect
       .poll(async () => {
         const color = await resolvedRgba(label, "color");
-        const expected = hexToRgba(ACTION_DANGER_HOVER);
+        const expected = hexToRgba(TEXT_DANGER);
         return (
           Math.abs(color.r - expected.r) <= 4 &&
           Math.abs(color.g - expected.g) <= 4 &&
@@ -127,6 +126,7 @@ test.describe("semantic-action-danger chrome sync (D3)", () => {
         );
       })
       .toBe(true);
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(TEXT_DANGER));
   });
 
   test("protected normal-text roles remain #CC3B37, not #E5484D", async ({ page }) => {
