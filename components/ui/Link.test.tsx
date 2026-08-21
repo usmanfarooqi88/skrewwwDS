@@ -126,7 +126,8 @@ describe("Link", () => {
     expect(css).toMatch(/\.subtle:active\s*\{[^}]*var\(--semantic-text-primary\)/);
     expect(css.indexOf(".subtle:active")).toBeGreaterThan(css.indexOf(".subtle:hover"));
 
-    expect(tokens).toMatch(/--primitive-color-brand-700:\s*#42299c/i);
+    expect(tokens).toMatch(/--primitive-color-brand-600:\s*#5638d6/i);
+    expect(tokens).toMatch(/--primitive-color-brand-700:\s*#4229ad/i);
     expect(tokens).toMatch(
       /--semantic-text-primary:\s*var\(--primitive-color-neutral-900\)/,
     );
@@ -169,9 +170,12 @@ describe("Link", () => {
     );
   });
 
-  it("meets WCAG AA normal-text contrast for Primary Pressed brand-700 and Subtle Pressed text-primary", () => {
+  it("meets WCAG AA normal-text contrast for Primary Hover brand-600 and Pressed brand-700", () => {
     expect(
-      contrastRatio(parseHexColor("#42299c"), parseHexColor("#ffffff")),
+      contrastRatio(parseHexColor("#5638d6"), parseHexColor("#ffffff")),
+    ).toBeGreaterThanOrEqual(WCAG_AA_NORMAL_TEXT);
+    expect(
+      contrastRatio(parseHexColor("#4229ad"), parseHexColor("#ffffff")),
     ).toBeGreaterThanOrEqual(WCAG_AA_NORMAL_TEXT);
     expect(
       contrastRatio(parseHexColor("#17181b"), parseHexColor("#ffffff")),

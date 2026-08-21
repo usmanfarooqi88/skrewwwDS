@@ -13,8 +13,8 @@ const config: Config = {
           300: "#AE9CF8",
           400: "#8E71F5",
           500: "#6C4CF2", // color/brand/500 — the actual confirmed brand color
-          600: "#5738C7",
-          700: "#42299C",
+          600: "#5638D6",
+          700: "#4229AD",
           800: "#2C1B68",
           900: "#170E36",
         },

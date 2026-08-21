@@ -11,10 +11,11 @@
  */
 
 :root {
-  /* ── Primitive: color / brand [VERIFIED] ── */
+  /* ── Primitive: color / brand [VERIFIED] ──
+     brand/600 and brand/700 synced to live Figma (was #5738c7 / #42299c). */
   --primitive-color-brand-500: #6c4cf2; /* color/brand/500 */
-  --primitive-color-brand-600: #5738c7; /* color/brand/600 */
-  --primitive-color-brand-700: #42299c; /* color/brand/700 */
+  --primitive-color-brand-600: #5638d6; /* color/brand/600 */
+  --primitive-color-brand-700: #4229ad; /* color/brand/700 */
 
   /* ── Primitive: color / danger [VERIFIED] ──
      Sparse status-hue family matching live Figma Primitive collection.

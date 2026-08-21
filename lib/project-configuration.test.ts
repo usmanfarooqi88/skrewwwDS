@@ -8,6 +8,7 @@ import {
 import { compareReadmeInventory, parseReadmeImplementedTable } from "@/lib/readme-inventory";
 import { getProjectStatusFacts } from "@/lib/project-status-facts";
 import { REDIRECTED_COMPONENT_SLUGS } from "@/lib/routes";
+import { tokenColorMap } from "@/lib/data";
 import tailwindConfig from "../tailwind.config";
 
 const root = process.cwd();
@@ -91,15 +92,39 @@ describe("project configuration", () => {
     expect(existsSync(join(root, "docs/architecture/table-foundation.md"))).toBe(true);
   });
 
-  it("guards Tailwind brand-500 against tokens.css drift", () => {
+  it("guards brand 500/600/700 across tokens.css, Tailwind, and lib/data", () => {
     const tokens = readRootFile("styles/tokens.css");
-    const match = tokens.match(/--primitive-color-brand-500:\s*(#[0-9a-fA-F]{6})/);
-    expect(match?.[1]).toBeDefined();
-    const tokenHex = match![1].toLowerCase();
-    const tailwindHex = (
-      tailwindConfig.theme?.extend?.colors as { brand?: { 500?: string } }
-    )?.brand?.[500]?.toLowerCase();
-    expect(tailwindHex).toBe(tokenHex);
+    const brandPalette = (
+      tailwindConfig.theme?.extend?.colors as {
+        brand?: Record<string, string | undefined>;
+      }
+    )?.brand;
+    const steps = [
+      { step: "500", dataKey: "color/brand/500", figma: "#6c4cf2" },
+      { step: "600", dataKey: "color/brand/600", figma: "#5638d6" },
+      { step: "700", dataKey: "color/brand/700", figma: "#4229ad" },
+    ] as const;
+
+    for (const { step, dataKey, figma } of steps) {
+      const match = tokens.match(
+        new RegExp(`--primitive-color-brand-${step}:\\s*(#[0-9a-fA-F]{6})`),
+      );
+      expect(match?.[1], `tokens.css brand-${step}`).toBeDefined();
+      const tokenHex = match![1].toLowerCase();
+      expect(tokenHex).toBe(figma);
+      expect(brandPalette?.[step]?.toLowerCase()).toBe(tokenHex);
+      expect(tokenColorMap[dataKey]?.toLowerCase()).toBe(tokenHex);
+    }
+
+    // Button Primary interaction fills already match live Figma 600/700 and stay component-scoped
+    expect(tokens).toMatch(/--component-button-primary-fill-hover:\s*#5638d6/i);
+    expect(tokens).toMatch(/--component-button-primary-fill-pressed:\s*#4229ad/i);
+    expect(tokens).toMatch(
+      /--semantic-action-primary-hover:\s*var\(--primitive-color-brand-600\)/,
+    );
+    expect(tokens).toMatch(
+      /--semantic-action-primary-pressed:\s*var\(--primitive-color-brand-700\)/,
+    );
   });
 
   it("declares the sparse Figma danger primitive family and no extra steps", () => {

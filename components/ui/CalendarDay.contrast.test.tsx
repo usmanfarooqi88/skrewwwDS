@@ -16,7 +16,7 @@ import {
 /** Verified primitive/semantic values from styles/tokens.css (flat theme). */
 const TOKENS = {
   brand500: "#6c4cf2",
-  brand600: "#5738c7",
+  brand600: "#5638d6",
   textPrimary: "#17181b",
   textInverse: "#ffffff",
   textMuted: "#5b5f68",

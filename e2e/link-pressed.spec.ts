@@ -7,15 +7,13 @@ import {
 } from "./fixtures";
 
 /**
- * Link R2/R3: Primary pressed + Subtle hover/pressed interaction.
- * Danger R1 remains covered here and in semantic-*-danger specs.
- *
- * Primary Pressed uses React --primitive-color-brand-700 (#42299C),
- * not live Figma brand/700 (#4229AD).
+ * Link Primary interaction after foundation brand/600 + /700 Figma sync.
+ * Hover/Pressed inherit corrected primitives (no Link CSS change).
  */
 
-const PRIMARY_HOVER = "#5738c7";
-const PRIMARY_PRESSED = "#42299c";
+const PRIMARY_DEFAULT = "#6c4cf2";
+const PRIMARY_HOVER = "#5638d6";
+const PRIMARY_PRESSED = "#4229ad";
 const SUBTLE_DEFAULT = "#5b5f68";
 const SUBTLE_INTERACT = "#17181b";
 const DANGER_TEXT = "#cc3b37";
@@ -28,8 +26,8 @@ async function settle(page: import("@playwright/test").Page) {
   });
 }
 
-test.describe("Link Primary/Subtle interaction (R2/R3)", () => {
-  test("Primary/default hover stays brand-600; :active resolves brand-700 for label + icon", async ({
+test.describe("Link Primary/Subtle interaction (R2/R3 + brand sync)", () => {
+  test("Primary/default Default/Hover/Active resolve live Figma brand ramp for label + icon", async ({
     page,
   }) => {
     await page.goto("/components/link");
@@ -37,6 +35,9 @@ test.describe("Link Primary/Subtle interaction (R2/R3)", () => {
     const link = page.getByRole("link", { name: "External reference" });
     const label = link.locator("span").filter({ hasText: "External reference" });
     const icon = link.locator('[aria-hidden="true"]');
+
+    expectColorClose(await resolvedRgba(label, "color"), hexToRgba(PRIMARY_DEFAULT));
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(PRIMARY_DEFAULT));
 
     await link.hover();
     expectColorClose(await resolvedRgba(label, "color"), hexToRgba(PRIMARY_HOVER));
@@ -90,7 +91,7 @@ test.describe("Link Primary/Subtle interaction (R2/R3)", () => {
     await page.mouse.up();
   });
 
-  test("Danger R1 remains Default/Hover/Active after Subtle Hover architecture fix", async ({
+  test("Danger R1 remains Default/Hover/Active after brand/600–700 foundation sync", async ({
     page,
   }) => {
     await page.goto("/components/link");
