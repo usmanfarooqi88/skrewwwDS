@@ -59,7 +59,8 @@ export default function HomePage() {
       <div className="mb-10 sm:mb-16">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-ink-200 px-3 py-1 font-mono text-xs text-ink-500">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-          {siteConfig.designSystemVersion} — {implementedCount} Beta React components
+          {siteConfig.designSystemVersion} — {implementedCount} React components
+          (individually Beta)
         </div>
         <h1 className="text-4xl font-semibold tracking-tight text-ink-900 sm:text-5xl">
           One foundation.

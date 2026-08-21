@@ -1,6 +1,8 @@
 # Skrewww Docs
 
-Documentation site for the Skrewww design system — token-driven components, native-first form semantics with accessible custom controls where native HTML cannot represent the confirmed interaction model, server-rendered usage guidance, and Beta React implementations with live previews.
+Documentation site for **Skrewww Design System 1.0** — token-driven components, native-first form semantics with accessible custom controls where native HTML cannot represent the confirmed interaction model, server-rendered usage guidance, and React implementations with live previews.
+
+Skrewww **1.0** is the platform and documentation release. Individual React components retain their own Beta maturity until explicitly promoted to Stable.
 
 ## Getting Started
 
@@ -21,10 +23,10 @@ URL on startup.
 
 Volatile counts and roadmap live in [`docs/project-status.md`](docs/project-status.md) (derived from the canonical registry).
 
-- **Beta React components:** count derived from `/registry.json` (`metadata.implementedComponentCount`, `hasImplementation: true`)
+- **Implemented React components:** count derived from `/registry.json` (`metadata.implementedComponentCount`, `hasImplementation: true`); individual entries remain Beta until promoted
 - **Figma-documented components:** count derived from `content/` documentation inventory (includes documentation-only entries)
 - **WCAG 2.2 AA (target)** accessibility baseline
-- **Design system version:** `0.2.0-beta`
+- **Design system version:** `1.0.0` (platform/docs release)
 - **Node.js:** `>=20.19.0` (see `.nvmrc`)
 
 ### Implemented React components
@@ -106,12 +108,18 @@ Stable-v1 Gradient contract: [`docs/architecture/gradient-foundation.md`](docs/a
 ## Distribution Model
 
 **Currently implemented — shadcn-compatible registry distribution.** A
-subset of components can be installed into a consumer project with
+**supported subset** of components can be installed into a consumer project with
 `npx shadcn@latest add @skrewww/<component>`, generated from the canonical
 registry (`lib/component-registry.ts`) via `npm run generate:registry` and
 served as static manifests under `/r/{name}.json`. This is a separate path
-from the `/registry.json` metadata feed below. Scope, mechanism, and
-verified consumer testing:
+from the `/registry.json` metadata feed below.
+
+**Supported `/r` install surface (exactly six items):** `foundation`,
+`button`, `card`, `text-input`, `form-field`, and `validation-message`.
+Other implemented React components are documented on this site but are not
+part of the current shadcn install surface.
+
+Scope, mechanism, and verified consumer testing:
 [`docs/architecture/shadcn-distribution.md`](docs/architecture/shadcn-distribution.md).
 
 **Future / not yet implemented.** Skrewww has also decided on "The Hybrid

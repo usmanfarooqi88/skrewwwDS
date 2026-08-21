@@ -2,12 +2,15 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  CANONICAL_REGISTRY_SCHEMA_VERSION,
   getImplementedComponentCount,
   getImplementedRegistryEntries,
 } from "@/lib/component-registry";
 import { compareReadmeInventory, parseReadmeImplementedTable } from "@/lib/readme-inventory";
 import { getProjectStatusFacts } from "@/lib/project-status-facts";
 import { REDIRECTED_COMPONENT_SLUGS } from "@/lib/routes";
+import { siteConfig } from "@/lib/site-config";
+import { buildValidationMessageManifest } from "@/lib/shadcn-registry-generator";
 import { tokenColorMap } from "@/lib/data";
 import tailwindConfig from "../tailwind.config";
 
@@ -248,5 +251,38 @@ describe("project configuration", () => {
     expect(siteConfigSource).toContain("NEXT_PUBLIC_SITE_URL");
     expect(siteConfigSource).toContain("PRODUCTION_FALLBACK_ORIGIN");
     expect(siteConfigSource).toContain("https://skrewww.dev");
+  });
+
+  it("keeps Skrewww 1.0 platform version metadata synchronized", () => {
+    const pkg = JSON.parse(readRootFile("package.json"));
+    const facts = getProjectStatusFacts();
+    expect(pkg.version).toBe("1.0.0");
+    expect(siteConfig.designSystemVersion).toBe("1.0.0");
+    expect(siteConfig.documentationVersion).toBe("1.0.0");
+    expect(facts.packageVersion).toBe("1.0.0");
+    expect(facts.designSystemVersion).toBe(pkg.version);
+    expect(facts.documentationVersion).toBe(pkg.version);
+    expect(facts.registrySchemaVersion).toBe("1.4.0");
+    expect(CANONICAL_REGISTRY_SCHEMA_VERSION).toBe("1.0.0");
+  });
+
+  it("preserves 47 individually Beta component statuses at platform 1.0", () => {
+    const implemented = getImplementedRegistryEntries();
+    expect(implemented).toHaveLength(47);
+    expect(implemented.every((entry) => entry.status === "beta")).toBe(true);
+    // Component versions stay on their own tracks — not mechanically set to platform 1.0.0.
+    expect(implemented.every((entry) => entry.version !== "1.0.0")).toBe(true);
+    expect(implemented.every((entry) => entry.version.includes("beta"))).toBe(true);
+  });
+
+  it("preserves the supported /r install surface and Phosphor transport", () => {
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("validation-message.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("text-input.json");
+    const validationMessage = getImplementedRegistryEntries().find(
+      (entry) => entry.slug === "validation-message",
+    );
+    expect(validationMessage?.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(buildValidationMessageManifest().dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(buildValidationMessageManifest().name).toBe("validation-message");
   });
 });

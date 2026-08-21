@@ -35,6 +35,56 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-08-skrewww-1-0",
+    date: "2026-08-21",
+    displayDate: "August 2026",
+    title: "Skrewww 1.0",
+    summary:
+      "Skrewww Design System 1.0 — platform and documentation release. Individual React components retain their own Beta or Stable maturity and are promoted independently from the platform release.",
+    items: [
+      {
+        type: "new",
+        text: "Skrewww Design System 1.0 platform release.",
+      },
+      {
+        type: "new",
+        text: "Verified shadcn registry distribution for the supported install surface.",
+      },
+      {
+        type: "new",
+        text: "Production-ready foundation, token, and accessibility contracts for the platform release.",
+      },
+      {
+        type: "improved",
+        text: "Core Figma and React parity, including interaction-state alignment.",
+      },
+      {
+        type: "improved",
+        text: "Glass Menu panel parity.",
+      },
+      {
+        type: "improved",
+        text: "Link interaction and state parity.",
+      },
+      {
+        type: "improved",
+        text: "Foundation brand interaction ramp.",
+      },
+      {
+        type: "improved",
+        text: "Registry dependency validation and clean consumer install path.",
+      },
+      {
+        type: "fixed",
+        text: "Stable-v1 component and state parity defects closed during hardening.",
+      },
+      {
+        type: "fixed",
+        text: "Foundations page-specific canonical and SEO metadata.",
+      },
+    ],
+  },
+  {
     id: "2026-08-foundation-and-distribution",
     date: "2026-08-15",
     displayDate: "August 2026",

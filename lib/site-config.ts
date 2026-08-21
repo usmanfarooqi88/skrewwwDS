@@ -23,8 +23,8 @@ export const siteConfig = {
   description:
     "AI-first design system platform with token-driven components, native-first form semantics with accessible custom controls where native HTML cannot represent the confirmed interaction model, and documentation for designers, developers, and coding agents.",
   origin: resolveSiteOrigin(),
-  designSystemVersion: "0.2.0-beta",
-  documentationVersion: "0.2.0-beta",
+  designSystemVersion: "1.0.0",
+  documentationVersion: "1.0.0",
   /** Fixed source date — do not regenerate on every build. */
   lastUpdated: "2026-07-13",
   documentationPublished: "2026-06-01",

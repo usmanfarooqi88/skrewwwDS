@@ -1,6 +1,47 @@
 # Project status
 
-Last verified: **2026-08-11** (Layer 3 parity reconciliation; implementation counts remain registry-derived)
+Last verified: **2026-08-21** (Skrewww 1.0 release readiness)
+
+## 2026-08-21 — Skrewww 1.0 release readiness
+
+Public platform/docs release metadata for **Skrewww Design System 1.0**.
+
+**Gates passed (pre-metadata):**
+
+- Stable-v1 technical readiness: `READY-WITH-PRE-V1-CHECK`
+- Public API freeze: `READY`
+- Final pre-v1 release gate: `READY`
+- Phosphor consumer dependency transport verified (`@phosphor-icons/react` via ValidationMessage)
+- Clean TextInput consumer smoke passed (`npm run smoke:consumer -- text-input`)
+- Production origin confirmed: `https://skrewww.com` (`NEXT_PUBLIC_SITE_URL`)
+- Live Foundations canonical verified (`https://skrewww.com/foundations`)
+- Live `/r/validation-message.json` dependency verified (includes `@phosphor-icons/react`)
+
+**Final gate evidence (pre-metadata baseline):**
+
+| Gate | Result |
+|------|--------|
+| Unit tests | 769 passed |
+| Playwright | 336 passed |
+| Lint | 0 errors / 26 warnings |
+| Typecheck | pass |
+| Build | pass |
+
+**Release model:**
+
+| Identifier | Value |
+|------------|-------|
+| Platform / `designSystemVersion` | `1.0.0` |
+| `documentationVersion` | `1.0.0` |
+| Package (`skrewww-docs`) | `1.0.0` |
+| Public registry `schemaVersion` | `1.4.0` (unchanged) |
+| `CANONICAL_REGISTRY_SCHEMA_VERSION` | `1.0.0` (unchanged) |
+| Implemented component statuses | **47 remain individually Beta** (not blanket-promoted to Stable) |
+| Supported `/r` install surface | Exactly six: foundation, button, card, text-input, form-field, validation-message |
+
+Platform maturity and individual component maturity are tracked independently. Public framing: *Skrewww 1.0 — platform and documentation release. Individual React components remain Beta until explicitly promoted to Stable.*
+
+See also: [`docs/architecture/versioning.md`](architecture/versioning.md)
 
 ## Documentation preview mode scoping (2026-08-13, additive)
 

@@ -37,8 +37,9 @@ export function getProjectStatusFacts() {
 
   return {
     lastVerifiedDate: siteConfig.lastUpdated,
-    packageVersion: "0.2.0-beta",
+    packageVersion: "1.0.0",
     designSystemVersion: siteConfig.designSystemVersion,
+    documentationVersion: siteConfig.documentationVersion,
     registrySchemaVersion: getPublicRegistry().metadata.schemaVersion,
     implementedComponentCount: getImplementedComponentCount(),
     registryEntryCount: componentRegistry.length,

@@ -6,7 +6,7 @@ Skrewww uses several version identifiers. They serve different purposes and **do
 
 | Identifier | Location | Meaning |
 |------------|----------|---------|
-| **Package version** | `package.json` `version` | npm package / documentation site release tag (currently `0.2.0-beta`). |
+| **Package version** | `package.json` `version` | npm package / documentation site release tag (currently `1.0.0`). |
 | **Design system version** | `lib/site-config.ts` `designSystemVersion` | Overall platform maturity surfaced in metadata, LLM indexes, and JSON-LD. |
 | **Documentation version** | `lib/site-config.ts` `documentationVersion` | Documentation site content generation baseline. |
 | **Registry schema version** | `lib/registry-public.ts` `metadata.schemaVersion` | Shape of `/registry.json` (currently `1.3.0`). Breaking registry field changes bump this. |

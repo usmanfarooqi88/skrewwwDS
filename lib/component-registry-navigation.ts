@@ -401,7 +401,11 @@ export function Example() {
       { name: "align", type: "PopoverAlign", default: '"start"', description: "Alignment relative to trigger." },
       { name: "loop", type: "boolean", default: "false", description: "Whether arrow navigation wraps." },
       { name: "closeOnSelect", type: "boolean", default: "true", description: "Close after item activation." },
-      { name: "onSelect", type: "(event: Event) => void", description: "MenuItem activation callback." },
+      {
+        name: "MenuItem.onSelect",
+        type: "(event: Event) => void",
+        description: "MenuItem activation callback (not a Menu root prop).",
+      },
     ],
     reactExample: `"use client";
 

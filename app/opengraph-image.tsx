@@ -50,7 +50,7 @@ export default function OpenGraphImage() {
           </div>
         </div>
         <div style={{ fontSize: 22, color: "#6C4CF2", fontWeight: 600 }}>
-          Token-driven · Native controls · Beta React implementations
+          Token-driven · Native controls · React implementations
         </div>
       </div>
     ),
