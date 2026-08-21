@@ -92,6 +92,29 @@ describe("SEO infrastructure", () => {
     expect(urls).toContain(absoluteUrl("/changelog"));
   });
 
+  it("includes foundations in the sitemap with a self-referencing canonical path", () => {
+    const urls = getSitemapUrls();
+    expect(urls).toContain(absoluteUrl("/foundations"));
+  });
+
+  it("exports page-specific foundations SEO metadata (not homepage canonical)", async () => {
+    const { metadata } = await import("@/app/foundations/page");
+    const expectedTitle = `Foundations — ${siteConfig.name}`;
+    const expectedUrl = absoluteUrl("/foundations");
+
+    expect(metadata.title).toEqual({ absolute: expectedTitle });
+    expect(typeof metadata.description).toBe("string");
+    expect((metadata.description as string).length).toBeGreaterThan(40);
+    expect((metadata.description as string).toLowerCase()).toContain("foundations");
+    expect(metadata.alternates?.canonical).toBe(expectedUrl);
+    expect(metadata.alternates?.canonical).not.toBe(siteConfig.origin);
+    expect(metadata.openGraph?.title).toBe(expectedTitle);
+    expect(metadata.openGraph?.description).toBe(metadata.description);
+    expect(metadata.openGraph?.url).toBe(expectedUrl);
+    expect(JSON.stringify(metadata)).not.toContain("localhost");
+    expect(metadata.robots).toBeUndefined();
+  });
+
   it("generates unique metadata titles and non-empty summaries for implemented components", () => {
     const titles = getImplementedComponentTitles();
     const implemented = getImplementedRegistryEntries();

@@ -22,6 +22,37 @@ test.describe("/foundations", () => {
     }
   });
 
+  test("serves page-specific SEO metadata with a self-referencing canonical", async ({ page }) => {
+    const response = await page.request.get("/foundations");
+    expect(response.ok()).toBeTruthy();
+    const html = await response.text();
+
+    expect(html).toMatch(/<title>[^<]*Foundations[^<]*<\/title>/i);
+
+    const description = html.match(
+      /<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i,
+    )?.[1];
+    expect(description?.toLowerCase()).toContain("foundations");
+
+    const canonical = html.match(
+      /<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/i,
+    )?.[1] ?? html.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["']/i)?.[1];
+    expect(canonical).toBeTruthy();
+    expect(new URL(canonical!).pathname.replace(/\/$/, "")).toBe("/foundations");
+
+    const ogUrl =
+      html.match(/<meta[^>]+property=["']og:url["'][^>]+content=["']([^"']+)["']/i)?.[1] ??
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:url["']/i)?.[1];
+    expect(new URL(ogUrl!).pathname.replace(/\/$/, "")).toBe("/foundations");
+
+    const ogTitle =
+      html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)?.[1] ??
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i)?.[1];
+    expect(ogTitle?.toLowerCase()).toContain("foundations");
+
+    expect(html.toLowerCase()).not.toContain('name="robots" content="noindex');
+  });
+
   test("does not load fonts from an external Google Fonts request (self-hosted via next/font)", async ({ page }) => {
     const externalFontRequests: string[] = [];
     page.on("request", (req) => {
