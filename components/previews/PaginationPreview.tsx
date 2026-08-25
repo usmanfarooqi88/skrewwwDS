@@ -18,7 +18,10 @@ export function PaginationPreview() {
             items={buildPaginationItems({
               currentPage: 3,
               totalPages: 12,
-              hrefBuilder: (nextPage) => `/results?page=${nextPage}`,
+              // Points at this page itself (a real, always-200 route) rather than a
+              // fictional destination — the query string is illustrative only and is
+              // ignored by this page's canonical, so it stays crawl-safe.
+              hrefBuilder: (nextPage) => `/components/pagination?page=${nextPage}`,
             })}
           />
         </PreviewGroup>

@@ -6,6 +6,23 @@ test.describe("Pagination browser behavior", () => {
     await page.goto("/components/pagination");
   });
 
+  // Regression check for a real production SEO bug: the "Href builder" live
+  // preview once pointed at a fictional `/results?page=N` destination. Because
+  // Pagination renders real crawlable <a>/NextLink elements (not inert demo
+  // text), Google indexed and 404'd on those links. Any hrefBuilder-generated
+  // link on this page must resolve to a real, existing, same-origin route —
+  // this asserts the class of bug, not just the one reported page number.
+  test("live preview never links to a nonexistent /results route", async ({ page }) => {
+    const hrefs = await page
+      .locator('nav[aria-label="Pagination"] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of hrefs) {
+      expect(href, `pagination link should not point at /results: ${href}`).not.toMatch(/^\/results(\?|$)/);
+    }
+  });
+
   function paginationLocators(page: Page) {
     // Scoped to the Pagination component itself — the docs sidebar also
     // marks its own "current page" nav link with aria-current="page", and
