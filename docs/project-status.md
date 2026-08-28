@@ -1,6 +1,31 @@
 # Project status
 
-Last verified: **2026-08-29** (consent-aware GA4 analytics; Skrewww 1.0 release remains tagged)
+Last verified: **2026-08-29** (Node engine range + install-script audit; consent-aware GA4 analytics remains closed)
+
+## 2026-08-29 — Node engine range and install-script policy
+
+Repo hygiene only (no product/API/analytics change):
+
+- `engines.node` is now `>=22.13.0 <23 || >=24 <25`. Supported majors are
+  Node **22.13+** (jsdom 29's 22.x floor) and Node **24.x** (current
+  Vercel production and local runtime). Node 21 and 23 are not declared
+  supported. Node 25+ stays blocked until explicitly validated. Node 20
+  was removed as repo-maintenance/security hygiene: it reached upstream
+  EOL in April 2026, Vercel still offers 20.x but this repo has no CI or
+  other requirement that still needs it, and Next.js 16's `>=20.9.0` floor
+  does not force keeping an EOL major.
+- `.nvmrc` and `.node-version` pin recommended local Node `24.14.0` (the
+  currently verified local version). They already existed and stay
+  synchronized; no extra version-manager file was added.
+- Install-script audit of the lockfile `hasInstallScript` graph:
+  `esbuild@0.28.1` (tsx/vite), `sharp@0.34.5` (optional Next.js image
+  optimizer), `unrs-resolver@1.12.2` (eslint-import-resolver-typescript),
+  and `fsevents` (chokidar/vite/playwright, Darwin-only). Native binaries
+  arrive through optional platform packages. A clean `npm ci --ignore-scripts`
+  still loaded and ran esbuild, sharp, and unrs-resolver on darwin-x64.
+  **Decision: do not approve those scripts.** Local npm is `11.12.1` and
+  has no `allowScripts` / `npm install-scripts` command; adding an allowlist
+  would be unsupported config churn.
 
 ## 2026-08-29 — Consent-aware GA4 analytics
 
@@ -291,7 +316,7 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 
 | Gate | Result |
 |------|--------|
-| `npm run verify:node` | Pass (Node 24.14.0, requires >=20.19.0) |
+| `npm run verify:node` | Pass (Node 24.14.0, requires >=22.13.0 <23 \|\| >=24 <25) |
 | `npm run verify:package` | Pass (`skrewww-docs@0.2.0-beta` lockfile aligned) |
 | ESLint | Pass — 0 problems (0 errors, 0 warnings), `--max-warnings 0`. React Hooks Compiler debt closed 2026-08-29; see [`architecture/react-hooks-lint-debt.md`](architecture/react-hooks-lint-debt.md). |
 | TypeScript | Pass |

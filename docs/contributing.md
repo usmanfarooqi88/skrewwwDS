@@ -21,6 +21,25 @@ Current status and open gaps:
 
 ---
 
+## Runtime and install scripts
+
+- Supported Node range is `>=22.13.0 <23 || >=24 <25` (`package.json`
+  `engines`): Node **22.13+** and Node **24.x**. Node 23 is not supported.
+  Node 25+ is blocked until explicitly validated. Node 20 was dropped
+  because it is upstream EOL (April 2026) and nothing in this repo still
+  requires it. Production currently runs Node 24.x.
+- `.nvmrc` and `.node-version` both pin recommended local Node `24.14.0`.
+  Keep those two files in sync; do not add another version-manager file.
+- Do not blanket-approve dependency install scripts. npm `11.12.x` in this
+  repo does not provide `allowScripts`. Audited lifecycle scripts
+  (`esbuild`, `sharp`, `unrs-resolver`, plus `fsevents`) are fallbacks for
+  missing optional native packages and are left blocked/unapproved.
+- Do not add `pnpm.onlyBuiltDependencies`, wildcard `allowScripts`,
+  `--dangerously-allow-all-scripts`, or a global `ignore-scripts`
+  disable just to silence installer warnings.
+
+---
+
 ## Source of truth
 
 Summarized rules (full detail:

@@ -20,8 +20,9 @@ npm run verify:node
 npm run dev
 ```
 
-Requires Node.js `>=20.19.0` (see `.nvmrc`). `npm run dev` prints the local
-URL on startup.
+Requires Node.js `>=22.13.0 <23 || >=24 <25` (see `engines` in
+`package.json`; `.nvmrc` pins recommended local Node 24). `npm run dev`
+prints the local URL on startup.
 
 ### Documentation map
 
@@ -40,7 +41,7 @@ Volatile counts and roadmap live in [`docs/project-status.md`](docs/project-stat
 - **Figma-documented components:** count derived from `content/` documentation inventory (includes documentation-only entries)
 - **WCAG 2.2 AA (target)** accessibility baseline
 - **Design system version:** `1.0.0` (platform/docs release)
-- **Node.js:** `>=20.19.0` (see `.nvmrc`)
+- **Node.js:** `>=22.13.0 <23 || >=24 <25` (see `engines`; `.nvmrc` for local Node 24)
 
 ### Implemented React components
 

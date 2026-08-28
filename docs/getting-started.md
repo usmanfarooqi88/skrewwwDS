@@ -71,9 +71,30 @@ accessibility baseline is WCAG 2.2 AA (target).
 
 | Requirement | Value | Source |
 |---|---|---|
-| Node.js | `>=20.19.0` | `engines` in `package.json`, `.nvmrc`, `.node-version` |
+| Node.js | `>=22.13.0 <23 \|\| >=24 <25` | `engines` in `package.json` (supported range) |
+| Recommended local Node | `24.14.0` | `.nvmrc` and `.node-version` (same pin; do not add a third version-manager file) |
 | Package manager | npm | `package-lock.json` (lockfile is authoritative) |
 | Git | required for clone / contribution | — |
+
+Supported Node majors are **22.13+** and **24.x**. Node 23 is not supported.
+Node 25+ is blocked until explicitly validated. Node 20 was removed from
+the supported/recommended set because it reached upstream EOL in April 2026
+and this repository has no CI or other requirement that still needs it.
+
+`engines.node` is a disjoint bounded range so local installs and Vercel
+cannot silently pick Node 20 (EOL), Node 21/23 (unverified odd majors), or
+a future Node 25+ that this repo has not verified. Current production on
+Vercel is Node 24.x, which is inside the range. `.nvmrc` / `.node-version`
+pin the recommended local runtime to Node 24 (`24.14.0`, the currently
+verified local version).
+
+Install lifecycle scripts (`preinstall` / `install` / `postinstall`) are
+**not** blanket-approved. This repo uses npm `11.12.x`, which does not yet
+implement `allowScripts` / `npm install-scripts`. Native binaries for
+`esbuild`, `sharp`, and `unrs-resolver` are delivered via optional platform
+packages, so a normal install/build does not need those packages' lifecycle
+scripts. Review any future script allowlist case-by-case; do not add
+wildcard approvals.
 
 Confirm the Node runtime matches repository policy:
 
@@ -97,7 +118,7 @@ Other everyday commands:
 |---|---|
 | `npm run dev` | Start the dev server (writes to `.next`) |
 | `npm run dev:clean` | Remove `.next`, then start dev — use if the build cache looks corrupted |
-| `npm run verify:node` | Confirm Node satisfies `engines` |
+| `npm run verify:node` | Confirm Node satisfies the bounded `engines` range |
 | `npm run verify:package` | Confirm package / lockfile metadata alignment |
 | `npm run lint` | ESLint (`--max-warnings 0`) |
 | `npm run typecheck` | TypeScript, no emit |

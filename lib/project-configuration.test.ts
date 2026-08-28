@@ -27,13 +27,14 @@ describe("project configuration", () => {
     const rootLock = lock.packages?.[""];
     expect(rootLock?.name).toBe(pkg.name);
     expect(rootLock?.version).toBe(pkg.version);
+    expect(rootLock?.engines?.node).toBe(pkg.engines?.node);
   });
 
   it("declares a Node runtime policy", () => {
     const pkg = JSON.parse(readRootFile("package.json"));
-    expect(pkg.engines?.node).toBe(">=20.19.0");
-    expect(readRootFile(".nvmrc").trim()).toBe("20.19.0");
-    expect(readRootFile(".node-version").trim()).toBe("20.19.0");
+    expect(pkg.engines?.node).toBe(">=22.13.0 <23 || >=24 <25");
+    expect(readRootFile(".nvmrc").trim()).toBe("24.14.0");
+    expect(readRootFile(".node-version").trim()).toBe("24.14.0");
   });
 
   it("keeps README inventory synchronized with the registry", () => {
