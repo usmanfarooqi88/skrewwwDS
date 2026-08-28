@@ -4,8 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { HomeHeroCtas } from "@/components/HomeHeroCtas";
 
 const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }));
+const { trackGAEvent } = vi.hoisted(() => ({ trackGAEvent: vi.fn() }));
 
 vi.mock("@/lib/analytics", () => ({ trackEvent }));
+vi.mock("@/lib/ga", () => ({ trackGAEvent }));
 
 vi.mock("next/link", () => ({
   default: ({
@@ -24,6 +26,7 @@ vi.mock("next/link", () => ({
 
 afterEach(() => {
   trackEvent.mockClear();
+  trackGAEvent.mockClear();
 });
 
 describe("HomeHeroCtas", () => {
@@ -88,6 +91,34 @@ describe("HomeHeroCtas", () => {
       label: "Get Skrewww Pro",
       href: "https://usmanfarooqi.gumroad.com/l/skrewww-pro",
     });
+  });
+
+  it("fires the named GA4 free_figma_click event exactly once for Get free Figma file", async () => {
+    const user = userEvent.setup();
+    render(<HomeHeroCtas totalComponents={63} />);
+    await user.click(screen.getByRole("link", { name: "Get free Figma file" }));
+    expect(trackGAEvent).toHaveBeenCalledExactlyOnceWith("free_figma_click", {
+      cta_location: "home_hero",
+      destination: "https://www.figma.com/community/file/1666920112751907121/skrewww-design-system-free",
+    });
+  });
+
+  it("fires the named GA4 pro_gumroad_click event exactly once for Get Skrewww Pro", async () => {
+    const user = userEvent.setup();
+    render(<HomeHeroCtas totalComponents={63} />);
+    await user.click(screen.getByRole("link", { name: "Get Skrewww Pro" }));
+    expect(trackGAEvent).toHaveBeenCalledExactlyOnceWith("pro_gumroad_click", {
+      cta_location: "home_hero",
+      destination: "https://usmanfarooqi.gumroad.com/l/skrewww-pro",
+    });
+  });
+
+  it("does not fire a named GA4 event for the internal Browse components / View foundations CTAs", async () => {
+    const user = userEvent.setup();
+    render(<HomeHeroCtas totalComponents={63} />);
+    await user.click(screen.getByRole("link", { name: "Browse components" }));
+    await user.click(screen.getByRole("link", { name: "View foundations" }));
+    expect(trackGAEvent).not.toHaveBeenCalled();
   });
 
   it("opens the Figma and Gumroad links in a new tab with a safe rel", () => {

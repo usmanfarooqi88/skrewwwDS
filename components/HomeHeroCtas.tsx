@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/Button";
 import { trackEvent } from "@/lib/analytics";
+import { trackGAEvent } from "@/lib/ga";
 
 const FIGMA_FREE_FILE_HREF =
   "https://www.figma.com/community/file/1666920112751907121/skrewww-design-system-free";
@@ -40,12 +41,16 @@ export function HomeHeroCtas({ totalComponents }: { totalComponents: number }) {
             href={FIGMA_FREE_FILE_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() =>
+            onClick={() => {
               trackEvent("navigation_cta_clicked", {
                 label: "Get free Figma file",
                 href: FIGMA_FREE_FILE_HREF,
-              })
-            }
+              });
+              trackGAEvent("free_figma_click", {
+                cta_location: "home_hero",
+                destination: FIGMA_FREE_FILE_HREF,
+              });
+            }}
             className={secondaryLinkClass}
           >
             Get free Figma file
@@ -54,9 +59,13 @@ export function HomeHeroCtas({ totalComponents }: { totalComponents: number }) {
             href={GUMROAD_PRO_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() =>
-              trackEvent("navigation_cta_clicked", { label: "Get Skrewww Pro", href: GUMROAD_PRO_HREF })
-            }
+            onClick={() => {
+              trackEvent("navigation_cta_clicked", { label: "Get Skrewww Pro", href: GUMROAD_PRO_HREF });
+              trackGAEvent("pro_gumroad_click", {
+                cta_location: "home_hero",
+                destination: GUMROAD_PRO_HREF,
+              });
+            }}
             className={secondaryLinkClass}
           >
             Get Skrewww Pro

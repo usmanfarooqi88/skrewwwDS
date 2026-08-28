@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -56,6 +58,12 @@ export const metadata: Metadata = {
   },
 };
 
+// GA4 only — set in Vercel's production environment. Unset locally by
+// default (see .env.example), so dev/preview traffic never reaches the real
+// property. The tag itself (and its consent-default script below) render
+// only when this is configured.
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -76,6 +84,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         */}
         <Analytics />
         <SpeedInsights />
+        {gaMeasurementId ? (
+          <>
+            {/*
+              Consent Mode v2 defaults, set beforeInteractive so they land in
+              <head> and run before GoogleAnalytics's own afterInteractive
+              script below. Skrewww has no consent-collection UI yet (no
+              cookie banner exists in this repo) and this deliberately does
+              NOT claim compliance on its own — it only ships the technical
+              default-deny groundwork: every visitor, EEA or not, starts
+              denied for ad/analytics storage and gets cookieless/modeled GA4
+              pings until something calls gtag('consent', 'update', ...). Wire
+              that call up from a real consent banner before treating this as
+              sufficient for EEA compliance.
+            */}
+            <Script id="ga-consent-default" strategy="beforeInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  analytics_storage: 'denied',
+  wait_for_update: 500
+});`}
+            </Script>
+            <GoogleAnalytics gaId={gaMeasurementId} />
+          </>
+        ) : null}
         <AppProviders>
           <Sidebar />
           <MobileDocsNav />
