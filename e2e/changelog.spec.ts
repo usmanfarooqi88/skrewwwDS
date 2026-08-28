@@ -13,10 +13,14 @@ test.describe("Changelog", () => {
   });
 
   test("shows New, Improved, and Fixed labels with content", async ({ page }) => {
-    const firstArticle = page.locator("article").first();
-    await expect(firstArticle.getByText("New", { exact: true })).toBeVisible();
-    await expect(firstArticle.getByText("Improved", { exact: true })).toBeVisible();
-    await expect(firstArticle.getByText("Fixed", { exact: true })).toBeVisible();
+    // Scoped to the Skrewww 1.0 entry specifically, not "the newest article"
+    // — a newer entry legitimately doesn't need to use all three item types
+    // (e.g. an analytics-only release has no "Fixed" item), but this entry
+    // always carries all three and exercises the badge rendering itself.
+    const skrewww1Article = page.locator("article").filter({ hasText: "Skrewww 1.0" });
+    await expect(skrewww1Article.getByText("New", { exact: true })).toBeVisible();
+    await expect(skrewww1Article.getByText("Improved", { exact: true })).toBeVisible();
+    await expect(skrewww1Article.getByText("Fixed", { exact: true })).toBeVisible();
   });
 
   test("is reachable from the sidebar navigation", async ({ page }) => {

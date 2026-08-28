@@ -35,6 +35,22 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-08-analytics-consent",
+    date: "2026-08-29",
+    displayDate: "August 2026",
+    title: "Analytics preferences",
+    items: [
+      {
+        type: "new",
+        text: "Added analytics preferences so visitors can choose whether Google Analytics measurement is enabled.",
+      },
+      {
+        type: "improved",
+        text: "Analytics preferences can be reopened at any time from the sidebar to change your choice.",
+      },
+    ],
+  },
+  {
     id: "2026-08-skrewww-1-0",
     date: "2026-08-21",
     displayDate: "August 2026",

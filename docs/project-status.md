@@ -1,6 +1,51 @@
 # Project status
 
-Last verified: **2026-08-21** (developer onboarding docs; Skrewww 1.0 release remains tagged)
+Last verified: **2026-08-29** (consent-aware GA4 analytics; Skrewww 1.0 release remains tagged)
+
+## 2026-08-29 — Consent-aware GA4 analytics
+
+GA4 (`NEXT_PUBLIC_GA_MEASUREMENT_ID`, via `@next/third-parties/google`) previously
+loaded unconditionally whenever configured, with Consent Mode v2 defaults
+hard-coded to denied and no way for a visitor to actually grant consent. That
+gap is closed:
+
+- `lib/consent.ts` — single canonical persisted consent state
+  (`localStorage["skrewww.analyticsConsent.v1"]`, values `"granted"` /
+  `"denied"`; anything else — missing, malformed, storage unavailable — reads
+  back as `null`/undecided). Read/write never throw.
+- `components/analytics/AnalyticsConsentProvider.tsx` — client provider,
+  mounted from `AppProviders`. Renders `<GoogleAnalytics>` only once
+  `state === "granted"`; before that, the beforeInteractive bootstrap script
+  in `app/layout.tsx` still seeds Consent Mode v2 defaults (all denied) but
+  makes no network request itself. `allow()`/`decline()` persist the choice
+  and push `gtag('consent', 'update', ...)` — only `analytics_storage` ever
+  moves; `ad_storage`/`ad_user_data`/`ad_personalization` stay denied
+  regardless. `reopen()` lets a returning visitor bring the banner back and
+  switch either direction without a reload.
+- `components/analytics/AnalyticsConsentBanner.tsx` — non-modal, no focus
+  trap, fixed to the viewport bottom, shown only while undecided or
+  reopened. A low-emphasis "Analytics preferences" action was added to
+  `SidebarNav.tsx` (desktop sidebar + mobile drawer, the only existing
+  global nav shell — no new footer was invented) to reopen it later.
+- `lib/ga.ts`'s `trackGAEvent()` now reads the same canonical consent state
+  on every call and safely no-ops unless it's exactly `"granted"` — the
+  named business events (`free_figma_click`, `pro_gumroad_click`, both still
+  only wired in `components/HomeHeroCtas.tsx`'s `home_hero` location) never
+  fire while undecided or declined.
+- Static rendering is unaffected: consent is read client-side, post-hydration
+  only, so `/` and other previously-static routes stay statically prerendered
+  (verified via `npm run build`'s route table).
+
+**Not a compliance claim.** This ships consent-aware technical behavior only
+— gating the GA tag and its events behind an explicit choice, with Basic
+Consent Mode semantics. No legal/compliance audit has been performed; this
+entry does not assert GDPR, cookie-law, or "privacy compliant" status.
+
+**Verification**: 814 unit tests pass (94 files, +32 from this change),
+lint clean at the existing 26-warning ceiling (0 new), typecheck clean,
+production build passes, and a focused Playwright suite
+(`e2e/analytics-consent.spec.ts`, 13 tests, plus `smoke.spec.ts` and
+`pagination.spec.ts` re-verified for regressions) passes with `--workers=1`.
 
 ## 2026-08-21 — Developer onboarding documentation
 

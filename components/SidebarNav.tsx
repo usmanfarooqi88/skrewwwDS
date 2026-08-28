@@ -6,12 +6,14 @@ import { allComponents } from "@/lib/data";
 import { REDIRECTED_COMPONENT_SLUGS } from "@/lib/routes";
 import { categories } from "@/lib/types";
 import { industries } from "@/lib/industry-content";
+import { useAnalyticsConsent } from "@/components/analytics/AnalyticsConsentProvider";
 
 type SidebarNavProps = {
   onNavigate?: () => void;
 };
 
 export function SidebarNav({ onNavigate }: SidebarNavProps) {
+  const { hasGA, reopen } = useAnalyticsConsent();
   const visibleComponents = allComponents.filter(
     (component) =>
       !REDIRECTED_COMPONENT_SLUGS.includes(
@@ -89,6 +91,21 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
           })}
         </div>
       </div>
+
+      {hasGA ? (
+        <div className="mt-6 border-t border-ink-200 pt-3">
+          <button
+            type="button"
+            onClick={() => {
+              reopen();
+              onNavigate?.();
+            }}
+            className="px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-400 transition-colors hover:text-ink-700"
+          >
+            Analytics preferences
+          </button>
+        </div>
+      ) : null}
     </nav>
   );
 }

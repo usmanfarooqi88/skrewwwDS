@@ -1,4 +1,5 @@
 import { sanitizeHref } from "@/lib/analytics";
+import { readStoredAnalyticsConsent } from "@/lib/consent";
 
 /**
  * Named GA4 business events, fired via `gtag()` (loaded through
@@ -35,9 +36,17 @@ declare global {
  * is unset, or the request was blocked) and never throws — analytics must
  * never break the UI. `page_path` is filled in from the current location
  * rather than passed by callers, so it can't go stale.
+ *
+ * Also gated on the canonical persisted consent choice (lib/consent.ts),
+ * read fresh on every call rather than cached — the single source of truth
+ * an AnalyticsConsentProvider write is immediately visible to, with no
+ * separate state to keep in sync. Denied or undecided (including a
+ * malformed/unreadable stored value) both safely no-op; only an explicit
+ * "granted" allows the event through.
  */
 export function trackGAEvent(name: GAEventName, properties: GAEventProperties): void {
   if (typeof window === "undefined" || typeof window.gtag !== "function") return;
+  if (readStoredAnalyticsConsent() !== "granted") return;
   try {
     window.gtag("event", name, {
       cta_location: properties.cta_location,
