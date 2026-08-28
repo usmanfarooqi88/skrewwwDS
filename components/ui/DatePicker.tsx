@@ -148,14 +148,28 @@ export function DatePicker(props: DatePickerProps) {
     resolveInitialVisibleMonth(defaultValue ?? value),
   );
 
-  useEffect(() => {
-    if (!valueProvided) return;
-    setInputText(formatInputValue(value, locale, formatDate));
-    setInternalError(undefined);
-    if (value) {
-      setVisibleMonth(getMonthFromDate(value));
+  const [valueSync, setValueSync] = useState<{
+    value: CalendarDateString | undefined;
+    locale: string;
+    formatDate: typeof formatDate;
+  } | null>(() =>
+    valueProvided ? { value, locale, formatDate } : null,
+  );
+  if (valueProvided) {
+    const changed =
+      valueSync == null ||
+      valueSync.value !== value ||
+      valueSync.locale !== locale ||
+      valueSync.formatDate !== formatDate;
+    if (changed) {
+      setValueSync({ value, locale, formatDate });
+      setInputText(formatInputValue(value, locale, formatDate));
+      setInternalError(undefined);
+      if (value) {
+        setVisibleMonth(getMonthFromDate(value));
+      }
     }
-  }, [formatDate, locale, value, valueProvided]);
+  }
 
   const wasOpenRef = useRef(open);
   useEffect(() => {

@@ -1,5 +1,6 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { registerOverlay } from "@/components/ui/internal/overlay-stack";
+import { useLatestRef } from "@/components/ui/internal/useLatestRef";
 
 /**
  * Base z-index for stacked overlay content (Popover/Dialog/Drawer/Tooltip). Each
@@ -17,8 +18,7 @@ export function useOverlayEscape(
   onEscape: () => void,
   options?: { modal?: boolean },
 ): number | undefined {
-  const onEscapeRef = useRef(onEscape);
-  onEscapeRef.current = onEscape;
+  const onEscapeRef = useLatestRef(onEscape);
   const [zIndex, setZIndex] = useState<number | undefined>(undefined);
 
   useLayoutEffect(() => {
@@ -32,7 +32,7 @@ export function useOverlayEscape(
     });
     setZIndex(OVERLAY_STACK_BASE_Z_INDEX + order);
     return unregister;
-  }, [active, options?.modal]);
+  }, [active, onEscapeRef, options?.modal]);
 
   return zIndex;
 }

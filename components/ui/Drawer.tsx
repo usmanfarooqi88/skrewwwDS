@@ -24,6 +24,7 @@ import { useBodyScrollLock } from "@/components/ui/internal/useBodyScrollLock";
 import { useOverlayEscape } from "@/components/ui/internal/useOverlayEscape";
 import { useFocusTrap } from "@/components/ui/internal/useFocusTrap";
 import { restoreFocusSafely } from "@/components/ui/internal/focus-utils";
+import { mergeRefs } from "@/components/ui/internal/assign-ref";
 import type { OverlayCloseReason } from "@/components/ui/internal/overlay-types";
 import styles from "@/components/ui/drawer.module.css";
 
@@ -173,14 +174,7 @@ export function DrawerTrigger({ children }: DrawerTriggerProps) {
   }>;
 
   return cloneElement(child, {
-    ref: (node: HTMLElement | null) => {
-      triggerRef.current = node;
-      const childRef = child.props.ref;
-      if (typeof childRef === "function") childRef(node);
-      else if (childRef && typeof childRef === "object") {
-        (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
-      }
-    },
+    ref: mergeRefs(triggerRef, child.props.ref),
     onClick: (event: React.MouseEvent<HTMLElement>) => {
       child.props.onClick?.(event);
       if (event.defaultPrevented) return;

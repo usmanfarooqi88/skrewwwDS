@@ -3,7 +3,6 @@
 import {
   cloneElement,
   isValidElement,
-  useEffect,
   useId,
   useLayoutEffect,
   useRef,
@@ -13,6 +12,8 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 import { computeTooltipPosition } from "@/components/ui/internal/tooltip-position";
 import type { TooltipPlacement } from "@/components/ui/internal/tooltip-position";
+import { mergeRefs } from "@/components/ui/internal/assign-ref";
+import { useIsClient } from "@/components/ui/internal/useIsClient";
 import { useTooltipController } from "@/components/ui/internal/useTooltipController";
 import { useOverlayEscape } from "@/components/ui/internal/useOverlayEscape";
 import styles from "@/components/ui/tooltip.module.css";
@@ -25,6 +26,45 @@ type TooltipTriggerProps = {
   onBlur?: React.FocusEventHandler<HTMLElement>;
   ref?: React.Ref<HTMLElement>;
 };
+
+type TooltipTriggerBindProps = {
+  child: React.ReactElement<TooltipTriggerProps>;
+  triggerRef: React.RefObject<HTMLElement | null>;
+  describedBy?: string;
+  scheduleOpen: () => void;
+  scheduleClose: () => void;
+  openImmediately: () => void;
+};
+
+function TooltipTriggerBind({
+  child,
+  triggerRef,
+  describedBy,
+  scheduleOpen,
+  scheduleClose,
+  openImmediately,
+}: TooltipTriggerBindProps) {
+  return cloneElement(child, {
+    ref: mergeRefs(triggerRef, child.props.ref),
+    "aria-describedby": describedBy || undefined,
+    onMouseEnter: (event: React.MouseEvent<HTMLElement>) => {
+      child.props.onMouseEnter?.(event);
+      scheduleOpen();
+    },
+    onMouseLeave: (event: React.MouseEvent<HTMLElement>) => {
+      child.props.onMouseLeave?.(event);
+      scheduleClose();
+    },
+    onFocus: (event: React.FocusEvent<HTMLElement>) => {
+      child.props.onFocus?.(event);
+      openImmediately();
+    },
+    onBlur: (event: React.FocusEvent<HTMLElement>) => {
+      child.props.onBlur?.(event);
+      scheduleClose();
+    },
+  });
+}
 
 export type TooltipProps = {
   content: React.ReactNode;
@@ -48,7 +88,7 @@ export function Tooltip({
   const tooltipId = useId();
   const triggerRef = useRef<HTMLElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsClient();
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const [resolvedPlacement, setResolvedPlacement] = useState(placement);
   const {
@@ -58,10 +98,6 @@ export function Tooltip({
     openImmediately,
     closeImmediately,
   } = useTooltipController({ openDelay, closeDelay, disabled });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useLayoutEffect(() => {
     if (!open || !triggerRef.current || !tooltipRef.current) return;
@@ -92,33 +128,16 @@ export function Tooltip({
       ? [child.props["aria-describedby"], tooltipId].filter(Boolean).join(" ")
       : child.props["aria-describedby"];
 
-  const trigger = cloneElement(child, {
-    ref: (node: HTMLElement | null) => {
-      triggerRef.current = node;
-      const childRef = child.props.ref;
-      if (typeof childRef === "function") childRef(node);
-      else if (childRef && typeof childRef === "object") {
-        (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
-      }
-    },
-    "aria-describedby": describedBy || undefined,
-    onMouseEnter: (event: React.MouseEvent<HTMLElement>) => {
-      child.props.onMouseEnter?.(event);
-      scheduleOpen();
-    },
-    onMouseLeave: (event: React.MouseEvent<HTMLElement>) => {
-      child.props.onMouseLeave?.(event);
-      scheduleClose();
-    },
-    onFocus: (event: React.FocusEvent<HTMLElement>) => {
-      child.props.onFocus?.(event);
-      openImmediately();
-    },
-    onBlur: (event: React.FocusEvent<HTMLElement>) => {
-      child.props.onBlur?.(event);
-      scheduleClose();
-    },
-  });
+  const trigger = (
+    <TooltipTriggerBind
+      child={child}
+      triggerRef={triggerRef}
+      describedBy={describedBy}
+      scheduleOpen={scheduleOpen}
+      scheduleClose={scheduleClose}
+      openImmediately={openImmediately}
+    />
+  );
 
   const tooltipNode =
     open && mounted && content ? (

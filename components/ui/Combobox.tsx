@@ -300,14 +300,9 @@ export const ComboboxControl = forwardRef<HTMLInputElement, ComboboxControlProps
 
     useLayoutEffect(() => {
       if (!open) {
-        setActiveOptionId(null);
         pointerSyncEnabledRef.current = false;
         return;
       }
-
-      setActiveOptionId(
-        resolveInitialActiveOptionId(filteredOptions, listboxId, selectedValue),
-      );
 
       pointerSyncEnabledRef.current = false;
       keyboardNavigationRef.current = false;
@@ -315,7 +310,22 @@ export const ComboboxControl = forwardRef<HTMLInputElement, ComboboxControlProps
         pointerSyncEnabledRef.current = true;
       });
       return () => window.cancelAnimationFrame(frame);
-    }, [filteredOptions, listboxId, open, selectedValue]);
+    }, [open]);
+
+    const activeSyncKey = open
+      ? `${listboxId}:${selectedValue ?? ""}:${filteredOptions.map((option) => option.value).join("\u0001")}`
+      : "";
+    const [activeForKey, setActiveForKey] = useState<string | null>(null);
+    if (activeSyncKey !== activeForKey) {
+      setActiveForKey(activeSyncKey);
+      if (!open) {
+        setActiveOptionId(null);
+      } else {
+        setActiveOptionId(
+          resolveInitialActiveOptionId(filteredOptions, listboxId, selectedValue),
+        );
+      }
+    }
 
     useEffect(() => {
       if (!open || !activeOptionId) return;

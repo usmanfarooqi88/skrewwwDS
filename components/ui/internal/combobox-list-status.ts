@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 export type ComboboxListStatusInput = {
   open: boolean;
@@ -22,33 +22,32 @@ export function useComboboxListStatus({
   resultCount,
 }: ComboboxListStatusInput): string {
   const [announcement, setAnnouncement] = useState("");
-  const previousRef = useRef<{ open: boolean; wasEmpty: boolean }>({
-    open: false,
-    wasEmpty: false,
-  });
+  const [tracked, setTracked] = useState<{
+    open: boolean;
+    wasEmpty: boolean;
+  }>({ open: false, wasEmpty: false });
 
-  useEffect(() => {
-    if (!open || disabled) {
-      setAnnouncement("");
-      previousRef.current = { open: false, wasEmpty: false };
-      return;
+  const silent = !open || disabled;
+  const isEmpty = resultCount === 0;
+
+  if (silent) {
+    if (tracked.open) {
+      setTracked({ open: false, wasEmpty: false });
     }
-
-    const isEmpty = resultCount === 0;
-    const previous = previousRef.current;
-
-    if (!previous.open) {
-      setAnnouncement(
-        isEmpty ? "No results found." : `${resultCount} results available.`,
-      );
-    } else if (isEmpty && !previous.wasEmpty) {
-      setAnnouncement("No results found.");
-    } else if (!isEmpty && previous.wasEmpty) {
-      setAnnouncement(`${resultCount} results available.`);
+  } else {
+    const justOpened = !tracked.open;
+    const becameEmpty = isEmpty && !tracked.wasEmpty;
+    const returned = !isEmpty && tracked.wasEmpty;
+    if (justOpened || becameEmpty || returned) {
+      const next = isEmpty ? "No results found." : `${resultCount} results available.`;
+      if (announcement !== next) {
+        setAnnouncement(next);
+      }
     }
+    if (tracked.open !== true || tracked.wasEmpty !== isEmpty) {
+      setTracked({ open: true, wasEmpty: isEmpty });
+    }
+  }
 
-    previousRef.current = { open: true, wasEmpty: isEmpty };
-  }, [disabled, open, resultCount]);
-
-  return announcement;
+  return silent ? "" : announcement;
 }

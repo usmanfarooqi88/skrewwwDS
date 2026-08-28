@@ -66,8 +66,9 @@ Detailed steps:
 - Run `npm run build` when registry generation, app routes, or production
   output may be affected.
 - Never claim a gate passed if it failed, timed out, or did not run.
-- Do not raise the ESLint warning ceiling casually; the current
-  `--max-warnings 26` budget is already fully used.
+- Keep ESLint at `--max-warnings 0`. Do not reintroduce a warning ceiling
+  without a documented, scoped exception
+  ([`architecture/react-hooks-lint-debt.md`](architecture/react-hooks-lint-debt.md)).
 
 Commands and when to widen:
 [`getting-started.md` — Testing and verification](getting-started.md#testing-and-verification).

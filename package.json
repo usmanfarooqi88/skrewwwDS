@@ -14,7 +14,7 @@
     "build:e2e": "npm run clean:e2e && NEXT_DIST_DIR=.next-playwright next build",
     "start": "next start",
     "start:e2e": "NEXT_DIST_DIR=.next-playwright next start",
-    "lint": "eslint . --max-warnings 26",
+    "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "generate:registry": "tsx scripts/generate-shadcn-registry.ts",
     "smoke:consumer": "tsx scripts/smoke-test-consumer.ts",

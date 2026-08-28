@@ -256,6 +256,27 @@ describe("DatePicker", () => {
     expect(screen.getByRole("textbox", { name: /Release date/i })).toHaveValue("");
   });
 
+  it("syncs the input when a controlled value changes to another date", () => {
+    const { rerender } = render(
+      <DatePicker
+        label="Release date"
+        value="2026-07-11"
+        onValueChange={() => {}}
+      />,
+    );
+
+    rerender(
+      <DatePicker
+        label="Release date"
+        value="2026-08-01"
+        onValueChange={() => {}}
+      />,
+    );
+    expect(screen.getByRole("textbox", { name: /Release date/i })).toHaveValue(
+      formatDisplayDate("2026-08-01"),
+    );
+  });
+
   it("warns in dev when only one formatter callback half is provided", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     render(

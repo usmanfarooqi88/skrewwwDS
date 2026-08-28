@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/cn";
@@ -41,6 +42,19 @@ function createToastId() {
   return `toast-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+function subscribeDocumentHidden(onChange: () => void) {
+  document.addEventListener("visibilitychange", onChange);
+  return () => document.removeEventListener("visibilitychange", onChange);
+}
+
+function getDocumentHidden() {
+  return document.visibilityState === "hidden";
+}
+
+function getServerDocumentHidden() {
+  return false;
+}
+
 function ToastItem({
   toast,
   onDismiss,
@@ -49,7 +63,11 @@ function ToastItem({
   onDismiss: (id: string) => void;
 }) {
   const [paused, setPaused] = useState(false);
-  const [hidden, setHidden] = useState(false);
+  const hidden = useSyncExternalStore(
+    subscribeDocumentHidden,
+    getDocumentHidden,
+    getServerDocumentHidden,
+  );
   const timeoutRef = useRef<number | null>(null);
   const duration = toast.duration ?? 5000;
   const announce = toast.announce ?? (toast.type === "error" ? "assertive" : "polite");
@@ -73,15 +91,6 @@ function ToastItem({
     scheduleDismiss();
     return clearTimer;
   }, [clearTimer, scheduleDismiss]);
-
-  useEffect(() => {
-    setHidden(document.visibilityState === "hidden");
-    function onVisibilityChange() {
-      setHidden(document.visibilityState === "hidden");
-    }
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, []);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {

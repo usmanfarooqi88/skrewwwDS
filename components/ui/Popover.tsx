@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/internal/popover-position";
 import { resolveInitialFocusTarget, restoreFocusSafely } from "@/components/ui/internal/focus-utils";
 import { useFloatingPosition } from "@/components/ui/internal/useFloatingPosition";
+import { mergeRefs } from "@/components/ui/internal/assign-ref";
 import styles from "@/components/ui/popover.module.css";
 
 export type PopoverFocusMode = "trigger" | "content";
@@ -171,14 +172,7 @@ export function PopoverAnchor({
   const child = children;
 
   return cloneElement(child, {
-    ref: (node: HTMLElement | null) => {
-      triggerRef.current = node;
-      const childRef = child.props.ref;
-      if (typeof childRef === "function") childRef(node);
-      else if (childRef && typeof childRef === "object") {
-        (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
-      }
-    },
+    ref: mergeRefs(triggerRef, child.props.ref),
   });
 }
 
@@ -191,14 +185,7 @@ export function PopoverTrigger({ children }: PopoverTriggerProps) {
   const child = children;
 
   return cloneElement(child, {
-    ref: (node: HTMLElement | null) => {
-      triggerRef.current = node;
-      const childRef = child.props.ref;
-      if (typeof childRef === "function") childRef(node);
-      else if (childRef && typeof childRef === "object") {
-        (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
-      }
-    },
+    ref: mergeRefs(triggerRef, child.props.ref),
     "aria-expanded": open,
     "aria-controls":
       child.props["aria-controls"] ?? (open ? contentId : undefined),
@@ -331,7 +318,7 @@ export function PopoverContent({
 
   useFloatingPosition({
     enabled: open,
-    triggerElement: triggerRef.current,
+    triggerRef,
     floatingElement: contentNode,
     onUpdate: updatePosition,
   });

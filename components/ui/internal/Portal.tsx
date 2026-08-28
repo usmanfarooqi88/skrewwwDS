@@ -1,7 +1,7 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useIsClient } from "@/components/ui/internal/useIsClient";
 
 export type PortalProps = {
   children: React.ReactNode;
@@ -9,11 +9,7 @@ export type PortalProps = {
 };
 
 export function Portal({ children, container }: PortalProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useLayoutEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useIsClient();
 
   if (!mounted) return null;
 

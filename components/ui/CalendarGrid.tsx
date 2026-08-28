@@ -9,10 +9,10 @@ import {
   useRef,
   useState,
   type RefObject,
-  type MutableRefObject,
 } from "react";
 import { CalendarDay } from "@/components/ui/CalendarDay";
 import { CalendarMonthCell } from "@/components/ui/CalendarMonthCell";
+import { assignRef } from "@/components/ui/internal/assign-ref";
 import { CalendarYearCell } from "@/components/ui/CalendarYearCell";
 import { cn } from "@/lib/cn";
 import {
@@ -425,18 +425,11 @@ export function CalendarGrid(props: CalendarGridProps) {
 
   useEffect(() => {
     const node = dayRefs.current.get(focusedDate) ?? null;
-    if (dayButtonRef) {
-      (dayButtonRef as MutableRefObject<HTMLButtonElement | null>).current = node;
-    }
-  }, [dayButtonRef, focusedDate]);
-
-  // Keyboard-driven focus movement within the day grid (unchanged from before subviews existed).
-  useEffect(() => {
-    const node = dayRefs.current.get(focusedDate);
+    assignRef(dayButtonRef, node);
     if (node && gridRef.current?.contains(document.activeElement)) {
       node.focus();
     }
-  }, [focusedDate, currentMonth]);
+  }, [dayButtonRef, focusedDate, currentMonth]);
 
   // Keyboard-driven focus movement within the month grid.
   useEffect(() => {

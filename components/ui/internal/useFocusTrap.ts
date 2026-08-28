@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect } from "react";
+import { useLatestRef } from "@/components/ui/internal/useLatestRef";
 import {
   getFocusableElementsForScope,
   resolveInitialFocusTarget,
@@ -14,8 +15,7 @@ export function useFocusTrap(
   container: HTMLElement | null,
   options?: FocusTrapOptions,
 ) {
-  const optionsRef = useRef(options);
-  optionsRef.current = options;
+  const optionsRef = useLatestRef(options);
 
   useLayoutEffect(() => {
     if (!active || !container) return;
@@ -32,7 +32,7 @@ export function useFocusTrap(
     focusInitial();
     const timer = window.setTimeout(focusInitial, 0);
     return () => window.clearTimeout(timer);
-  }, [active, container]);
+  }, [active, container, optionsRef]);
 
   useEffect(() => {
     if (!active || !container) return;
@@ -65,5 +65,5 @@ export function useFocusTrap(
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [active, container]);
+  }, [active, container, optionsRef]);
 }

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import { useLatestRef } from "@/components/ui/internal/useLatestRef";
 
 type OutsidePointerOptions = {
   active: boolean;
@@ -11,10 +12,8 @@ export function useOutsidePointer({
   onOutsidePointer,
   getInsideElements,
 }: OutsidePointerOptions) {
-  const onOutsidePointerRef = useRef(onOutsidePointer);
-  const getInsideElementsRef = useRef(getInsideElements);
-  onOutsidePointerRef.current = onOutsidePointer;
-  getInsideElementsRef.current = getInsideElements;
+  const onOutsidePointerRef = useLatestRef(onOutsidePointer);
+  const getInsideElementsRef = useLatestRef(getInsideElements);
 
   useEffect(() => {
     if (!active) return;
@@ -35,5 +34,5 @@ export function useOutsidePointer({
 
     document.addEventListener("pointerdown", handlePointerDown, true);
     return () => document.removeEventListener("pointerdown", handlePointerDown, true);
-  }, [active]);
+  }, [active, getInsideElementsRef, onOutsidePointerRef]);
 }

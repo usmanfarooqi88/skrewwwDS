@@ -79,7 +79,7 @@ Public platform/docs release metadata for **Skrewww Design System 1.0**.
 |------|--------|
 | Unit tests | 769 passed |
 | Playwright | 336 passed |
-| Lint | 0 errors / 26 warnings |
+| Lint | 0 errors / 0 warnings |
 | Typecheck | pass |
 | Build | pass |
 
@@ -293,7 +293,7 @@ Historical Figma snapshots must not be treated as current state. See [`skrewww-f
 |------|--------|
 | `npm run verify:node` | Pass (Node 24.14.0, requires >=20.19.0) |
 | `npm run verify:package` | Pass (`skrewww-docs@0.2.0-beta` lockfile aligned) |
-| ESLint | Pass — 26 problems (0 errors, 26 warnings), `--max-warnings 26` |
+| ESLint | Pass — 0 problems (0 errors, 0 warnings), `--max-warnings 0`. React Hooks Compiler debt closed 2026-08-29; see [`architecture/react-hooks-lint-debt.md`](architecture/react-hooks-lint-debt.md). |
 | TypeScript | Pass |
 | Vitest | Pass — **688/688 tests** across **81 files** |
 | Playwright | Focused Button, Avatar, Calendar Day, and Pagination suites passed during the parity batches; the historical full-suite total was not rerun and is not replaced by focused counts |

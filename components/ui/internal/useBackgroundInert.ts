@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 type InertSnapshot = {
   element: HTMLElement;
@@ -37,15 +37,12 @@ export function resetBackgroundInertForTests() {
 }
 
 export function useBackgroundInert(active: boolean, excludeElement: HTMLElement | null) {
-  const excludeRef = useRef(excludeElement);
-  excludeRef.current = excludeElement;
-
   useEffect(() => {
-    if (!active) return;
+    if (!active || !excludeElement) return;
 
     modalInertCount += 1;
     if (modalInertCount === 1) {
-      applyBackgroundInert(excludeRef.current);
+      applyBackgroundInert(excludeElement);
     }
 
     return () => {
@@ -54,5 +51,5 @@ export function useBackgroundInert(active: boolean, excludeElement: HTMLElement 
         restoreBackgroundInert();
       }
     };
-  }, [active]);
+  }, [active, excludeElement]);
 }

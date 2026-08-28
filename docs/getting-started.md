@@ -99,7 +99,7 @@ Other everyday commands:
 | `npm run dev:clean` | Remove `.next`, then start dev — use if the build cache looks corrupted |
 | `npm run verify:node` | Confirm Node satisfies `engines` |
 | `npm run verify:package` | Confirm package / lockfile metadata alignment |
-| `npm run lint` | ESLint (`--max-warnings 26` — ceiling is currently full) |
+| `npm run lint` | ESLint (`--max-warnings 0`) |
 | `npm run typecheck` | TypeScript, no emit |
 | `npm test` | Vitest unit tests (single run) |
 | `npm run test:watch` | Vitest in watch mode |
@@ -375,9 +375,10 @@ suite. Token or CSS changes that touch many surfaces deserve a wide run. Say
 which checks you actually ran — never report a gate as passing if it failed,
 timed out, or did not finish.
 
-**Lint warnings.** ESLint is configured with `--max-warnings 26`. That budget
-is currently fully used; do not add warnings casually, and do not “clean”
-unrelated warnings in an unrelated PR without agreement.
+**Lint warnings.** ESLint is configured with `--max-warnings 0`. Historical
+React Hooks Compiler warnings are closed; see
+[`architecture/react-hooks-lint-debt.md`](architecture/react-hooks-lint-debt.md).
+Do not reintroduce a warning ceiling without a documented exception.
 
 Browser testing conventions:
 [`architecture/browser-interaction-testing.md`](architecture/browser-interaction-testing.md).

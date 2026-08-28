@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, type RefObject } from "react";
+import { useLatestRef } from "@/components/ui/internal/useLatestRef";
 
 function getScrollableAncestors(node: HTMLElement): HTMLElement[] {
   const ancestors: HTMLElement[] = [];
@@ -17,7 +18,8 @@ function getScrollableAncestors(node: HTMLElement): HTMLElement[] {
 
 type UseFloatingPositionOptions = {
   enabled: boolean;
-  triggerElement: HTMLElement | null;
+  triggerElement?: HTMLElement | null;
+  triggerRef?: RefObject<HTMLElement | null>;
   floatingElement: HTMLElement | null;
   onUpdate: () => void;
 };
@@ -25,14 +27,15 @@ type UseFloatingPositionOptions = {
 export function useFloatingPosition({
   enabled,
   triggerElement,
+  triggerRef,
   floatingElement,
   onUpdate,
 }: UseFloatingPositionOptions) {
-  const onUpdateRef = useRef(onUpdate);
-  onUpdateRef.current = onUpdate;
+  const onUpdateRef = useLatestRef(onUpdate);
 
   useEffect(() => {
-    if (!enabled || !triggerElement) return;
+    const trigger = triggerElement ?? triggerRef?.current ?? null;
+    if (!enabled || !trigger) return;
 
     let frame = 0;
     const scheduleUpdate = () => {
@@ -42,7 +45,7 @@ export function useFloatingPosition({
 
     scheduleUpdate();
 
-    const scrollAncestors = getScrollableAncestors(triggerElement);
+    const scrollAncestors = getScrollableAncestors(trigger);
     for (const ancestor of scrollAncestors) {
       ancestor.addEventListener("scroll", scheduleUpdate, { passive: true });
     }
@@ -55,7 +58,7 @@ export function useFloatingPosition({
 
     if (typeof ResizeObserver !== "undefined") {
       triggerObserver = new ResizeObserver(scheduleUpdate);
-      triggerObserver.observe(triggerElement);
+      triggerObserver.observe(trigger);
 
       if (floatingElement) {
         floatingObserver = new ResizeObserver(scheduleUpdate);
@@ -73,5 +76,5 @@ export function useFloatingPosition({
       triggerObserver?.disconnect();
       floatingObserver?.disconnect();
     };
-  }, [enabled, floatingElement, triggerElement]);
+  }, [enabled, floatingElement, onUpdateRef, triggerElement, triggerRef]);
 }

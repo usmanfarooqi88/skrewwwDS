@@ -61,4 +61,24 @@ describe("useBackgroundInert", () => {
     second.unmount();
     expect(background.inert).toBe(false);
   });
+
+  it("waits for the excluded overlay node before applying inert", () => {
+    if (!supportsInert()) return;
+
+    const background = document.createElement("main");
+    const portal = document.createElement("div");
+    document.body.append(background, portal);
+
+    const { rerender } = renderHook(
+      ({ exclude }: { exclude: HTMLElement | null }) => useBackgroundInert(true, exclude),
+      { initialProps: { exclude: null as HTMLElement | null } },
+    );
+
+    expect(background.inert).toBe(false);
+    expect(portal.inert).toBe(false);
+
+    rerender({ exclude: portal });
+    expect(background.inert).toBe(true);
+    expect(portal.inert).toBe(false);
+  });
 });
