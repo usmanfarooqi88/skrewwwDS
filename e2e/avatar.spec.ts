@@ -3,11 +3,22 @@ import { expect, expectColorClose, hexToRgba, resolvedRgba, setSurfaceMode, test
 
 test.describe("Avatar browser behavior", () => {
   test("falls back from broken image to initials", async ({ page }) => {
+    // Scope to the "Broken image fallback" preview. The live preview also
+    // renders initials="UF", so a page-wide [data-fallback=initials] locator
+    // is ambiguous: it false-passes against the working initials avatar while
+    // the reserved-TLD src hangs, and strict-mode-fails once both are visible.
+    // Chromium does not fire img.onError for that hanging src, so dispatch
+    // the same error the unit test already covers (Avatar.test.tsx).
     await page.goto("/components/avatar");
-    await page.getByText("Broken image fallback").scrollIntoViewIfNeeded();
-    const fallback = page.locator('[data-fallback="initials"]').filter({ hasText: "UF" });
-    await expect(fallback).toBeVisible({ timeout: 10000 });
+    const group = page.getByRole("heading", { name: "Broken image fallback" }).locator("xpath=..");
+    await group.scrollIntoViewIfNeeded();
+    await expect(group.locator("img")).toBeVisible();
+    await group.locator("img").dispatchEvent("error");
+    const fallback = group.locator('[data-fallback="initials"]');
+    await expect(fallback).toBeVisible();
+    await expect(fallback).toHaveCount(1);
     await expect(fallback.locator("img")).toHaveCount(0);
+    await expect(fallback).toHaveAttribute("role", "img");
   });
 });
 

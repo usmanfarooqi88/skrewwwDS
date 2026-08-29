@@ -67,6 +67,38 @@ function flattenOptions(
   return options;
 }
 
+function getEnabledOptionButtons(listbox: ParentNode): HTMLButtonElement[] {
+  return Array.from(
+    listbox.querySelectorAll<HTMLButtonElement>('button[role="option"]:not(:disabled)'),
+  );
+}
+
+/** Moves DOM focus between enabled listbox options. Returns true when the key was handled. */
+function focusListboxOptionByKey(listbox: ParentNode, key: string): boolean {
+  const buttons = getEnabledOptionButtons(listbox);
+  if (buttons.length === 0) return false;
+
+  const activeIndex = buttons.findIndex((button) => button === document.activeElement);
+
+  if (key === "ArrowDown") {
+    buttons[Math.min(activeIndex + 1, buttons.length - 1)]?.focus();
+    return true;
+  }
+  if (key === "ArrowUp") {
+    buttons[Math.max(activeIndex - 1, 0)]?.focus();
+    return true;
+  }
+  if (key === "Home") {
+    buttons[0]?.focus();
+    return true;
+  }
+  if (key === "End") {
+    buttons[buttons.length - 1]?.focus();
+    return true;
+  }
+  return false;
+}
+
 function renderNativeOptions(options: SelectOption[]) {
   return options.map((option) => (
     <option key={option.value} value={option.value} disabled={option.disabled}>
@@ -148,9 +180,22 @@ function SelectTriggerButton({
       if (!open && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
         event.preventDefault();
         setOpen(true);
+        return;
+      }
+      if (
+        open &&
+        (event.key === "ArrowDown" ||
+          event.key === "ArrowUp" ||
+          event.key === "Home" ||
+          event.key === "End")
+      ) {
+        const listbox = document.getElementById(listboxId);
+        if (!listbox) return;
+        event.preventDefault();
+        focusListboxOptionByKey(listbox, event.key);
       }
     },
-    [disabled, open, setOpen],
+    [disabled, listboxId, open, setOpen],
   );
 
   return (
@@ -169,6 +214,12 @@ function SelectTriggerButton({
         aria-autocomplete="none"
         aria-expanded={open}
         aria-controls={open ? listboxId : undefined}
+        onMouseDown={(event) => {
+          if (disabled || event.button !== 0) return;
+          // Prevent the combobox from reclaiming focus on mouseup/click after
+          // PopoverContent moves it into the listbox. Click still toggles open.
+          event.preventDefault();
+        }}
         onKeyDown={handleKeyDown}
       >
         <span className={cn(styles.triggerLabel, isPlaceholder && styles.placeholder)}>
@@ -214,27 +265,12 @@ function SelectListbox({
   );
 
   const handleListboxKeyDown = useCallback((event: KeyboardEvent<HTMLUListElement>) => {
-    const buttons = Array.from(
-      event.currentTarget.querySelectorAll<HTMLButtonElement>(
-        'button[role="option"]:not(:disabled)',
-      ),
-    );
-    const activeIndex = buttons.findIndex((button) => button === document.activeElement);
-    if (activeIndex === -1) return;
+    if (focusListboxOptionByKey(event.currentTarget, event.key)) {
+      event.preventDefault();
+      return;
+    }
 
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      buttons[Math.min(activeIndex + 1, buttons.length - 1)]?.focus();
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      buttons[Math.max(activeIndex - 1, 0)]?.focus();
-    } else if (event.key === "Home") {
-      event.preventDefault();
-      buttons[0]?.focus();
-    } else if (event.key === "End") {
-      event.preventDefault();
-      buttons[buttons.length - 1]?.focus();
-    } else if (event.key === "Enter" || event.key === " ") {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       const active = document.activeElement;
       if (active instanceof HTMLButtonElement && active.getAttribute("role") === "option") {

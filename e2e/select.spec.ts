@@ -21,6 +21,7 @@ test.describe("Select keyboard model", () => {
     await trigger.click();
     const listbox = page.getByRole("listbox", { name: "Role" });
     await expect(listbox).toBeVisible();
+    await expect(page.getByRole("option", { name: "Viewer" })).toBeFocused();
     await page.keyboard.press("End");
     await expect(page.getByRole("option", { name: "Admin" })).toBeFocused();
     await page.keyboard.press("Home");

@@ -81,13 +81,27 @@ test.describe("Banking Transaction Row browser behavior", () => {
   });
 
   test("only one row's Popover is open at a time", async ({ page }) => {
+    // Returning visitor with a decided consent choice — same mechanism as
+    // e2e/analytics-consent.spec.ts. The production banner stays mounted for
+    // undecided visitors and would cover the second row at this viewport.
+    await page.addInitScript(
+      ([key, value]) => window.localStorage.setItem(key, value),
+      ["skrewww.analyticsConsent.v1", "denied"],
+    );
+    await page.goto("/components/banking-transaction-row");
+    await expect(page.getByRole("region", { name: "Analytics preferences" })).toBeHidden();
+
     const coffeeTrigger = page.getByRole("button", { name: /Coffee Collective/ });
     const transitTrigger = page.getByRole("button", { name: /Metro Transit Authority/ });
 
     await coffeeTrigger.click();
     await expect(page.getByRole("dialog", { name: /Coffee Collective/ })).toBeVisible();
 
-    await transitTrigger.click();
+    // The first Popover is placement=bottom / align=start (max-width 20rem)
+    // and covers the next row's center. Exclusive-open is pointer-driven:
+    // click the uncovered trailing metadata of the second row — still the
+    // same row button, not a force-click through the overlay.
+    await transitTrigger.getByText("Pending").click();
     await expect(page.getByRole("dialog", { name: /Metro Transit Authority/ })).toBeVisible();
     await expect(page.getByRole("dialog", { name: /Coffee Collective/ })).not.toBeVisible();
   });

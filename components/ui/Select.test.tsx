@@ -108,6 +108,35 @@ describe("Select", () => {
     expect(screen.getByRole("combobox")).toHaveTextContent("Choose role");
   });
 
+  const keyboardOptions = [
+    { value: "viewer", label: "Viewer" },
+    { value: "editor", label: "Editor" },
+    { value: "admin", label: "Admin" },
+  ];
+
+  it("moves focus into the listbox on click-open so Home and End navigate options", async () => {
+    const user = userEvent.setup();
+    render(<Select label="Role" placeholder="Choose role" options={keyboardOptions} />);
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("option", { name: "Viewer" })).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(screen.getByRole("option", { name: "Admin" })).toHaveFocus();
+    await user.keyboard("{Home}");
+    expect(screen.getByRole("option", { name: "Viewer" })).toHaveFocus();
+  });
+
+  it("still moves Home and End when the combobox retains focus after open", async () => {
+    const user = userEvent.setup();
+    render(<Select label="Role" placeholder="Choose role" options={keyboardOptions} />);
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    trigger.focus();
+    await user.keyboard("{End}");
+    expect(screen.getByRole("option", { name: "Admin" })).toHaveFocus();
+    await user.keyboard("{Home}");
+    expect(screen.getByRole("option", { name: "Viewer" })).toHaveFocus();
+  });
+
   it("never logs a 'value without onChange' warning in uncontrolled usage (no value/onChange passed)", async () => {
     // Regression guard: the internal aria-hidden native <select> mirror
     // used to forward the raw `onChange` prop directly, which is undefined

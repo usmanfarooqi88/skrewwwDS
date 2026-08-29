@@ -1,6 +1,15 @@
 # Project status
 
-Last verified: **2026-08-29** (Node engine range + install-script audit; consent-aware GA4 analytics remains closed)
+Last verified: **2026-08-29** (Select click-open keyboard; full Playwright gate restored)
+
+## 2026-08-29 — Select keyboard after click-open
+
+Clicking the Select combobox could leave DOM focus on the trigger, so Home/End
+(and arrows) did not move between options until a later keyboard-open path
+focused an option. The documented contract is unchanged: the combobox opens
+the listbox, and Arrow/Home/End move between options. The trigger now keeps
+the subsequent click from reclaiming focus, and those keys also work from the
+combobox while the listbox is open. Public Select APIs are unchanged.
 
 ## 2026-08-29 — Node engine range and install-script policy
 
