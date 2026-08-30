@@ -248,23 +248,52 @@ describe("PopoverAnchor", () => {
 });
 
 describe("Popover shell tokens stay independent of selectable-list panels", () => {
-  it("keeps the pre-existing Popover elevation and Glass mix (not Menu/Combobox parity)", () => {
+  it("composes the Card-family rich overlay locally and keeps Select/Date Picker lock tokens", () => {
     const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
     const css = readFileSync(resolve(process.cwd(), "components/ui/popover.module.css"), "utf8");
+    const selectCss = readFileSync(resolve(process.cwd(), "components/ui/select.module.css"), "utf8");
+    const datePickerCss = readFileSync(
+      resolve(process.cwd(), "components/ui/date-picker.module.css"),
+      "utf8",
+    );
+    const tooltipCss = readFileSync(resolve(process.cwd(), "components/ui/tooltip.module.css"), "utf8");
 
+    expect(tokens).toMatch(/--popover-padding:\s*0\.75rem/);
+    expect(tokens).toMatch(/--popover-surface:\s*var\(--semantic-surface-default\)/);
+    expect(tokens).toMatch(/--popover-border:\s*var\(--semantic-border-default\)/);
     expect(tokens).toMatch(
       /--popover-elevation:\s*0 var\(--primitive-shadow-blur-4\) var\(--primitive-shadow-blur-4\)/,
     );
-    expect(tokens).toMatch(/--popover-surface:\s*var\(--semantic-surface-default\)/);
-    expect(tokens).toMatch(/--popover-border:\s*var\(--semantic-border-default\)/);
-    expect(css).toMatch(/box-shadow:\s*var\(--popover-elevation\)/);
-    expect(css).toMatch(
-      /\[data-skrewww-surface="glass"\] \.popover\s*\{[^}]*glass-mix-md/,
-    );
-    expect(css).toMatch(
-      /\[data-skrewww-surface="glass"\] \.popover\s*\{[^}]*glass-backdrop-filter-md/,
-    );
+
+    expect(css).toMatch(/component-card-surface/);
+    expect(css).toMatch(/component-card-border-gradient/);
+    expect(css).toMatch(/box-shadow:\s*none/);
+    expect(css).toMatch(/backdrop-filter:\s*var\(--component-surface-backdrop-filter\)/);
+    expect(css).not.toMatch(/glass-mix-md|glass-backdrop-filter-md/);
     expect(css).not.toMatch(/menu-surface|combobox-popup|menu-elevation/);
+    expect(css).not.toMatch(/component-surface-gradient-overlay/);
+
+    expect(css).toMatch(
+      /\.arrow[\s\S]*?background:\s*var\(--component-card-surface\)/,
+    );
+    expect(css).toMatch(
+      /\.arrow[\s\S]*?border:\s*1px solid var\(--component-card-border\)/,
+    );
+    expect(css).not.toMatch(/\.arrow[^{]*\{[^}]*backdrop-filter/);
+
+    expect(selectCss).toMatch(/\.listboxPopover\.listboxPopover/);
+    expect(selectCss).toMatch(/box-shadow:\s*var\(--popover-elevation\)/);
+    expect(selectCss).toMatch(/glass-backdrop-filter-md/);
+    expect(selectCss).not.toMatch(/component-card-border-gradient/);
+
+    expect(datePickerCss).toMatch(/\.popover\.popover/);
+    expect(datePickerCss).toMatch(/box-shadow:\s*var\(--popover-elevation\)/);
+    expect(datePickerCss).toMatch(/glass-backdrop-filter-md/);
+    expect(datePickerCss).not.toMatch(/component-card-border-gradient/);
+
+    expect(tooltipCss).toMatch(/background:\s*var\(--tooltip-surface\)/);
+    expect(tooltipCss).toMatch(/glass-mix-sm/);
+    expect(tooltipCss).not.toMatch(/popover-surface|component-card-border-gradient/);
   });
 });
 

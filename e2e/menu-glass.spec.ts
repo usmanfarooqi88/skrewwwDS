@@ -109,7 +109,7 @@ test.describe("Menu Glass panel exact parity", () => {
     expect(outline).not.toBe("none");
   });
 
-  test("generic Popover Glass remains the prior md/color-mix recipe", async ({ page }) => {
+  test("generic Popover Glass uses Card surface + 16px blur, not Menu's simple border", async ({ page }) => {
     await page.goto("/components/popover");
     await setSurfaceMode(page, "glass");
     await page.getByRole("button", { name: "View details" }).click();
@@ -118,18 +118,16 @@ test.describe("Menu Glass panel exact parity", () => {
     const styles = await popover.evaluate((element) => {
       const style = getComputedStyle(element);
       return {
-        backgroundColor: style.backgroundColor,
         backdropFilter: style.backdropFilter,
+        boxShadow: style.boxShadow,
+        backgroundImage: style.backgroundImage,
       };
     });
 
-    // Popover Glass is still the opaque-ish color-mix + 12px blur path — not Menu's 12%/16px.
-    expect(styles.backdropFilter).toBe("blur(12px)");
-    expectColorClose(
-      await resolvedRgba(popover, "backgroundColor"),
-      hexToRgba("#ffffff"),
-      "popover glass remains near-opaque color-mix",
-    );
+    expect(styles.backdropFilter).toBe("blur(16px)");
+    expect(styles.boxShadow).toBe("none");
+    expect(styles.backgroundImage).toContain("162.47deg");
+    expect(styles.backgroundImage).toMatch(/0\.12|0, 0\.12/);
   });
 });
 

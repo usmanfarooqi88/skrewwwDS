@@ -32,7 +32,9 @@
   opacity: var(--opacity-disabled);
 }
 
-.popover {
+/* Double class beats canonical Popover Card-rim / no-elevation / lg blur.
+ * Date Picker calendar is a field shell, not the rich Popover overlay. */
+.popover.popover {
   box-sizing: border-box;
   width: auto;
   max-width: min(
@@ -41,6 +43,23 @@
   );
   padding: 0;
   overflow: hidden;
+  background: var(--popover-surface);
+  border: 1px solid var(--popover-border);
+  box-shadow: var(--popover-elevation);
+  backdrop-filter: none;
+}
+
+:global([data-skrewww-surface="glass"]) .popover.popover {
+  background: color-mix(in srgb, var(--popover-surface) var(--glass-mix-md), white);
+  border: 1px solid var(--popover-border);
+  box-shadow: var(--popover-elevation);
+  backdrop-filter: var(--glass-backdrop-filter-md);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :global([data-skrewww-surface="glass"]) .popover.popover {
+    background: color-mix(in srgb, var(--popover-surface) var(--glass-mix-md-fallback), white);
+  }
 }
 
 .popover :global([class*="body"]) {

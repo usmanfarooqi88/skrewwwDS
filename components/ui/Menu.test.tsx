@@ -305,13 +305,9 @@ describe("Menu Glass panel contract", () => {
     );
     expect(menuCss).not.toMatch(/\.item[^{]*\{[^}]*backdrop-filter/);
 
-    // Popover Glass recipe stays md/12px color-mix — Menu must not mutate it.
-    expect(popoverCss).toMatch(
-      /\[data-skrewww-surface="glass"\] \.popover\s*\{[^}]*glass-mix-md/,
-    );
-    expect(popoverCss).toMatch(
-      /\[data-skrewww-surface="glass"\] \.popover\s*\{[^}]*glass-backdrop-filter-md/,
-    );
+    // Popover owns the Card rim + lg blur locally. Menu must not consume it.
+    expect(popoverCss).toMatch(/component-card-border-gradient/);
+    expect(popoverCss).toMatch(/component-surface-backdrop-filter/);
     expect(popoverCss).not.toMatch(/menu-surface|menu-backdrop-filter|menu-border/);
   });
 

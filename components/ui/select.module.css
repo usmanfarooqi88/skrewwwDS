@@ -58,19 +58,39 @@
   pointer-events: none;
 }
 
-/* Override generic popover max-content sizing for select listboxes. */
-.listboxPopover {
+/* Override generic popover max-content sizing for select listboxes.
+ * Double class beats canonical Popover Card-rim / no-elevation / lg blur.
+ * Select is a listbox shell, not the rich Popover overlay. */
+.listboxPopover.listboxPopover {
   box-sizing: border-box;
   padding: 0;
   overflow: hidden;
   width: auto;
   max-width: none;
   animation: none;
+  background-color: var(--popover-surface);
+  background-image: var(--component-surface-gradient-overlay);
+  border: 1px solid var(--popover-border);
+  box-shadow: var(--popover-elevation);
+  backdrop-filter: none;
+}
+
+[data-skrewww-surface="gradient"] .listboxPopover.listboxPopover {
   background-image: var(--component-surface-gradient-overlay);
 }
 
-[data-skrewww-surface="gradient"] .listboxPopover {
-  background-image: var(--component-surface-gradient-overlay);
+[data-skrewww-surface="glass"] .listboxPopover.listboxPopover {
+  background: color-mix(in srgb, var(--popover-surface) var(--glass-mix-md), white);
+  background-image: none;
+  border: 1px solid var(--popover-border);
+  box-shadow: var(--popover-elevation);
+  backdrop-filter: var(--glass-backdrop-filter-md);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  [data-skrewww-surface="glass"] .listboxPopover.listboxPopover {
+    background: color-mix(in srgb, var(--popover-surface) var(--glass-mix-md-fallback), white);
+  }
 }
 
 .listboxBody {

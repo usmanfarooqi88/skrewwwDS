@@ -436,7 +436,14 @@
   --dialog-close-duration: 150ms;
   --dialog-motion-easing: ease;
 
-  /* ── Popover geometry [TEMPORARY] ── */
+  /* ── Popover geometry ──
+   * Canonical Figma Content 2044:26006 is a Card-family rich overlay
+   * (card/surface, 3-stop highlight rim, surface/blur, padding 12, radius 12).
+   * No drop shadow. No Gradient overlay. popover.module.css composes that
+   * locally using Card tokens (Dialog rim pattern). These --popover-* aliases
+   * stay the Select / Date Picker implementation lock — those shells must
+   * not inherit the rich rim. --popover-elevation is retained for that lock,
+   * not for canonical Popover. */
   --popover-surface: var(--semantic-surface-default);
   --popover-surface-opaque: var(--semantic-surface-default);
   --popover-text: var(--semantic-text-primary);
@@ -444,7 +451,7 @@
   --popover-radius: var(--shape-radius-container);
   --popover-elevation: 0 var(--primitive-shadow-blur-4) var(--primitive-shadow-blur-4)
     var(--primitive-shadow-color-4);
-  --popover-padding: 1rem;
+  --popover-padding: 0.75rem; /* [VERIFIED] Figma spacing/12 on Content 2044:26006 */
   --popover-max-width: 20rem;
   --popover-offset: 0.5rem;
   --popover-viewport-padding: 0.5rem;

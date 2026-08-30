@@ -11,13 +11,19 @@
   z-index: var(--popover-z-index);
   width: max-content;
   max-width: min(var(--popover-max-width), calc(100vw - (var(--popover-viewport-padding) * 2)));
-  border: 1px solid var(--popover-border);
+  /* Dialog rim: transparent border + card-surface fill + 3-stop highlight. */
+  border: 1px solid transparent;
   border-radius: var(--popover-radius);
-  background: var(--popover-surface);
+  background:
+    linear-gradient(var(--component-card-surface), var(--component-card-surface)) padding-box,
+    var(--component-card-border-gradient) border-box;
   color: var(--popover-text);
-  box-shadow: var(--popover-elevation);
+  /* Figma Content 2044:26006: BACKGROUND_BLUR only — no drop shadow. */
+  box-shadow: none;
   padding: var(--popover-padding);
   outline: none;
+  /* Flat/Gradient: none. Glass: --component-surface-backdrop-filter → lg 16px. */
+  backdrop-filter: var(--component-surface-backdrop-filter);
 }
 
 .title {
@@ -69,8 +75,9 @@
   position: absolute;
   width: var(--popover-arrow-size);
   height: var(--popover-arrow-size);
-  background: var(--popover-surface);
-  border: 1px solid var(--popover-border);
+  background: var(--component-card-surface);
+  border: 1px solid var(--component-card-border);
+  /* Panel owns Glass blur. Arrow fill matches the surface; do not blur again. */
   transform: rotate(45deg);
 }
 
@@ -109,23 +116,6 @@
 @media (prefers-reduced-motion: reduce) {
   .popover {
     animation: none;
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .popover {
-    background: var(--popover-surface-opaque);
-  }
-}
-
-[data-skrewww-surface="glass"] .popover {
-  background: color-mix(in srgb, var(--popover-surface) var(--glass-mix-md), white);
-  backdrop-filter: var(--glass-backdrop-filter-md);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-surface="glass"] .popover {
-    background: color-mix(in srgb, var(--popover-surface) var(--glass-mix-md-fallback), white);
   }
 }
 

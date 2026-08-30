@@ -1,6 +1,20 @@
 # Project status
 
-Last verified: **2026-08-31** (Selectable-list panel React parity)
+Last verified: **2026-08-31** (Popover React Surface parity)
+
+## 2026-08-31 — Popover React Surface parity
+
+Figma Containers/Popover `2044:26011` (Content `2044:26006`) is a rich overlay, not a selectable-list shell.
+
+- Card surface + 3-stop Card highlight rim (Dialog `padding-box` / `border-box` pattern).
+- No Gradient overlay (canonical Content has only `component/card/surface`).
+- No drop shadow (BACKGROUND_BLUR only).
+- Glass blur 16 via `--component-surface-backdrop-filter`.
+- Arrow uses Card surface/border and does not apply its own blur.
+- Padding 12. Radius unchanged (12 in Rounded).
+- Menu and Combobox stay simple no-shadow list shells.
+- Select and Date Picker keep the prior Popover lock (simple border + elevation + Glass md mix). They do not inherit the rich rim.
+- Public APIs and ARIA unchanged.
 
 ## 2026-08-31 — Selectable-list panel React parity
 
