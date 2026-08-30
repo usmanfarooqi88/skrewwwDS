@@ -255,22 +255,26 @@
      not consume these aliases — its live masters use the Card contract. */
   --feedback-info-surface: #dceefe;
   --feedback-info-border: rgb(37 99 199 / 0.24);
-  --feedback-info-text: var(--component-surface-content-muted);
+  /* Alert description on always-light feedback surfaces. Figma:
+     semantic/text/secondary (#5B5F68). Do not alias content-muted —
+     that token stays for dismiss/cascade consumers. Toast overrides
+     --feedback-text to semantic-text-primary on .toast. */
+  --feedback-info-text: var(--semantic-text-secondary);
   --feedback-info-title: var(--semantic-text-primary);
   --feedback-info-icon: #3b82f6;
   --feedback-success-surface: #dff5e6;
   --feedback-success-border: rgb(26 139 76 / 0.24);
-  --feedback-success-text: var(--component-surface-content-muted);
+  --feedback-success-text: var(--semantic-text-secondary);
   --feedback-success-title: var(--semantic-text-primary);
   --feedback-success-icon: #30a46c;
   --feedback-warning-surface: #fef3d6;
   --feedback-warning-border: rgb(179 106 0 / 0.28);
-  --feedback-warning-text: var(--component-surface-content-muted);
+  --feedback-warning-text: var(--semantic-text-secondary);
   --feedback-warning-title: var(--semantic-text-primary);
   --feedback-warning-icon: #f5a524;
   --feedback-error-surface: #fde2e1;
   --feedback-error-border: rgb(217 45 62 / 0.24);
-  --feedback-error-text: var(--component-surface-content-muted);
+  --feedback-error-text: var(--semantic-text-secondary);
   --feedback-error-title: var(--semantic-text-primary);
   /* [ALIASED] Alert/Toast error status icons via FeedbackSurface.
      Resolves semantic-icon-danger → danger-500 → #E5484D (zero visual delta). */

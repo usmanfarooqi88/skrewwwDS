@@ -43,6 +43,7 @@ export const feedbackRegistryEntries: ComponentRegistryEntry[] = [
       "component/feedback/danger/surface",
       "component/surface/blur",
       "component/surface/content-muted",
+      "semantic/text/secondary",
       "semantic/text/primary",
       "semantic/feedback/info",
       "semantic/feedback/success",
@@ -56,6 +57,7 @@ export const feedbackRegistryEntries: ComponentRegistryEntry[] = [
     relatedTokens: [
       { label: "semantic/feedback/info", href: "/foundations" },
       { label: "semantic/action/danger", href: "/foundations" },
+      { label: "semantic/text/secondary (Alert description)", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [

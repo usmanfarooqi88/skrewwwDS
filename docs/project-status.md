@@ -1,6 +1,14 @@
 # Project status
 
-Last verified: **2026-08-29** (Select click-open keyboard; full Playwright gate restored)
+Last verified: **2026-08-30** (Alert description React parity)
+
+## 2026-08-30 — Layer 3 Navigation + Feedback React parity
+
+Figma Navigation + Feedback Surface sweep is already **PASS**. This React pass is Alert-only.
+
+- **Alert description:** `--feedback-{info,success,warning,error}-text` now alias `--semantic-text-secondary` (`#5B5F68`) to match Figma on always-light Alert panels. `--component-surface-content-muted` is unchanged (dismiss, Toast close, other cascade consumers). Titles and type-specific icons are unchanged. Toast still overrides `--feedback-text` to `--semantic-text-primary`.
+- **Menu selected:** **API gap — no production change.** `MenuItem` has no `selected` / `aria-selected` contract; existing tests lock that absence. Hover stays overlay-free. Do not invent a Selected API for visual parity.
+- **Intentionally deferred:** Tooltip Glass, Skeleton Surface, Tabs tablist Glass, Breadcrumb muted vs secondary.
 
 ## 2026-08-29 — Select keyboard after click-open
 

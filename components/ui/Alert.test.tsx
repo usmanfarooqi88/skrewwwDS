@@ -6,6 +6,60 @@ import { describe, expect, it, vi } from "vitest";
 import { Alert } from "@/components/ui/Alert";
 
 describe("Alert", () => {
+  it("description tokens alias semantic-text-secondary, not content-muted", () => {
+    const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+    const feedbackCss = readFileSync(
+      resolve(process.cwd(), "components/ui/internal/feedback-surface.module.css"),
+      "utf8",
+    );
+
+    expect(tokens).toMatch(/--semantic-text-secondary:\s*var\(--primitive-color-neutral-600\)/);
+    expect(tokens).toMatch(/--primitive-color-neutral-600:\s*#5b5f68/i);
+
+    for (const status of ["info", "success", "warning", "error"] as const) {
+      expect(tokens).toMatch(
+        new RegExp(`--feedback-${status}-text:\\s*var\\(--semantic-text-secondary\\)`),
+      );
+      expect(tokens).not.toMatch(
+        new RegExp(`--feedback-${status}-text:\\s*var\\(--component-surface-content-muted\\)`),
+      );
+      expect(feedbackCss).toMatch(
+        new RegExp(`\\.${status}[\\s\\S]*?--feedback-text:\\s*var\\(--feedback-${status}-text\\)`),
+      );
+    }
+
+    expect(feedbackCss).toMatch(/\.description[\s\S]*?color:\s*var\(--feedback-text\)/);
+    expect(feedbackCss).toMatch(/\.title[\s\S]*?color:\s*var\(--feedback-title\)/);
+    expect(tokens).toMatch(/--feedback-info-title:\s*var\(--semantic-text-primary\)/);
+    expect(tokens).toMatch(/--feedback-success-title:\s*var\(--semantic-text-primary\)/);
+    expect(tokens).toMatch(/--feedback-warning-title:\s*var\(--semantic-text-primary\)/);
+    expect(tokens).toMatch(/--feedback-error-title:\s*var\(--semantic-text-primary\)/);
+    expect(tokens).toMatch(/--component-surface-content-muted:\s*var\(--semantic-icon-muted\)/);
+    expect(feedbackCss).toMatch(/\.toast[\s\S]*?--feedback-text:\s*var\(--semantic-text-primary\)/);
+  });
+
+  it("resolves Info/Success/Warning/Error description color to #5B5F68 via semantic-text-secondary", () => {
+    const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+    const feedbackCss = readFileSync(
+      resolve(process.cwd(), "components/ui/internal/feedback-surface.module.css"),
+      "utf8",
+    );
+
+    expect(tokens).toMatch(/--primitive-color-neutral-600:\s*#5b5f68/i);
+    expect(tokens).toMatch(/--semantic-text-secondary:\s*var\(--primitive-color-neutral-600\)/);
+    expect(feedbackCss).toMatch(/\.description[\s\S]*?color:\s*var\(--feedback-text\)/);
+
+    for (const status of ["info", "success", "warning", "error"] as const) {
+      expect(tokens).toMatch(
+        new RegExp(`--feedback-${status}-text:\\s*var\\(--semantic-text-secondary\\)`),
+      );
+    }
+
+    render(<Alert type="info" title="Title" description="Info description" />);
+    expect(screen.getByText("Info description")).toBeInTheDocument();
+    expect(screen.getByText("Title")).toBeInTheDocument();
+  });
+
   it("error status icon stays on feedback-error-icon → semantic-icon-danger (#E5484D)", () => {
     const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
     const feedbackCss = readFileSync(

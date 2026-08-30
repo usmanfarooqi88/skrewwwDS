@@ -86,7 +86,7 @@ describe("feedback-error-icon (D3 Alert/Toast consumer)", () => {
     expect(tokens).toMatch(/--feedback-error-surface:\s*#fde2e1/i);
     expect(tokens).toMatch(/--feedback-error-border:\s*rgb\(217 45 62 \/ 0\.24\)/);
     expect(tokens).toMatch(
-      /--feedback-error-text:\s*var\(--component-surface-content-muted\)/,
+      /--feedback-error-text:\s*var\(--semantic-text-secondary\)/,
     );
     expect(tokens).toMatch(/--feedback-error-title:\s*var\(--semantic-text-primary\)/);
     expect(tokens).toMatch(/--feedback-success-icon:\s*#30a46c/i);

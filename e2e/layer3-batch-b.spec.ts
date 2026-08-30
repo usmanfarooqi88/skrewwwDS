@@ -92,7 +92,7 @@ test.describe("Layer 3 Batch B Surface parity", () => {
         expectColorClose(await resolvedRgba(title, "color"), hexToRgba("#17181B"));
         expectColorClose(
           await resolvedRgba(description, "color"),
-          hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac"),
+          hexToRgba("#5B5F68"),
         );
         expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(iconColor[status]));
       }

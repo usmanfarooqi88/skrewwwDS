@@ -489,7 +489,8 @@ export const LAYER3_SURFACE_BATCH_B_EVIDENCE = {
       danger: { name: "component/feedback/danger/surface", id: "VariableID:2140:5", resolved: { flat: "#FDE2E1", gradient: "#FDE2E1", glass: "#FDE2E173 (45%)" } },
     },
     title: "semantic/text/primary",
-    descriptionAndClose: "component/surface/content-muted",
+    description: "semantic/text/secondary (VariableID:2002:2463) → #5B5F68; rebound 2026-08-30 from content-muted",
+    close: "component/surface/content-muted",
     icons: {
       info: "semantic/feedback/info #3B82F6",
       success: "semantic/feedback/success #30A46C",

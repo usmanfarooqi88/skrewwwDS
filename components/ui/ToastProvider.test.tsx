@@ -38,6 +38,7 @@ describe("Toast", () => {
     expect(toastSrc).toMatch(/FeedbackSurface/);
     // Toast surface overrides card chrome only — error icons still inherit .error token map
     expect(feedbackCss).toMatch(/\.toast[\s\S]*?--feedback-surface:\s*var\(--component-card-surface\)/);
+    expect(feedbackCss).toMatch(/\.toast[\s\S]*?--feedback-text:\s*var\(--semantic-text-primary\)/);
     expect(feedbackCss).not.toMatch(/\.toast[\s\S]*?--feedback-icon:/);
   });
 
