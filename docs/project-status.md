@@ -1,6 +1,17 @@
 # Project status
 
-Last verified: **2026-08-30** (Validation Message React text parity)
+Last verified: **2026-08-30** (Combobox option surface parity)
+
+## 2026-08-30 — Combobox option surface parity
+
+Figma option master `2740:554` is established. React option Hover/Active/Selected now reuse the Menu row-highlight Surface contract (`--menu-item-hover-surface` / `component/menu/item-hover`).
+
+- Glass options use 20% white highlight.
+- Selected keeps Gradient overlay + Medium 500.
+- Active keeps focus ring.
+- Panel alone owns Glass blur.
+- No API or checkmark changes.
+- `semantic/surface/subtle` was not added to Figma.
 
 ## 2026-08-30 — Validation Message React text parity
 
@@ -938,8 +949,7 @@ panel fixed for Date Picker in Batch 2.
 
 1. **File Upload token verification** — diff the Filled/Empty/Dragging/Error/Disabled variants' token bindings against `file-upload.module.css`'s Temporary aliases now that the component set (`2024:2649`) and both single-file and multi-file anatomy are confirmed
 2. **Data Table Figma parity** — MCP audit for a component-set node once available; not blocking (see [`data-table-discovery.md`](architecture/data-table-discovery.md))
-3. **Combobox selected-option token gap** (low priority) — `semantic/surface/subtle` (used by `--combobox-option-selected-surface`) has no Figma variable; either add the missing variable or rename the CSS token to an existing one — a separate, deliberate decision, not urgent (see [`combobox-parity.md`](architecture/combobox-parity.md#selected-surface-token-gap))
-4. Infrastructure and source-of-truth maintenance — ongoing
+3. Infrastructure and source-of-truth maintenance — ongoing
 
 ## Source-of-truth rules
 

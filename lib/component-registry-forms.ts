@@ -604,7 +604,7 @@ export function Example() {
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/forms.ts",
     documentationLastUpdated: DOCS_DATE,
-    reactLastUpdated: "2026-07-12",
+    reactLastUpdated: "2026-08-30",
     figmaReference: "Forms / Combobox — State (5 variants)",
     figmaSourceUrl: COMBOBOX_FIGMA_FILE_URL,
     figmaNodeId: COMBOBOX_FIGMA_START_NODE_ID,
@@ -614,7 +614,9 @@ export function Example() {
     tokensUsed: [
       "component/radius/control",
       "combobox/popup-surface",
+      "component/menu/item-hover",
       "combobox/option-active-surface",
+      "combobox/option-selected-surface",
       "semantic/focus-ring",
     ],
     relatedComponents: [
@@ -624,6 +626,7 @@ export function Example() {
     ],
     relatedTokens: [
       { label: "component/radius/control", href: "/foundations" },
+      { label: "component/menu/item-hover", href: "/foundations" },
       { label: "semantic/focus-ring", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],

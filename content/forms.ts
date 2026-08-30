@@ -174,7 +174,9 @@ export const formsComponents: ComponentDoc[] = [
     tokensUsed: [
       "component/radius/control",
       "combobox/popup-surface",
+      "component/menu/item-hover",
       "combobox/option-active-surface",
+      "combobox/option-selected-surface",
       "semantic/focus-ring",
     ],
     properties:

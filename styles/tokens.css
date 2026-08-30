@@ -502,8 +502,12 @@
   --combobox-option-padding: 0.5rem 0.625rem;
   --combobox-option-radius: var(--shape-radius-control);
   --combobox-option-text: var(--semantic-text-primary);
-  --combobox-option-active-surface: var(--semantic-surface-elevated);
-  --combobox-option-selected-surface: var(--semantic-surface-subtle);
+  /* [VERIFIED 2026-08-30] Forms/Combobox Option 2740:554 — Hover/Active/Selected
+     share component/menu/item-hover via the canonical Menu row-highlight token
+     (Flat/Gradient #F7F7F8, Glass white 20%). Do not alias elevated/subtle:
+     those stay opaque in Glass. */
+  --combobox-option-active-surface: var(--menu-item-hover-surface);
+  --combobox-option-selected-surface: var(--menu-item-hover-surface);
   --combobox-option-disabled-text: var(--semantic-text-disabled);
   --combobox-empty-padding: 0.625rem;
   --combobox-empty-min-height: 2.25rem;

@@ -1,6 +1,6 @@
 # Combobox Figma parity
 
-Last updated: 2026-07-15
+Last updated: 2026-08-30
 
 ## Figma source
 
@@ -43,7 +43,7 @@ The 2026-07-13 pass confirmed only the five closed-trigger states — it did not
 | Leading field icon | Unresolved | CaretDown only (decorative) | Temporary | MCP audit |
 | Option leading icon | **Confirmed absent from Figma** — the open-example reference frame (`2113:2`, see **Option anatomy**) shows label-text-only rows, no icon | Label text only | Matched | — |
 | Option description | **Confirmed absent from Figma** — the open-example reference frame shows no description slot (see **Option anatomy**) | Not implemented | Matched | — |
-| Selected indicator (in list) | **Confirmed via reference frame** — font-weight 500 distinction only; the row has no visible background fill because `semantic/surface/subtle` has no Figma variable (see **Selected-surface token gap**) | Font-weight 500 + `--combobox-option-selected-surface` token | Matched (font-weight); token-mapping gap tracked separately | See **Selected-surface token gap** |
+| Selected indicator (in list) | Option master `2740:554` / Selected `2740:550` — `component/menu/item-hover` + Gradient overlay + Medium 500; no checkmark | `aria-selected` + `--combobox-option-selected-surface` → `--menu-item-hover-surface` + overlay + font-weight 500 | Matched | Closed 2026-08-30 — see **Selected-surface token mapping** |
 | Popup width | Reference frame (`2113:2`) now exists, but exact popup width/sizing was not itemized in this pass | `matchTriggerWidth` (min = field width) | React-first (dimension undiffed) | Diff exact popup width against the reference frame in a follow-up pass |
 | Popup max height | Reference frame now exists, but exact max-height was not itemized in this pass | `--combobox-popup-max-height` | React-first (dimension undiffed) | Diff against the reference frame in a follow-up pass |
 | Option height / padding | Reference frame now exists, but exact row height/padding was not itemized in this pass | `--combobox-option-*` tokens | React-first (dimension undiffed) | Diff against the reference frame in a follow-up pass |
@@ -105,9 +105,9 @@ Confirmed against this reference frame:
 
 Historical note (2026-07-13): this section previously read "no open/expanded example frame exists anywhere in the Figma file... do not infer or invent option-list anatomy from the Figma file as it stands." That was accurate at the time — the reference frame above did not yet exist. It has since been added, and the facts in this section reflect the current state.
 
-## Selected-surface token gap
+## Selected-surface token mapping
 
-**Found 2026-07-15, not fixed — a separate decision for later.** `combobox.module.css`'s `.optionSelected` rule references `--combobox-option-selected-surface: var(--semantic-surface-subtle)`, but `semantic/surface/subtle` does not exist in Figma's variable set (confirmed via full search — only `semantic/surface/default`, `/elevated`, `/glass` exist there). The open-example demo's "selected" row therefore has no background fill in Figma; the font-weight-500 distinction (which does exist in code) is the only visual signal in the reference. Resolve later by either adding the missing Figma variable or renaming the CSS custom property to an existing token — this document does not pick one; see `lib/combobox-figma-metadata.ts`'s `COMBOBOX_FIGMA_SELECTED_SURFACE_TOKEN_GAP`.
+**Closed 2026-08-30.** Figma option master `2740:554` uses `component/menu/item-hover` (`VariableID:2142:210`) for Hover, Active, and Selected. React `--combobox-option-selected-surface` and `--combobox-option-active-surface` now alias `--menu-item-hover-surface` (Flat/Gradient `#F7F7F8`, Glass white @ 20%). Selected keeps the shared Gradient overlay and Medium 500. Active keeps `semantic/focus-ring`. `semantic/surface/subtle` was not added to Figma. Historical gap note: `COMBOBOX_FIGMA_SELECTED_SURFACE_TOKEN_GAP`.
 
 ## Pointer active-option sync
 
@@ -136,8 +136,8 @@ Public export for composition (Combobox positioning). Not a registry component. 
 | `--combobox-option-padding` | Temporary implementation |
 | `--combobox-option-radius` | Alias → `--shape-radius-control` |
 | `--combobox-option-text` | Alias → `--semantic-text-primary` |
-| `--combobox-option-active-surface` | Alias → `--semantic-surface-elevated` |
-| `--combobox-option-selected-surface` | Alias → `--semantic-surface-subtle` — **no Figma variable exists for this token** (see **Selected-surface token gap**) |
+| `--combobox-option-active-surface` | Alias → `--menu-item-hover-surface` (Figma `component/menu/item-hover`) |
+| `--combobox-option-selected-surface` | Alias → `--menu-item-hover-surface` — same row-highlight contract; Selected adds overlay + 500 |
 | `--combobox-option-disabled-text` | Alias → `--semantic-text-disabled` |
 | `--combobox-empty-*` | Temporary implementation |
 | Field chrome | Alias → Text Input tokens |
@@ -152,7 +152,6 @@ Public export for composition (Combobox positioning). Not a registry component. 
 
 ## Recommended next batch
 
-1. Resolve the **Selected-surface token gap** — either add a `semantic/surface/subtle` Figma variable or rename `--combobox-option-selected-surface` to an existing token; a separate, deliberate decision, not part of this sync
-2. Diff the option-list reference frame's (`2113:2`) exact popup width, max-height, and option height/padding against the current Temporary token values
-3. Diff each confirmed State variant's (Default/Hover/Focused/Error/Disabled) token values against `text-input.module.css` and map the trigger's confirmed variable IDs (`lib/combobox-figma-metadata.ts`) to their React token aliases
-4. Diacritic-normalized filtering (if confirmed)
+1. Diff the option-list reference frame's (`2113:2`) exact popup width, max-height, and option height/padding against the current Temporary token values
+2. Diff each confirmed State variant's (Default/Hover/Focused/Error/Disabled) token values against `text-input.module.css` and map the trigger's confirmed variable IDs (`lib/combobox-figma-metadata.ts`) to their React token aliases
+3. Diacritic-normalized filtering (if confirmed)

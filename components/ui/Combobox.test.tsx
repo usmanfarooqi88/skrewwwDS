@@ -1,9 +1,23 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Combobox } from "@/components/ui/Combobox";
 import * as PublicUi from "@/components/ui";
 import { getImplementedComponentCount, getRegistryEntry } from "@/lib/component-registry";
+
+function comboboxCss() {
+  return readFileSync(resolve(process.cwd(), "components/ui/combobox.module.css"), "utf8");
+}
+
+function tokensCss() {
+  return readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+}
+
+function comboboxSource() {
+  return readFileSync(resolve(process.cwd(), "components/ui/Combobox.tsx"), "utf8");
+}
 
 const countries = [
   { value: "us", label: "United States" },
@@ -83,6 +97,11 @@ describe("Combobox selection and input sync", () => {
     expect(onValueChange).toHaveBeenCalledWith("ca");
     expect(input).toHaveValue("Canada");
     expect(input).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    const canada = screen.getByRole("option", { name: "Canada" });
+    expect(canada).toHaveAttribute("aria-selected", "true");
+    expect(canada.querySelector("svg")).toBeNull();
+    expect(canada).toHaveTextContent("Canada");
   });
 
   it("selects with Enter while keeping input focus", async () => {
@@ -346,5 +365,91 @@ describe("Combobox controlled-state matrix", () => {
     );
     await user.click(screen.getByRole("combobox", { name: "Country" }));
     expect(handlers.onOpenChange).toHaveBeenCalledWith(true);
+  });
+});
+
+describe("Combobox option surface contract", () => {
+  it("aliases hover/active/selected fills to the Menu row-highlight token", () => {
+    const tokens = tokensCss();
+    expect(tokens).toMatch(
+      /--combobox-option-active-surface:\s*var\(--menu-item-hover-surface\)/,
+    );
+    expect(tokens).toMatch(
+      /--combobox-option-selected-surface:\s*var\(--menu-item-hover-surface\)/,
+    );
+    expect(tokens).not.toMatch(
+      /--combobox-option-active-surface:\s*var\(--semantic-surface-elevated\)/,
+    );
+    expect(tokens).not.toMatch(
+      /--combobox-option-selected-surface:\s*var\(--semantic-surface-subtle\)/,
+    );
+    expect(tokens).toMatch(
+      /\[data-skrewww-surface="glass"\][\s\S]*?--menu-item-hover-surface:\s*rgb\(255 255 255 \/ 0\.2\)/,
+    );
+  });
+
+  it("keeps Default transparent, Hover/Active on row highlight, Selected overlay + 500, Disabled unfilled", () => {
+    const css = comboboxCss();
+    expect(css).toMatch(/\.option\s*\{[^}]*background:\s*transparent/);
+    expect(css).toMatch(
+      /\.option:hover:not\(\.optionDisabled\)\s*\{[^}]*background-color:\s*var\(--combobox-option-active-surface\)/,
+    );
+    expect(css).toMatch(
+      /\.optionActive\s*\{[^}]*background-color:\s*var\(--combobox-option-active-surface\)/,
+    );
+    expect(css).toMatch(
+      /\.optionActive\s*\{[^}]*outline:\s*2px solid var\(--semantic-focus-ring\)/,
+    );
+    expect(css).toMatch(/\.optionSelected\s*\{[^}]*font-weight:\s*500/);
+    expect(css).toMatch(
+      /\.optionSelected\s*\{[^}]*background-color:\s*var\(--combobox-option-selected-surface\)/,
+    );
+    expect(css).toMatch(
+      /\.optionSelected\s*\{[^}]*background-image:\s*var\(--component-surface-gradient-overlay\)/,
+    );
+    expect(css).toMatch(
+      /\.optionSelected:hover:not\(\.optionDisabled\),\s*\.optionSelected\.optionActive\s*\{[^}]*background-color:\s*var\(--combobox-option-selected-surface\)/,
+    );
+    expect(css).toMatch(
+      /\.optionSelected:hover:not\(\.optionDisabled\),\s*\.optionSelected\.optionActive\s*\{[^}]*background-image:\s*var\(--component-surface-gradient-overlay\)/,
+    );
+    expect(css).toMatch(/\.optionDisabled\s*\{[^}]*color:\s*var\(--combobox-option-disabled-text\)/);
+    expect(css).toMatch(/\.optionDisabled\s*\{[^}]*cursor:\s*not-allowed/);
+    expect(css).not.toMatch(/\.optionDisabled\s*\{[^}]*background/);
+  });
+
+  it("gives the listbox panel Surface blur and never blurs option rows", () => {
+    const css = comboboxCss();
+    expect(css).toMatch(
+      /\.listboxPopover\s*\{[^}]*backdrop-filter:\s*var\(--component-surface-backdrop-filter\)/,
+    );
+    expect(css).toMatch(
+      /\[data-skrewww-surface="glass"\] \.listboxPopover\.listboxPopover\s*\{[^}]*backdrop-filter:\s*var\(--glass-backdrop-filter-lg\)/,
+    );
+    expect(css).not.toMatch(/\.option[^{]*\{[^}]*backdrop-filter/);
+  });
+
+  it("does not invent a checkmark and keeps aria-selected on option rows", () => {
+    const source = comboboxSource();
+    expect(source).toMatch(/aria-selected=\{option\.value === selectedValue\}/);
+    expect(source).toMatch(/aria-activedescendant/);
+    expect(source).toMatch(/\{option\.label\}/);
+    expect(source).not.toMatch(/checkmark|CheckCircle|aria-checked/);
+  });
+
+  it("documents Menu row-highlight in Combobox registry metadata", () => {
+    const entry = getRegistryEntry("combobox");
+    expect(entry?.reactLastUpdated).toBe("2026-08-30");
+    expect(entry?.tokensUsed).toEqual([
+      "component/radius/control",
+      "combobox/popup-surface",
+      "component/menu/item-hover",
+      "combobox/option-active-surface",
+      "combobox/option-selected-surface",
+      "semantic/focus-ring",
+    ]);
+    expect(entry?.relatedTokens?.some((token) => token.label === "component/menu/item-hover")).toBe(
+      true,
+    );
   });
 });

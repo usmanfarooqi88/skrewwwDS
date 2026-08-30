@@ -39,7 +39,13 @@
   border: 1px solid var(--combobox-popup-border);
   border-radius: var(--combobox-popup-radius);
   box-shadow: var(--combobox-popup-elevation);
+  /* Panel owns Surface blur (Card/lg 16px in Glass). Option rows never blur. */
+  backdrop-filter: var(--component-surface-backdrop-filter);
   animation: none;
+}
+
+[data-skrewww-surface="glass"] .listboxPopover.listboxPopover {
+  backdrop-filter: var(--glass-backdrop-filter-lg);
 }
 
 [data-skrewww-surface="gradient"] .listboxPopover {
@@ -82,11 +88,11 @@
 }
 
 .option:hover:not(.optionDisabled) {
-  background: var(--combobox-option-active-surface);
+  background-color: var(--combobox-option-active-surface);
 }
 
 .optionActive {
-  background: var(--combobox-option-active-surface);
+  background-color: var(--combobox-option-active-surface);
   outline: 2px solid var(--semantic-focus-ring);
   outline-offset: -2px;
 }
@@ -97,7 +103,9 @@
   background-image: var(--component-surface-gradient-overlay);
 }
 
-.optionSelected:hover:not(.optionDisabled) {
+.optionSelected:hover:not(.optionDisabled),
+.optionSelected.optionActive {
+  background-color: var(--combobox-option-selected-surface);
   background-image: var(--component-surface-gradient-overlay);
 }
 

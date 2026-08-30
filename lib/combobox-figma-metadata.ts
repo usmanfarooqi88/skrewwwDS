@@ -88,31 +88,30 @@ export const COMBOBOX_FIGMA_OPTION_ROW_NODE_IDS = [
 ] as const;
 
 /**
- * Confirmed present (2026-07-15) — corrects the 2026-07-13 "not specified"
- * finding. A new demo frame (COMBOBOX_FIGMA_OPEN_EXAMPLE_NODE_ID) now shows
- * option-list/listbox anatomy directly, matching combobox.module.css's real
- * CSS: .option (transparent, semantic/text/primary), .optionActive
- * (semantic/surface/elevated background + 2px inset outline using
- * semantic/focus-ring), .optionSelected (font-weight 500 — see
- * COMBOBOX_FIGMA_SELECTED_SURFACE_TOKEN_GAP below for the background),
- * .optionDisabled (semantic/text/disabled). The clear-all control remains
- * absent from the trigger anatomy — that finding is unchanged.
+ * Option master (2026-08-30). Canonical selectable-row contract:
+ * Forms/Combobox Option 2740:554. Variants: Default 2740:544, Hover 2740:546,
+ * Active 2740:548, Selected 2740:550, Disabled 2740:552. Rows use
+ * component/menu/item-hover (VariableID:2142:210); the panel owns Glass blur.
+ */
+export const COMBOBOX_FIGMA_OPTION_MASTER_NODE_ID = "2740:554";
+export const COMBOBOX_FIGMA_LISTBOX_PANEL_MASTER_NODE_ID = "2181:1173";
+
+/**
+ * Confirmed present (2026-07-15) — option-list anatomy exists. 2026-08-30
+ * closed the selected-surface mapping: Hover/Active/Selected reuse
+ * component/menu/item-hover via --menu-item-hover-surface. Selected keeps
+ * Medium 500 + shared Gradient overlay. Active keeps semantic/focus-ring.
+ * No checkmark. Panel owns Glass blur 16. See COMBOBOX_FIGMA_SELECTED_SURFACE_TOKEN_GAP.
  */
 export const COMBOBOX_FIGMA_OPTION_LIST_ANATOMY_STATUS = "confirmed-present" as const;
 
 /**
- * Gap found 2026-07-15, not fixed — a separate decision for later, not part
- * of this sync. Code's .optionSelected rule references
- * --combobox-option-selected-surface: var(--semantic-surface-subtle), but
- * semantic/surface/subtle does not exist in Figma's variable set (confirmed
- * via full search — only semantic/surface/default, /elevated, /glass exist
- * there). The open-example demo's "selected" row therefore has no
- * background fill; the font-weight-500 distinction (which does exist in
- * code) is the only visual signal in the Figma reference. Resolve later by
- * either adding the missing Figma variable or renaming the CSS custom
- * property to an existing token — do not silently pick one here.
+ * Closed 2026-08-30. React no longer maps selected/active option fills through
+ * semantic/surface/subtle or /elevated. Both aliases now target
+ * --menu-item-hover-surface (Figma component/menu/item-hover).
+ * semantic/surface/subtle was not added to Figma.
  */
 export const COMBOBOX_FIGMA_SELECTED_SURFACE_TOKEN_GAP =
-  "semantic/surface/subtle (used by --combobox-option-selected-surface in combobox.module.css) has no corresponding Figma variable — confirmed via full search 2026-07-15.";
+  "CLOSED 2026-08-30 — --combobox-option-selected-surface and --combobox-option-active-surface alias --menu-item-hover-surface (component/menu/item-hover). semantic/surface/subtle was not added to Figma.";
 
-export const COMBOBOX_FIGMA_AUDIT_STATUS = "verified-2026-07-15" as const;
+export const COMBOBOX_FIGMA_AUDIT_STATUS = "verified-2026-08-30" as const;
