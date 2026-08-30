@@ -28,7 +28,8 @@
   pointer-events: none;
 }
 
-.listboxPopover {
+/* Double class beats shared Popover `.popover` elevation/Glass mix. */
+.listboxPopover.listboxPopover {
   box-sizing: border-box;
   padding: 0;
   overflow: hidden;
@@ -39,16 +40,20 @@
   border: 1px solid var(--combobox-popup-border);
   border-radius: var(--combobox-popup-radius);
   box-shadow: var(--combobox-popup-elevation);
-  /* Panel owns Surface blur (Card/lg 16px in Glass). Option rows never blur. */
+  /* Panel owns Surface blur (lg 16px in Glass). Option rows never blur. */
   backdrop-filter: var(--component-surface-backdrop-filter);
   animation: none;
 }
 
 [data-skrewww-surface="glass"] .listboxPopover.listboxPopover {
+  background: var(--combobox-popup-surface);
+  background-image: none;
+  border: 1px solid var(--combobox-popup-border);
+  box-shadow: var(--combobox-popup-elevation);
   backdrop-filter: var(--glass-backdrop-filter-lg);
 }
 
-[data-skrewww-surface="gradient"] .listboxPopover {
+[data-skrewww-surface="gradient"] .listboxPopover.listboxPopover {
   background-image: var(--component-surface-gradient-overlay);
 }
 

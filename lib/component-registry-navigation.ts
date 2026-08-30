@@ -327,7 +327,7 @@ export function Example() {
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/navigation.ts",
     documentationLastUpdated: DOCS_DATE,
-    reactLastUpdated: "2026-07-12",
+    reactLastUpdated: "2026-08-31",
     figmaReference:
       "Navigation / Menu Item + Dropdown Trigger — composed Menu pattern (Dropdown Menu is a usage alias, not a separate component)",
     documentationUrl: getComponentDocumentationUrl("menu"),
@@ -336,6 +336,7 @@ export function Example() {
     tokensUsed: [
       "menu/surface",
       "menu/border",
+      "menu/elevation",
       "menu/backdrop-filter",
       "menu/item-text",
       "menu/item-hover-surface",

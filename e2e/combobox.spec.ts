@@ -408,6 +408,42 @@ test.describe("Combobox option surface parity", () => {
     expect(hasFocusRing(visual)).toBe(false);
   });
 
+  for (const mode of SURFACE_MODES) {
+    test(`${mode}: listbox shell is a no-shadow selectable-list panel`, async ({ page }) => {
+      await setSurfaceMode(page, mode);
+      await basicCountryInput(page).click();
+      const listbox = countryListbox(page);
+      await expect(listbox).toBeVisible();
+      const panel = countryPanel(page);
+      const styles = await panel.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          boxShadow: style.boxShadow,
+          backdropFilter: style.backdropFilter,
+          backgroundImage: style.backgroundImage,
+          borderWidth: style.borderWidth,
+        };
+      });
+
+      expect(styles.boxShadow, `${mode} shadow`).toBe("none");
+      expect(styles.borderWidth, `${mode} border`).toBe("1px");
+      if (mode === "glass") {
+        expect(styles.backdropFilter).toBe("blur(16px)");
+        expect(styles.backgroundImage).toBe("none");
+        expectColorClose(await resolvedRgba(panel, "backgroundColor"), hexToRgba("#ffffff", 0.12));
+        expectColorClose(await resolvedRgba(panel, "borderColor"), hexToRgba("#ffffff", 0.24));
+      } else {
+        expect(styles.backdropFilter, `${mode} blur`).toBe("none");
+        expectColorClose(await resolvedRgba(panel, "backgroundColor"), hexToRgba("#ffffff"));
+        if (mode === "gradient") {
+          expectGradientOverlay(styles.backgroundImage);
+        } else {
+          expectNoOverlay(styles.backgroundImage);
+        }
+      }
+    });
+  }
+
   test("Glass panel owns 16px blur; option rows never blur", async ({ page }) => {
     await setSurfaceMode(page, "glass");
     await basicCountryInput(page).click();

@@ -421,12 +421,29 @@ describe("Combobox option surface contract", () => {
   it("gives the listbox panel Surface blur and never blurs option rows", () => {
     const css = comboboxCss();
     expect(css).toMatch(
-      /\.listboxPopover\s*\{[^}]*backdrop-filter:\s*var\(--component-surface-backdrop-filter\)/,
+      /\.listboxPopover\.listboxPopover\s*\{[^}]*backdrop-filter:\s*var\(--component-surface-backdrop-filter\)/,
     );
     expect(css).toMatch(
       /\[data-skrewww-surface="glass"\] \.listboxPopover\.listboxPopover\s*\{[^}]*backdrop-filter:\s*var\(--glass-backdrop-filter-lg\)/,
     );
     expect(css).not.toMatch(/\.option[^{]*\{[^}]*backdrop-filter/);
+  });
+
+  it("aliases the listbox shell to Menu panel tokens instead of Popover elevation/rim", () => {
+    const tokens = tokensCss();
+    const css = comboboxCss();
+    expect(tokens).toMatch(/--combobox-popup-surface:\s*var\(--menu-surface\)/);
+    expect(tokens).toMatch(/--combobox-popup-border:\s*var\(--menu-border\)/);
+    expect(tokens).toMatch(/--combobox-popup-elevation:\s*var\(--menu-elevation\)/);
+    expect(tokens).toMatch(/--combobox-popup-radius:\s*var\(--menu-radius\)/);
+    expect(tokens).not.toMatch(/--combobox-popup-surface:\s*var\(--popover-surface\)/);
+    expect(tokens).not.toMatch(/--combobox-popup-elevation:\s*var\(--popover-elevation\)/);
+    expect(tokens).not.toMatch(/--combobox-popup-border:\s*var\(--popover-border\)/);
+    expect(css).toMatch(/box-shadow:\s*var\(--combobox-popup-elevation\)/);
+    expect(css).toMatch(
+      /\.listboxPopover\.listboxPopover\s*\{[^}]*background-image:\s*var\(--component-surface-gradient-overlay\)/,
+    );
+    expect(css).not.toMatch(/component-card-border-highlight/);
   });
 
   it("does not invent a checkmark and keeps aria-selected on option rows", () => {
@@ -439,10 +456,12 @@ describe("Combobox option surface contract", () => {
 
   it("documents Menu row-highlight in Combobox registry metadata", () => {
     const entry = getRegistryEntry("combobox");
-    expect(entry?.reactLastUpdated).toBe("2026-08-30");
+    expect(entry?.reactLastUpdated).toBe("2026-08-31");
     expect(entry?.tokensUsed).toEqual([
       "component/radius/control",
       "combobox/popup-surface",
+      "menu/surface",
+      "menu/border",
       "component/menu/item-hover",
       "combobox/option-active-surface",
       "combobox/option-selected-surface",

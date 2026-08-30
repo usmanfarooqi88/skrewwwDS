@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
@@ -242,6 +244,27 @@ describe("PopoverAnchor", () => {
       error.mock.calls.some((call) => String(call[0]).includes("element.ref")),
     ).toBe(false);
     error.mockRestore();
+  });
+});
+
+describe("Popover shell tokens stay independent of selectable-list panels", () => {
+  it("keeps the pre-existing Popover elevation and Glass mix (not Menu/Combobox parity)", () => {
+    const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
+    const css = readFileSync(resolve(process.cwd(), "components/ui/popover.module.css"), "utf8");
+
+    expect(tokens).toMatch(
+      /--popover-elevation:\s*0 var\(--primitive-shadow-blur-4\) var\(--primitive-shadow-blur-4\)/,
+    );
+    expect(tokens).toMatch(/--popover-surface:\s*var\(--semantic-surface-default\)/);
+    expect(tokens).toMatch(/--popover-border:\s*var\(--semantic-border-default\)/);
+    expect(css).toMatch(/box-shadow:\s*var\(--popover-elevation\)/);
+    expect(css).toMatch(
+      /\[data-skrewww-surface="glass"\] \.popover\s*\{[^}]*glass-mix-md/,
+    );
+    expect(css).toMatch(
+      /\[data-skrewww-surface="glass"\] \.popover\s*\{[^}]*glass-backdrop-filter-md/,
+    );
+    expect(css).not.toMatch(/menu-surface|combobox-popup|menu-elevation/);
   });
 });
 

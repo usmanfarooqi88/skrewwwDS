@@ -1,4 +1,5 @@
-.content {
+/* Double class beats shared Popover `.popover` elevation/background. */
+.content.content {
   box-sizing: border-box;
   padding: 0;
   overflow: hidden;
@@ -16,7 +17,7 @@
   animation: none;
 }
 
-[data-skrewww-surface="gradient"] .content {
+[data-skrewww-surface="gradient"] .content.content {
   background-image: var(--component-surface-gradient-overlay);
 }
 

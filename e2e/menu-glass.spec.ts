@@ -147,6 +147,29 @@ test.describe("Menu Flat panel preservation", () => {
     expect(await panel.evaluate((element) => getComputedStyle(element).backdropFilter)).toBe(
       "none",
     );
+    expect(await panel.evaluate((element) => getComputedStyle(element).boxShadow)).toBe("none");
+    expect(await panel.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe("none");
     expect(await panel.evaluate((element) => getComputedStyle(element).borderRadius)).toBe("12px");
+  });
+
+  test("Gradient shell keeps overlay, no shadow, and no blur", async ({ page }) => {
+    await page.goto("/components/menu");
+    await setSurfaceMode(page, "gradient");
+    await page.getByRole("button", { name: "Project actions" }).click();
+
+    const menu = page.getByRole("menu", { name: "Project actions" });
+    const panel = await menuPanel(menu);
+    const styles = await panel.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        boxShadow: style.boxShadow,
+        backdropFilter: style.backdropFilter,
+        backgroundImage: style.backgroundImage,
+      };
+    });
+
+    expect(styles.boxShadow).toBe("none");
+    expect(styles.backdropFilter).toBe("none");
+    expect((styles.backgroundImage.match(/linear-gradient/g) ?? []).length).toBe(1);
   });
 });

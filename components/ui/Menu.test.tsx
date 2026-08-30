@@ -262,9 +262,13 @@ describe("Menu Glass panel contract", () => {
     const menuCss = readFileSync(resolve(process.cwd(), "components/ui/menu.module.css"), "utf8");
     const popoverCss = readFileSync(resolve(process.cwd(), "components/ui/popover.module.css"), "utf8");
 
-    // Flat panel aliases stay solid semantic surface/border; blur off.
+    // Flat panel aliases stay solid semantic surface/border; blur off; no shadow.
     expect(tokens).toMatch(/--menu-surface:\s*var\(--semantic-surface-default\)/);
     expect(tokens).toMatch(/--menu-border:\s*var\(--semantic-border-default\)/);
+    expect(tokens).toMatch(
+      /--menu-border:\s*var\(--semantic-border-default\);\s*\/\* Figma Menu Panel[\s\S]*?--menu-elevation:\s*none;/,
+    );
+    expect(tokens).not.toMatch(/--menu-elevation:\s*var\(--popover-elevation\)/);
     expect(tokens).toMatch(/--menu-backdrop-filter:\s*none/);
 
     // Glass: exact Figma panel-surface 12% / panel-border 24% / blur lg 16px.
@@ -287,6 +291,7 @@ describe("Menu Glass panel contract", () => {
     // Menu shell consumes the Menu tokens (not Card gradient rim).
     expect(menuCss).toMatch(/background-color:\s*var\(--menu-surface\)/);
     expect(menuCss).toMatch(/border:\s*1px solid var\(--menu-border\)/);
+    expect(menuCss).toMatch(/box-shadow:\s*var\(--menu-elevation\)/);
     expect(menuCss).toMatch(/backdrop-filter:\s*var\(--menu-backdrop-filter\)/);
     expect(menuCss).toMatch(
       /\[data-skrewww-surface="glass"\][\s\S]*?backdrop-filter:\s*var\(--glass-backdrop-filter-lg\)/,

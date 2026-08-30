@@ -1,6 +1,16 @@
 # Project status
 
-Last verified: **2026-08-30** (Combobox option surface parity)
+Last verified: **2026-08-31** (Selectable-list panel React parity)
+
+## 2026-08-31 — Selectable-list panel React parity
+
+Figma Menu Panel `2181:216` and Combobox Listbox `2181:1173` Slot architecture is already **CLOSED**. This React pass is panel-shell parity only.
+
+- Menu `--menu-elevation` is `none` in every Surface mode (no `--popover-elevation`).
+- Combobox listbox aliases Menu panel shell tokens (`surface` / `border` / `elevation` / `radius`), not Popover.
+- Shared Gradient overlay and Glass blur 16 stay on the panel.
+- Rows still have no blur. Option and Menu Item state contracts are unchanged.
+- Public APIs unchanged. Popover visual parity is explicitly deferred.
 
 ## 2026-08-30 — Combobox option surface parity
 

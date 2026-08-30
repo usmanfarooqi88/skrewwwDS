@@ -461,7 +461,8 @@
    * component/surface/blur 16px via --menu-backdrop-filter. */
   --menu-surface: var(--semantic-surface-default);
   --menu-border: var(--semantic-border-default);
-  --menu-elevation: var(--popover-elevation);
+  /* Figma Menu Panel 2181:216 — no drop shadow in any Surface mode. */
+  --menu-elevation: none;
   --menu-backdrop-filter: none;
   --menu-radius: var(--popover-radius);
   --menu-padding: 0.25rem;
@@ -490,13 +491,16 @@
   --menu-close-duration: var(--popover-close-duration);
   --menu-motion-easing: var(--popover-motion-easing);
 
-  /* ── Combobox geometry [TEMPORARY — aliases Select/Popover/form tokens] ── */
+  /* ── Combobox listbox shell — selectable-list contract, not Popover ──
+   * Figma Forms/Combobox Listbox Panel 2181:1173 shares the resolved Menu
+   * Panel construction. Alias the Menu panel shell; keep Combobox as its
+   * own component. Viewport padding stays Popover positioning chrome. */
   --combobox-icon: var(--semantic-icon-muted);
-  --combobox-popup-surface: var(--popover-surface);
-  --combobox-popup-border: var(--popover-border);
-  --combobox-popup-elevation: var(--popover-elevation);
-  --combobox-popup-radius: var(--popover-radius);
-  --combobox-popup-padding: 0.25rem;
+  --combobox-popup-surface: var(--menu-surface);
+  --combobox-popup-border: var(--menu-border);
+  --combobox-popup-elevation: var(--menu-elevation);
+  --combobox-popup-radius: var(--menu-radius);
+  --combobox-popup-padding: var(--menu-padding);
   --combobox-popup-max-height: min(16rem, calc(100vh - var(--popover-viewport-padding) * 2));
   --combobox-option-height: 2.25rem;
   --combobox-option-padding: 0.5rem 0.625rem;
@@ -1153,7 +1157,7 @@
     --component-surface-content-muted: var(--semantic-icon-muted);
     --menu-surface: var(--semantic-surface-default);
     --menu-border: var(--semantic-border-default);
-    --menu-elevation: var(--popover-elevation);
+    --menu-elevation: none;
     --menu-backdrop-filter: none;
     --menu-item-hover-surface: var(--semantic-surface-elevated);
     --file-upload-dragging-surface: var(--semantic-surface-elevated);

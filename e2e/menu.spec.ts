@@ -139,6 +139,10 @@ test.describe("Menu keyboard model", () => {
       if (mode === "gradient") {
         const image = await panel.evaluate((element) => getComputedStyle(element).backgroundImage);
         expect((image.match(/linear-gradient/g) ?? []).length).toBe(1);
+        expect(await panel.evaluate((element) => getComputedStyle(element).boxShadow)).toBe("none");
+        expect(await panel.evaluate((element) => getComputedStyle(element).backdropFilter)).toBe(
+          "none",
+        );
       } else if (mode === "glass") {
         expectColorClose(await resolvedRgba(panel, "backgroundColor"), hexToRgba("#ffffff", 0.12));
         expectColorClose(await resolvedRgba(panel, "borderColor"), hexToRgba("#ffffff", 0.24));
@@ -151,6 +155,7 @@ test.describe("Menu keyboard model", () => {
         );
       } else {
         expect(await panel.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe("none");
+        expect(await panel.evaluate((element) => getComputedStyle(element).boxShadow)).toBe("none");
       }
 
       await item.hover();
