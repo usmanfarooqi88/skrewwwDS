@@ -146,7 +146,7 @@ export function Example() {
     documentationLastUpdated: DOCS_DATE,
     reactLastUpdated: REACT_DATE,
     figmaReference:
-      "Containers / Dialog — Title + Body + Footer with real Button instances and scrim composition",
+      "No canonical Dialog COMPONENT_SET/master. React compound composition is the source of truth.",
     documentationUrl: getComponentDocumentationUrl("dialog"),
     supportedVariants: ["modal"],
     supportedSizes: [],
@@ -174,6 +174,7 @@ export function Example() {
     openQuestions: [
       "Destructive alertdialog variant not confirmed as a separate Figma pattern — use Dialog with danger actions for now.",
       "Full-screen mobile Dialog layout not confirmed — viewport padding and max-height cap used instead.",
+      "No canonical Figma Dialog COMPONENT_SET — a future Figma build should follow React DialogBody/DialogFooter composition, not instructional placeholders.",
     ],
     hasImplementation: true,
     hasPreview: true,
@@ -204,6 +205,10 @@ export function Example() {
         title: "How does nested overlay Escape work?",
         body: "Escape closes only the topmost overlay. Tooltip inside Popover inside Dialog closes in that order.",
       },
+      {
+        title: "Does Dialog body/footer accept arbitrary composition?",
+        body: "Yes. DialogBody and DialogFooter take ReactNode children — forms, alerts, multiple buttons, or custom layout. There is no Figma instructional placeholder in React. Closed Dialogs unmount portal content by design (focus trap / portal lifecycle), unlike Accordion’s CSS-hidden panels.",
+      },
     ],
     apiProps: [
       { name: "open", type: "boolean", description: "Controlled open state." },
@@ -214,6 +219,8 @@ export function Example() {
         description: "Closure requests always emit false with a reason.",
       },
       { name: "closeOnOverlayClick", type: "boolean", default: "true", description: "Backdrop dismissal." },
+      { name: "DialogBody children", type: "React.ReactNode", description: "Arbitrary body composition." },
+      { name: "DialogFooter children", type: "React.ReactNode", description: "Arbitrary action/footer composition." },
       { name: "initialFocusRef", type: "RefObject<HTMLElement>", description: "Preferred initial focus target on DialogContent." },
       { name: "finalFocusRef", type: "RefObject<HTMLElement>", description: "Preferred focus restoration target on close." },
     ],
@@ -380,7 +387,7 @@ export function Example() {
     documentationLastUpdated: DOCS_DATE,
     reactLastUpdated: REACT_DATE,
     figmaReference:
-      "Containers / Drawer — left-anchored panel; viewport-attached left edge flush, exposed right corners rounded",
+      "No canonical Drawer COMPONENT_SET/master. React compound composition is the source of truth. Implemented left-edge geometry: viewport-attached left edge flush, exposed right corners rounded.",
     documentationUrl: getComponentDocumentationUrl("drawer"),
     supportedVariants: ["left"],
     supportedSizes: [],
@@ -407,6 +414,7 @@ export function Example() {
       "Swipe-to-close, drag handles, and snap points are not confirmed.",
       "Full-screen mobile Drawer layout is not confirmed — max-width cap used instead.",
       "Figma prose said “left corners rounded, right edge flush” but topRightRadius=0 refers to the viewport-attached corner. Implementation uses left edge flush with right-corner radius per edge-attachment geometry.",
+      "No canonical Figma Drawer COMPONENT_SET — a future Figma build should follow React DrawerBody/DrawerFooter composition, not instructional placeholders.",
     ],
     hasImplementation: true,
     hasPreview: true,
@@ -440,6 +448,10 @@ export function Example() {
         title: "When should Drawer not use swipe gestures?",
         body: "Swipe-to-close is not confirmed in Figma and is intentionally omitted until a verified pattern exists.",
       },
+      {
+        title: "Does Drawer body/footer accept arbitrary composition?",
+        body: "Yes. DrawerBody and DrawerFooter take ReactNode children. React composition is canonical because no Figma Drawer master exists. Closed Drawers unmount portal content by design, unlike Accordion’s CSS-hidden panels.",
+      },
     ],
     apiProps: [
       { name: "open", type: "boolean", description: "Controlled open state." },
@@ -449,8 +461,10 @@ export function Example() {
         type: "(open: boolean, reason?: DrawerCloseReason) => void",
         description: "Closure requests always emit false with a reason.",
       },
-      { name: "placement", type: '"left"', default: '"left"', description: "Confirmed Figma placement." },
+      { name: "placement", type: '"left"', default: '"left"', description: "Implemented left-edge placement." },
       { name: "closeOnOverlayClick", type: "boolean", default: "true", description: "Backdrop dismissal." },
+      { name: "DrawerBody children", type: "React.ReactNode", description: "Arbitrary body composition." },
+      { name: "DrawerFooter children", type: "React.ReactNode", description: "Arbitrary action/footer composition." },
       { name: "initialFocusRef", type: "RefObject<HTMLElement>", description: "Preferred initial focus target." },
       { name: "finalFocusRef", type: "RefObject<HTMLElement>", description: "Preferred focus restoration target." },
     ],

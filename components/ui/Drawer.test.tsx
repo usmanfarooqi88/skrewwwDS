@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi, afterEach } from "vitest";
@@ -170,6 +170,58 @@ describe("Drawer", () => {
   it("does not export internal overlay infrastructure", () => {
     expect(Object.keys(PublicUi)).not.toContain("registerOverlay");
     expect(Object.keys(PublicUi)).not.toContain("useFloatingPosition");
+  });
+
+  it("composes arbitrary body and footer ReactNode and unmounts them when closed", async () => {
+    const user = userEvent.setup();
+    render(
+      <Drawer placement="left">
+        <DrawerTrigger>
+          <Button type="button">Open drawer</Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Compose</DrawerTitle>
+            <DrawerClose />
+          </DrawerHeader>
+          <DrawerBody>
+            <div data-testid="custom-drawer-content">
+              <p>Custom content</p>
+              <Button>Action</Button>
+            </div>
+          </DrawerBody>
+          <DrawerFooter>
+            <Button type="button" variant="secondary">
+              Cancel
+            </Button>
+            <Button type="button">Confirm</Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>,
+    );
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("custom-drawer-content")).not.toBeInTheDocument();
+    expect(screen.queryByText(/add content/i)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Open drawer" }));
+    const drawer = screen.getByRole("dialog", { name: "Compose" });
+    expect(drawer).toHaveAttribute("aria-modal", "true");
+    expect(screen.getAllByTestId("custom-drawer-content")).toHaveLength(1);
+    const content = screen.getByTestId("custom-drawer-content");
+    expect(content).toHaveTextContent("Custom content");
+    expect(within(content).getByRole("button", { name: "Action" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("custom-drawer-content")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Open drawer" }));
+    expect(screen.getByTestId("custom-drawer-content")).toHaveTextContent("Custom content");
+    expect(
+      within(screen.getByTestId("custom-drawer-content")).getByRole("button", { name: "Action" }),
+    ).toBeInTheDocument();
   });
 
   // Regression guard: DrawerTrigger composes a caller-supplied ref with its

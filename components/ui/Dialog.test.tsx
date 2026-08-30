@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, afterEach } from "vitest";
 import {
@@ -267,6 +267,59 @@ describe("Dialog", () => {
     expect(Object.keys(PublicUi)).not.toContain("Portal");
     expect(Object.keys(PublicUi)).not.toContain("useBackgroundInert");
     expect(Object.keys(PublicUi)).not.toContain("registerOverlay");
+  });
+
+  it("composes arbitrary body and footer ReactNode and unmounts them when closed", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dialog>
+        <DialogTrigger>
+          <Button type="button">Open dialog</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Compose</DialogTitle>
+            <DialogClose />
+          </DialogHeader>
+          <DialogBody>
+            <div data-testid="custom-dialog-content">
+              <p>Custom content</p>
+              <Button>Action</Button>
+            </div>
+          </DialogBody>
+          <DialogFooter>
+            <Button type="button" variant="secondary">
+              Cancel
+            </Button>
+            <Button type="button">Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("custom-dialog-content")).not.toBeInTheDocument();
+    expect(screen.queryByText(/add content/i)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Open dialog" }));
+    const dialog = screen.getByRole("dialog", { name: "Compose" });
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(screen.getAllByTestId("custom-dialog-content")).toHaveLength(1);
+    const content = screen.getByTestId("custom-dialog-content");
+    expect(content).toHaveTextContent("Custom content");
+    expect(within(content).getByRole("button", { name: "Action" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("custom-dialog-content")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Open dialog" }));
+    expect(screen.getByTestId("custom-dialog-content")).toHaveTextContent("Custom content");
+    expect(
+      within(screen.getByTestId("custom-dialog-content")).getByRole("button", { name: "Action" }),
+    ).toBeInTheDocument();
   });
 });
 

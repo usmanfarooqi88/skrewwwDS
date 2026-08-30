@@ -396,7 +396,7 @@ export function Example() {
     documentationSource: "content/containers.ts",
     documentationLastUpdated: "2026-06-01",
     reactLastUpdated: "2026-07-11",
-    figmaReference: "Containers / Card — Elevation (Flat/Raised)",
+    figmaReference: "Containers / Card — Elevation (Flat/Raised); node 2044:25756. Title/Body are Figma TEXT; Footer is a hardcoded Button frame. React children + footer ReactNode are ahead of that contract.",
     documentationUrl: getComponentDocumentationUrl("card"),
     supportedVariants: ["flat", "raised"],
     supportedSizes: [],
@@ -448,6 +448,7 @@ export function Example() {
     openQuestions: [
       "Confirm raised elevation shadow offset/spread values from Figma shadow tokens.",
       "Clickable-card pattern (single interactive target) not implemented — TODO before using Card as a link surface.",
+      "REACT AHEAD OF FIGMA — Figma Card 2044:25756 still uses Title/Body TEXT and a hardcoded Footer. A follow-up should audit native Content/Actions Slots without blocking React.",
     ],
     hasImplementation: true,
     hasPreview: true,
@@ -471,6 +472,12 @@ export function Example() {
         description: "Optional card header title.",
       },
       {
+        name: "children",
+        type: "React.ReactNode",
+        description:
+          "Arbitrary body content. Optional. Does not render Figma instructional placeholders. React is ahead of Figma Card Body TEXT.",
+      },
+      {
         name: "headingLevel",
         type: '"h2" | "h3" | "h4"',
         default: '"h3"',
@@ -479,7 +486,8 @@ export function Example() {
       {
         name: "footer",
         type: "ReactNode",
-        description: "Optional footer row — typically composed Button instances.",
+        description:
+          "Optional footer composition — typically Button instances. React is ahead of Figma’s hardcoded Footer frame.",
       },
     ],
     reactExample: `import { Card } from "@/components/ui/Card";

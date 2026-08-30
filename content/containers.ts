@@ -12,7 +12,7 @@ export const containersComponents: ComponentDoc[] = [
     accessibility: "If the whole Card is clickable, it needs a single clear interactive element, not the entire card silently clickable.",
     commonMistakes: "Overusing Card for every piece of content on a page, creating visual noise.",
     tokensUsed: ["semantic/surface/default", "semantic/border/default", "component/radius/container", "shadow-blur/3", "shadow-color/3"],
-    properties: "Elevation as variants. Title (text), Body (text). Footer is a real composed row with actual Button instances.",
+    properties: "Elevation as variants. Title (optional string). Body is children ReactNode. Footer is optional ReactNode for composed actions. React composition is ahead of Figma Card 2044:25756 (Title/Body TEXT + hardcoded Footer Buttons).",
   },
   {
     slug: "accordion",
@@ -63,7 +63,8 @@ export const containersComponents: ComponentDoc[] = [
     accessibility: "Must trap focus while open, return focus to trigger on close, support Escape-to-close, role=\"dialog\" with aria-modal=\"true\".",
     commonMistakes: "Not trapping focus, allowing Tab to escape to obscured page content behind the scrim.",
     tokensUsed: ["semantic/surface/default", "component/radius/container", "shadow-blur/5", "shadow-color/5"],
-    properties: "Title (text), Body (text). Footer uses real Button instances. Demonstrated with a real scrim + centered composition.",
+    properties:
+      "Compound React API: DialogHeader/Title/Description/Close stay structured; DialogBody and DialogFooter accept arbitrary ReactNode. No canonical Figma Dialog COMPONENT_SET — React composition is the source of truth. Portal content unmounts when closed.",
   },
   {
     slug: "drawer",
@@ -77,7 +78,7 @@ export const containersComponents: ComponentDoc[] = [
     commonMistakes: "Forgetting the same accessibility rigor as Dialog just because it feels visually less \"modal.\"",
     tokensUsed: ["semantic/surface/default", "component/radius/container", "shadow-blur/5", "shadow-color/5"],
     properties:
-      "Title (text), Body (text). Left viewport edge flush; exposed right corners rounded (topRightRadius=0 on the viewport-attached corner). Figma prose “left corners rounded” was ambiguous — implementation follows edge-attachment geometry.",
+      "Compound React API matching Dialog: DrawerHeader/Title/Description/Close stay structured; DrawerBody and DrawerFooter accept arbitrary ReactNode. No canonical Figma Drawer COMPONENT_SET — React composition is the source of truth. Left viewport edge flush; exposed right corners rounded (topRightRadius=0 on the viewport-attached corner).",
   },
   {
     slug: "popover",

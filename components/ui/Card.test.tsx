@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
 describe("Card", () => {
@@ -32,5 +33,41 @@ describe("Card", () => {
       </Card>,
     );
     expect(screen.getByRole("heading", { level: 2, name: "Billing" })).toBeInTheDocument();
+  });
+
+  it("composes arbitrary body children and footer actions", () => {
+    render(
+      <Card
+        title="Billing"
+        footer={
+          <>
+            <Button size="sm">Cancel</Button>
+            <Button size="sm">Save</Button>
+          </>
+        }
+      >
+        <div data-testid="custom-card-content">
+          <p>Custom content</p>
+          <Button>Action</Button>
+        </div>
+      </Card>,
+    );
+
+    expect(screen.getByRole("heading", { name: "Billing" })).toBeInTheDocument();
+    expect(screen.getAllByTestId("custom-card-content")).toHaveLength(1);
+    const content = screen.getByTestId("custom-card-content");
+    expect(content).toHaveTextContent("Custom content");
+    expect(within(content).getByRole("button", { name: "Action" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
+    expect(screen.queryByText(/add content/i)).not.toBeInTheDocument();
+  });
+
+  it("does not inject instructional placeholder when children and footer are omitted", () => {
+    render(<Card title="Empty body" />);
+    expect(screen.getByRole("heading", { name: "Empty body" })).toBeInTheDocument();
+    expect(screen.queryByText(/add content/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/drop content/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/content slot/i)).not.toBeInTheDocument();
   });
 });
