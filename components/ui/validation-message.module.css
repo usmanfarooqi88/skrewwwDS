@@ -11,34 +11,36 @@
   margin-top: 0.125rem;
 }
 
-.iconError {
-  color: var(--component-validation-message-text);
-}
-
-.iconWarning {
-  color: var(--semantic-feedback-warning);
-}
-
-.iconSuccess {
-  color: var(--semantic-feedback-success);
-}
-
-.iconInfo {
-  color: var(--semantic-feedback-info);
-}
-
 .error {
-  color: var(--component-validation-message-text);
+  color: var(--component-validation-message-error-text);
 }
 
 .warning {
-  color: var(--semantic-feedback-warning);
+  color: var(--component-validation-message-warning-text);
 }
 
 .success {
-  color: var(--semantic-feedback-success);
+  color: var(--component-validation-message-success-text);
 }
 
 .info {
+  color: var(--component-validation-message-info-text);
+}
+
+/* Icon rules come after type text and use .icon + type so inherited
+   message color cannot darken the glyph. */
+.icon.iconError {
+  color: var(--component-validation-message-text);
+}
+
+.icon.iconWarning {
+  color: var(--semantic-feedback-warning);
+}
+
+.icon.iconSuccess {
+  color: var(--semantic-feedback-success);
+}
+
+.icon.iconInfo {
   color: var(--semantic-feedback-info);
 }

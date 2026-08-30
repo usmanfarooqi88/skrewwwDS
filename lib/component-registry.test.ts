@@ -186,6 +186,29 @@ describe("component registry — Validation Message distribution metadata", () =
   it("declares @skrewww/foundation as its only registry dependency", () => {
     expect(validationMessage?.registryDependencies).toEqual(["@skrewww/foundation"]);
   });
+
+  it("documents typed Validation Message text tokens plus retained icon/untyped Error token", () => {
+    expect(validationMessage?.tokensUsed).toEqual([
+      "component/validation-message/error/text",
+      "component/validation-message/warning/text",
+      "component/validation-message/success/text",
+      "component/validation-message/info/text",
+      "component/validation-message/text",
+      "semantic/feedback/warning",
+      "semantic/feedback/success",
+      "semantic/feedback/info",
+    ]);
+    expect(validationMessage?.cssTokens).toEqual([
+      "--component-validation-message-error-text",
+      "--component-validation-message-info-text",
+      "--component-validation-message-success-text",
+      "--component-validation-message-text",
+      "--component-validation-message-warning-text",
+      "--semantic-feedback-info",
+      "--semantic-feedback-success",
+      "--semantic-feedback-warning",
+    ]);
+  });
 });
 
 describe("component registry — Badge R1 token documentation", () => {

@@ -30,14 +30,24 @@
   /* ── Primitive: color / warning [VERIFIED] ──
      Sparse status-hue family matching live Figma Primitive collection.
      Only 100/500/700/800 exist there; do not invent 50/200/300/400/600/900.
-     warning/800 exists because earlier warning steps fail normal-text AA on
-     Warning Badge surfaces. Do not retarget --semantic-feedback-warning
-     (or other warning consumers) in this batch — Badge warning text alone
-     aliases warning/800. */
+     warning/800 exists because earlier warning steps fail normal-text AA.
+     Badge warning text and Validation Message warning text alias it.
+     Do not retarget --semantic-feedback-warning. */
   --primitive-color-warning-100: #fef3d6; /* color/warning/100 */
   --primitive-color-warning-500: #f5a524; /* color/warning/500 */
   --primitive-color-warning-700: #b9770e; /* color/warning/700 */
   --primitive-color-warning-800: #8a4f00; /* color/warning/800 */
+
+  /* ── Primitive: color / success [VERIFIED] ──
+     Live Figma Primitive success/700. Declared so Validation Message text
+     can alias it without hardcoding hex in component CSS. Do not retarget
+     --semantic-feedback-success in this pass. */
+  --primitive-color-success-700: #1f7a4d; /* color/success/700 */
+
+  /* ── Primitive: color / info [VERIFIED] ──
+     Live Figma Primitive info/700. Same consumer rule as success/700. Do
+     not retarget --semantic-feedback-info in this pass. */
+  --primitive-color-info-700: #1d4ed8; /* color/info/700 */
 
   /* ── Primitive: color / neutral [VERIFIED] ── */
   --primitive-color-neutral-0: #ffffff;
@@ -132,11 +142,17 @@
   --component-danger-fill-hover: #cc3b37;
   --component-danger-fill-pressed: #b3261e;
 
-  /* [VERIFIED] component/validation-message/text — Error helper/message/icon.
-     Aliases color/danger/600 in every Surface mode (Flat/Gradient/Glass).
-     Distinct from --semantic-action-danger, which remains the chrome/fill
-     token for Text Input error strokes, required indicators, and similar. */
+  /* [VERIFIED] component/validation-message/text — retained untyped Error
+     token (Figma Form Field helper + React Error icon). Aliases
+     color/danger/600. Distinct from --semantic-action-danger chrome. */
   --component-validation-message-text: var(--primitive-color-danger-600);
+  /* [VERIFIED 2026-08-30] Typed Validation Message text tokens matching
+     Figma component/validation-message/{error,warning,success,info}/text.
+     Icons stay on the untyped Error token / semantic-feedback-* tokens. */
+  --component-validation-message-error-text: var(--primitive-color-danger-600);
+  --component-validation-message-warning-text: var(--primitive-color-warning-800);
+  --component-validation-message-success-text: var(--primitive-color-success-700);
+  --component-validation-message-info-text: var(--primitive-color-info-700);
 
   /* [VERIFIED] Separate Primary and Danger three-stop Glass-rim families.
      They are transparent outside Glass and are intentionally independent

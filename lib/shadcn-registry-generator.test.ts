@@ -151,6 +151,29 @@ describe("shadcn registry generator", () => {
     expect(steps.sort()).toEqual(["100", "500", "700", "800"]);
   });
 
+  it("includes Validation Message typed text tokens and sparse success/info-700 primitives in Foundation CSS", () => {
+    const css = extractFoundationCss();
+    expect(css).toMatch(/--primitive-color-success-700:\s*#1f7a4d/i);
+    expect(css).toMatch(/--primitive-color-info-700:\s*#1d4ed8/i);
+    expect(css).toMatch(
+      /--component-validation-message-error-text:\s*var\(--primitive-color-danger-600\)/,
+    );
+    expect(css).toMatch(
+      /--component-validation-message-warning-text:\s*var\(--primitive-color-warning-800\)/,
+    );
+    expect(css).toMatch(
+      /--component-validation-message-success-text:\s*var\(--primitive-color-success-700\)/,
+    );
+    expect(css).toMatch(
+      /--component-validation-message-info-text:\s*var\(--primitive-color-info-700\)/,
+    );
+    expect(css).toMatch(
+      /--component-validation-message-text:\s*var\(--primitive-color-danger-600\)/,
+    );
+    expect(css).toMatch(/--semantic-feedback-success:\s*#1a8b4c/i);
+    expect(css).toMatch(/--semantic-feedback-info:\s*#2563c7/i);
+  });
+
   it("throws when a Foundation extraction marker is missing", () => {
     expect(() => extractFoundationCssFromSource("body { color: red; }", ".sr-only {}")).toThrow(
       /extraction marker not found/,

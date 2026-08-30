@@ -190,6 +190,29 @@ describe("project configuration", () => {
     expect(declared).not.toHaveProperty("900");
   });
 
+  it("declares sparse Figma success-700 and info-700 primitives without inventing extra steps", () => {
+    const tokens = readRootFile("styles/tokens.css");
+
+    const success: Record<string, string> = {};
+    const successRe = /--primitive-color-success-(\d+):\s*(#[0-9a-fA-F]{6})/g;
+    let successMatch: RegExpExecArray | null = successRe.exec(tokens);
+    while (successMatch) {
+      success[successMatch[1]] = successMatch[2].toLowerCase();
+      successMatch = successRe.exec(tokens);
+    }
+
+    const info: Record<string, string> = {};
+    const infoRe = /--primitive-color-info-(\d+):\s*(#[0-9a-fA-F]{6})/g;
+    let infoMatch: RegExpExecArray | null = infoRe.exec(tokens);
+    while (infoMatch) {
+      info[infoMatch[1]] = infoMatch[2].toLowerCase();
+      infoMatch = infoRe.exec(tokens);
+    }
+
+    expect(success).toEqual({ "700": "#1f7a4d" });
+    expect(info).toEqual({ "700": "#1d4ed8" });
+  });
+
   it("keeps standing instructions free of stale Calendar/docs-site claims", () => {
     const claude = readRootFile("skrewww-claude-project-instructions.md");
     const figma = readRootFile("skrewww-figma-practices-instructions.md");

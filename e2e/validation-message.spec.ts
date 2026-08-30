@@ -9,10 +9,14 @@ import {
 } from "./fixtures";
 import type { Locator, Page } from "@playwright/test";
 
-const ERROR = "#cc3b37";
-const WARNING = "#b36a00";
-const SUCCESS = "#1a8b4c";
-const INFO = "#2563c7";
+const ERROR_TEXT = "#cc3b37";
+const WARNING_TEXT = "#8a4f00";
+const SUCCESS_TEXT = "#1f7a4d";
+const INFO_TEXT = "#1d4ed8";
+const ERROR_ICON = "#cc3b37";
+const WARNING_ICON = "#b36a00";
+const SUCCESS_ICON = "#1a8b4c";
+const INFO_ICON = "#2563c7";
 const AA_NORMAL_TEXT = 4.5;
 const SURFACES = ["flat", "gradient", "glass"] as const;
 
@@ -60,8 +64,8 @@ test.describe("Validation Message error-text contract", () => {
     test(`Error text and icon resolve #CC3B37 in ${mode}`, async ({ page }) => {
       await setSurfaceMode(page, mode);
       const { text, icon } = await errorMessage(page);
-      expectColorClose(await resolvedRgba(text, "color"), hexToRgba(ERROR), `${mode} text`);
-      expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(ERROR), `${mode} icon`);
+      expectColorClose(await resolvedRgba(text, "color"), hexToRgba(ERROR_TEXT), `${mode} text`);
+      expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(ERROR_ICON), `${mode} icon`);
     });
   }
 
@@ -74,19 +78,33 @@ test.describe("Validation Message error-text contract", () => {
     expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
   });
 
-  test("Warning, Success, and Info colors are unchanged", async ({ page }) => {
+  test("Warning, Success, and Info text use typed tokens while icons stay on semantic-feedback", async ({
+    page,
+  }) => {
     await setSurfaceMode(page, "flat");
+
+    const warning = page.getByText("This action cannot be undone.", { exact: true });
+    const success = page.getByText("Profile saved successfully.", { exact: true });
+    const info = page.getByText("We will never share your email.", { exact: true });
+
+    expectColorClose(await resolvedRgba(warning, "color"), hexToRgba(WARNING_TEXT), "warning text");
+    expectColorClose(await resolvedRgba(success, "color"), hexToRgba(SUCCESS_TEXT), "success text");
+    expectColorClose(await resolvedRgba(info, "color"), hexToRgba(INFO_TEXT), "info text");
+
     expectColorClose(
-      await resolvedRgba(page.getByText("This action cannot be undone.", { exact: true }), "color"),
-      hexToRgba(WARNING),
+      await resolvedRgba(warning.locator("xpath=preceding-sibling::*[name()='svg'][1]"), "color"),
+      hexToRgba(WARNING_ICON),
+      "warning icon",
     );
     expectColorClose(
-      await resolvedRgba(page.getByText("Profile saved successfully.", { exact: true }), "color"),
-      hexToRgba(SUCCESS),
+      await resolvedRgba(success.locator("xpath=preceding-sibling::*[name()='svg'][1]"), "color"),
+      hexToRgba(SUCCESS_ICON),
+      "success icon",
     );
     expectColorClose(
-      await resolvedRgba(page.getByText("We will never share your email.", { exact: true }), "color"),
-      hexToRgba(INFO),
+      await resolvedRgba(info.locator("xpath=preceding-sibling::*[name()='svg'][1]"), "color"),
+      hexToRgba(INFO_ICON),
+      "info icon",
     );
   });
 });
@@ -99,8 +117,8 @@ test.describe("Form Field error composition", () => {
   test("error path renders ValidationMessage with the error-text token", async ({ page }) => {
     const message = page.getByText("Enter a valid API key.", { exact: true });
     await expect(message).toBeVisible();
-    expectColorClose(await resolvedRgba(message, "color"), hexToRgba(ERROR));
+    expectColorClose(await resolvedRgba(message, "color"), hexToRgba(ERROR_TEXT));
     const icon = message.locator("xpath=preceding-sibling::*[name()='svg'][1]");
-    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(ERROR));
+    expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(ERROR_ICON));
   });
 });

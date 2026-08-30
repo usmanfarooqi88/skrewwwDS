@@ -1,6 +1,17 @@
 # Project status
 
-Last verified: **2026-08-30** (Alert description React parity)
+Last verified: **2026-08-30** (Validation Message React text parity)
+
+## 2026-08-30 — Validation Message React text parity
+
+Figma Pro Validation Message semantic-text accessibility is already **CLOSED**. This React pass is text-token parity only. Public API, layout, ARIA, and icons are unchanged.
+
+- **Warning text** aliases warning/800 (`#8A4F00`).
+- **Success text** aliases success/700 (`#1F7A4D`).
+- **Info text** aliases info/700 (`#1D4ED8`).
+- **Error text** stays danger/600 (`#CC3B37`).
+- All four types meet normal-text AA on white and elevated (`#F7F7F8`) light field surfaces only.
+- Icons are unchanged (Error still untyped `component/validation-message/text`; Warning/Success/Info still `semantic-feedback-*`). Warning icon contrast remains a separate Figma-first task.
 
 ## 2026-08-30 — Layer 3 Navigation + Feedback React parity
 
