@@ -139,3 +139,38 @@ export async function setSurfaceMode(page: Page, mode: "flat" | "gradient" | "gl
     void document.body.offsetHeight;
   }, mode);
 }
+
+/**
+ * Hold the real browser pointer on `locator` so CSS :active is genuine.
+ *
+ * `locator.hover()` + `page.mouse.down()` is not enough on the docs site:
+ * `html { scroll-behavior: smooth }` keeps scrolling after hover places the
+ * mouse, so mousedown hits stale viewport coordinates and :active matches
+ * html/body instead of the target.
+ */
+export async function holdPointerPressed(page: Page, locator: Locator) {
+  await locator.evaluate((el) => {
+    document.documentElement.style.setProperty("scroll-behavior", "auto", "important");
+    document.body.style.setProperty("scroll-behavior", "auto", "important");
+    el.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" });
+  });
+
+  const first = await locator.boundingBox();
+  expect(first, "target must have a bounding box before press").toBeTruthy();
+  await page.mouse.move(first!.x + first!.width / 2, first!.y + first!.height / 2);
+
+  const box = await locator.boundingBox();
+  expect(box, "target must keep a bounding box after pointer move").toBeTruthy();
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+
+  expect(await locator.evaluate((el) => el.matches(":hover")), "target :hover before press").toBe(true);
+  await page.mouse.down();
+  expect(await locator.evaluate((el) => el.matches(":active")), "target :active while pointer is down").toBe(true);
+
+  return {
+    async release() {
+      await page.mouse.up();
+      expect(await locator.evaluate((el) => el.matches(":active")), "target :active after release").toBe(false);
+    },
+  };
+}

@@ -2,6 +2,7 @@ import {
   expect,
   expectColorClose,
   hexToRgba,
+  holdPointerPressed,
   resolvedRgba,
   test,
 } from "./fixtures";
@@ -22,7 +23,8 @@ const DANGER_PRESSED = "#b3261e";
 
 async function settle(page: import("@playwright/test").Page) {
   await page.addStyleTag({
-    content: "*,*::before,*::after{transition:none!important;animation:none!important}",
+    content:
+      "*,*::before,*::after{transition:none!important;animation:none!important}html,body{scroll-behavior:auto!important}",
   });
 }
 
@@ -43,20 +45,10 @@ test.describe("Link Primary/Subtle interaction (R2/R3 + brand sync)", () => {
     expectColorClose(await resolvedRgba(label, "color"), hexToRgba(PRIMARY_HOVER));
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(PRIMARY_HOVER));
 
-    await page.mouse.down();
-    await expect
-      .poll(async () => {
-        const color = await resolvedRgba(label, "color");
-        const expected = hexToRgba(PRIMARY_PRESSED);
-        return (
-          Math.abs(color.r - expected.r) <= 4 &&
-          Math.abs(color.g - expected.g) <= 4 &&
-          Math.abs(color.b - expected.b) <= 4
-        );
-      })
-      .toBe(true);
+    const press = await holdPointerPressed(page, link);
+    expectColorClose(await resolvedRgba(label, "color"), hexToRgba(PRIMARY_PRESSED));
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(PRIMARY_PRESSED));
-    await page.mouse.up();
+    await press.release();
   });
 
   test("Subtle Default stays text-secondary; Hover/Active resolve text-primary for label + icon", async ({
@@ -75,20 +67,10 @@ test.describe("Link Primary/Subtle interaction (R2/R3 + brand sync)", () => {
     expectColorClose(await resolvedRgba(label, "color"), hexToRgba(SUBTLE_INTERACT));
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(SUBTLE_INTERACT));
 
-    await page.mouse.down();
-    await expect
-      .poll(async () => {
-        const color = await resolvedRgba(label, "color");
-        const expected = hexToRgba(SUBTLE_INTERACT);
-        return (
-          Math.abs(color.r - expected.r) <= 4 &&
-          Math.abs(color.g - expected.g) <= 4 &&
-          Math.abs(color.b - expected.b) <= 4
-        );
-      })
-      .toBe(true);
+    const press = await holdPointerPressed(page, link);
+    expectColorClose(await resolvedRgba(label, "color"), hexToRgba(SUBTLE_INTERACT));
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(SUBTLE_INTERACT));
-    await page.mouse.up();
+    await press.release();
   });
 
   test("Danger R1 remains Default/Hover/Active after brand/600–700 foundation sync", async ({
@@ -117,19 +99,9 @@ test.describe("Link Primary/Subtle interaction (R2/R3 + brand sync)", () => {
     expectColorClose(await resolvedRgba(label, "color"), hexToRgba(DANGER_TEXT));
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(DANGER_TEXT));
 
-    await page.mouse.down();
-    await expect
-      .poll(async () => {
-        const color = await resolvedRgba(label, "color");
-        const expected = hexToRgba(DANGER_PRESSED);
-        return (
-          Math.abs(color.r - expected.r) <= 4 &&
-          Math.abs(color.g - expected.g) <= 4 &&
-          Math.abs(color.b - expected.b) <= 4
-        );
-      })
-      .toBe(true);
+    const press = await holdPointerPressed(page, link);
+    expectColorClose(await resolvedRgba(label, "color"), hexToRgba(DANGER_PRESSED));
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(DANGER_PRESSED));
-    await page.mouse.up();
+    await press.release();
   });
 });

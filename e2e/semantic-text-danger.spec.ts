@@ -2,6 +2,7 @@ import {
   expect,
   expectColorClose,
   hexToRgba,
+  holdPointerPressed,
   resolvedRgba,
   rgbaStringToRgba,
   test,
@@ -103,7 +104,8 @@ test.describe("semantic/text/danger consumers", () => {
   }) => {
     await page.goto("/components/link");
     await page.addStyleTag({
-      content: "*,*::before,*::after{transition:none!important;animation:none!important}",
+      content:
+        "*,*::before,*::after{transition:none!important;animation:none!important}html,body{scroll-behavior:auto!important}",
     });
     const link = page.getByRole("link", { name: "Delete this resource" });
     const label = link.locator("span").filter({ hasText: "Delete this resource" });
@@ -138,19 +140,9 @@ test.describe("semantic/text/danger consumers", () => {
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(DANGER_TEXT));
 
     // :active while hovered — pressed danger/700 for label + icon
-    await page.mouse.down();
-    await expect
-      .poll(async () => {
-        const color = await resolvedRgba(label, "color");
-        const expected = hexToRgba(DANGER_PRESSED);
-        return (
-          Math.abs(color.r - expected.r) <= 4 &&
-          Math.abs(color.g - expected.g) <= 4 &&
-          Math.abs(color.b - expected.b) <= 4
-        );
-      })
-      .toBe(true);
+    const press = await holdPointerPressed(page, link);
+    expectColorClose(await resolvedRgba(label, "color"), hexToRgba(DANGER_PRESSED));
     expectColorClose(await resolvedRgba(icon, "color"), hexToRgba(DANGER_PRESSED));
-    await page.mouse.up();
+    await press.release();
   });
 });
