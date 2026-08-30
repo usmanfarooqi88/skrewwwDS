@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowRight, BellRinging, MagnifyingGlass } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/Button";
 import { ChevronRightIcon, PlusIcon } from "@/components/ui/icons";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
@@ -145,6 +146,26 @@ function ButtonExamples() {
           <Button trailingIcon={<ChevronRightIcon />}>Continue</Button>
           <Button fullWidth className="max-w-xs">
             Full width
+          </Button>
+        </PreviewGroup>
+        <PreviewGroup label="Icon foreground">
+          <Button variant="primary" leadingIcon={<ArrowRight size={16} />}>
+            Primary icon
+          </Button>
+          <Button variant="secondary" leadingIcon={<MagnifyingGlass size={16} />}>
+            Secondary icon
+          </Button>
+          <Button variant="danger" leadingIcon={<BellRinging size={16} />}>
+            Danger icon
+          </Button>
+          <Button variant="primary" aria-label="Search">
+            <MagnifyingGlass size={16} />
+          </Button>
+          <Button variant="secondary" aria-label="Notifications">
+            <BellRinging size={16} />
+          </Button>
+          <Button variant="danger" aria-label="Go forward">
+            <ArrowRight size={16} />
           </Button>
         </PreviewGroup>
       </ComponentPreview>

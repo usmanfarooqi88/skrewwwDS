@@ -557,3 +557,71 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     expect(await fullWidth.evaluate((el) => el.tagName)).toBe("BUTTON");
   });
 });
+
+test.describe("Button icon foreground (currentColor)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/components/button");
+  });
+
+  async function iconPaint(button: Locator) {
+    return button.evaluate((el) => {
+      const svg = el.querySelector("svg");
+      const painted = svg?.querySelector("path, circle, line");
+      return {
+        buttonColor: getComputedStyle(el).color,
+        svgColor: svg ? getComputedStyle(svg).color : null,
+        svgAttrFill: svg?.getAttribute("fill"),
+        svgAttrStroke: svg?.getAttribute("stroke"),
+        pathStroke: painted ? getComputedStyle(painted).stroke : null,
+        pathFill: painted ? getComputedStyle(painted).fill : null,
+        pathAttrStroke: painted?.getAttribute("stroke"),
+        pathAttrFill: painted?.getAttribute("fill"),
+      };
+    });
+  }
+
+  const cases = [
+    { name: "Primary icon", flat: "#FFFFFF", glass: "#17181B" },
+    { name: "Secondary icon", flat: "#17181B", glass: "#17181B" },
+    { name: "Danger icon", flat: "#FFFFFF", glass: "#17181B" },
+    { name: "Search", flat: "#FFFFFF", glass: "#17181B" },
+    { name: "Notifications", flat: "#17181B", glass: "#17181B" },
+    { name: "Go forward", flat: "#FFFFFF", glass: "#17181B" },
+  ] as const;
+
+  test("labelled and icon-only icons follow Button color on Flat, Gradient, and Glass", async ({
+    page,
+  }) => {
+    await page.getByRole("heading", { name: "Icon foreground" }).scrollIntoViewIfNeeded();
+
+    for (const mode of ["flat", "gradient"] as const) {
+      await setButtonSurfaceMode(page, mode);
+      for (const expected of cases) {
+        const button = page.getByRole("button", { name: expected.name, exact: true });
+        const paint = await iconPaint(button);
+        expectColorClose(await resolvedRgba(button, "color"), hexToRgba(expected.flat), `${expected.name} ${mode} button`);
+        expect(paint.svgColor, `${expected.name} ${mode} svg color`).toBe(paint.buttonColor);
+        expect(
+          paint.pathStroke === paint.buttonColor || paint.pathFill === paint.buttonColor,
+          `${expected.name} ${mode} path uses button color`,
+        ).toBe(true);
+        expect(
+          paint.svgAttrFill === "currentColor" || paint.pathAttrStroke === "currentColor",
+          `${expected.name} ${mode} currentColor`,
+        ).toBe(true);
+      }
+    }
+
+    await setButtonSurfaceMode(page, "glass");
+    for (const expected of cases) {
+      const button = page.getByRole("button", { name: expected.name, exact: true });
+      const paint = await iconPaint(button);
+      expectColorClose(await resolvedRgba(button, "color"), hexToRgba(expected.glass), `${expected.name} glass button`);
+      expect(paint.svgColor, `${expected.name} glass svg color`).toBe(paint.buttonColor);
+      expect(
+        paint.pathStroke === paint.buttonColor || paint.pathFill === paint.buttonColor,
+        `${expected.name} glass path uses button color`,
+      ).toBe(true);
+    }
+  });
+});

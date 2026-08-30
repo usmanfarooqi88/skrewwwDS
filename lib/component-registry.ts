@@ -305,6 +305,14 @@ export const componentRegistry: ComponentRegistryEntry[] = [
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
+    anatomy:
+      "Button = native button or link + visual surface + content row (optional leading/trailing icon + label). Icons are consumer-supplied nodes; Button does not wrap them in SVG or change their paths.",
+    comparisons: [
+      {
+        title: "How do Button icons get their color?",
+        body: "Button sets CSS color only. Primary and Danger use surface-content semantics: inverse/light on Flat and Gradient, dark on Glass. Secondary uses primary text color on every surface. Compatible icons inherit that color through SVG currentColor — Phosphor defaults fill to currentColor; stroke icons should use stroke=currentColor. Button does not set fill, stroke, or icon-specific paint, and it does not rewrite icon artwork. Any compatible icon inherits the same foreground automatically. Icon-only actions use this same Button with an aria-label; there is no separate Icon Button implementation.",
+      },
+    ],
     apiProps: [
       {
         name: "variant",

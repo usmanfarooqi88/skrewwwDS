@@ -12,7 +12,7 @@ export const actionsComponents: ComponentDoc[] = [
     accessibility: "Renders as a real <button>, not a styled <div>. Keyboard: Tab to focus, Enter/Space to activate. Focus uses semantic/focus-ring (5.31:1 contrast, confirmed on the Accessibility page). Never rely on the Disabled state alone to explain unavailability — pair with visible explanatory text nearby.",
     commonMistakes: "More than one Primary button in the same view (dilutes hierarchy). Not disabling the button during an async action (allows double-submission). Skipping a confirmation step for Danger actions just because the button is red.",
     tokensUsed: ["component/radius/control", "semantic/action/primary", "semantic/action/danger", "semantic/surface/default", "semantic/text/inverse", "semantic/text/primary", "semantic/focus-ring", "opacity/disabled"],
-    properties: "Style × Size × State as variants. Label (text). Has Icon (boolean) + Icon (instance-swap).",
+    properties: "Style × Size × State as variants. Label (text). Has Icon (boolean) + Icon (instance-swap). React icons inherit Button's CSS color via SVG currentColor — Primary/Danger follow surface-content (light on Flat/Gradient, dark on Glass); Secondary follows primary text. Button does not recolor or rewrite icon artwork.",
   },
   {
     slug: "icon-button",
@@ -22,7 +22,7 @@ export const actionsComponents: ComponentDoc[] = [
     purpose: "Icon Button is a compact, icon-only trigger for a single action — used when space is limited or the icon's meaning is universally understood (close, more options, edit).",
     whenToUse: "Toolbars, table row actions, card corner actions — anywhere a text label would be redundant given context.",
     whenNotToUse: "When the icon's meaning isn't obvious without a label — pair with visible text (use Button) or add a Tooltip.",
-    accessibility: "MUST have an accessible name via aria-label, since there is no visible text. This component includes a hidden \"Accessible Label\" layer specifically to document what that aria-label should say per instance — never ship an instance without setting it to something real.",
+    accessibility: "MUST have an accessible name via aria-label, since there is no visible text. This component includes a hidden \"Accessible Label\" layer specifically to document what that aria-label should say per instance — never ship an instance without setting it to something real. In React, use Button with aria-label and an icon child or leadingIcon — the same currentColor foreground contract as labelled Button, not a separate component.",
     commonMistakes: "Leaving the Accessible Label at its generic placeholder instead of describing the actual action. Using an ambiguous icon with no tooltip as a fallback.",
     tokensUsed: ["component/radius/control", "semantic/action/primary", "semantic/action/danger", "semantic/surface/default"],
     properties: "Style × Size × State as variants. Icon (instance-swap). Accessible Label (text, hidden layer, drives aria-label in code).",

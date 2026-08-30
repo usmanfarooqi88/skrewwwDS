@@ -1,5 +1,8 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ArrowRight, BellRinging, MagnifyingGlass } from "@phosphor-icons/react";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { Button } from "@/components/ui/Button";
@@ -71,6 +74,37 @@ describe("Button", () => {
     );
     expect(screen.getByRole("button", { name: "Label" }).querySelector("svg")).toBeTruthy();
     expect(screen.getByTestId("trailing")).toBeInTheDocument();
+  });
+
+  it("does not paint or rewrite nested SVG icon artwork", () => {
+    const css = readFileSync(resolve(process.cwd(), "components/ui/button.module.css"), "utf8");
+    expect(css).toMatch(/\.primary\s*\{[^}]*var\(--component-surface-content/);
+    expect(css).toMatch(/\.danger\s*\{[^}]*var\(--component-surface-content/);
+    expect(css).toMatch(/\.secondary\s*\{[^}]*var\(--semantic-text-primary\)/);
+    expect(css).toMatch(/\.icon\s*\{[^}]*display:\s*inline-flex/);
+    expect(css).not.toMatch(/svg/);
+    expect(css).not.toMatch(/\bfill\s*:/);
+    expect(css).not.toMatch(/\bstroke\s*:/);
+  });
+
+  it("lets structurally different Phosphor icons inherit fill=currentColor without a color prop", () => {
+    render(
+      <>
+        <Button leadingIcon={<ArrowRight data-testid="icon-arrow" size={16} />}>Arrow</Button>
+        <Button leadingIcon={<MagnifyingGlass data-testid="icon-search" size={16} />}>Search</Button>
+        <Button aria-label="Alerts">
+          <BellRinging data-testid="icon-bell" size={16} />
+        </Button>
+      </>,
+    );
+
+    for (const testId of ["icon-arrow", "icon-search", "icon-bell"] as const) {
+      const svg = screen.getByTestId(testId);
+      expect(svg.tagName.toLowerCase()).toBe("svg");
+      expect(svg).toHaveAttribute("fill", "currentColor");
+      expect(svg.getAttribute("color")).toBeNull();
+      expect(svg.querySelector("[stroke], [fill]:not(svg)")).toBeNull();
+    }
   });
 
   it("keeps icon-only composition on the same visual-surface contract", () => {
