@@ -37,7 +37,7 @@ export const containersComponents: ComponentDoc[] = [
       "component/radius/container",
     ],
     properties:
-      "Composed Accordion API built from Figma Accordion Item building blocks. Title and content per item. Chevron rotation and panel visibility match expanded state.",
+      "Composed Accordion API built from Figma Accordion Item building blocks. Title and content per item. Chevron rotation and panel visibility match expanded state. AccordionPanel children is optional ReactNode — Figma’s Content slot placeholder is design-tool affordance only and is not rendered in React.",
   },
   {
     slug: "accordion-item",
@@ -50,7 +50,7 @@ export const containersComponents: ComponentDoc[] = [
     accessibility: "Header must be a real button with aria-expanded; content region needs aria-labelledby.",
     commonMistakes: "Making the entire row clickable but only visually indicating the chevron as interactive.",
     tokensUsed: ["semantic/border/default", "semantic/text/primary", "semantic/icon/muted"],
-    properties: "State as variants — chevron rotation and content visibility both verified to genuinely match state. Title (text), Content (text).",
+    properties: "State as variants — chevron rotation and content visibility both verified to genuinely match state. Title (text), Content (slot). React maps Content to optional AccordionPanel children; Figma’s instructional slot placeholder is not product UI.",
   },
   {
     slug: "dialog",

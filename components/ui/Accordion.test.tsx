@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import {
@@ -7,6 +7,7 @@ import {
   AccordionPanel,
   AccordionTrigger,
 } from "@/components/ui/Accordion";
+import { Button } from "@/components/ui/Button";
 
 function ExampleAccordion({
   type = "single" as const,
@@ -130,5 +131,90 @@ describe("Accordion", () => {
     const slugs = registry.componentRegistry.map((entry) => entry.slug);
     expect(slugs).toContain("accordion");
     expect(slugs).not.toContain("accordion-item");
+  });
+
+  it("preserves custom panel ReactNode across expand and collapse cycles", async () => {
+    const user = userEvent.setup();
+    render(
+      <Accordion type="single" collapsible defaultValue="one">
+        <AccordionItem value="one">
+          <AccordionTrigger>Section one</AccordionTrigger>
+          <AccordionPanel>
+            <div data-testid="custom-accordion-content">
+              <p>Custom accordion content</p>
+              <Button>Action</Button>
+            </div>
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Section one" });
+    const panelId = trigger.getAttribute("aria-controls");
+    expect(panelId).toBeTruthy();
+    const panel = document.getElementById(panelId!);
+    expect(panel).toBeTruthy();
+    const content = screen.getByTestId("custom-accordion-content");
+
+    for (let step = 0; step < 5; step += 1) {
+      const expanded = step % 2 === 0;
+      expect(trigger).toHaveAttribute("aria-expanded", String(expanded));
+      expect(trigger.getAttribute("aria-controls")).toBe(panel!.id);
+      expect(panel).toHaveAttribute("aria-labelledby", trigger.id);
+      if (expanded) {
+        expect(panel).not.toHaveAttribute("hidden");
+      } else {
+        expect(panel).toHaveAttribute("hidden");
+      }
+
+      expect(screen.getByTestId("custom-accordion-content")).toBe(content);
+      expect(screen.getAllByTestId("custom-accordion-content")).toHaveLength(1);
+      expect(content).toHaveTextContent("Custom accordion content");
+      expect(within(content).getByRole("button", { name: "Action", hidden: true })).toBeInTheDocument();
+      expect(screen.queryByText(/add content/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/placeholder/i)).not.toBeInTheDocument();
+
+      if (step < 4) {
+        await user.click(trigger);
+      }
+    }
+  });
+
+  it("does not inject instructional placeholder content when children is omitted", () => {
+    render(
+      <Accordion type="single" collapsible defaultValue="one">
+        <AccordionItem value="one">
+          <AccordionTrigger>Section one</AccordionTrigger>
+          <AccordionPanel />
+        </AccordionItem>
+      </Accordion>,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Section one" });
+    const panel = document.getElementById(trigger.getAttribute("aria-controls")!);
+    expect(panel).toBeTruthy();
+    expect(panel).toHaveAttribute("role", "region");
+    expect(panel).toHaveAttribute("aria-labelledby", trigger.id);
+    expect(panel).not.toHaveAttribute("hidden");
+    expect(panel!.childElementCount).toBe(0);
+    expect(panel).toBeEmptyDOMElement();
+    expect(screen.queryByText(/add content/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/placeholder/i)).not.toBeInTheDocument();
+  });
+
+  it("does not inject instructional placeholder content when children is null", () => {
+    render(
+      <Accordion type="single" collapsible defaultValue="one">
+        <AccordionItem value="one">
+          <AccordionTrigger>Section one</AccordionTrigger>
+          <AccordionPanel>{null}</AccordionPanel>
+        </AccordionItem>
+      </Accordion>,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Section one" });
+    const panel = document.getElementById(trigger.getAttribute("aria-controls")!);
+    expect(panel!.childElementCount).toBe(0);
+    expect(screen.queryByText(/add content/i)).not.toBeInTheDocument();
   });
 });

@@ -195,12 +195,13 @@ export function AccordionTrigger({ children, className }: AccordionTriggerProps)
 }
 
 export type AccordionPanelProps = {
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
 };
 
 export function AccordionPanel({ children, className }: AccordionPanelProps) {
   const { triggerId, panelId, isOpen } = useAccordionItemContext("AccordionPanel");
+  const hasContent = children != null;
 
   return (
     <div
@@ -210,7 +211,7 @@ export function AccordionPanel({ children, className }: AccordionPanelProps) {
       hidden={!isOpen}
       className={cn(styles.panel, className)}
     >
-      <div className={styles.panelInner}>{children}</div>
+      {hasContent ? <div className={styles.panelInner}>{children}</div> : null}
     </div>
   );
 }

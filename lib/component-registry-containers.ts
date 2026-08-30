@@ -87,6 +87,10 @@ export const containersRegistryEntries: ComponentRegistryEntry[] = [
         title: "When should content remain permanently visible?",
         body: "Essential instructions, primary documentation, and SEO-critical content must not live only inside collapsed client-rendered panels.",
       },
+      {
+        title: "Does React render Figma’s Content slot placeholder?",
+        body: "No. Figma may show an instructional placeholder so designers can discover the Content slot. That is authoring affordance only. AccordionPanel children is optional application content (React.ReactNode, default undefined). When omitted or null, React injects no placeholder copy and does not render an empty content wrapper.",
+      },
     ],
     apiProps: [
       { name: "type", type: '"single" | "multiple"', default: '"single"', description: "Expansion mode." },
@@ -94,6 +98,13 @@ export const containersRegistryEntries: ComponentRegistryEntry[] = [
       { name: "defaultValue", type: "string | string[]", description: "Initial open item(s)." },
       { name: "onValueChange", type: "(value: string | string[]) => void", description: "Called when expansion changes." },
       { name: "collapsible", type: "boolean", default: "false", description: "Allow closing all items in single mode." },
+      {
+        name: "AccordionPanel children",
+        type: "React.ReactNode",
+        default: "undefined",
+        description:
+          "Application body content for a panel. Optional. Figma’s Content slot placeholder is not part of this API and is never injected.",
+      },
     ],
     reactExample: `"use client";
 
