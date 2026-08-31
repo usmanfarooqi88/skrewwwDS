@@ -17,9 +17,9 @@
  * checked) that no Industry Systems page and no Banking-related frame or
  * component exists anywhere in the design file. This is a genuinely
  * greenfield pilot with a confirmed *absence* of a Figma reference — not
- * a pending/inconclusive MCP check. Do not conflate this status with
- * Table/Data Table's "unresolved-mcp" (which means the check hasn't
- * succeeded yet, not that nothing exists), and do not invent a Figma
+ * a pending/inconclusive MCP check. Do not conflate this confirmed
+ * absence with Data Table, which now has a mapped Column Header primitive
+ * (`2805:859`) but still no shell master. Do not invent a Figma
  * reference for any of these three components.
  */
 export const BANKING_FIGMA_COMPONENT_SET_NODE_ID: string | null = null;

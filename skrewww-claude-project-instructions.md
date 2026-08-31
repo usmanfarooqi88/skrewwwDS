@@ -120,7 +120,7 @@ These are implemented in React (Beta). Verify in the registry before claiming el
 - Uses native table semantics (`<table>`, `<caption>`, `<th>`, `<td>`, …)
 - Does **not** use `role="grid"`
 - Does not own sorting, selection, pagination, or spreadsheet keyboard navigation
-- Figma parity **pending**
+- Figma parity **pending** for Caption/Footer visuals; canonical Table/Row/Cell masters verified 2026-08-14
 
 ### Data Table
 
@@ -129,7 +129,7 @@ These are implemented in React (Beta). Verify in the registry before claiming el
 - Must **compose Table** — no forked markup, no `columns`/`rows` prop API; the consumer writes real `Table`/`TableHead`/`TableBody` markup and drops in `DataTableSortHeader` for sortable columns
 - `useDataTableSort` is the dual controlled/uncontrolled sort-state hook (same `lib/use-controllable.ts` pattern as Accordion/Dialog/Drawer/CalendarGrid range mode); sort cycle per column is none → ascending → descending → none
 - Canonical name **Data Table** (not "Data Grid" — scope deliberately excludes `role="grid"`, cell editing, and spreadsheet-style arrow-key cell navigation) and slug `data-table` are decided, final
-- Figma parity **pending** — no Figma component set exists yet for Data Table
+- Figma: `DataTableSortHeader` maps to Content/Data Table Column Header `2805:859`. There is no Content/Data Table master — customer examples are composition-only (`2491:932`). Free Table-family port is deferred until the Table family is ported coherently
 - Row selection, sticky headers, density variants, and virtualization remain **deferred** — not part of this MVP
 
 Do **not** treat Table and Data Table as interchangeable.

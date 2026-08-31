@@ -16,13 +16,15 @@ import {
 import { getImplementedComponentCount, getRegistryEntry } from "@/lib/component-registry";
 import {
   TABLE_FIGMA_COMPONENT_NODE_ID,
+  TABLE_FIGMA_NATIVE_SLOTS,
+  TABLE_FIGMA_NATIVE_SLOT_STATUS,
   TABLE_FIGMA_RELATED_NODE_IDS,
   TABLE_FIGMA_VERIFICATION,
   TABLE_IMPLEMENTATION_ORIGIN,
   TABLE_STABLE_V1_CONTRACT,
   TABLE_USABILITY_AUDIT_STATUS,
 } from "@/lib/table-figma-metadata";
-import { DATA_TABLE_IMPLEMENTATION_GATE } from "@/lib/data-table-figma-metadata";
+import { DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID, DATA_TABLE_IMPLEMENTATION_GATE } from "@/lib/data-table-figma-metadata";
 import { buildLlmsTxt, buildLlmsFullTxt } from "@/lib/llms-content";
 
 function SampleTable() {
@@ -398,7 +400,8 @@ describe("Table architecture and registry", () => {
 
     const dataTableEntry = getRegistryEntry("data-table");
     expect(dataTableEntry?.hasImplementation).toBe(true);
-    expect(dataTableEntry?.figmaAvailability).toBe("unavailable");
+    expect(dataTableEntry?.figmaAvailability).toBe("partial");
+    expect(dataTableEntry?.figmaNodeId).toBe(DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID);
     expect(dataTableEntry?.summary).toMatch(/no columns-config prop/i);
 
     expect(getRegistryEntry("data-grid")).toBeUndefined();
@@ -413,6 +416,12 @@ describe("Table architecture and registry", () => {
       bodyRow: "2321:1920",
       cell: "2321:1872",
     });
+    expect(TABLE_FIGMA_NATIVE_SLOTS).toEqual({
+      rows: "Rows#2791:12",
+      headerCells: "Cells#2791:0",
+      bodyCells: "Cells#2791:6",
+    });
+    expect(TABLE_FIGMA_NATIVE_SLOT_STATUS).toBe("verified-2026-08-31");
     expect(TABLE_STABLE_V1_CONTRACT).toMatchObject({
       surface: "flat-only",
       surfaceProperty: false,

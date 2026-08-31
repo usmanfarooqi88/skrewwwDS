@@ -1,6 +1,33 @@
 # Project status
 
-Last verified: **2026-08-31** (Popover React Surface parity)
+Last verified: **2026-08-31** (Data Table Figma metadata + docs)
+
+## 2026-08-31 — Data Table v1 composition examples
+
+Figma-only. No Data Table shell, no React write, no publish.
+
+- No Content/Data Table master. Basic Table (`2321:1964`) composed unchanged (Flat-only, radius 12).
+- Column Header `2805:859` used for sorting. Customer presentation: `Content/Presentation/Data Table` `2491:932`.
+- Examples: sorting, mixed static/sortable, optional Checkbox selection, row actions (Icon Button + Menu), Skeleton loading, Empty State, external Pagination, 375px horizontal overflow.
+- No Data Table Row required yet. No Gradient/Glass table shell.
+- Free deferred until a coherent Table-family port.
+
+## 2026-08-31 — Data Table Column Header
+
+New Figma primitive `Content/Data Table Column Header` `2805:859`.
+
+- Properties: Sort (Unsorted / Ascending / Descending), Align (Start / End), Disabled (False / True), Label (text).
+- Sort cycle matches shipped React: none → ascending → descending → none.
+- Native-table semantics, not ARIA grid. `DataTableSortHeader` / `useDataTableSort` unchanged.
+
+## 2026-08-31 — Basic Table Native Slots
+
+Figma-only authoring change. React Table API unchanged.
+
+- Basic Table remains Flat-only.
+- Rows `INSTANCE_SWAP` → Native Slot `Rows#2791:12`.
+- Header/Body Cells `INSTANCE_SWAP` → Native Slots `Cells#2791:0` / `Cells#2791:6`.
+- Helper components removed after zero consumers.
 
 ## 2026-08-31 — Popover React Surface parity
 
@@ -358,13 +385,13 @@ Full detail in
 
 ## Figma status
 
-**Partially resolved** — Combobox confirmed 2026-07-13, updated 2026-07-15 (Multi-select removed from Figma, option-list anatomy now confirmed present); File Upload confirmed 2026-07-15 (single-file and multi-file anatomy both Figma-confirmed); basic Table reusable architecture confirmed 2026-08-14; Data Table MCP verification still required
+**Partially resolved** — Combobox confirmed 2026-07-13, updated 2026-07-15 (Multi-select removed from Figma, option-list anatomy now confirmed present); File Upload confirmed 2026-07-15 (single-file and multi-file anatomy both Figma-confirmed); basic Table reusable architecture confirmed 2026-08-14; Data Table Column Header mapped 2026-08-31 (no Data Table master)
 
 - Starting node from brief: `2002:2365`
 - Combobox component-set node ID: **`2024:2480`** ("Forms/Combobox", section `2024:2501`) — confirmed via Figma MCP on 2026-07-13, after resolving a competing Desktop Bridge instance on port 9224 that had caused the prior timeout. **Updated 2026-07-15**: the `Multi-select` boolean property and its Chips frame were removed from Figma entirely (no corresponding code capability ever existed); a new demo frame ("Combobox (example — open)", node `2113:2`) now confirms option-list/listbox anatomy directly — plain label text only, no icon, no description, matching `ComboboxOption`'s real type. A token gap was found (not fixed): `semantic/surface/subtle`, used by the selected-option background, has no Figma variable (see [`combobox-parity.md`](architecture/combobox-parity.md))
 - File Upload component-set node ID: **`2024:2649`** ("Forms/File Upload") — confirmed via direct Figma property inspection on 2026-07-15: 5 state variants (Empty/Dragging/Error/Disabled/Filled) + File Name text property. **Both single-file and multi-file anatomy are Figma-confirmed.** The Filled variant (node `2024:2648`) is a vertical list container holding one or more File Row frames (first: node `2107:10`, File Icon + File Name + Remove Icon); the base variant shows one row (single-file as a list of one), and a multi-file example frame (node `2108:21`) shows three. React's existing `multiple`/`maxFiles`/independently-removable file list already matches this structure — nothing to change (see [`file-upload-discovery.md`](architecture/file-upload-discovery.md), `FILE_UPLOAD_MULTI_FILE_ANATOMY_STATUS = "confirmed-present"` in `lib/file-upload-figma-metadata.ts`)
-- Basic Table canonical nodes: **Table `2321:1964`; Header Row `2321:1903`; Body Row `2321:1920`; Cell `2321:1872`** — live-verified 2026-08-14. Stable-v1 is Flat-only with no Surface property and Rounded-only at `radius/lg` (12px) with `cornerSmoothing=0` and no Shape property, with Card surface/border, zero blur, no shadow, elevated muted header, default body, 12px/16px row geometry, and semantic dividers. Caption/Footer visuals and controlled Table Shape mapping remain pending. Historical example `2044:26192` is not canonical. Data Table remains a separate interaction layer (see [`table-foundation.md`](architecture/table-foundation.md), `lib/table-figma-metadata.ts`, and `lib/layer3-surface-figma-metadata.ts`).
-- Data Table component-set node ID: unresolved — Figma verification still pending, but **not blocking**: the sorting-only MVP (external Pagination composition) approved 2026-07-13 was implemented 2026-07-15 as a React-first interaction layer over basic Table (see [`table-foundation.md`](architecture/table-foundation.md), [`data-table-discovery.md`](architecture/data-table-discovery.md))
+- Basic Table canonical nodes: **Table `2321:1964`; Header Row `2321:1903`; Body Row `2321:1920`; Cell `2321:1872`** — live-verified 2026-08-14. Native Slot composition verified 2026-08-31 (`Rows#2791:12`, Header `Cells#2791:0`, Body `Cells#2791:6`). Stable-v1 is Flat-only with no Surface property and Rounded-only at `radius/lg` (12px) with `cornerSmoothing=0` and no Shape property, with Card surface/border, zero blur, no shadow, elevated muted header, default body, 12px/16px row geometry, and semantic dividers. Caption/Footer visuals and controlled Table Shape mapping remain pending. Historical example `2044:26192` is not canonical. Data Table remains a separate interaction layer (see [`table-foundation.md`](architecture/table-foundation.md), `lib/table-figma-metadata.ts`, and `lib/layer3-surface-figma-metadata.ts`).
+- Data Table: **no shell master**. Sortable header primitive **Content/Data Table Column Header `2805:859`** maps to `DataTableSortHeader` (Sort / Align / Disabled / Label). Customer-facing composition examples live on presentation FRAME **`2491:932`** (not a component). Registry `figmaAvailability: "partial"`. React sorting MVP unchanged (2026-07-15). Free Table-family port deferred (see [`data-table-discovery.md`](architecture/data-table-discovery.md), `lib/data-table-figma-metadata.ts`)
 - Tree View component-set node ID: **confirmed 2026-07-18** — "Content/Tree Item" component set is node `2058:1988` (State variants: Default `2058:1985`, Hover `2058:1986`, Selected `2058:1987`); the "Tree View (example)" composed demo is node `2058:1998`; parent section "Content/Tree View" is node `2058:2071`. This closes the one open item from the 2026-07-18 implementation — the component structure, properties, tokens, and 20px-per-depth indentation convention were already accurately described and implemented against; only the node IDs themselves were missing from the record (see `lib/tree-view-figma-metadata.ts`, `TREE_VIEW_FIGMA_AUDIT_STATUS = "verified-2026-07-18"`)
 - Bar Chart / Line Chart component-set node IDs: **confirmed 2026-07-18** — parent section "Content/Charts" is node `2058:2568`; "Bar Chart (example)" frame is node `2058:2532`; "Line Chart (example)" frame is node `2058:2559`. Both examples are illustrative/minimal (establishing color, stroke weight, and marker style), not full chart specs — axes beyond Bar Chart's month labels, legends, and multi-series were never shown in Figma and are documented as deliberate v1 deferrals, not gaps (see `lib/charts-figma-metadata.ts`, `CHARTS_FIGMA_AUDIT_STATUS = "verified-2026-07-18"`)
 - Timeline component-set node ID: **confirmed 2026-07-24** — "Content/Timeline Item" component set is node `2058:2092` (Title/Timestamp/Description text properties + State: Default/Highlighted variant); the "Timeline (example)" composed demo is node `2058:2102`; parent section "Content/Timeline" is node `2058:2130`. This closes the one open item from the 2026-07-19 implementation — the component structure, properties, tokens, and positional (not state-coupled) connector suppression were already accurately described and implemented against; only the node IDs themselves were missing from the record. Confirmed anatomy: Default is a 10x10 stroke-only dot (1.5px, semantic/action/primary) + a 2x48px Connector Line (semantic/border/default); Highlighted is a 12x12 solid-fill dot (semantic/action/primary), no stroke; Title is always semantic/text/primary, Timestamp/Description always semantic/text/secondary in both states. The last item's connector is structurally absent (no Connector Line child at all), not merely hidden — there is no formal "Show connector" boolean property (see `lib/timeline-figma-metadata.ts`, `TIMELINE_FIGMA_AUDIT_STATUS = "verified-2026-07-24"`)
@@ -446,8 +473,10 @@ range mode) — chosen over a component-prop-only API because it keeps
 direction + click handler in, nothing else), pushing all controlled/
 uncontrolled complexity into one hook rather than every header cell. Sort
 cycle per column: none → ascending → descending → none; activating a
-different column always resets it to ascending. `figmaAvailability:
-"unavailable"` — no Figma component set exists yet for Data Table. Registry
+different column always resets it to ascending. `figmaAvailability` was
+`"unavailable"` at ship (no Figma component set yet). **Superseded 2026-08-31:**
+Column Header `2805:859` is mapped; registry is `"partial"` because there is
+still no Data Table master (see Figma status above). Registry
 count moved 39 → 40, Figma-documented count 55 → 56 (new `content/content-data.ts`
 entry, required for `/components/data-table` to resolve rather than 404),
 indexable slugs 54 → 55.
@@ -499,7 +528,7 @@ that decision lands.
 
 - **Calendar Grid month/year drill-up subviews** (2026-07-12) — three internal drill levels (day/month/year) with dedicated `CalendarMonthCell`/`CalendarYearCell` components, focus restoration on drill transitions, and range enforcement via `isMonthFullyDisabled`/`isYearFullyDisabled`
 - **Calendar Grid date-range selection** (2026-07-12) — opt-in `mode="range"` with `rangeValue`/`defaultRangeValue`/`onRangeValueChange`, live keyboard+hover provisional preview, chronological auto-swap on a backwards second click, and disabled-dates-in-the-middle handling
-- **Data Table MVP** (2026-07-15) — the narrow scope approved 2026-07-13 (sorting only + external Pagination) is now implemented at `/components/data-table`: `DataTableSortHeader` composes `TableHead` with a real button, `aria-sort`, and a direction indicator; `useDataTableSort` is a dual controlled/uncontrolled sort-state hook (`lib/use-controllable.ts` pattern) with a none → ascending → descending → none cycle per column. No `columns`/`rows` prop API — the consumer still writes real `Table`/`TableHead`/`TableBody` markup. Row selection, sticky headers, density, and virtualization remain deferred; see [`data-table-discovery.md`](architecture/data-table-discovery.md)
+- **Data Table MVP** (2026-07-15) — the narrow scope approved 2026-07-13 (sorting only + external Pagination) is now implemented at `/components/data-table`: `DataTableSortHeader` composes `TableHead` with a real button, `aria-sort`, and a direction indicator; `useDataTableSort` is a dual controlled/uncontrolled sort-state hook (`lib/use-controllable.ts` pattern) with a none → ascending → descending → none cycle per column. No `columns`/`rows` prop API — the consumer still writes real `Table`/`TableHead`/`TableBody` markup. Figma Column Header mapping landed 2026-08-31 (`2805:859`); there is still no Data Table master. Row selection, sticky headers, density, and virtualization remain deferred as React APIs; see [`data-table-discovery.md`](architecture/data-table-discovery.md)
 - **Layer 3 (Shape) radius-token rebinding — 5 of 8 flagged components fixed in Figma (2026-07-17)**: a prior radius-token sweep flagged 8 components whose Figma-side radius binding pointed at the wrong token layer. Confirmed via direct Figma inspection (61 variants checked, zero inconsistencies), Figma-side only — no React code, test, or component-registry changes required, since these components' `tokensUsed` entries already named the correct semantic token:
   - **Actions/Link** (all 42 variants) — rebound from `radius/xs` (Primitive, 2px) to `component/radius/control` (Shape-aware). Real visual change: now renders 4px in Rounded mode, matching Button's control-scale.
   - **Forms/File Upload** (all 5 variants) — rebound from `radius/lg` to `component/radius/container`. No visual change (12px both ways); now properly Shape-aware.
@@ -513,7 +542,7 @@ that decision lands.
 
 ## Layer 4 pilot — Banking (first Industry Systems pilot)
 
-**Implemented 2026-07-25** — the first Layer 4 (Industry Systems) pilot, not a Layer 2 gap and not folded into "Major parity gaps" below. Three components, genuinely greenfield: confirmed via a full Figma file search (every page checked) that no Industry Systems page and no Banking-related frame or component exists anywhere in the design file. Figma status for all three is **React-first, Figma parity pending** — no reference exists, none was invented (see `lib/banking-figma-metadata.ts`, `BANKING_FIGMA_AUDIT_STATUS = "confirmed-no-reference-2026-07-25"`, a confirmed *absence*, not Data Table's "unresolved-mcp" pending-check status). `category` on all three registry/content entries is **Content & Data**, unchanged — that field still describes the underlying component kind. **Navigation/IA note (superseded same day, see the section directly below)**: at initial implementation, no distinct nav grouping existed yet and these three were reachable only via their `category`, indistinguishable from Layer 2 Content & Data components except by name prefix — corrected the same day by the "Industries" navigation structure below, once Healthcare's future addition made the gap in reachability structurally clear.
+**Implemented 2026-07-25** — the first Layer 4 (Industry Systems) pilot, not a Layer 2 gap and not folded into "Major parity gaps" below. Three components, genuinely greenfield: confirmed via a full Figma file search (every page checked) that no Industry Systems page and no Banking-related frame or component exists anywhere in the design file. Figma status for all three is **React-first, Figma parity pending** — no reference exists, none was invented (see `lib/banking-figma-metadata.ts`, `BANKING_FIGMA_AUDIT_STATUS = "confirmed-no-reference-2026-07-25"`, a confirmed *absence*, not a Data Table “pending MCP” status — Data Table now has a mapped Column Header primitive but still no shell master). `category` on all three registry/content entries is **Content & Data**, unchanged — that field still describes the underlying component kind. **Navigation/IA note (superseded same day, see the section directly below)**: at initial implementation, no distinct nav grouping existed yet and these three were reachable only via their `category`, indistinguishable from Layer 2 Content & Data components except by name prefix — corrected the same day by the "Industries" navigation structure below, once Healthcare's future addition made the gap in reachability structurally clear.
 
 - **Banking Transaction Row** (`/components/banking-transaction-row`) — **Composes:** List Item (row shell) + Avatar (merchant logo/initials) + Badge (status) + Popover (detail-view trigger, anchored via `PopoverAnchor` since List Item doesn't forward a ref). Chose **Popover over Drawer**: Popover's own documented purpose ("non-modal floating panel for supplementary or lightly interactive content anchored to a trigger") precisely matches viewing a handful of read-only detail fields for one row without leaving the list; Drawer's placement is currently left-edge-only (`DrawerPlacement = "left"`), an unconventional position for a per-row detail panel, and its own description ("supplementary settings, filters, or secondary forms") targets a heavier use case. Status (`success`/`warning`/`error`) drives both the Badge variant and the amount's color via the existing `semantic/feedback/success`, `semantic/feedback/warning`, and `semantic/action/danger` tokens — no new colors.
 - **Banking Account Card** (`/components/banking-account-card`) — **Composes:** Card (surface shell, title + footer slots) + Tag (account type) + Button (action trigger, in Card's footer) + Line Chart in sparkline mode (balance history). Glass Surface + Pill Shape inheritance was verified live via computed-style inspection (not assumed): the same Account Card instance resolves `border-radius: 12px` / `background-color: rgb(255,255,255)` under the default Rounded+Flat mode, `border-radius: 16px` under Pill Shape, and `background-color: rgba(255,255,255,0.72)` under Glass Surface — purely from Card's own `--shape-radius-container`/`--surface-fill-default` custom properties, zero Account-Card-specific surface code.
@@ -972,8 +1001,13 @@ panel fixed for Date Picker in Batch 2.
 **Scope discipline — "do not expand sideways" clarified**: this phrase governs starting **new React component/product scope** (new components, new industries, new product surfaces) — it does not apply to distribution work on components that are already built. The primary track (the Figma Surface/parity follow-ups and Timeline-class work below) remains the priority when choosing where to spend limited attention. shadcn distribution packaging (Card, Text Input, and future already-built components) is an explicitly allowed **parallel track**, not a violation of that discipline — it is distribution hardening on already-shipped components, not new component expansion, and it is not blocked or deferred by the primary track.
 
 1. **File Upload token verification** — diff the Filled/Empty/Dragging/Error/Disabled variants' token bindings against `file-upload.module.css`'s Temporary aliases now that the component set (`2024:2649`) and both single-file and multi-file anatomy are confirmed
-2. **Data Table Figma parity** — MCP audit for a component-set node once available; not blocking (see [`data-table-discovery.md`](architecture/data-table-discovery.md))
+2. **Coherent Table-family Free port** — Free currently has no Basic Table family; Column Header and Data Table presentation stay deferred until Table/Header Row/Body Row/Cell port together. Technical sequencing, not Pro-exclusive gating
 3. Infrastructure and source-of-truth maintenance — ongoing
+
+Keep only if they become product requirements (not active work):
+
+- Checkbox compact/label-visibility if the empty-label table-selection override becomes authoring-fragile
+- Data Table Row only if selected/hover chrome or denser action rows are required
 
 ## Source-of-truth rules
 

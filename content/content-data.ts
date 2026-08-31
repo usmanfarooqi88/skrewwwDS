@@ -83,7 +83,7 @@ export const contentDataComponents: ComponentDoc[] = [
     properties:
       "Compound API: Table, TableCaption, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableScrollArea. layout auto|fixed. Caption visibility visible|screen-reader. Cell/head align start|center|end. data-table-wrap=nowrap for action cells. Empty/loading/error via composition only.",
     knownLimitation:
-      "Canonical reusable Figma anatomy is now verified (Table 2321:1964; Header Row 2321:1903; Body Row 2321:1920; Cell 2321:1872). Stable-v1 is Flat-only with no Surface property and Rounded-only at 12px with cornerSmoothing=0 and no Shape property. Caption/Footer visuals and controlled Table Shape mapping remain pending; sorting is provided separately by Data Table. See docs/architecture/table-foundation.md.",
+      "Canonical reusable Figma anatomy is now verified (Table 2321:1964; Header Row 2321:1903; Body Row 2321:1920; Cell 2321:1872) with Native Slot Rows/Cells composition. Stable-v1 is Flat-only with no Surface property and Rounded-only at 12px with cornerSmoothing=0 and no Shape property. Caption/Footer visuals and controlled Table Shape mapping remain pending; sorting is provided separately by Data Table. See docs/architecture/table-foundation.md.",
   },
   {
     slug: "data-table",
@@ -111,7 +111,7 @@ export const contentDataComponents: ComponentDoc[] = [
     properties:
       "DataTableSortHeader: sortDirection (\"ascending\"|\"descending\"|\"none\"), onSort, disabled, plus all TableHead props (scope, align, etc.). useDataTableSort(options): sortState/defaultSortState/onSortStateChange (dual controlled/uncontrolled), returns { sortState, getSortDirection, toggleSort }. Sort cycle per column: none -> ascending -> descending -> none; a different column always resets to ascending.",
     knownLimitation:
-      "React-first MVP implemented 2026-07-15 — no Figma component set exists yet for Data Table specifically. Row selection, sticky headers, density variants, and virtualization remain deferred to a later pass. See docs/architecture/data-table-discovery.md.",
+      "DataTableSortHeader maps to Figma Content/Data Table Column Header 2805:859. There is no Content/Data Table master — customer examples are composition-only. Selection, sticky headers, density, and virtualization remain deferred as React APIs. See docs/architecture/data-table-discovery.md.",
   },
   {
     slug: "empty-state",

@@ -48,3 +48,15 @@ export const TABLE_STABLE_V1_CONTRACT = {
 
 /** Usability / a11y / composition audit completed before visual parity. */
 export const TABLE_USABILITY_AUDIT_STATUS = "completed-2026-07-13" as const;
+
+/**
+ * Basic Table Native Slot composition (Figma, 2026-08-31).
+ * INSTANCE_SWAP helpers were removed after zero consumers. React API unchanged.
+ */
+export const TABLE_FIGMA_NATIVE_SLOTS = {
+  rows: "Rows#2791:12",
+  headerCells: "Cells#2791:0",
+  bodyCells: "Cells#2791:6",
+} as const;
+
+export const TABLE_FIGMA_NATIVE_SLOT_STATUS = "verified-2026-08-31" as const;

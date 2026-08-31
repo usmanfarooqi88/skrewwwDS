@@ -9,36 +9,54 @@
  * only prose with nothing to keep it honest.
  */
 
-/** Figma / gate metadata for Data Table (formerly tracked as "Data Grid") discovery — node IDs updated when MCP succeeds. */
+/** Figma / gate metadata for Data Table (formerly tracked as "Data Grid"). */
 export const DATA_TABLE_FIGMA_FILE_URL =
   "https://www.figma.com/design/U6KUuNf7DF4CP9QBOkLSUx/Skrewww---Design-System?node-id=2002-2365";
 
-/** Starting node from the discovery pass brief. MCP inspection failed in this pass. */
+/** Starting node from the discovery pass brief. */
 export const DATA_TABLE_FIGMA_START_NODE_ID = "2002:2365";
 
-/** Canonical component-set node ID — unresolved until Figma MCP confirms. Not blocking for the approved React-first MVP. */
+/**
+ * There is no Content/Data Table component master. Keep this null so
+ * registry/docs cannot treat a shell node as canonical.
+ */
 export const DATA_TABLE_FIGMA_COMPONENT_SET_NODE_ID: string | null = null;
 
-/** Related building-block node IDs — unresolved until MCP search succeeds. */
+/** Canonical sortable header primitive — maps to DataTableSortHeader. */
+export const DATA_TABLE_COLUMN_HEADER_FIGMA_NAME =
+  "Content/Data Table Column Header" as const;
+export const DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID = "2805:859";
+export const DATA_TABLE_COLUMN_HEADER_FIGMA_SOURCE_URL =
+  "https://www.figma.com/design/U6KUuNf7DF4CP9QBOkLSUx/Skrewww---Design-System?node-id=2805-859";
+
+/**
+ * Customer-facing composition examples. This is a presentation FRAME, not
+ * a component master — do not use it as figmaNodeId.
+ */
+export const DATA_TABLE_PRESENTATION_FRAME_NAME =
+  "Content/Presentation/Data Table" as const;
+export const DATA_TABLE_PRESENTATION_FRAME_NODE_ID = "2491:932";
+
+/** Related building-block node IDs. `dataTable` stays null (no shell master). */
 export const DATA_TABLE_FIGMA_RELATED_NODE_IDS = {
-  table: null as string | null,
+  table: "2321:1964",
   dataTable: null as string | null,
-  headerCell: null as string | null,
+  headerCell: "2321:1872",
   row: null as string | null,
-  cell: null as string | null,
-  sortableHeader: null as string | null,
+  cell: "2321:1872",
+  sortableHeader: DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID,
   selectionColumn: null as string | null,
 } as const;
 
-export const DATA_TABLE_FIGMA_AUDIT_STATUS = "unresolved-mcp" as const;
+export const DATA_TABLE_FIGMA_AUDIT_STATUS = "verified-2026-08-31" as const;
 
 /**
- * Implementation gate for the Data Table component.
+ * Implementation gate for the Data Table pattern.
  * approved-narrow-mvp (2026-07-13) approved naming, MVP interactive pillar
  * (sorting only), and pagination approach (external Pagination composition).
  * implemented-react-first (2026-07-15) — the approved MVP is now built:
- * DataTableSortHeader + useDataTableSort compose Table, no Figma component
- * set exists yet for Data Table.
+ * DataTableSortHeader + useDataTableSort compose Table.
+ * Figma (2026-08-31): Column Header primitive mapped; no Data Table master.
  */
 export const DATA_TABLE_IMPLEMENTATION_GATE = "implemented-react-first" as const;
 

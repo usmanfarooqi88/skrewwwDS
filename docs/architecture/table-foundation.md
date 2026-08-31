@@ -1,6 +1,6 @@
 # Table foundation
 
-Last updated: **2026-08-14** (canonical Figma parity)
+Last updated: **2026-08-31** (Native Slots + Data Table Column Header mapping)
 
 ## Implementation status
 
@@ -10,8 +10,9 @@ Last updated: **2026-08-14** (canonical Figma parity)
 - Category: Content & Data
 - Origin: React-first native HTML semantics; visual anatomy now aligned to reusable Figma masters
 - Figma verification: **Verified 2026-08-14** — Table `2321:1964`, Header Row `2321:1903`, Body Row `2321:1920`, Cell `2321:1872`
+- Native Slot composition **verified 2026-08-31** — Rows `Rows#2791:12`, Header Cells `Cells#2791:0`, Body Cells `Cells#2791:6`. INSTANCE_SWAP helpers were removed after zero consumers. React API unchanged. Stable-v1 remains Flat-only.
 - Historical Table example `2044:26192` is retained as evidence but is not canonical
-- Data Table (named "Data Grid" during discovery; canonical name finalized as "Data Table" on 2026-07-13): **implemented at the narrow MVP scope** (sorting only + external Pagination) and remains separate — see [`data-table-discovery.md`](data-table-discovery.md)
+- Data Table (named "Data Grid" during discovery; canonical name finalized as "Data Table" on 2026-07-13): **implemented at the narrow MVP scope** (sorting only + external Pagination) and remains separate — `DataTableSortHeader` maps to Content/Data Table Column Header `2805:859`. There is no Data Table master. See [`data-table-discovery.md`](data-table-discovery.md)
 
 Metadata: `lib/table-figma-metadata.ts`
 
@@ -265,13 +266,15 @@ No raw color values are introduced in `table.module.css`; the shell locally rebi
 
 Reusable visual anatomy was verified live on 2026-08-14: Table `2321:1964`, Header Row `2321:1903`, Body Row `2321:1920`, and Cell `2321:1872`. The shell is Flat-only with no Surface property, 12px Rounded-only with `cornerSmoothing=0` and no Shape property, clipped, shadowless, and uses Card surface/border plus zero blur. Header/body typography, color, padding, and dividers are verified. Caption and Footer visual contracts remain intentionally pending; the historical example `2044:26192` is not canonical.
 
+Rows and Cells composition now uses Native Slots (`Rows#2791:12`, `Cells#2791:0`, `Cells#2791:6`). That Figma authoring change does not change the React Table API.
+
 Presentation QA remains a separate backlog: budget/date wrapping, column presentation, Pagination number visibility, Table/Pagination spacing, and interactive-cell alignment are not claimed as closed by this visual-anatomy parity pass.
 
 ## 24. Data Table capabilities beyond Table
 
-Implemented for the Data Table MVP: sorting only via `DataTableSortHeader` + `useDataTableSort`, with external Pagination composition over Table.
+Implemented for the Data Table MVP: sorting only via `DataTableSortHeader` + `useDataTableSort`, with external Pagination composition over Table. Figma maps the sort header to Content/Data Table Column Header `2805:859`. Customer examples live on presentation frame `2491:932`. There is no Content/Data Table master and no Data Table Row primitive in v1.
 
-Excluded from v1 / deferred: selection (deferred to a later pass), sticky headers, density, stripes, embedded pagination ownership, editing, virtualization, `role="grid"`, arrow-key cell navigation.
+Excluded from v1 / deferred: selection as a Table/Data Table API (Figma may compose Checkbox), sticky headers, density, stripes, embedded pagination ownership, editing, virtualization, `role="grid"`, arrow-key cell navigation, Gradient/Glass table shells.
 
 ## 25. Common mistakes
 

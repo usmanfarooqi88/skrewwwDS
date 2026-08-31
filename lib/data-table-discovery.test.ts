@@ -1,15 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { getImplementedRegistryEntries } from "@/lib/component-registry";
+import { getImplementedRegistryEntries, getRegistryEntry } from "@/lib/component-registry";
 import {
   DATA_TABLE_CANONICAL_NAME,
   DATA_TABLE_CANONICAL_SLUG,
+  DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID,
   DATA_TABLE_FIGMA_AUDIT_STATUS,
   DATA_TABLE_FIGMA_COMPONENT_SET_NODE_ID,
   DATA_TABLE_IMPLEMENTATION_GATE,
   DATA_TABLE_MVP_INTERACTIVE_PILLAR,
   DATA_TABLE_PAGINATION_APPROACH,
+  DATA_TABLE_PRESENTATION_FRAME_NODE_ID,
   DATA_TABLE_SEMANTICS,
 } from "@/lib/data-table-figma-metadata";
 
@@ -19,6 +21,9 @@ describe("Data Table discovery gate", () => {
     expect(slugs).not.toContain("data-grid");
     expect(slugs).toContain(DATA_TABLE_CANONICAL_SLUG);
     expect(slugs).toContain("table");
+    const dataTable = getRegistryEntry("data-table");
+    expect(dataTable?.figmaAvailability).toBe("partial");
+    expect(dataTable?.figmaNodeId).toBe(DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID);
   });
 
   it("records the implemented gate and the decided naming/scope facts", () => {
@@ -28,9 +33,10 @@ describe("Data Table discovery gate", () => {
     expect(DATA_TABLE_MVP_INTERACTIVE_PILLAR).toBe("sorting-only");
     expect(DATA_TABLE_PAGINATION_APPROACH).toBe("external-pagination-composition");
     expect(DATA_TABLE_SEMANTICS).toBe("native-table");
-    // Figma parity is still a separate, non-blocking follow-up for this decision.
-    expect(DATA_TABLE_FIGMA_AUDIT_STATUS).toBe("unresolved-mcp");
+    expect(DATA_TABLE_FIGMA_AUDIT_STATUS).toBe("verified-2026-08-31");
     expect(DATA_TABLE_FIGMA_COMPONENT_SET_NODE_ID).toBeNull();
+    expect(DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID).toBe("2805:859");
+    expect(DATA_TABLE_PRESENTATION_FRAME_NODE_ID).toBe("2491:932");
   });
 
   it("documents the approved decision in architecture docs", () => {

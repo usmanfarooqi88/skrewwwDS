@@ -5,8 +5,8 @@ import {
   TABLE_FIGMA_SOURCE_URL,
 } from "@/lib/table-figma-metadata";
 import {
-  DATA_TABLE_FIGMA_COMPONENT_SET_NODE_ID,
-  DATA_TABLE_FIGMA_FILE_URL,
+  DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID,
+  DATA_TABLE_COLUMN_HEADER_FIGMA_SOURCE_URL,
 } from "@/lib/data-table-figma-metadata";
 import {
   TREE_VIEW_FIGMA_COMPONENT_SET_NODE_ID,
@@ -388,10 +388,10 @@ export function Example() {
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/content-data.ts",
-    documentationLastUpdated: TABLE_DOCS_DATE,
+    documentationLastUpdated: "2026-08-31",
     reactLastUpdated: TABLE_DOCS_DATE,
     figmaReference:
-      "Canonical reusable basic Table architecture: Content/Table shell 2321:1964; Content/Table Header Row 2321:1903; Content/Table Body Row 2321:1920; Content/Table Cell 2321:1872. Stable-v1 is Flat-only with no Surface property and Rounded-only at radius/lg 12px with cornerSmoothing=0 and no Shape property. Historical example 2044:26192 is reference evidence, not canonical.",
+      "Canonical reusable basic Table architecture: Content/Table shell 2321:1964; Content/Table Header Row 2321:1903; Content/Table Body Row 2321:1920; Content/Table Cell 2321:1872. Native Slot composition: Rows#2791:12, Header Cells#2791:0, Body Cells#2791:6. Stable-v1 is Flat-only with no Surface property and Rounded-only at radius/lg 12px with cornerSmoothing=0 and no Shape property. Historical example 2044:26192 is reference evidence, not canonical.",
     figmaSourceUrl: TABLE_FIGMA_SOURCE_URL,
     figmaNodeId: TABLE_FIGMA_COMPONENT_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("table"),
@@ -540,15 +540,16 @@ export function Example() {
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
-    figmaAvailability: "unavailable",
+    figmaAvailability: "partial",
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/content-data.ts",
-    documentationLastUpdated: "2026-07-15",
+    documentationLastUpdated: "2026-08-31",
     reactLastUpdated: "2026-07-15",
-    figmaReference: "React-first Data Table MVP — no Figma component set exists yet; MCP audit pending",
-    figmaSourceUrl: DATA_TABLE_FIGMA_FILE_URL,
-    figmaNodeId: DATA_TABLE_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
+    figmaReference:
+      "DataTableSortHeader maps to Content/Data Table Column Header 2805:859 (Sort Unsorted/Ascending/Descending, Align Start/End, Disabled False/True, Label). No Content/Data Table master exists — customer examples are composition-only on presentation frame 2491:932.",
+    figmaSourceUrl: DATA_TABLE_COLUMN_HEADER_FIGMA_SOURCE_URL,
+    figmaNodeId: DATA_TABLE_COLUMN_HEADER_FIGMA_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("data-table"),
     supportedVariants: ["sortable-header"],
     supportedSizes: [],
@@ -573,9 +574,9 @@ export function Example() {
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
-      "No Figma component set exists for Data Table yet — sort-header anatomy and token bindings are React-first, same precedent as Table.",
-      "Row selection (Checkbox column), sticky headers, density variants, and virtualization remain deferred to a later pass — not in this MVP.",
-      "Row-actions conventions beyond composing Menu in a cell are still open.",
+      "No Content/Data Table master exists — Figma ships a Column Header primitive plus composition examples, not a shell component.",
+      "Selection, row actions, loading, and empty are Figma composition examples only — not Data Table React APIs. A Data Table Row primitive is not required unless selected/hover chrome or denser action rows become a product requirement.",
+      "Free currently has no Basic Table family; Column Header and Data Table presentation stay deferred until a coherent Table-family port. Technical sequencing, not Pro-exclusive gating.",
     ],
     hasImplementation: true,
     hasPreview: true,
@@ -607,7 +608,11 @@ export function Example() {
       },
       {
         title: "Does Data Table support row selection?",
-        body: "Not in v1 — explicitly deferred. Consumers may still compose Checkbox inside a TableCell manually, the same way they can with plain Table, but Data Table has no selection API of its own.",
+        body: "Not in v1 — explicitly deferred. Consumers may still compose Checkbox inside a TableCell manually, the same way they can with plain Table, but Data Table has no selection API of its own. Figma shows optional selection as composition only.",
+      },
+      {
+        title: "Does a Data Table Figma master exist?",
+        body: "No. DataTableSortHeader maps to Content/Data Table Column Header 2805:859. Customer-facing examples live on the Content/Presentation/Data Table frame 2491:932. There is no Content/Data Table component master.",
       },
       {
         title: "How does pagination work with Data Table?",
