@@ -12,6 +12,7 @@ const ALLOWED_BASE_CONSUMERS: Record<string, string[]> = {
   "components/ui/checkbox.module.css": ["border/stroke", "fill/background"],
   "components/ui/radio.module.css": ["border/stroke"],
   "components/ui/progress-bar.module.css": ["fill/background"],
+  "styles/tokens.css": ["File Upload error border alias"],
 };
 
 function collectCssFiles(dir: string): string[] {
@@ -82,6 +83,12 @@ describe("semantic-action-danger (D3)", () => {
     for (const hit of hits) {
       expect(ALLOWED_BASE_CONSUMERS[hit.file], `unexpected BASE consumer: ${hit.file}`).toBeDefined();
     }
+
+    expect(
+      hits
+        .filter((h) => h.file === "styles/tokens.css")
+        .every((h) => /--file-upload-border-error:\s*var\(--semantic-action-danger\)/.test(h.line)),
+    ).toBe(true);
 
     const colorLines = hits.filter((h) => /^\s*color\s*:/.test(h.line) || /\{[^}]*color\s*:/.test(h.line));
     // Link Danger icons moved onto --semantic-icon-danger; no BASE action-danger color consumers remain.

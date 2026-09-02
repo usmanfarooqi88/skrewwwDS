@@ -530,13 +530,13 @@
   --file-upload-dragging-surface: var(--semantic-surface-elevated);
   --file-upload-border-style: dashed;
   --file-upload-border-dragging: var(--semantic-action-primary);
-  --file-upload-border-error: var(--component-danger-fill);
+  --file-upload-border-error: var(--semantic-action-danger);
   --file-upload-radius: var(--shape-radius-container);
   --file-upload-padding: 1.25rem;
   --file-upload-min-height: 8rem;
   --file-upload-icon-size: 1.75rem;
   --file-upload-icon: var(--component-surface-content-muted);
-  --file-upload-title-text: var(--component-surface-content-muted);
+  --file-upload-title-text: var(--semantic-text-secondary);
   --file-upload-description-text: var(--component-surface-content-muted);
   --file-upload-list-gap: 0.5rem;
   --file-upload-item-surface: var(--component-card-surface);

@@ -73,7 +73,7 @@ test.describe("semantic/text/danger consumers", () => {
     await expect(page.getByText("(required)")).toHaveCount(1);
   });
 
-  test("File Upload rejection copy uses danger text while dropzone error chrome stays unchanged", async ({
+  test("File Upload rejection and error title use danger text; icon and border stay action/icon danger", async ({
     page,
   }) => {
     await page.goto("/components/file-upload");
@@ -89,13 +89,10 @@ test.describe("semantic/text/danger consumers", () => {
 
     const serverErrorDropzone = page.locator('input[name="server-error-doc"]').locator("..");
     expectColorClose(await resolvedRgba(serverErrorDropzone, "borderColor"), hexToRgba(DROPZONE_ERROR));
-    expectColorClose(
-      await resolvedRgba(serverErrorDropzone.locator("p").first(), "color"),
-      hexToRgba(DROPZONE_ERROR),
-    );
+    await expectDangerTextContrast(serverErrorDropzone.locator("p").first());
     expectColorClose(
       await resolvedRgba(serverErrorDropzone.locator("svg"), "color"),
-      hexToRgba(DROPZONE_ERROR),
+      hexToRgba(ACTION_DANGER),
     );
   });
 

@@ -233,28 +233,35 @@ describe("FileUpload registry", () => {
 });
 
 describe("FileUpload danger-text contract", () => {
-  it("binds rejection copy to semantic-text-danger and keeps dropzone error chrome on the existing error border token", () => {
+  it("binds default title to text-secondary and keeps error icon/text/border on distinct danger tokens", () => {
     const css = readFileSync(
       resolve(process.cwd(), "components/ui/file-upload.module.css"),
       "utf8",
     );
     const tokens = readFileSync(resolve(process.cwd(), "styles/tokens.css"), "utf8");
 
+    expect(tokens).toMatch(/--file-upload-title-text:\s*var\(--semantic-text-secondary\)/);
+    expect(css).toMatch(/\.title\s*\{[^}]*var\(--file-upload-title-text\)/);
+    expect(css).toMatch(/\.dropzoneError \.title\s*\{[^}]*var\(--semantic-text-danger\)/);
+    expect(css).toMatch(/\.dropzoneError \.icon\s*\{[^}]*var\(--semantic-icon-danger\)/);
+    expect(css).toMatch(/\.dropzoneError\s*\{[^}]*var\(--file-upload-border-error\)/);
     expect(css).toMatch(/\.rejectionList\s*\{[^}]*var\(--semantic-text-danger\)/);
     expect(css).not.toMatch(/\.rejectionList\s*\{[^}]*var\(--semantic-action-danger\)/);
-    expect(css).toMatch(/\.dropzoneError\s*\{[^}]*var\(--file-upload-border-error\)/);
-    expect(css).toMatch(/\.dropzoneError \.icon\s*\{[^}]*var\(--semantic-icon-danger\)/);
-    expect(css).toMatch(/\.dropzoneError \.title\s*\{[^}]*var\(--file-upload-border-error\)/);
+    expect(css).not.toMatch(/\.dropzoneError \.title\s*\{[^}]*var\(--file-upload-border-error\)/);
+    expect(css).not.toMatch(/\.dropzoneError \.icon\s*\{[^}]*var\(--semantic-text-danger\)/);
     expect(css).not.toMatch(
       /\.dropzoneError \.icon,\s*\.dropzoneError \.title\s*\{[^}]*var\(--file-upload-border-error\)/,
     );
-    expect(tokens).toMatch(/--file-upload-border-error:\s*var\(--component-danger-fill\)/);
-    expect(tokens).toMatch(/--component-danger-fill:\s*#e5484d/);
+    expect(tokens).toMatch(/--file-upload-border-error:\s*var\(--semantic-action-danger\)/);
+    expect(tokens).toMatch(
+      /--semantic-text-danger:\s*var\(--primitive-color-danger-600\)/,
+    );
     expect(tokens).toMatch(
       /--semantic-icon-danger:\s*var\(--primitive-color-danger-500\)/,
     );
-    expect(tokens).toMatch(/--primitive-color-danger-500:\s*#e5484d/i);
     expect(tokens).toMatch(/--semantic-action-danger:\s*var\(--primitive-color-danger-500\)/);
+    expect(tokens).toMatch(/--primitive-color-danger-500:\s*#e5484d/i);
+    expect(tokens).toMatch(/--primitive-color-danger-600:\s*#cc3b37/i);
   });
 
   it("does not retarget non-Error dropzone icon paths onto semantic-icon-danger", () => {
