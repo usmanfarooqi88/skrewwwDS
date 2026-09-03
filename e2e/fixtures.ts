@@ -38,22 +38,26 @@ export { expect };
 export async function resolvedRgba(
   locator: Locator,
   property: "backgroundColor" | "color" | "borderColor" | "borderTopColor",
+  pseudoElement?: string,
 ): Promise<{ r: number; g: number; b: number; a: number }> {
-  return locator.evaluate((el, prop) => {
-    const value = getComputedStyle(el)[prop as "backgroundColor"];
-    const canvas = document.createElement("canvas");
-    canvas.width = 1;
-    canvas.height = 1;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
-    ctx.clearRect(0, 0, 1, 1);
-    ctx.fillStyle = value;
-    ctx.fillRect(0, 0, 1, 1);
-    // Indexed rather than destructured — this repo's tsconfig targets es5,
-    // and destructuring a canvas ImageData's Uint8ClampedArray-like `data`
-    // needs downlevelIteration / an es2015+ target.
-    const data = ctx.getImageData(0, 0, 1, 1).data;
-    return { r: data[0], g: data[1], b: data[2], a: data[3] / 255 };
-  }, property);
+  return locator.evaluate(
+    (el, [prop, pseudo]) => {
+      const value = getComputedStyle(el, pseudo || undefined)[prop as "backgroundColor"];
+      const canvas = document.createElement("canvas");
+      canvas.width = 1;
+      canvas.height = 1;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+      ctx.clearRect(0, 0, 1, 1);
+      ctx.fillStyle = value;
+      ctx.fillRect(0, 0, 1, 1);
+      // Indexed rather than destructured — this repo's tsconfig targets es5,
+      // and destructuring a canvas ImageData's Uint8ClampedArray-like `data`
+      // needs downlevelIteration / an es2015+ target.
+      const data = ctx.getImageData(0, 0, 1, 1).data;
+      return { r: data[0], g: data[1], b: data[2], a: data[3] / 255 };
+    },
+    [property, pseudoElement ?? ""] as const,
+  );
 }
 
 /** Parses a "#rrggbb" hex string (optionally with a separate 0-1 alpha) into the same {r,g,b,a} shape resolvedRgba returns. */

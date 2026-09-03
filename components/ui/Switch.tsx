@@ -60,7 +60,7 @@ export function Switch({
       >
         <span className={cn(styles.thumb, isOn && styles.thumbOn)} aria-hidden="true" />
       </button>
-      <span id={labelId} className={styles.labelText}>
+      <span id={labelId} className={cn(styles.labelText, disabled && styles.labelDisabled)}>
         {label}
       </span>
     </div>

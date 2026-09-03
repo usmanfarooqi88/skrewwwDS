@@ -61,6 +61,19 @@ describe("Switch", () => {
     expect(control).toHaveAttribute("aria-checked", "false");
   });
 
+  it("stays pinned to a controlled `checked` prop until the parent updates it", async () => {
+    const user = userEvent.setup();
+    const onCheckedChange = vi.fn();
+    render(<Switch label="Controlled" checked={false} onCheckedChange={onCheckedChange} />);
+    const control = screen.getByRole("switch");
+    expect(control).toHaveAttribute("aria-checked", "false");
+
+    await user.click(control);
+    expect(onCheckedChange).toHaveBeenCalledWith(true);
+    // No internal state change without the parent re-rendering with the new value.
+    expect(control).toHaveAttribute("aria-checked", "false");
+  });
+
   it("does not submit a surrounding form", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn((event: React.FormEvent<HTMLFormElement>) => event.preventDefault());

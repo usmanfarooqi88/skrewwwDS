@@ -420,10 +420,11 @@ export function Example() {
       { label: "semantic/focus-ring", href: "/foundations" },
     ],
     relatedConcepts: [sharedConcepts.shape],
-    openQuestions: [
-      "Switch thumb travel uses temporary spacing tokens pending Figma alignment property confirmation.",
-      "Switch surfaces remain functionally flat in Gradient/Glass modes.",
-    ],
+    // Geometry verified against the canonical Figma contract (2026-09):
+    // 40×24 track, 18×18 thumb, 2px inset, 18px travel, 8px label gap,
+    // Shape-aware Track via the shared runtime radius token, Thumb always
+    // circular. No longer an open question.
+    openQuestions: ["Switch surfaces remain functionally flat in Gradient/Glass modes."],
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
