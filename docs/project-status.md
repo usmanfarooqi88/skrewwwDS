@@ -2,6 +2,53 @@
 
 Last verified: **2026-08-31** (Data Table Figma metadata + docs)
 
+## 2026-09-11 — Skrewww Agent Kit roadmap entry (PLANNED / GATED)
+
+Documentation-only. No implementation started.
+
+**Skrewww Agent Kit is the next major development initiative after Figma
+Presentation V2 completes.** Execution gate: finish Presentation V2 → final
+whole-file Presentation QA/freeze → Agent Kit AK-0. **The current active
+development priority remains Figma Presentation V2** — this entry does not
+pause or supersede that work. Agent Kit does not begin until the gate is
+reached and AK-0 is explicitly started by the user.
+
+**Planned phases (high-level only):**
+
+| Phase | Scope |
+|-------|-------|
+| AK-0 | Read-only architecture audit |
+| AK-1 | Component Contract schema + context compiler |
+| AK-2 | Universal Skrewww Agent Skill |
+| AK-3 | Registry / MCP integration + project context |
+| AK-4 | Recipes / Feature Kits |
+| AK-5 | Agent Kit OFF vs ON eval harness |
+| AK-6 | Public Beta |
+
+Next major follow-up after Agent Kit Beta: **Skrewww Guard**.
+
+**Locked architecture notes** (decisions only, not implementation design):
+
+- Existing Skrewww registry remains the foundation.
+- Custom Skrewww MCP is deferred beyond v0.1; the shadcn-compatible
+  registry/MCP path (already proven — see the shadcn distribution layer
+  below) is preferred first.
+- One portable knowledge core, not separate Claude/Cursor/Codex rulebooks.
+- Facts should be generated from canonical Skrewww metadata where possible,
+  not hand-authored per surface.
+- Agent Skills + adapters are the intended distribution architecture.
+- Evals are mandatory before Public Beta.
+- n8n is optional future orchestration only.
+- Skrewww Guard follows Agent Kit Beta.
+
+**Planning bundle**: detailed Agent Kit research and planning currently
+exists locally at
+[`docs/skrewww-agent-kit-planning-2026-09-11.zip`](skrewww-agent-kit-planning-2026-09-11.zip)
+(untracked, not committed — a local reference bundle only). Consult it when
+AK-0 begins; extract and review the selected Markdown files into normal
+version-controlled docs only after AK-0 confirms their final placement and
+architecture. Do not commit the ZIP itself merely to preserve planning.
+
 ## 2026-08-31 — Data Table v1 composition examples
 
 Figma-only. No Data Table shell, no React write, no publish.
