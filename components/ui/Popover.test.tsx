@@ -292,7 +292,8 @@ describe("Popover shell tokens stay independent of selectable-list panels", () =
     expect(datePickerCss).not.toMatch(/component-card-border-gradient/);
 
     expect(tooltipCss).toMatch(/background:\s*var\(--tooltip-surface\)/);
-    expect(tooltipCss).toMatch(/glass-mix-sm/);
+    expect(tooltipCss).not.toMatch(/glass-mix-sm|glass-backdrop-filter/);
+    expect(tooltipCss).not.toMatch(/data-skrewww-surface/);
     expect(tooltipCss).not.toMatch(/popover-surface|component-card-border-gradient/);
   });
 });

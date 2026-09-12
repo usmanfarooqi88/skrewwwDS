@@ -4,6 +4,8 @@
   max-width: var(--tooltip-max-width);
   padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
   border-radius: var(--tooltip-radius);
+  /* Figma Feedback/Tooltip 2034:25628 is fixed color/neutral/900 with no
+     Surface participation. Do not invent Glass lightening or blur here. */
   background: var(--tooltip-surface);
   color: var(--tooltip-text);
   box-shadow: var(--tooltip-shadow);
@@ -35,19 +37,5 @@
 @media (prefers-reduced-motion: reduce) {
   .tooltip {
     animation: none;
-  }
-}
-
-[data-skrewww-surface="glass"] .tooltip {
-  /* Was a one-off 10px/92% previously — consolidated to the shared "sm"
-     tier (8px/88%), matching Badge/Tabs/Pagination's similarly-compact
-     scale; see the tier comment in styles/tokens.css. */
-  background: color-mix(in srgb, var(--tooltip-surface) var(--glass-mix-sm), white);
-  backdrop-filter: var(--glass-backdrop-filter-sm);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-surface="glass"] .tooltip {
-    background: color-mix(in srgb, var(--tooltip-surface) var(--glass-mix-sm-fallback), white);
   }
 }

@@ -29,6 +29,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* Figma Navigation/Breadcrumb Item Default 2024:2860 binds
+     component/surface/content-muted, not semantic/text/secondary.
+     Hover/Current stay on semantic/text/primary via Link subtle states. */
+  color: var(--component-surface-content-muted);
 }
 
 .current {

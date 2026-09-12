@@ -69,13 +69,5 @@
   }
 }
 
-[data-skrewww-surface="glass"] .list {
-  background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-sm), white);
-  backdrop-filter: var(--glass-backdrop-filter-sm);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-surface="glass"] .list {
-    background: color-mix(in srgb, var(--semantic-surface-default) var(--glass-mix-sm-fallback), white);
-  }
-}
+/* Figma Navigation/Tabs 2024:2849 has zero fill and no Surface blur.
+   Tablist remains transparent in every Surface mode. */

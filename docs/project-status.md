@@ -1,6 +1,6 @@
 # Project status
 
-Last verified: **2026-09-13** (Stable-v1 closeout Phase 1 Button Glass re-verification)
+Last verified: **2026-09-13** (Stable-v1 closeout Phase 3 Surface N/A cleanup)
 
 ## 2026-09-13 — Stable-v1 closeout Phase 1 (Button Layer 3 Glass)
 
@@ -44,6 +44,22 @@ READ-ONLY live Figma discovery + fresh-instance Surface validation. **No Figma w
 - Combobox Listbox Panel `2181:1173` remains the Forms sibling of the same architecture
 
 Stale claim “Menu Surface lives only on an example frame” is obsolete. Phase 2 **CLOSED**.
+
+## 2026-09-13 — Stable-v1 closeout Phase 3 batch (Surface N/A cleanup)
+
+Live Figma re-verification of remaining uncertain Surface participants. Evidence-backed React cleanup only — no new visual direction.
+
+| Component | Figma master | Live Surface finding | React change |
+|-----------|--------------|----------------------|--------------|
+| Tooltip | `2034:25628` | Fixed `color/neutral/900`; no blur | Removed invented Glass lighten/blur |
+| Skeleton | `2034:25640` | Fixed `color/neutral/300`; no blur | Removed invented Gradient/Glass surface rules |
+| Tabs | `2024:2849` | Zero fill; no blur | Removed invented Glass tablist fill/blur |
+| Breadcrumb Item | `2024:2863` | Default → `component/surface/content-muted`; Hover/Current → `semantic/text/primary` | Default ancestor links now use content-muted (was Link subtle = secondary) |
+| Progress Bar | `2034:25546` | Semantic action/feedback fills; no blur | **Surface N/A** (confirmed) |
+| Spinner | `2034:25600` | Border/action only; no blur | **Surface N/A** (confirmed) |
+| Divider | `2044:26035` | `semantic/border/default` only | **Surface N/A** (confirmed) |
+
+Duplicate Badge vs Alert/Toast tint token names remain non-blocking cleanup (identical values, no rendered drift).
 
 ## 2026-09-11 — Skrewww Agent Kit roadmap entry (PLANNED / GATED)
 
@@ -171,7 +187,7 @@ Figma Navigation + Feedback Surface sweep is already **PASS**. This React pass i
 
 - **Alert description:** `--feedback-{info,success,warning,error}-text` now alias `--semantic-text-secondary` (`#5B5F68`) to match Figma on always-light Alert panels. `--component-surface-content-muted` is unchanged (dismiss, Toast close, other cascade consumers). Titles and type-specific icons are unchanged. Toast still overrides `--feedback-text` to `--semantic-text-primary`.
 - **Menu selected:** **API gap — no production change.** `MenuItem` has no `selected` / `aria-selected` contract; existing tests lock that absence. Hover stays overlay-free. Do not invent a Selected API for visual parity.
-- **Intentionally deferred:** Tooltip Glass, Skeleton Surface, Tabs tablist Glass, Breadcrumb muted vs secondary.
+- **Closed 2026-09-13:** Tooltip Glass, Skeleton Surface, Tabs tablist Glass, and Breadcrumb Default muted-vs-secondary are no longer deferred — React now matches the live Figma Surface N/A / content-muted contracts (see Phase 3 batch above).
 
 ## 2026-08-29 — Select keyboard after click-open
 

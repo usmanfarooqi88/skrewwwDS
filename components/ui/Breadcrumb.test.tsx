@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -78,5 +80,10 @@ describe("Breadcrumb", () => {
     const homeLink = screen.getByRole("link", { name: "Home" });
     expect(homeLink).toHaveTextContent("Home");
     expect(homeLink.querySelector("svg")).toBeTruthy();
+  });
+
+  it("binds default ancestor links to content-muted, matching Figma Default", () => {
+    const css = readFileSync(resolve(process.cwd(), "components/ui/breadcrumb.module.css"), "utf8");
+    expect(css).toMatch(/\.link\s*\{[^}]*var\(--component-surface-content-muted\)/);
   });
 });

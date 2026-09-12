@@ -50,23 +50,8 @@
   }
 }
 
-[data-skrewww-surface="gradient"] .skeleton {
-  background: color-mix(in srgb, var(--skeleton-base-surface) 85%, white);
-}
-
-/* Found during this pass: shared a rule with Gradient mode above with no
-   backdrop-filter at all — same missing-blur bug as Card/Button/etc. Split
-   out so only Glass gets blur; Gradient's own 85% mix above is unchanged. */
-[data-skrewww-surface="glass"] .skeleton {
-  background: color-mix(in srgb, var(--skeleton-base-surface) var(--glass-mix-sm), white);
-  backdrop-filter: var(--glass-backdrop-filter-sm);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  [data-skrewww-surface="glass"] .skeleton {
-    background: color-mix(in srgb, var(--skeleton-base-surface) var(--glass-mix-sm-fallback), white);
-  }
-}
+/* Figma Feedback/Skeleton 2034:25640 binds color/neutral/300 only — no
+   Surface fill/blur participation. Keep the resting skeleton base fixed. */
 
 [data-skrewww-shape="pill"] .text,
 [data-skrewww-shape="pill"] .rectangle {
