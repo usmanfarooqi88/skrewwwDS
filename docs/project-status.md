@@ -1,6 +1,35 @@
 # Project status
 
-Last verified: **2026-08-31** (Data Table Figma metadata + docs)
+Last verified: **2026-09-13** (Stable-v1 closeout Phase 1 Button Glass re-verification)
+
+## 2026-09-13 — Stable-v1 closeout Phase 1 (Button Layer 3 Glass)
+
+Live re-verification of Paid Figma Button set `2012:7752` against shipped React.
+
+**Result: already complete — no fill/border/blur token rewrite required.**
+
+Live-confirmed (Flat / Glass) on Primary Medium Default/Hover/Pressed and Danger Medium Default/Hover/Pressed/Focused:
+
+| Contract | Live Figma | React |
+|----------|------------|-------|
+| Primary Default | `#6C4CF2` / Glass 18% | match |
+| Primary Hover | `#5638D6` / Glass 24% | match |
+| Primary Pressed | `#4229AD` / Glass 30% | match |
+| Danger Default | `#E5484D` / Glass 58% | match |
+| Danger Hover | `#CC3B37` / Glass 64% | match |
+| Danger Pressed | `#B3261E` / Glass 70% | match |
+| Focused fill | reuses Default (Danger Focused `2012:7745`) | match |
+| Blur | `component/surface/blur` Flat/Gradient `0`, Glass `16` | match |
+| Secondary Glass fill | aliases `component/surface/fill` → `#FFFFFF` @ 12% | match |
+| Primary/Danger Glass rim | shared 3-stop families (not per-state) | match (135.25deg practical approximation) |
+
+Menu reusable Panel master `Navigation/Menu Panel` `2181:216` still exists with `component/menu/panel-*` + Surface blur — Phase 2 starts from that evidence, not the stale “example-only” claim.
+
+Calendar Day set `2058:2146` still only has Default / Today / Selected / Disabled / Outside. Range states remain **React-first · Figma parity pending**.
+
+Additive this phase:
+- Playwright Squircle + Glass rim regression (`e2e/button.spec.ts`) so Squircle clipping cannot silently drop the masked rim.
+- Layer 3 Batch C File Upload text assertions updated to live Figma: Empty Message → `semantic/text/secondary`; Error Message → `semantic/text/danger`; icon remains content-muted / icon-danger. Stale assertions still expected Empty title = muted after the earlier File Upload React text parity fix.
 
 ## 2026-09-11 — Skrewww Agent Kit roadmap entry (PLANNED / GATED)
 

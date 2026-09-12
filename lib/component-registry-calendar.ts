@@ -64,7 +64,8 @@ export const calendarRegistryEntries: ComponentRegistryEntry[] = [
     // radius/full and does not participate in Figma's global Shape modes.
     relatedConcepts: [sharedConcepts.surface],
     openQuestions: [
-      "Range start/middle/end, range preview, hover, selected hover, pressed, and focused are implemented React capabilities without corresponding live Figma masters; their visual parity remains unverified.",
+      "Range Start / Range End / Range Middle / range preview are React-first · Figma parity pending — live Calendar Day masters only expose Default, Today, Selected, Disabled, and Outside (set 2058:2146). Do not invent Figma range variants for Stable-v1.",
+      "Hover, selected hover, pressed, and focused Calendar Day visuals remain unverified against Figma masters.",
       "Calendar Day should be composed inside Calendar Grid — not used standalone without grid context.",
     ],
     hasImplementation: true,

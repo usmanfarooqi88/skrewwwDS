@@ -75,9 +75,13 @@ test.describe("Layer 3 Batch C Surface parity", () => {
       expect(disabledStyles.backgroundImage).toBe("none");
       expect(errorStyles.pointerEvents).toBe("auto");
       expect(errorStyles.zIndex).toBe("auto");
+      // Empty Message in Figma (2024:2613) binds semantic/text/secondary.
+      // React keeps a separate description line; Empty forces that to secondary
+      // too (see .dropzoneEmpty .description). Icon uses content-muted cascade.
+      const secondary = hexToRgba("#5B5F68");
       const muted = hexToRgba(mode === "glass" ? "#17181B" : "#a0a3ac");
-      expectColorClose(await resolvedRgba(empty.locator("p").first(), "color"), muted);
-      expectColorClose(await resolvedRgba(empty.locator("p").nth(1), "color"), hexToRgba("#5B5F68"));
+      expectColorClose(await resolvedRgba(empty.locator("p").first(), "color"), secondary);
+      expectColorClose(await resolvedRgba(empty.locator("p").nth(1), "color"), secondary);
       expectColorClose(await resolvedRgba(empty.locator("svg"), "color"), muted);
       expectColorClose(
         await resolvedRgba(disabled.locator("p").first(), "color"),
@@ -87,7 +91,9 @@ test.describe("Layer 3 Batch C Surface parity", () => {
         await resolvedRgba(disabled.locator("p").nth(1), "color"),
         hexToRgba("#a0a3ac"),
       );
-      expectColorClose(await resolvedRgba(error.locator("p").first(), "color"), hexToRgba("#e5484d"));
+      // Error Message binds semantic/text/danger (#CC3B37); icon binds
+      // semantic/icon/danger (#E5484D). Supporting copy uses content-muted.
+      expectColorClose(await resolvedRgba(error.locator("p").first(), "color"), hexToRgba("#cc3b37"));
       expectColorClose(await resolvedRgba(error.locator("p").nth(1), "color"), muted);
       expectColorClose(await resolvedRgba(error.locator("svg"), "color"), hexToRgba("#e5484d"));
       expectColorClose(

@@ -323,6 +323,46 @@ test.describe("Button Surface (Layer 3 Glass contract)", () => {
     expect(dangerBorder).not.toBe(primaryBorder);
   });
 
+  test("Glass rim remains intact under Squircle clipping", async ({ page }) => {
+    const controls = page.getByTestId("button-preview-mode-controls");
+    await setButtonSurfaceMode(page, "glass");
+    await controls.getByRole("button", { name: "Squircle" }).click();
+    await expect(page.locator('[data-skrewww-preview-sandbox=""]').first()).toHaveAttribute(
+      "data-skrewww-shape",
+      "squircle",
+    );
+
+    const primary = page.getByRole("button", { name: "Primary", exact: true });
+    const surface = visualSurface(primary);
+    const before = await primary.boundingBox();
+
+    const rim = await surface.evaluate((el) => {
+      const beforeStyle = getComputedStyle(el, "::before");
+      const surfaceStyle = getComputedStyle(el);
+      return {
+        image: beforeStyle.backgroundImage,
+        clipPath: surfaceStyle.clipPath,
+        borderRadius: surfaceStyle.borderRadius,
+        backdropFilter: surfaceStyle.backdropFilter,
+      };
+    });
+
+    expect(rim.borderRadius).toBe("8px");
+    expect(rim.backdropFilter).toBe("blur(16px)");
+    expect(rim.clipPath, "Squircle must apply a real clip-path on the visual surface").not.toBe("none");
+
+    const gradient = parseLinearGradient(rim.image);
+    expect(gradient.angle).toBeCloseTo(135.25, 2);
+    expect(gradient.stops.map((stop) => stop.position)).toEqual([0, 23.1, 46.2, 100]);
+    expectColorClose(rgbaStringToRgba(gradient.stops[0].color), hexToRgba("#FFFFFF", 0.8), "squircle rim stop 0");
+    expectColorClose(rgbaStringToRgba(gradient.stops[1].color), hexToRgba("#6C4CF2", 0.6), "squircle rim stop 1");
+    expectColorClose(rgbaStringToRgba(gradient.stops[2].color), hexToRgba("#6C4CF2", 0.15), "squircle rim stop 2");
+
+    const after = await primary.boundingBox();
+    expect(after?.width).toBe(before?.width);
+    expect(after?.height).toBe(before?.height);
+  });
+
   test("Secondary boundary follows the Card highlight contract, not semantic-border-strong, and Hover keeps the same boundary", async ({ page }) => {
     const secondary = page.getByRole("button", { name: "Secondary", exact: true });
     const surface = visualSurface(secondary);
