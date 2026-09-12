@@ -102,9 +102,17 @@ test.describe("Popover Surface parity", () => {
       await setSurfaceMode(page, mode);
       const styles = await arrow.evaluate((element) => {
         const style = getComputedStyle(element);
+        // Placement flips which sides keep width; assert a visible side only.
+        const sides = [
+          { width: style.borderTopWidth, color: style.borderTopColor },
+          { width: style.borderRightWidth, color: style.borderRightColor },
+          { width: style.borderBottomWidth, color: style.borderBottomColor },
+          { width: style.borderLeftWidth, color: style.borderLeftColor },
+        ];
+        const visible = sides.find((side) => side.width !== "0px");
         return {
           backgroundColor: style.backgroundColor,
-          borderTopColor: style.borderTopColor,
+          borderColor: visible?.color ?? style.borderTopColor,
           backdropFilter: style.backdropFilter,
         };
       });
@@ -112,10 +120,10 @@ test.describe("Popover Surface parity", () => {
       expect(styles.backdropFilter, `${mode} arrow blur`).toBe("none");
       if (mode === "glass") {
         expect(styles.backgroundColor).toMatch(/0\.12/);
-        expect(styles.borderTopColor).toMatch(/0\.24/);
+        expect(styles.borderColor).toMatch(/0\.24/);
       } else {
         expect(styles.backgroundColor).toMatch(/rgb\(255,\s*255,\s*255\)/);
-        expect(styles.borderTopColor).toMatch(/rgb\(223,\s*224,\s*228\)/);
+        expect(styles.borderColor).toMatch(/rgb\(223,\s*224,\s*228\)/);
       }
     }
   });

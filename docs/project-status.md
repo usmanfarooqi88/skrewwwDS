@@ -1,6 +1,6 @@
 # Project status
 
-Last verified: **2026-09-13** (Stable-v1 closeout Phase 3 Surface N/A cleanup)
+Last verified: **2026-09-13** (Stable-v1 closeout Phase 6 RC)
 
 ## 2026-09-13 — Stable-v1 closeout Phase 1 (Button Layer 3 Glass)
 
@@ -71,6 +71,68 @@ Duplicate Badge vs Alert/Toast tint token names remain non-blocking cleanup (ide
 - Remaining intentional / pending (not inventing Figma): Data Table shell, Calendar range variants, MenuItem selected API, separate Icon Button, Chart example-vs-component expansion.
 
 **Phase 5 (Timeline):** public React `Timeline` already exists (`components/ui/Timeline.tsx`, registry, Vitest, `e2e/timeline.spec.ts`) against Figma Item set `2058:2092` / example `2058:2102`. No duplicate implementation. Connector remains positional (last item structurally omits connector — no fake `Last` property).
+
+## 2026-09-13 — Stable-v1 closeout Phase 6 (hardening + RC)
+
+### Exit criteria (explicit)
+
+| ID | Criterion | Result | Evidence |
+|----|-----------|--------|----------|
+| A | Public API freeze / naming preserved (Search Field, Spinner, Divider, Empty State, Form Field, Accordion, Data Table≠Grid) | **PASS** | Registry APIs unchanged this campaign; no renames |
+| B | Layer 1 + Layer 3 Shape/Surface integrity; no critical unresolved token gaps that break shipped contracts | **PASS WITH DEBT** | Button Glass closed Phase 1; Surface N/A cleanup Phase 3; Badge/Alert/Toast duplicate tint names non-blocking; spinner/divider locals remain below Foundation cut line |
+| C | WCAG 2.2 AA baseline for shipped interactive patterns (keyboard, focus, overlays, forms, disabled, reduced motion) | **PASS WITH DEBT** | Existing unit + Playwright a11y contracts green; no full third-party audit claimed |
+| D | Responsive: mobile docs nav, drawer, overflow | **PASS** | `e2e/responsive-nav.spec.ts` + `e2e/sidebar-nav-surface.spec.ts` green 2026-09-13 |
+| E | Lint / typecheck / Vitest / Playwright / build / `git diff --check` | **PASS** | Phase gates this campaign; full Playwright re-run in Phase 6 |
+| F | Docs / registry / Figma node IDs accuracy for audited masters | **PASS WITH DEBT** | Phases 1–5 metadata updated; stale Menu “no Panel master” prose corrected below |
+| G | shadcn `/r/*` distribution valid; `hostRequirements` never public; no metadata leakage | **PASS WITH SCOPE LIMIT** | Six manifests only (foundation, button, card, text-input, form-field, validation-message). Next batch blocked without architecture decision (see below) |
+| H | Per-component maturity classified with evidence; no blanket Stable promotion | **PASS** | **0 Stable / 47 Beta** implemented components |
+
+**Stable-v1 technical readiness:** `RC-READY` (platform/docs 1.0.0 already published; individual components remain Beta).
+
+**Not declared:** blanket component `status: "stable"` promotion, Free/Pro Community republish, Gumroad bump.
+
+### Maturity classification (implemented React)
+
+**Stable (registry `status: stable`):** none.
+
+**Beta (all 47):** accordion, alert, avatar, badge, banking-account-card, banking-balance-summary, banking-transaction-row, bar-chart, breadcrumb, button, calendar-day, calendar-grid, card, checkbox, combobox, data-table, date-picker, dialog, divider, drawer, empty-state, file-upload, form-field, line-chart, link, list-item, menu, pagination, popover, progress-bar, radio, radio-group, search-field, select, skeleton, spinner, switch, table, tabs, tag, text-input, textarea, timeline, toast, tooltip, tree-view, validation-message.
+
+**Blocked / deferred (product or Figma invent required — not registry status):**
+
+| Item | Why blocked |
+|------|-------------|
+| Calendar range Figma variants | Live Day set has no Range Start/End/Middle |
+| MenuItem selected / checkable API | Intentional Stable-v1 command model; inventing would be API decision |
+| Separate Icon Button Figma/React product | React uses Button + `aria-label`; inventing separate public component needs approval |
+| Data Table interaction shell Figma master | React-ahead; do not invent shell |
+| Semantic Icon Size dual-bind migration | Prior Pro Actions pass left mixed W/H binds; needs explicit Figma repair approval |
+| shadcn Spinner/Divider/Link expansion | Spinner/Divider tokens live below Foundation cut line; Link pulls `site-config` via `link-utils` |
+
+### Distribution status
+
+Supported `/r` install surface remains exactly six. Expanding Spinner/Divider without moving their geometry tokens into Foundation (or inventing a co-transport pattern) would ship broken consumers. Expanding Link without decoupling from `lib/site-config` would leak docs-site origin logic. Both require human architecture approval — not done in this closeout.
+
+### Figma Free / Pro / Gumroad sync checklist (do **not** publish yet)
+
+| Channel | Sync required after this campaign? | Why |
+|---------|-------------------------------------|-----|
+| Pro paid Figma | **No for Phases 1–6 React/docs work** | No Pro master visual rewrite this campaign; Menu Panel already reusable; Surface N/A was React-only invented Glass removal |
+| Free Community Figma | **No** | Shared foundation visuals unchanged by this campaign’s React fixes |
+| Gumroad | **No new version required yet** | Wait until Icon Size migration and/or any shared Figma foundation fix ships |
+
+If a future Stable-v1 Figma write changes shared foundations/components, re-evaluate all three channels.
+
+### Known non-blocking debt
+
+- Badge/Alert/Toast duplicate tint token names (identical values)
+- Calendar range React-first / Figma parity pending
+- Charts remain example-scoped vs rich interactive expansions
+- Lint debt: none currently (`--max-warnings 0` green)
+- Icon Size semantic binding migration incomplete in Pro Actions
+
+### Phase 6 product fix (gate failure)
+
+Popover arrow Glass/Flat border assertion failed when floating placement flipped to `top`: `border-*: none` reset collapsed sides to `currentColor` (`#17181B`). Switched to `border-*-width: 0` and placement-aware visible-side color reads in `e2e/popover.spec.ts`.
 
 ## 2026-09-11 — Skrewww Agent Kit roadmap entry (PLANNED / GATED)
 
@@ -296,7 +358,7 @@ Public platform/docs release metadata for **Skrewww Design System 1.0**.
 
 **Gates passed (pre-metadata):**
 
-- Stable-v1 technical readiness: `READY-WITH-PRE-V1-CHECK`
+- Stable-v1 technical readiness: `RC-READY` (see Phase 6 exit criteria; components remain individually Beta)
 - Public API freeze: `READY`
 - Final pre-v1 release gate: `READY`
 - Phosphor consumer dependency transport verified (`@phosphor-icons/react` via ValidationMessage)
@@ -708,7 +770,7 @@ No new industry-specific tokens were introduced — every token used aliases to 
 - Calendar Grid composed range-picker input (two independently-typable start/end text fields + shared calendar, analogous to Date Picker) — judged non-trivial in scope (comparable to rebuilding Date Picker), not built; see [`calendar-foundation.md`](architecture/calendar-foundation.md#composed-range-picker-input--explicitly-out-of-scope)
 - ~~Timeline~~ — Tree View, Charts, and Timeline (all three Layer 2 code-side gaps) are now implemented (see Recently shipped). Tree View and Charts' Figma node IDs were confirmed 2026-07-18; Timeline's node ID was confirmed 2026-07-24 (see Figma status above) — no open Figma-verification item remains across all three
 - Advanced overlay patterns beyond current Dialog/Drawer/Popover/Menu stack
-- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface substantially resolved 2026-07-17 in Figma**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass (see the Layer 3 Surface baseline section below), and the Surface/content-cascade audit across the remaining registry (3 batches, 23 components) is now complete, with 2 flagged items still open rather than closed — Menu's Surface fix has no reusable master "Panel" component to live on, and Badge/Alert/Toast carry duplicate tint tokens pending a future consolidation pass (see the Layer 3 Surface audit section below). **React parity for Button/Avatar/Calendar Day/Pagination was a separate, later fix (2026-08-11)** — the Figma verification above did not mean the React implementation matched it; see the "Layer 3 React parity fix" section below for what was actually missing and what's now fixed. **Stable-v1 Gradient was implemented 2026-08-14** as the approved additive fixed `90deg` overlay; File Upload Error participation was resolved later that day, while directional Gradient behavior and broader Foundation color drift remain open.
+- Full Style System (Shape/Surface) parity across all components — **Shape/radius partially resolved 2026-07-17**: Link, File Upload, Alert, Toast, and Skeleton confirmed rebound to the correct Shape-aware `component/radius/*` tokens (see Recently shipped); Badge, Avatar, and Calendar Day confirmed as intentional fixed-circular exceptions, not gaps. **Surface substantially resolved 2026-07-17 in Figma**: Button, Card, and Text Input master components genuinely remediated and fresh-instance-verified across Flat/Gradient/Glass (see the Layer 3 Surface baseline section below), and the Surface/content-cascade audit across the remaining registry (3 batches, 23 components) is now complete, with flagged cleanup remaining — Menu Panel master `2181:216` is reusable (verified Phase 2 2026-09-13); Badge/Alert/Toast still carry duplicate tint tokens pending a future consolidation pass (see the Layer 3 Surface audit section below). **React parity for Button/Avatar/Calendar Day/Pagination was a separate, later fix (2026-08-11)** — the Figma verification above did not mean the React implementation matched it; see the "Layer 3 React parity fix" section below for what was actually missing and what's now fixed. **Stable-v1 Gradient was implemented 2026-08-14** as the approved additive fixed `90deg` overlay; File Upload Error participation was resolved later that day, while directional Gradient behavior and broader Foundation color drift remain open.
 
 ## Layer 3 Surface baseline
 
