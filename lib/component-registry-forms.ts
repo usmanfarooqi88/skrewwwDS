@@ -1,12 +1,20 @@
 import type { ComponentRegistryEntry } from "@/lib/component-registry";
 import {
+  COMBOBOX_FIGMA_COMPONENT_SET_NODE_ID,
   COMBOBOX_FIGMA_FILE_URL,
-  COMBOBOX_FIGMA_START_NODE_ID,
 } from "@/lib/combobox-figma-metadata";
+import {
+  DATE_PICKER_FIGMA_COMPONENT_SET_NODE_ID,
+  DATE_PICKER_FIGMA_FILE_URL,
+} from "@/lib/date-picker-figma-metadata";
 import {
   FILE_UPLOAD_FIGMA_FILE_URL,
   FILE_UPLOAD_FIGMA_COMPONENT_SET_NODE_ID,
 } from "@/lib/file-upload-figma-metadata";
+import {
+  SEARCH_FIELD_FIGMA_COMPONENT_SET_NODE_ID,
+  SEARCH_FIELD_FIGMA_FILE_URL,
+} from "@/lib/search-field-figma-metadata";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -608,7 +616,7 @@ export function Example() {
     reactLastUpdated: "2026-08-31",
     figmaReference: "Forms / Combobox — State (5 variants)",
     figmaSourceUrl: COMBOBOX_FIGMA_FILE_URL,
-    figmaNodeId: COMBOBOX_FIGMA_START_NODE_ID,
+    figmaNodeId: COMBOBOX_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
     documentationUrl: getComponentDocumentationUrl("combobox"),
     supportedVariants: ["default", "error", "disabled"],
     supportedSizes: ["sm", "md", "lg"],
@@ -635,10 +643,8 @@ export function Example() {
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
-      "Figma MCP inspection unavailable in parity pass — component-set node ID and exact token values remain unresolved.",
-      "Multi-select chips mode exists in Figma but is deferred in Beta.",
-      "Clear control not confirmed via MCP — deferred.",
-      "Option leading icons and descriptions not confirmed via MCP — deferred.",
+      "No multi-select / chips mode — Figma Multi-select property was removed 2026-07-15 to match React single-select.",
+      "Option leading icons and descriptions remain out of scope for ComboboxOption.",
       "Remote/async fetching is not implemented.",
       "Free-form custom values are not supported — closed predefined option list only.",
       "Diacritic-insensitive filtering is not implemented — locale lowercase only.",
@@ -721,6 +727,8 @@ export function Example() {
     documentationLastUpdated: DOCS_DATE,
     reactLastUpdated: REACT_DATE,
     figmaReference: "Forms / Search Field — State × Size (12 variants)",
+    figmaSourceUrl: SEARCH_FIELD_FIGMA_FILE_URL,
+    figmaNodeId: SEARCH_FIELD_FIGMA_COMPONENT_SET_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("search-field"),
     supportedVariants: ["default", "error", "disabled"],
     supportedSizes: ["sm", "md", "lg"],
@@ -788,6 +796,8 @@ export function Example() {
     documentationLastUpdated: DOCS_DATE,
     reactLastUpdated: REACT_DATE,
     figmaReference: "Forms / Date Picker — text-input-style trigger + calendar popover",
+    figmaSourceUrl: DATE_PICKER_FIGMA_FILE_URL,
+    figmaNodeId: DATE_PICKER_FIGMA_COMPONENT_SET_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("date-picker"),
     supportedVariants: ["single-date"],
     supportedSizes: ["sm", "md", "lg"],

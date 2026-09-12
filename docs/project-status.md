@@ -61,6 +61,17 @@ Live Figma re-verification of remaining uncertain Surface participants. Evidence
 
 Duplicate Badge vs Alert/Toast tint token names remain non-blocking cleanup (identical values, no rendered drift).
 
+## 2026-09-13 — Stable-v1 closeout Phase 4 + Phase 5
+
+**Phase 4 (parity sweep hygiene):** evidence-backed metadata only — no public API or visual redesign.
+
+- Combobox registry `figmaNodeId` now points at live set `2024:2480` (was discovery start `2002:2365`).
+- Search Field master recorded: `Forms/Search Field` `2024:2109` (12 State×Size variants) — `lib/search-field-figma-metadata.ts`.
+- Date Picker master recorded: `Forms/Date Picker` `2024:2596` (5 states) — `lib/date-picker-figma-metadata.ts`.
+- Remaining intentional / pending (not inventing Figma): Data Table shell, Calendar range variants, MenuItem selected API, separate Icon Button, Chart example-vs-component expansion.
+
+**Phase 5 (Timeline):** public React `Timeline` already exists (`components/ui/Timeline.tsx`, registry, Vitest, `e2e/timeline.spec.ts`) against Figma Item set `2058:2092` / example `2058:2102`. No duplicate implementation. Connector remains positional (last item structurally omits connector — no fake `Last` property).
+
 ## 2026-09-11 — Skrewww Agent Kit roadmap entry (PLANNED / GATED)
 
 Documentation-only. No implementation started.
