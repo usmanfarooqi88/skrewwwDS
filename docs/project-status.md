@@ -31,6 +31,20 @@ Additive this phase:
 - Playwright Squircle + Glass rim regression (`e2e/button.spec.ts`) so Squircle clipping cannot silently drop the masked rim.
 - Layer 3 Batch C File Upload text assertions updated to live Figma: Empty Message → `semantic/text/secondary`; Error Message → `semantic/text/danger`; icon remains content-muted / icon-danger. Stale assertions still expected Empty title = muted after the earlier File Upload React text parity fix.
 
+## 2026-09-13 — Stable-v1 closeout Phase 2 (Menu Panel master)
+
+READ-ONLY live Figma discovery + fresh-instance Surface validation. **No Figma write required.**
+
+- Master: `Navigation/Menu Panel` `2181:216` (COMPONENT, not example-only)
+- Anatomy: single `Items` SLOT (`Items#2757:4`); shell owns surface/border/Gradient overlay/Glass blur; rows own state
+- Tokens: `component/menu/panel-surface` `2142:208`, `component/menu/panel-border` `2142:209`, `component/surface/blur` `2057:13`
+- Fresh instance Flat/Gradient/Glass: fill `#FFFFFF` / `#FFFFFF` / 12% white; border neutral-200 / neutral-200 / 24% white; blur `0` / `0` / `16`; remained attached
+- Dependent instances on Navigation page: 8 attached consumers (including Presentation V2)
+- React already aliases `--menu-surface` / `--menu-border` / `--menu-backdrop-filter` (Glass 16px, elevation none); Combobox listbox reuses the same panel shell
+- Combobox Listbox Panel `2181:1173` remains the Forms sibling of the same architecture
+
+Stale claim “Menu Surface lives only on an example frame” is obsolete. Phase 2 **CLOSED**.
+
 ## 2026-09-11 — Skrewww Agent Kit roadmap entry (PLANNED / GATED)
 
 Documentation-only. No implementation started.
