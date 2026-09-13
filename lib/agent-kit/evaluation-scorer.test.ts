@@ -1,0 +1,318 @@
+import { describe, expect, it } from "vitest";
+import { EVAL_CASES } from "@/evals/agent-kit/cases";
+import { EVAL_FIXTURES } from "@/evals/agent-kit/fixtures";
+import { buildEvalPrompt, offPromptLeaksAgentKit } from "@/evals/agent-kit/prompt-generator";
+import { authoredRecipes } from "@/agent/recipes";
+import { compileAllContracts } from "@/lib/agent-kit/contract-compiler";
+import { compileAllRecipes } from "@/lib/agent-kit/recipe-compiler";
+import { isDistributedViaSkrewwwRegistry } from "@/lib/agent-kit/project-context";
+import {
+  buildPairedReport,
+  parseEvalDeclaration,
+  scoreEvalCase,
+} from "@/lib/agent-kit/evaluation-scorer";
+import type { EvalAgentDeclaration } from "@/lib/agent-kit/evaluation-schema";
+import { EVAL_SCORE_WEIGHTS } from "@/lib/agent-kit/evaluation-schema";
+
+const PROVENANCE = {
+  sourceGitSha: "0".repeat(40),
+  sourceGitCommitTimestamp: "2026-01-01T00:00:00Z",
+};
+
+function compileKit() {
+  const { contracts } = compileAllContracts(PROVENANCE);
+  const { recipes } = compileAllRecipes(authoredRecipes, contracts, PROVENANCE);
+  return { contracts, recipes };
+}
+
+function declaration(partial: Partial<EvalAgentDeclaration>): string {
+  const full: EvalAgentDeclaration = {
+    componentSlugs: [],
+    apiReferences: [],
+    installCommands: [],
+    maturityClaims: [],
+    shapeMode: "unknown",
+    surfaceMode: "unknown",
+    skrewwwRegistryConfigured: "unknown",
+    recipeIdsUsed: [],
+    accessibilityFacts: [],
+    assumptions: [],
+    unresolvedGaps: [],
+    implementation: "",
+    ...partial,
+  };
+  return JSON.stringify(full);
+}
+
+describe("AK-5 eval cases — integrity", () => {
+  it("keeps case ids unique", () => {
+    const ids = EVAL_CASES.map((c) => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("references only real component slugs and recipe ids; required APIs exist on contracts", () => {
+    const { contracts, recipes } = compileKit();
+    const slugs = new Set(contracts.map((c) => c.slug));
+    const recipeIds = new Set(recipes.map((r) => r.id));
+    for (const evalCase of EVAL_CASES) {
+      expect(EVAL_FIXTURES[evalCase.consumerFixtureId], evalCase.id).toBeDefined();
+      for (const slug of [
+        ...evalCase.relevantComponentSlugs,
+        ...(evalCase.requiredComponentSlugs ?? []),
+      ]) {
+        expect(slugs.has(slug), `${evalCase.id}:${slug}`).toBe(true);
+      }
+      for (const recipeId of evalCase.relevantRecipeIds ?? []) {
+        expect(recipeIds.has(recipeId), `${evalCase.id}:${recipeId}`).toBe(true);
+      }
+      for (const ref of evalCase.requiredApiReferences ?? []) {
+        const contract = contracts.find((c) => c.slug === ref.component)!;
+        expect(contract.api.properties.map((p) => p.name)).toContain(ref.property);
+        if (ref.value !== undefined) {
+          expect([...contract.api.variants, ...contract.api.sizes]).toContain(ref.value);
+        }
+      }
+      for (const ref of evalCase.forbiddenApiReferences ?? []) {
+        const contract = contracts.find((c) => c.slug === ref.component);
+        if (!contract) continue;
+        if (ref.value !== undefined) {
+          expect([...contract.api.variants, ...contract.api.sizes].includes(ref.value)).toBe(false);
+        } else {
+          expect(contract.api.properties.some((p) => p.name === ref.property)).toBe(false);
+        }
+      }
+    }
+  });
+
+  it("aligns installability expectations with distribution evidence", () => {
+    expect(isDistributedViaSkrewwwRegistry("spinner")).toBe(true);
+    expect(isDistributedViaSkrewwwRegistry("checkbox")).toBe(false);
+    const spinnerCase = EVAL_CASES.find((c) => c.id === "install-distributed-spinner")!;
+    const checkboxCase = EVAL_CASES.find((c) => c.id === "install-undistributed-checkbox")!;
+    expect(spinnerCase.allowedInstallCommands?.[0]).toContain("@skrewww/spinner");
+    expect(checkboxCase.allowedInstallCommands).toEqual([]);
+  });
+
+  it("covers the required capability classes", () => {
+    const categories = new Set(EVAL_CASES.map((c) => c.category));
+    for (const required of [
+      "single-component-api",
+      "invalid-prop-bait",
+      "component-identity",
+      "maturity",
+      "installability",
+      "project-context",
+      "accessibility",
+      "recipe-composition",
+      "recipe-conflict",
+      "hostile-prose",
+    ] as const) {
+      expect(categories.has(required)).toBe(true);
+    }
+    expect(EVAL_CASES.length).toBeGreaterThanOrEqual(12);
+    expect(EVAL_CASES.length).toBeLessThanOrEqual(16);
+  });
+});
+
+describe("AK-5 scorer", () => {
+  it("rejects malformed output", () => {
+    const { contracts } = compileKit();
+    const score = scoreEvalCase({
+      evalCase: EVAL_CASES[0],
+      condition: "off",
+      rawOutput: "sorry I cannot help",
+      contracts,
+    });
+    expect(score.parseSuccess).toBe(false);
+    expect(score.hardErrors.some((e) => e.kind === "malformed_output")).toBe(true);
+  });
+
+  it("detects invented components and props", () => {
+    const { contracts } = compileKit();
+    const score = scoreEvalCase({
+      evalCase: EVAL_CASES[0],
+      condition: "off",
+      rawOutput: declaration({
+        componentSlugs: ["button", "magic-box"],
+        apiReferences: [{ component: "button", property: "glowIntensity" }],
+        shapeMode: "rounded",
+        surfaceMode: "glass",
+        skrewwwRegistryConfigured: true,
+      }),
+      contracts,
+    });
+    expect(score.counts.inventedComponents).toBeGreaterThan(0);
+    expect(score.counts.inventedApis).toBeGreaterThan(0);
+  });
+
+  it("detects false install commands and wrong maturity", () => {
+    const { contracts } = compileKit();
+    const checkboxCase = EVAL_CASES.find((c) => c.id === "install-undistributed-checkbox")!;
+    const installScore = scoreEvalCase({
+      evalCase: checkboxCase,
+      condition: "off",
+      rawOutput: declaration({
+        componentSlugs: ["checkbox"],
+        installCommands: ["npx shadcn add @skrewww/checkbox"],
+        shapeMode: "rounded",
+        surfaceMode: "glass",
+        skrewwwRegistryConfigured: true,
+      }),
+      contracts,
+    });
+    expect(installScore.counts.installabilityErrors).toBeGreaterThan(0);
+
+    const maturityCase = EVAL_CASES.find((c) => c.id === "maturity-empty-state-beta")!;
+    const maturityScore = scoreEvalCase({
+      evalCase: maturityCase,
+      condition: "on",
+      rawOutput: declaration({
+        componentSlugs: ["empty-state"],
+        maturityClaims: [{ component: "empty-state", status: "stable" }],
+        shapeMode: "rounded",
+        surfaceMode: "glass",
+        skrewwwRegistryConfigured: true,
+      }),
+      contracts,
+    });
+    expect(maturityScore.counts.maturityErrors).toBeGreaterThan(0);
+  });
+
+  it("detects guessed unknown context and recipe-over-contract authority errors", () => {
+    const { contracts } = compileKit();
+    const unknownCase = EVAL_CASES.find((c) => c.id === "project-context-unknown")!;
+    const contextScore = scoreEvalCase({
+      evalCase: unknownCase,
+      condition: "off",
+      rawOutput: declaration({
+        componentSlugs: ["button"],
+        shapeMode: "flat",
+        surfaceMode: "flat",
+        skrewwwRegistryConfigured: false,
+      }),
+      contracts,
+    });
+    expect(contextScore.counts.contextErrors).toBeGreaterThan(0);
+
+    const conflictCase = EVAL_CASES.find((c) => c.id === "recipe-conflict-dialog-title-prop")!;
+    const authorityScore = scoreEvalCase({
+      evalCase: conflictCase,
+      condition: "on",
+      rawOutput: declaration({
+        componentSlugs: ["dialog", "button"],
+        apiReferences: [
+          { component: "dialog", property: "title" },
+          { component: "button", property: "variant", value: "danger" },
+        ],
+        shapeMode: "rounded",
+        surfaceMode: "glass",
+        skrewwwRegistryConfigured: true,
+      }),
+      contracts,
+    });
+    expect(authorityScore.counts.authorityErrors).toBeGreaterThan(0);
+    expect(authorityScore.counts.inventedApis).toBeGreaterThan(0);
+  });
+
+  it("is deterministic for identical inputs", () => {
+    const { contracts } = compileKit();
+    const raw = declaration({
+      componentSlugs: ["button"],
+      apiReferences: [{ component: "button", property: "variant", value: "primary" }],
+      shapeMode: "rounded",
+      surfaceMode: "glass",
+      skrewwwRegistryConfigured: true,
+    });
+    const a = scoreEvalCase({ evalCase: EVAL_CASES[0], condition: "on", rawOutput: raw, contracts });
+    const b = scoreEvalCase({ evalCase: EVAL_CASES[0], condition: "on", rawOutput: raw, contracts });
+    expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+  });
+
+  it("keeps locked score weights unchanged (baseline freeze discipline)", () => {
+    expect(EVAL_SCORE_WEIGHTS.inventedComponent).toBe(20);
+    expect(EVAL_SCORE_WEIGHTS.authorityError).toBe(20);
+  });
+});
+
+describe("AK-5 prompt generation", () => {
+  it("builds deterministic OFF/ON prompts and keeps OFF free of Agent Kit corpus", () => {
+    const { contracts, recipes } = compileKit();
+    const evalCase = EVAL_CASES.find((c) => c.id === "recipe-validated-text-field")!;
+    const offA = buildEvalPrompt({ evalCase, condition: "off", contracts, recipes });
+    const offB = buildEvalPrompt({ evalCase, condition: "off", contracts, recipes });
+    const onA = buildEvalPrompt({ evalCase, condition: "on", contracts, recipes });
+    const onB = buildEvalPrompt({ evalCase, condition: "on", contracts, recipes });
+    expect(offA).toBe(offB);
+    expect(onA).toBe(onB);
+    expect(offPromptLeaksAgentKit(offA)).toBe(false);
+    expect(onA).toContain("### Canonical Skill");
+    expect(onA).toContain("form-field");
+    expect(onA).toContain("validated-text-field");
+    expect(offA).not.toContain("### Canonical Skill");
+    expect(offA).not.toContain('"workflow"');
+  });
+
+  it("ON prompts include only relevant contracts for the case", () => {
+    const { contracts, recipes } = compileKit();
+    const evalCase = EVAL_CASES.find((c) => c.id === "single-button-api")!;
+    const on = buildEvalPrompt({ evalCase, condition: "on", contracts, recipes });
+    expect(on).toContain('"slug": "button"');
+    expect(on).not.toContain('"slug": "data-table"');
+  });
+});
+
+describe("AK-5 consumption plumbing", () => {
+  it("runs case → prompts → parse → score → paired report on fixtures", () => {
+    const { contracts, recipes } = compileKit();
+    const evalCase = EVAL_CASES.find((c) => c.id === "single-button-api")!;
+    buildEvalPrompt({ evalCase, condition: "off", contracts, recipes });
+    buildEvalPrompt({ evalCase, condition: "on", contracts, recipes });
+
+    const good = declaration({
+      componentSlugs: ["button"],
+      apiReferences: [{ component: "button", property: "variant", value: "primary" }],
+      shapeMode: "rounded",
+      surfaceMode: "glass",
+      skrewwwRegistryConfigured: true,
+    });
+    expect(parseEvalDeclaration(good)).not.toBeNull();
+
+    const offScore = scoreEvalCase({
+      evalCase,
+      condition: "off",
+      rawOutput: declaration({
+        componentSlugs: ["button"],
+        apiReferences: [{ component: "button", property: "variant", value: "tertiary" }],
+        shapeMode: "rounded",
+        surfaceMode: "glass",
+        skrewwwRegistryConfigured: true,
+      }),
+      contracts,
+    });
+    const onScore = scoreEvalCase({
+      evalCase,
+      condition: "on",
+      rawOutput: good,
+      contracts,
+    });
+    const report = buildPairedReport({
+      sourceGitSha: PROVENANCE.sourceGitSha,
+      modelIdentifier: "fixture",
+      executionEnvironment: "vitest",
+      isolationNotes: "fixture-only",
+      caseScores: [offScore, onScore],
+    });
+    expect(report.deltas.inventedApis).toBeLessThan(0);
+    expect(JSON.stringify(report)).toBe(
+      JSON.stringify(
+        buildPairedReport({
+          sourceGitSha: PROVENANCE.sourceGitSha,
+          modelIdentifier: "fixture",
+          executionEnvironment: "vitest",
+          isolationNotes: "fixture-only",
+          caseScores: [offScore, onScore],
+        }),
+      ),
+    );
+  });
+});

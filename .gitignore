@@ -17,6 +17,9 @@ public/r/
 # docs/architecture/agent-kit.md.
 public/agent/
 
+# Generated AK-5 OFF/ON prompt bundles (scripts/generate-agent-eval-prompts.ts)
+evals/agent-kit/generated/
+
 # Production
 build/
 dist/

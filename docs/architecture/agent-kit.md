@@ -495,7 +495,51 @@ considerations. AK-4 does not add a second detector.
 ### AK-5 boundary
 
 AK-4 adds no OFF/ON eval harness, scoring rubric, LLM prompt suite, or
-Guard enforcement. Those remain AK-5 / Guard.
+Guard enforcement. Those remain AK-5 / Guard (see below).
+
+## AK-5 — Evaluations
+
+### Purpose
+
+Answer: does Agent Kit ON materially reduce hard design-system errors versus
+the same model/task with Agent Kit OFF?
+
+### OFF vs ON
+
+| Condition | Receives |
+|---|---|
+| **OFF** | Same user task + consumer fixture. No Skill, contracts, Recipes, Feature Kits. |
+| **ON** | Same task/fixture + canonical Skill + relevant contracts/Recipes (progressive disclosure) + ProjectContext rules. |
+
+Isolation: separate fresh contexts per case/condition. Do not run OFF after
+teaching the same conversation the Agent Kit answers.
+
+### Deterministic vs subjective
+
+Hard scoring is pure and contract-backed (`lib/agent-kit/evaluation-scorer.ts`).
+Primary metrics: invented components/APIs, installability errors, maturity
+errors, context errors, authority errors, accessibility-fact misses,
+forbidden claims, malformed output. Aggregate score is convenience only —
+critical counts gate release. Optional human review stays separate and is
+not mixed into hard scores. No model-as-judge in AK-5.
+
+### Baseline freeze
+
+Before the first real paired run, record the Agent Kit freeze SHA. Do not
+edit Skill/contracts/Recipes/ProjectContext/distribution mid-run to improve
+scores. Fix harness bugs only. Remediations after baseline use a **new**
+run id; never overwrite the baseline artifacts.
+
+### Artifacts
+
+Canonical cases: `evals/agent-kit/cases.ts`. Generated prompts (gitignored):
+`evals/agent-kit/generated/`. Runs: `evals/agent-kit/runs/<run-id>/` with
+`metadata.json`, `off|on/<case-id>.json`, `report.json`, `SUMMARY.md`.
+
+### AK-6 gate
+
+AK-6 Public Beta starts only if the AK-5 release gate passes (documented in
+`docs/project-status.md`). Failures require an AK-5 remediation sub-pass.
 
 ## See also
 
@@ -506,5 +550,7 @@ Guard enforcement. Those remain AK-5 / Guard.
 - `lib/agent-kit/skill.test.ts` — the enforced AK-2 contract (Skill structure, catalog/count-free, adapter byte-identity, out-of-scope boundaries, consumption proof).
 - `lib/agent-kit/retrieval.test.ts`, `lib/agent-kit/registry-integration.test.ts`, `lib/agent-kit/project-context.test.ts` — the enforced AK-3 contract.
 - `lib/agent-kit/recipe-compiler.test.ts` — the enforced AK-4 contract.
+- `lib/agent-kit/evaluation-scorer.test.ts` — the enforced AK-5 harness contract.
+- `evals/agent-kit/` — authored cases, fixtures, and baseline runs.
 - `agent/skill/SKILL.md` — the canonical Skill itself.
 - `agent/recipes/` — authored Recipe / Feature Kit sources.

@@ -1,6 +1,50 @@
 # Project status
 
-Last verified: **2026-09-13** (Skrewww Agent Kit AK-4 — Recipes / Feature Kits complete)
+Last verified: **2026-09-13** (Skrewww Agent Kit AK-5 — Evaluations baseline complete)
+
+## 2026-09-13 — Skrewww Agent Kit AK-5 (Evaluations)
+
+Provider-neutral OFF/ON evaluation harness + first genuine paired baseline
+run against freeze SHA `aa26a17`.
+
+**Suite:** 14 cases (`evals/agent-kit/cases.ts`) covering single-API,
+invalid-prop bait, identity, maturity, installability (distributed + not),
+project-context (confirmed + unknown), accessibility, Recipe composition
+(×2), Recipe-vs-contract conflict, Beta Recipe dependency, hostile README.
+
+**Execution:** Cursor Task subagents, model=`inherit` (exact vendor model id
+**not exposed**). OFF = 14 isolated prompts. ON = 2 batches × 7
+self-contained `on.md` prompts (batch isolation limitation documented in
+run metadata).
+
+**Freeze SHA:** `aa26a17` (Agent Kit Skill/contracts/Recipes unchanged
+during the paired run).
+
+**OFF hard metrics:** inventedComponents 9 · inventedApis 40 ·
+installability 3 · maturity 5 · context 0 · authority 0 · a11y 1 ·
+forbiddenClaims 2 · missingRequired 7 · **totalHardErrors 67** ·
+meanAggregate 38.93
+
+**ON hard metrics:** inventedComponents 0 · inventedApis 0 ·
+installability 0 · maturity 0 · context 0 · authority 0 · a11y 0 ·
+forbiddenClaims 1 · missingRequired 1 · **totalHardErrors 2** ·
+meanAggregate 98.21
+
+**Deltas (ON−OFF):** totalHardErrors **−65**; inventedApis **−40**;
+inventedComponents **−9**; maturity **−5**; installability **−3**.
+
+**ON residual failures:** (1) hostile-readme `glowIntensity` substring in
+rejecting `unresolvedGaps` — scorer/case defect; (2) identity-icon-button
+refused Button due to Icon Button guidance gap — Skill/product naming
+weakness. Neither is a critical invent/install/maturity/authority miss.
+
+**Release gate:** **PASSED** (zeros on invent/install/maturity/authority;
+a11y not worse than OFF; total hard errors improved).
+
+**Artifacts:** `evals/agent-kit/runs/ak5-v1-aa26a17-cursor-inherit/`.
+
+**Skrewww Agent Kit AK-5 — COMPLETE.** AK-6 (Public Beta) is next but
+**NOT STARTED**.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-4 (Recipes / Feature Kits)
 
@@ -42,8 +86,8 @@ byte-identical via `install:agent-skill`.
 `npm run build` regenerates contracts + Recipes + Feature Kits; Skill 324
 lines (≤500); adapter byte-identical. `/r/*` unchanged (9 manifests).
 
-**Skrewww Agent Kit AK-4 — COMPLETE.** AK-5 (Evaluations) is next but
-**NOT STARTED**.
+**Skrewww Agent Kit AK-4 — COMPLETE.** AK-5 (Evaluations) completed in a
+later same-day entry above.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-3 (Registry / Retrieval + Project Context)
 
