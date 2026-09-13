@@ -22,6 +22,7 @@ export const systemAgentContract: SystemAgentContract = {
     "Do not invent a Skrewww component, prop, or variant that is not present in the current component contract's api.properties/variants/sizes.",
     "Do not invent component states, Slots, or composition structures — this schema does not model them yet.",
     "Do not treat a Figma variant name as an automatic public React prop; only api.properties reflects the real React API.",
+    "Only names in api.properties may be used as React props. api.variants/api.sizes are value or scenario metadata — never invent a variant prop from them unless variant itself appears in api.properties.",
     "Do not claim a Figma reference is verified when figma.verified is false.",
     "Do not recreate a canonical component with a raw element (e.g. a styled div instead of Dialog) merely because its real API seems inconvenient.",
     "Do not use a raw hex/brand color where a semantic token exists in tokens.used.",

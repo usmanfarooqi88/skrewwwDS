@@ -41,6 +41,16 @@ describe("Skrewww UI Skill — canonical file structure", () => {
     expect(normalized).toMatch(/do not rely on memorized skrewww apis/i);
     expect(normalized).toMatch(/read the relevant current contract/i);
   });
+
+  it("states that only api.properties names may be used as React props", () => {
+    const normalized = readCanonicalSkill().replace(/\s+/g, " ");
+    expect(normalized).toMatch(/`?api\.properties`? is the React prop allow-list/i);
+    expect(normalized).toMatch(/`?api\.properties`? = prop allow-list/i);
+    expect(normalized).toMatch(/`?api\.variants`?\s*\/\s*`?api\.sizes`? ≠ props/i);
+    expect(normalized).toMatch(
+      /Never invent a `variant` prop from scenario names in `api\.variants` unless `variant` is listed in `api\.properties`/i,
+    );
+  });
 });
 
 describe("Skrewww UI Skill — does not embed a manually maintained catalog", () => {

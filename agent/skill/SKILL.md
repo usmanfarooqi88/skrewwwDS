@@ -92,10 +92,15 @@ Follow this every time a task touches Skrewww UI:
    `public/agent/recipes/index.json` for a matching Recipe id, then read
    that Recipe — see "Recipes" below. Skip this when the task is a single
    component.
-7. **Use only what the contract states**: `api.properties` for real props,
-   `api.variants`/`api.sizes` for real variant/size values, `tokens.used`
-   for the tokens that component genuinely consumes. If a Recipe mentions
-   an API fact, re-verify it on the current component contract.
+7. **Use only what the contract states**: `api.properties` is the React
+   prop allow-list. `api.variants` / `api.sizes` list allowed **values**
+   for a prop only when that prop name itself exists in `api.properties`
+   (commonly `variant` or `size`). Descriptive metadata — including
+   `api.variants`, guidance, examples, states, or scenarios — does **not**
+   create props. Never invent a `variant` prop from scenario names in
+   `api.variants` unless `variant` is listed in `api.properties`. Use
+   `tokens.used` for tokens the component genuinely consumes. If a Recipe
+   mentions an API fact, re-verify it on the current component contract.
 8. **Respect `status`** (`stable` vs `beta` vs other) — see "Maturity"
    below. Never state or imply a status the contract doesn't give. If a
    Recipe's `componentMaturity` is `containsBeta`, say so.
@@ -133,8 +138,8 @@ passed.
 ## The allow-list
 
 `index.json`'s `components` array plus each contract's `api.properties` is
-the complete allowed universe — component slugs, prop names, variant
-values, size values. Treat anything not present there as not real:
+the complete allowed universe for component slugs and **React prop names**.
+Treat anything not present there as not real:
 
 - Do not invent a component name, prop, variant, or compound API.
 - Do not treat a deprecated/renamed slug as a second, separate component.
@@ -142,6 +147,13 @@ values, size values. Treat anything not present there as not real:
   its public export.
 - A Figma variant name is not automatically a public React prop; only
   `api.properties` reflects the real React API.
+- **`api.properties` = prop allow-list.** Only names listed there may be
+  used as React props.
+- **`api.variants` / `api.sizes` ≠ props.** They are value/metadata lists.
+  Use a value from them only on a prop that already exists in
+  `api.properties`. Never convert a descriptive/scenario name from
+  `api.variants` into a `variant={...}` prop unless `variant` itself is in
+  `api.properties`.
 
 ## Maturity (Stable vs Beta)
 

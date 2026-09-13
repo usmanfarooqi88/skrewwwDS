@@ -202,8 +202,11 @@ directory:
    component allow-list.
 4. Read `public/agent/contracts/<slug>.json` before using that component
    — every time, not from memory.
-5. Use only `api.properties`/`variants`/`sizes` and `tokens.used` as
-   given; respect `status` (Stable/Beta); apply `guidance`; treat
+5. Use only `api.properties` as the React prop allow-list. `api.variants` /
+   `api.sizes` are value or scenario metadata — use those values only on a
+   prop that already exists in `api.properties` (never invent a `variant`
+   prop from descriptive `api.variants` alone). Use `tokens.used` as given;
+   respect `status` (Stable/Beta); apply `guidance`; treat
    `behavior`/`figma`/`distribution` as optional and often absent.
 6. If the contract doesn't cover the request, say so or compose from
    contracts that do — never invent an API to close the gap.
@@ -523,11 +526,17 @@ forbidden claims, malformed output. Aggregate score is convenience only —
 critical counts gate release. Optional human review stays separate and is
 not mixed into hard scores. No model-as-judge in AK-5.
 
-**Forbidden-claim scan:** substrings are checked only in usage/assertion
-fields (`componentSlugs`, `apiReferences`, `installCommands`,
-`maturityClaims`, `recipeIdsUsed`, `implementation`). Mentions inside
-`unresolvedGaps` / `assumptions` that reject an invalid API do **not**
-count as claiming it is valid.
+**API allow-list:** `api.properties` is the React prop allow-list.
+`api.variants` / `api.sizes` are descriptive value/scenario metadata — they
+do **not** create props. A scenario name in `api.variants` must never become
+`variant={...}` unless `variant` itself is listed in `api.properties`.
+
+**Forbidden-claim scan:** structured fields (`componentSlugs`,
+`apiReferences`, `installCommands`, `maturityClaims`, `recipeIdsUsed`) are
+substring-checked. `implementation` is checked only for **usage-shaped**
+references (e.g. `glowIntensity=`, JSX attributes). Mentions inside
+`unresolvedGaps` / `assumptions`, and rejection prose in `implementation`
+("Do not use glowIntensity"), do **not** count as claiming the invalid API.
 
 **Isolation (mandatory):** every OFF and every ON case must run in a
 **separate fresh execution context** — no multi-case batching within a
