@@ -1,6 +1,6 @@
 # Project status
 
-Last verified: **2026-09-13** (OS-1 Open Source Launch — PAUSED, blocked on a Next.js security fix)
+Last verified: **2026-09-13** (OS-1 Security Gate — PASSED; OS-1 Open Source Launch ready to resume from the visibility change)
 
 ## 2026-09-13 — OS-1 Open Source Launch (PAUSED before visibility change)
 
@@ -62,6 +62,58 @@ of it depends on visibility having changed.
 **OS-1 Open Source Launch — PAUSED, not complete.** Next step: a focused
 Next.js security-upgrade task, then resume OS-1 from Part 8 (the visibility
 change) using the now-complete Parts 1–7 prep.
+
+## 2026-09-13 — OS-1 Security Gate (Next.js security remediation) — PASSED
+
+Full audit trail: [`docs/open-source-readiness.md`](open-source-readiness.md#security-gate-resolved-next-js-upgraded-1626-1316-3-5).
+This is the "focused Next.js security-upgrade task" the entry above deferred
+to. Scope was intentionally narrow: fix the security blocker only, no
+visibility change, no unrelated upgrades.
+
+**Advisory verification (before touching any package file):** confirmed via
+GitHub's Security Advisory API for `vercel/next.js` that `16.3.3` is the
+authoritative patched floor for both Critical RCE advisories, and via npm
+registry `dist-tags`/`versions` that `16.3.5` was the current stable
+(non-preview) 16.x release at execution time — not merely the oldest patched
+version, and not Dependabot's suggested branch taken on faith.
+
+**Change made:** `next` `16.2.10 → ^16.3.5` in `package.json` (single line).
+`npm install`'s normal resolution naturally bumped Next's own bundled
+`sharp` (0.34.5→0.35.4) and all `@next/swc-*`/`@swc/helpers` platform
+packages in `package-lock.json` — no direct action on `sharp`, no
+opportunistic unrelated upgrades. React/react-dom untouched (`^19.2.7`); the
+chosen Next.js version did not require a React bump.
+
+**Remaining-finding adjudication (per the "don't auto-waive HIGH findings"
+rule):** after the Next.js bump, `nanoid` (HIGH, production-scope, via
+`postcss`), `baseline-browser-mapping` (MODERATE, production-scope, pulled
+in directly by `next` itself), `browserslist`/`js-yaml` (HIGH, dev-only),
+and `vitest`/`@vitest/mocker` (MODERATE, dev-only, a direct devDependency
+already among the original 20 flagged packages) all had a same-major patched
+version already inside the range their parent package had declared — each
+applied via plain `npm update <pkg>`, zero further `package.json` changes.
+
+**Result: `npm audit` = 0 critical / 0 high / 0 moderate / 0 low, full tree
+and `--omit=dev` production scope alike.** Both original Critical Next.js
+RCE advisories confirmed resolved. Dependabot alerts and automated security
+fixes remain enabled (not disabled to make the launch look clean).
+
+**Full re-validation, all clean:** lint, typecheck, Vitest 987/987,
+production build (all expected public outputs present: `/agent/*`, `/r/*`,
+`/agent-kit`, `/registry.json`, `/llms.txt`, `/sitemap.xml`), Playwright
+376/376 (one full-worker-run timeout flake confirmed non-reproducing in
+isolation and in a reduced-worker full run — machine CPU contention, not a
+Next.js regression), `smoke:consumer` 13/13, and a `next start` HTTP smoke
+13/13 (all expected 200s, safe 404s on invalid contract/recipe/traversal
+paths, correct `next/image` behavior). One pre-existing, non-blocking
+deprecation warning (`app/opengraph-image.tsx`'s edge runtime, new in Next
+16.3.x) left untouched — no speculative edits, build still succeeds.
+
+**Verdict: OS-1 SECURITY GATE PASSED. Repository visibility unchanged
+(still PRIVATE) — that step is explicitly reserved for the next task.**
+OS-1 Open Source Launch = CURRENT / READY TO RESUME from Part 8 (the
+visibility change), using the now-complete Parts 1–7 prep plus this
+resolved security blocker.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-6 (Public Beta)
 
@@ -1880,16 +1932,18 @@ here instead.
 | Agent Kit AK-5 Evaluations | ✅ Complete |
 | Agent Kit AK-6 Public Beta | ✅ Complete |
 | OS-0 Open Source Readiness | ✅ Complete (READY FOR OS-1) |
-| **OS-1 Open Source Launch** | **← CURRENT — PAUSED before visibility change, blocked on a Next.js security fix** |
+| OS-1 Security Gate (Next.js upgrade) | ✅ Complete (PASSED — 0 critical/high/moderate/low, full and production scope) |
+| **OS-1 Open Source Launch** | **← CURRENT — READY TO RESUME from the visibility change (Part 8)** |
 | Community / Beta Stabilization | Planned |
 | Skrewww Guard | Later — not next |
 
-**Next required step: a focused Next.js security-upgrade task** (fixes 2
-critical unauthenticated-RCE advisories surfaced by enabling Dependabot in
-OS-1), then resume OS-1 from the visibility change. Guard is no longer the
-next milestone regardless — it sits behind the open-source track and Beta
-stabilization. See [`docs/open-source-readiness.md`](open-source-readiness.md)
-for the full audit result and current launch-checklist state.
+**Next required step: resume OS-1 from the visibility change (Part 8)** —
+the Next.js security blocker (2 critical unauthenticated-RCE advisories
+surfaced by enabling Dependabot) is resolved; Next.js is now `16.3.5`, and
+`npm audit` is clean. Guard is no longer the next milestone regardless — it
+sits behind the open-source track and Beta stabilization. See
+[`docs/open-source-readiness.md`](open-source-readiness.md) for the full
+audit result and current launch-checklist state.
 
 ### Component/distribution work (parallel track)
 

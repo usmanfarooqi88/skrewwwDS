@@ -6,12 +6,19 @@
 **OS-0 verdict:** READY FOR OS-1, conditional on three human decisions — all
 three resolved (see [Blockers and decisions](#blockers-and-decisions)).
 
-**OS-1 status: PAUSED before the visibility change.** All launch prep (domain
-cleanup, community files, CI, Dependabot opt-in) is complete and pushed.
-Enabling Dependabot surfaced 2 critical unauthenticated-RCE advisories in the
-pinned Next.js version — new information not available when OS-1 was scoped.
-Human decision: fix Next.js in a separate task before making the repository
-public. See [New blocker found during OS-1](#new-blocker-found-during-os-1--launch-paused).
+**OS-1 status: Security Gate PASSED — CURRENT / READY TO RESUME from the
+visibility change.** All launch prep (domain cleanup, community files, CI,
+Dependabot opt-in) is complete and pushed. Enabling Dependabot surfaced 2
+critical unauthenticated-RCE advisories in the pinned Next.js version — new
+information not available when OS-1 was scoped. Human decision: fix Next.js
+in a separate task before making the repository public. That task is done:
+Next.js was upgraded `16.2.10 → 16.3.5` and the full dependency tree now
+audits clean (`npm audit`: 0 critical/high/moderate/low, both full and
+production scope). See
+[Security gate resolved](#security-gate-resolved-next-js-upgraded-1626-1316-3-5)
+for the full record. The repository remains PRIVATE — the visibility change
+itself was intentionally deferred to a follow-up task for a clean audit
+trail.
 
 This is a technical readiness audit, not legal advice. See
 [`docs/project-status.md`](project-status.md#phase-roadmap-canonical) for the
@@ -309,12 +316,66 @@ NOT performed.** Everything before it — domain cleanup, community files,
 CI, Dependabot/security-fix opt-in, label creation — is complete and
 pushed. The repository remains PRIVATE.
 
+### Security gate resolved (Next.js upgraded 16.2.10 → 16.3.5)
+
+**Verdict: OS-1 SECURITY GATE PASSED.** Verified via GitHub's Security
+Advisory API for `vercel/next.js` that `16.3.3` is the authoritative patched
+floor for both Critical RCE advisories, and that `16.3.5` was the current
+stable (non-preview) 16.x release at execution time. Updated `next` from an
+exact pin `16.2.10` to `^16.3.5` in `package.json`; `npm install` naturally
+bumped Next's own bundled `sharp` (0.34.5→0.35.4) and `@next/swc-*`/
+`@swc/helpers` platform packages in `package-lock.json` — no direct action
+taken on `sharp` itself, no unrelated dependency upgraded. React/react-dom
+were untouched (`^19.2.7`) — the chosen Next.js version did not require a
+bump and no advisory forced one.
+
+After the Next.js upgrade, three findings remained in scope for adjudication
+per the task's "don't automatically waive HIGH findings" rule. All three had
+a same-major patched version already inside the range their parent package
+had declared, so each was applied as a plain `npm update <pkg>` (zero
+`package.json` changes beyond the `next` line):
+
+- `nanoid` 3.3.17→3.3.19 (HIGH, production-scope — pulled in by `postcss`,
+  which already declared `^3.3.17`)
+- `baseline-browser-mapping` 2.10.42→2.11.23 (MODERATE, production-scope —
+  pulled in directly by `next` itself, which already declared `^2.9.19`)
+- `browserslist` 4.28.5→4.28.9 and `js-yaml` 4.3.1→4.3.2 (both HIGH,
+  dev-only — via `autoprefixer`/`eslint-config-next` and `eslint`
+  respectively; fixed opportunistically since the patch was free and
+  in-range, even though dev-only findings weren't launch-blocking)
+- `vitest`/`@vitest/mocker` 4.1.10→4.1.11 (MODERATE, dev-only, direct
+  devDependency — one of the original 20 flagged packages, not an unrelated
+  upgrade; already inside the declared `^4.1.10` range)
+
+**Result: `npm audit` (full tree) = 0 critical / 0 high / 0 moderate / 0
+low. `npm audit --omit=dev` (production/runtime scope) = 0 findings of any
+severity.** Both original Critical Next.js RCE advisories are confirmed
+resolved. Dependabot alerts and automated security fixes remain enabled
+(not disabled to make the launch look clean); GitHub's alert list will
+re-scan and clear once this fix is pushed.
+
+Full validation re-run clean after the upgrade: lint clean, typecheck
+clean, Vitest 987/987, production build succeeded with all expected public
+outputs (`/agent/*`, `/r/*`, `/agent-kit`, `/registry.json`, `/llms.txt`,
+`/sitemap.xml`), Playwright 376/376 (one timeout flake in a full-worker run
+was confirmed non-reproducing both in isolation and in a reduced-worker
+full run — CPU contention on this machine, not a Next.js regression),
+`smoke:consumer` 13/13, and a `next start` HTTP smoke covering all expected
+200/404 paths plus the `next/image` optimization endpoint 13/13. One
+pre-existing, non-blocking deprecation warning (`app/opengraph-image.tsx`'s
+`export const runtime = "edge"`, new in Next 16.3.x) was left untouched per
+the no-speculative-edits rule — it does not fail the build.
+
+`eslint-config-next` remains pinned at its own devDependency version
+(`^16.2.10`) — untouched, since bumping it was not required by any
+advisory and is out of scope for a narrow security fix.
+
 ## OS-1 launch checklist
 
 Repository settings:
 
 - [x] Resolve decisions 1–3 above
-- [ ] **BLOCKED: fix the 2 critical Next.js RCE advisories first** (separate task)
+- [x] Fix the 2 critical Next.js RCE advisories — resolved in the OS-1 Security Gate task: Next.js upgraded `16.2.10 → 16.3.5`, `npm audit` now 0 critical/high/moderate/low (full and production scope)
 - [ ] Change visibility to public
 - [ ] Enable private vulnerability reporting (Settings → Code security) — confirmed available once public
 - [x] Enable Dependabot alerts + security updates — enabled in OS-1 (this is what surfaced the Next.js blocker)
