@@ -26,6 +26,12 @@ A component marked **Beta** in the registry:
 - May change props, visuals, or keyboard behavior until promoted to `stable`
 - Is indexed for SEO/LLM when `indexing: "index"`
 
+A component marked **Stable**:
+
+- Meets the Stable-v1 promotion bar (settled public API, parity or documented intentional difference, a11y/responsive coverage, green tests, accurate registry)
+- Uses component `version: "1.0.0"` (independent of platform `designSystemVersion`, which is also `1.0.0`)
+- Still may receive non-breaking fixes; breaking API changes require a major component version bump
+
 ## Implemented component count
 
 The canonical implemented count is derived at runtime:

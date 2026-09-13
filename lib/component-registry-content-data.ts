@@ -119,8 +119,8 @@ export function Example() {
     category: "Content & Data",
     summary:
       "Avatar is a circular visual identity for a user or entity with image, initials, or icon fallback.",
-    status: "beta",
-    version: "0.5.0-beta",
+    status: "stable",
+    version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
     documentationCompleteness: "partial",
@@ -202,8 +202,8 @@ export function Example() {
     category: "Content & Data",
     summary:
       "Divider is a thin separator line between content sections — horizontal or vertical, semantic or decorative.",
-    status: "beta",
-    version: "0.5.0-beta",
+    status: "stable",
+    version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
     documentationCompleteness: "partial",

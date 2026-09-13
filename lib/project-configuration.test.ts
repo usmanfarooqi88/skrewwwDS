@@ -301,13 +301,16 @@ describe("project configuration", () => {
     expect(CANONICAL_REGISTRY_SCHEMA_VERSION).toBe("1.0.0");
   });
 
-  it("preserves 47 individually Beta component statuses at platform 1.0", () => {
+  it("tracks mixed Stable and Beta component maturity at platform 1.0", () => {
     const implemented = getImplementedRegistryEntries();
     expect(implemented).toHaveLength(47);
-    expect(implemented.every((entry) => entry.status === "beta")).toBe(true);
-    // Component versions stay on their own tracks — not mechanically set to platform 1.0.0.
-    expect(implemented.every((entry) => entry.version !== "1.0.0")).toBe(true);
-    expect(implemented.every((entry) => entry.version.includes("beta"))).toBe(true);
+    const stable = implemented.filter((entry) => entry.status === "stable");
+    const beta = implemented.filter((entry) => entry.status === "beta");
+    expect(stable.length).toBe(27);
+    expect(beta.length).toBe(20);
+    expect(stable.every((entry) => entry.version === "1.0.0")).toBe(true);
+    expect(beta.every((entry) => entry.version.includes("beta"))).toBe(true);
+    expect(beta.every((entry) => entry.version !== "1.0.0")).toBe(true);
   });
 
   it("preserves the supported /r install surface and Phosphor transport", () => {

@@ -309,12 +309,13 @@ describe("Combobox pointer active sync", () => {
 });
 
 describe("Combobox Figma metadata", () => {
-  it("stores the Figma source URL and start node id", async () => {
+  it("stores the Figma source URL and component-set node id", async () => {
     const metadata = await import("@/lib/combobox-figma-metadata");
     expect(metadata.COMBOBOX_FIGMA_FILE_URL).toContain("figma.com/design/");
     expect(metadata.COMBOBOX_FIGMA_START_NODE_ID).toBe("2002:2365");
+    expect(metadata.COMBOBOX_FIGMA_COMPONENT_SET_NODE_ID).toBe("2024:2480");
     expect(getRegistryEntry("combobox")?.figmaSourceUrl).toBe(metadata.COMBOBOX_FIGMA_FILE_URL);
-    expect(getRegistryEntry("combobox")?.figmaNodeId).toBe(metadata.COMBOBOX_FIGMA_START_NODE_ID);
+    expect(getRegistryEntry("combobox")?.figmaNodeId).toBe(metadata.COMBOBOX_FIGMA_COMPONENT_SET_NODE_ID);
   });
 });
 

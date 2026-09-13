@@ -1,6 +1,67 @@
 # Project status
 
-Last verified: **2026-09-13** (Stable-v1 closeout Phase 6 RC)
+Last verified: **2026-09-13** (Icon Size dual-bind repair + Stable-v1 maturity promotion)
+
+## 2026-09-13 — Icon Size dual-bind repair + Stable-v1 maturity promotion
+
+### Icon Size defect (live Figma)
+
+**Variables (Semantic, Light+Dark identical aliases):**
+
+| Token | ID | Aliases | Resolved px |
+|-------|-----|---------|---------------|
+| `semantic/icon-size/sm` | `VariableID:2003:3546` | `spacing/16` (`2002:2414`) | 16 |
+| `semantic/icon-size/md` | `VariableID:2003:3547` | `spacing/20` (`2002:2415`) | 20 |
+| `semantic/icon-size/lg` | `VariableID:2003:3548` | `spacing/24` (`2002:2416`) | 24 |
+
+Scopes: `WIDTH_HEIGHT`. Present in **both Pro and Free**.
+
+**Defect:** Icon `INSTANCE` consumers bound **height only**. Live proof: `setBoundVariable('width')` on an INSTANCE **clears** height (Figma Plugin API limitation — Frames/Components accept true dual width+height; Instances do not).
+
+**Visual impact before repair:** none for current squares (16×16 / 20×20 / 24×24). Issue was **structural** (width unbound → size could drift under resize/overrides).
+
+**Repair (Pro + Free, shared technical fix only):** for every Icon INSTANCE with height → `semantic/icon-size/*`, also bind `minWidth` + `maxWidth` to the **same** variable. Preserves height binding; clamps width to the token.
+
+Verified:
+
+- Pro Actions Button/Icon Button/Link/Split Button: locked
+- Pro Forms / Navigation / Feedback / Containers / Content: residual height-only cleared
+- Free Actions + Forms + Feedback + Navigation + Containers mirrored
+- Fresh Button instances (sm/md/lg, leading+trailing on): locked at 16/20/24
+- Icon Button instance-swap (`Icon/DotsThree` → `Icon/Bell`): size lock retained at md 20×20
+- No Squircle/Glass/Shape Pro features moved into Free
+
+Canonical record: `lib/icon-size-figma-metadata.ts`
+
+**React:** no code change — React still uses component-local icon dimensions; no CSS `semantic/icon-size` tokens yet (Figma-only structural contract).
+
+### Release sync after Icon Size
+
+| Channel | Sync required? | Why |
+|---------|----------------|-----|
+| Pro Figma | **Yes — already applied in file** | Structural binding repair on masters/consumers |
+| Free Figma | **Yes — already applied in file** | Same shared Semantic tokens + consumer binds |
+| Gumroad / Community republish | **Ask before publish** | Shared technical fix is in Free+Pro files; external republish still needs explicit approval |
+
+### Maturity promotion (evidence-based, not blanket)
+
+| Class | Count | Slugs |
+|-------|------:|-------|
+| **Stable** (`status: stable`, `version: 1.0.0`) | 27 | alert, avatar, breadcrumb, button, calendar-day, card, checkbox, dialog, divider, form-field, link, pagination, popover, progress-bar, radio, radio-group, search-field, select, skeleton, spinner, switch, tabs, text-input, textarea, toast, tooltip, validation-message |
+| **Beta** | 20 | accordion, badge, banking-*, bar-chart, calendar-grid, combobox, data-table, date-picker, drawer, empty-state, file-upload, line-chart, list-item, menu, table, tag, timeline, tree-view |
+| **Blocked (product invent)** | — | Calendar range Figma variants; Menu selected API invent; separate Icon Button product; Data Table shell master; shadcn Spinner/Divider/Link expansion |
+
+**Non-Stable reasons (summary):**
+
+- **calendar-grid / date-picker** — range states React-first · Figma parity pending
+- **data-table** — no Figma master; React-ahead MVP
+- **menu / combobox** — deferred selection/multi-select scope; intentional API boundaries still open
+- **table** — Caption/Footer + Shape mapping still pending within Flat-only Stable-v1 table scope
+- **drawer / accordion / empty-state / file-upload / list-item / tag / badge** — openQuestions and/or incomplete docs maturity
+- **tree-view / timeline / bar-chart / line-chart** — advanced / example-scoped depth
+- **banking-*** — industry pilot, Figma unavailable
+
+**Core library v1.0 Stable release:** **YES for the Stable core (27)** — platform remains `1.0.0`; remaining 20 stay Beta inside the same platform release. Do **not** claim “all 47 Stable”.
 
 ## 2026-09-13 — Stable-v1 closeout Phase 1 (Button Layer 3 Glass)
 
@@ -85,11 +146,11 @@ Duplicate Badge vs Alert/Toast tint token names remain non-blocking cleanup (ide
 | E | Lint / typecheck / Vitest / Playwright / build / `git diff --check` | **PASS** | Phase gates this campaign; full Playwright re-run in Phase 6 |
 | F | Docs / registry / Figma node IDs accuracy for audited masters | **PASS WITH DEBT** | Phases 1–5 metadata updated; stale Menu “no Panel master” prose corrected below |
 | G | shadcn `/r/*` distribution valid; `hostRequirements` never public; no metadata leakage | **PASS WITH SCOPE LIMIT** | Six manifests only (foundation, button, card, text-input, form-field, validation-message). Next batch blocked without architecture decision (see below) |
-| H | Per-component maturity classified with evidence; no blanket Stable promotion | **PASS** | **0 Stable / 47 Beta** implemented components |
+| H | Per-component maturity classified with evidence; no blanket Stable promotion | **PASS** | **27 Stable / 20 Beta** (2026-09-13 promotion) |
 
-**Stable-v1 technical readiness:** `RC-READY` (platform/docs 1.0.0 already published; individual components remain Beta).
+**Stable-v1 technical readiness:** `STABLE-CORE-READY` (27 Stable · 20 Beta; see Icon Size + maturity promotion entry).
 
-**Not declared:** blanket component `status: "stable"` promotion, Free/Pro Community republish, Gumroad bump.
+**Not declared:** Free/Pro Community/Gumroad external republish (files already repaired; publish still needs approval).
 
 ### Maturity classification (implemented React)
 
@@ -105,7 +166,7 @@ Duplicate Badge vs Alert/Toast tint token names remain non-blocking cleanup (ide
 | MenuItem selected / checkable API | Intentional Stable-v1 command model; inventing would be API decision |
 | Separate Icon Button Figma/React product | React uses Button + `aria-label`; inventing separate public component needs approval |
 | Data Table interaction shell Figma master | React-ahead; do not invent shell |
-| Semantic Icon Size dual-bind migration | Prior Pro Actions pass left mixed W/H binds; needs explicit Figma repair approval |
+| Semantic Icon Size dual-bind migration | **Repaired 2026-09-13** — height + minWidth/maxWidth lock on Icon INSTANCEs (Pro+Free) |
 | shadcn Spinner/Divider/Link expansion | Spinner/Divider tokens live below Foundation cut line; Link pulls `site-config` via `link-utils` |
 
 ### Distribution status
@@ -116,9 +177,9 @@ Supported `/r` install surface remains exactly six. Expanding Spinner/Divider wi
 
 | Channel | Sync required after this campaign? | Why |
 |---------|-------------------------------------|-----|
-| Pro paid Figma | **No for Phases 1–6 React/docs work** | No Pro master visual rewrite this campaign; Menu Panel already reusable; Surface N/A was React-only invented Glass removal |
-| Free Community Figma | **No** | Shared foundation visuals unchanged by this campaign’s React fixes |
-| Gumroad | **No new version required yet** | Wait until Icon Size migration and/or any shared Figma foundation fix ships |
+| Pro paid Figma | **Applied in file** — republish needs approval | Icon Size dual-bind repair on masters/consumers |
+| Free Community Figma | **Applied in file** — republish needs approval | Same shared Semantic tokens + consumer binds |
+| Gumroad | **Ask before new version** | Shared technical fix is in Free+Pro files |
 
 If a future Stable-v1 Figma write changes shared foundations/components, re-evaluate all three channels.
 
@@ -128,7 +189,7 @@ If a future Stable-v1 Figma write changes shared foundations/components, re-eval
 - Calendar range React-first / Figma parity pending
 - Charts remain example-scoped vs rich interactive expansions
 - Lint debt: none currently (`--max-warnings 0` green)
-- Icon Size semantic binding migration incomplete in Pro Actions
+- Icon Size dual-bind: **closed 2026-09-13** (see promotion entry)
 
 ### Phase 6 product fix (gate failure)
 
@@ -358,7 +419,7 @@ Public platform/docs release metadata for **Skrewww Design System 1.0**.
 
 **Gates passed (pre-metadata):**
 
-- Stable-v1 technical readiness: `RC-READY` (see Phase 6 exit criteria; components remain individually Beta)
+- Stable-v1 technical readiness: `STABLE-CORE-READY` (27 Stable · 20 Beta; Icon Size dual-bind repaired in Pro+Free)
 - Public API freeze: `READY`
 - Final pre-v1 release gate: `READY`
 - Phosphor consumer dependency transport verified (`@phosphor-icons/react` via ValidationMessage)
@@ -386,10 +447,10 @@ Public platform/docs release metadata for **Skrewww Design System 1.0**.
 | Package (`skrewww-docs`) | `1.0.0` |
 | Public registry `schemaVersion` | `1.4.0` (unchanged) |
 | `CANONICAL_REGISTRY_SCHEMA_VERSION` | `1.0.0` (unchanged) |
-| Implemented component statuses | **47 remain individually Beta** (not blanket-promoted to Stable) |
+| Implemented component statuses | **27 Stable · 20 Beta** (evidence-based promotion 2026-09-13) |
 | Supported `/r` install surface | Exactly six: foundation, button, card, text-input, form-field, validation-message |
 
-Platform maturity and individual component maturity are tracked independently. Public framing: *Skrewww 1.0 — platform and documentation release. Individual React components remain Beta until explicitly promoted to Stable.*
+Platform maturity and individual component maturity are tracked independently. Public framing: *Skrewww 1.0 — platform release with a Stable core. Advanced and parity-pending components remain Beta until explicitly promoted.*
 
 See also: [`docs/architecture/versioning.md`](architecture/versioning.md)
 
@@ -422,7 +483,9 @@ See also: [`docs/architecture/source-of-truth.md`](architecture/source-of-truth.
 
 | Metric | Value | Source |
 |--------|------:|--------|
-| Implemented Beta components | 47 | `getImplementedComponentCount()` / `lib/component-registry.ts` |
+| Implemented components | 47 | `getImplementedComponentCount()` / `lib/component-registry.ts` |
+| Stable | 27 | `status: "stable"` |
+| Beta | 20 | `status: "beta"` |
 | Registry entries with React | 47 | `hasImplementation: true` |
 | Figma-documented components | 63 | `content/` inventory (`lib/data.ts`) |
 | Documentation-only (no React) | 16 | Figma docs not in implemented registry set |

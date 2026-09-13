@@ -22,8 +22,8 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
     category: "Actions",
     summary:
       "Link is semantic navigational text styled as inline or standalone links — not for primary actions.",
-    status: "beta",
-    version: "0.4.0-beta",
+    status: "stable",
+    version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
     documentationCompleteness: "partial",
@@ -100,8 +100,8 @@ export function Example() {
     category: "Navigation",
     summary:
       "Breadcrumb is an ordered hierarchical trail showing location with navigable ancestors and a current-page indicator.",
-    status: "beta",
-    version: "0.4.0-beta",
+    status: "stable",
+    version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
     documentationCompleteness: "partial",
@@ -168,8 +168,8 @@ export function Example() {
     category: "Navigation",
     summary:
       "Tabs is a navigation pattern that switches between related in-context views using tablist/tab/tabpanel semantics and roving focus.",
-    status: "beta",
-    version: "0.4.0-beta",
+    status: "stable",
+    version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
     documentationCompleteness: "partial",
@@ -240,8 +240,8 @@ export function Example() {
     category: "Navigation",
     summary:
       "Pagination is a paged navigation control with Previous/Next boundaries, numbered pages, and optional ellipsis.",
-    status: "beta",
-    version: "0.4.0-beta",
+    status: "stable",
+    version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
     documentationCompleteness: "partial",

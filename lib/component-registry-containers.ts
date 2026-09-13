@@ -136,8 +136,8 @@ export function Example() {
     category: "Containers & Overlays",
     summary:
       "Dialog is a modal overlay that interrupts workflow for focused attention, information, or a decision.",
-    status: "beta",
-    version: "0.5.0-beta",
+    status: "stable",
+    version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
     documentationCompleteness: "partial",
@@ -269,8 +269,8 @@ export function Example() {
     category: "Containers & Overlays",
     summary:
       "Popover is a non-modal floating panel for supplementary or lightly interactive content anchored to a trigger.",
-    status: "beta",
-    version: "0.5.0-beta",
+    status: "stable",
+    version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
     documentationCompleteness: "partial",
