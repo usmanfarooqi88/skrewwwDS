@@ -1,13 +1,19 @@
-# Open source readiness (OS-0)
+# Open source readiness (OS-0 / OS-1)
 
-**Audit date:** 2026-09-13 · **Audited commit:** `2d7208b` ·
-**Repository visibility at audit time:** PRIVATE
+**OS-0 audit date:** 2026-09-13 · **Audited commit:** `2d7208b` ·
+**Repository visibility:** still PRIVATE
 
-**Verdict: READY FOR OS-1, conditional on three human decisions** listed under
-[Blockers and decisions](#blockers-and-decisions). No technical blocker was
-found. This is a technical readiness audit, not legal advice.
+**OS-0 verdict:** READY FOR OS-1, conditional on three human decisions — all
+three resolved (see [Blockers and decisions](#blockers-and-decisions)).
 
-OS-0 does **not** make the repository public. See
+**OS-1 status: PAUSED before the visibility change.** All launch prep (domain
+cleanup, community files, CI, Dependabot opt-in) is complete and pushed.
+Enabling Dependabot surfaced 2 critical unauthenticated-RCE advisories in the
+pinned Next.js version — new information not available when OS-1 was scoped.
+Human decision: fix Next.js in a separate task before making the repository
+public. See [New blocker found during OS-1](#new-blocker-found-during-os-1--launch-paused).
+
+This is a technical readiness audit, not legal advice. See
 [`docs/project-status.md`](project-status.md#phase-roadmap-canonical) for the
 canonical phase roadmap.
 
@@ -253,53 +259,83 @@ open-source-readiness work. Revisit after OS-1.
 
 ## Blockers and decisions
 
-No technical blocker. Three items need a human decision before flipping
-visibility:
+Items 1–3 below were resolved by human decision during OS-1 (see
+`docs/project-status.md`'s OS-1 entry): item 1 accepted (no history
+rewrite), item 2 accepted conditional on Figma Pro sharing staying
+restricted, item 3 resolved as GitHub Issues (product feedback) + GitHub
+Private Vulnerability Reporting (security, enabled once public) with no
+invented email address. The domain inconsistency was also resolved in
+OS-1 — `skrewww.com` is now the single canonical domain everywhere.
 
 1. **Git history retains 28 personal-path strings** (username, home-directory
    layout, Cursor session UUIDs) in one eval metadata file. HEAD is clean.
-   Decide: accept as low-severity, or approve a history rewrite (a separate,
-   high-impact operation that was explicitly not performed here).
+   **Decision: accept as low-severity. No history rewrite.**
 2. **The Pro Figma file key appears in 16 tracked files** (`lib/*-figma-metadata.ts`
    and architecture docs) as parity metadata. A file key is not a credential
    and Figma enforces access server-side, but publishing it reveals the paid
    file's identity and would matter if that file's sharing were ever loosened
-   to "anyone with the link." Decide: accept, or redact before launch. Verify
-   the Pro file's current sharing setting either way. Not stripped
-   autonomously — these references are load-bearing parity evidence.
+   to "anyone with the link." **Decision: accept, conditional on Figma Pro
+   sharing remaining restricted — HUMAN CONFIRMATION REQUIRED that the Pro
+   file's current sharing setting is actually restricted before or
+   immediately after launch; this was not independently re-verified via
+   Figma API/MCP in this pass.**
 3. **No private security/conduct reporting channel exists.** GitHub private
-   vulnerability reporting returned 404 and is public-repo-only, so it cannot
-   be enabled until visibility changes. Decide the route (enable GitHub PVR at
-   launch, or establish an address) and update `SECURITY.md` and
-   `CODE_OF_CONDUCT.md` in the launch commit.
+   vulnerability reporting returned 404 pre-launch (public-repo-only).
+   **Decision: enable GitHub PVR immediately after the repository becomes
+   public; product feedback goes through GitHub Issues.** Conduct reports
+   have no dedicated private channel yet — `CODE_OF_CONDUCT.md` says so
+   honestly rather than inventing an address; this remains an explicit
+   admin follow-up, not a launch blocker.
 
-Optional, non-blocking: reconcile the three-way domain inconsistency.
+### New blocker found during OS-1 — launch paused
+
+**Enabling Dependabot vulnerability alerts (an OS-1 step) surfaced 20 open
+alerts: 2 critical, 10 high, 8 moderate.** The two critical findings are
+unauthenticated RCE advisories against the pinned Next.js version
+(`16.2.10`) — one via the Image Optimization API when AVIF files are used,
+one on Windows-hosted servers. The remaining alerts are mostly other Next.js
+CVEs (SSRF in Server Actions/rewrites, cache confusion, DoS) plus a handful
+in `sharp`, `js-yaml`, `browserslist`, `nanoid`, and Vitest's mocker
+(dev-only).
+
+This was not known when OS-1 was scoped — dependency vulnerability
+remediation is explicitly out of scope for an open-source *readiness* task,
+and upgrading Next.js right before a public launch, untested, was judged too
+risky to do inline. **Human decision: pause the launch. Fix Next.js first,
+in a separate task, then resume OS-1.**
+
+**The repository visibility change (Part 8 of the OS-1 launch) was
+NOT performed.** Everything before it — domain cleanup, community files,
+CI, Dependabot/security-fix opt-in, label creation — is complete and
+pushed. The repository remains PRIVATE.
 
 ## OS-1 launch checklist
 
-Repository settings (none performed in OS-0):
+Repository settings:
 
-- [ ] Resolve decisions 1–3 above
+- [x] Resolve decisions 1–3 above
+- [ ] **BLOCKED: fix the 2 critical Next.js RCE advisories first** (separate task)
 - [ ] Change visibility to public
-- [ ] Enable private vulnerability reporting (Settings → Code security)
-- [ ] Enable Dependabot alerts + security updates
-- [ ] Enable secret scanning and push protection
-- [ ] Add branch protection / ruleset on `main` (require the CI check; no force-push)
-- [ ] Set repository topics (e.g. `design-system`, `react`, `typescript`, `shadcn`, `ai-agents`)
-- [ ] Fix the homepage field (currently `skrewww-ds.vercel.app`) to the canonical domain
-- [ ] Confirm GitHub detects the MIT license on the repository page
+- [ ] Enable private vulnerability reporting (Settings → Code security) — confirmed available once public
+- [x] Enable Dependabot alerts + security updates — enabled in OS-1 (this is what surfaced the Next.js blocker)
+- [ ] Enable secret scanning and push protection — confirmed unavailable while private (`422 Secret scanning is not available for this repository`); retry once public
+- [ ] Add branch protection / ruleset on `main` (require the CI check; no force-push) — confirmed unavailable while private (`403 Upgrade to GitHub Pro or make this repository public`); retry once public
+- [ ] Set repository topics (e.g. `design-system`, `react`, `typescript`, `shadcn`, `ai-agents`) — currently empty, not yet set
+- [ ] Fix the homepage field (currently `https://skrewww-ds.vercel.app`) to `https://skrewww.com`
+- [x] Confirm GitHub detects the MIT license on the repository page — confirmed via API (`license.spdx_id: "MIT"`)
 - [ ] Decide whether to enable Discussions (currently off)
+- [x] Create the `agent-kit` label referenced by the Agent Kit issue template (didn't exist; created, color `#6C4CF2`)
 
-Content updates in the launch commit:
+Content updates for the launch commit (not yet made — repo still private):
 
-- [ ] `SECURITY.md` — real reporting route
-- [ ] `CODE_OF_CONDUCT.md` — real reporting route
+- [ ] `SECURITY.md` — real reporting route (GitHub PVR)
+- [ ] `CODE_OF_CONDUCT.md` — real reporting route, or continue stating the gap honestly
 - [ ] `/agent-kit` Feedback section — point at the public issue tracker
 - [ ] `docs/project-status.md` — mark OS-1 complete, OS-0 superseded
 - [x] Reconcile domain references — resolved in OS-1: `skrewww.com` is the single confirmed canonical domain; `PRODUCTION_FALLBACK_ORIGIN` in `lib/site-config.ts` and all doc/instruction references to the `.dev` fallback were updated to match (dated audit records in `docs/audits/` intentionally left as historical, unedited findings)
 
 Verification before announcing:
 
-- [ ] CI green on a real pull request
-- [ ] Fresh public clone: install → lint → typecheck → test → build
+- [x] CI green on a real pull request-equivalent push — the `ci.yml` workflow ran successfully on the OS-0 push (`da593ab`) before this pass even started
+- [ ] Fresh public clone: install → lint → typecheck → test → build — done against local `main` in OS-1 (987/987, clean build); re-run against the actual public URL once visibility flips
 - [ ] Issue templates render correctly in the GitHub UI

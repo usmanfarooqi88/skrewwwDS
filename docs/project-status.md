@@ -1,6 +1,67 @@
 # Project status
 
-Last verified: **2026-09-13** (Skrewww Agent Kit AK-6 — Public Beta COMPLETE)
+Last verified: **2026-09-13** (OS-1 Open Source Launch — PAUSED, blocked on a Next.js security fix)
+
+## 2026-09-13 — OS-1 Open Source Launch (PAUSED before visibility change)
+
+Full audit trail: [`docs/open-source-readiness.md`](open-source-readiness.md).
+(OS-0's own dated entry was not added to this file at the time — its result
+is recorded here and in that document, which remains the canonical detail
+source; no separate retroactive OS-0 entry is being added to avoid
+duplicating the same record twice.)
+
+**OS-0 (prior commits `8ffd233`, `da593ab`): READY FOR OS-1**, all three
+flagged human decisions now resolved — historical personal paths in Git
+history accepted (no history rewrite), the Pro Figma file key accepted
+conditional on Figma Pro sharing staying restricted (**HUMAN CONFIRMATION
+REQUIRED** — not independently re-verified via Figma API/MCP), and
+feedback/security resolved as GitHub Issues + GitHub Private Vulnerability
+Reporting with no invented email address.
+
+**OS-1 execution (this pass, commits `e160f36` and this entry):**
+
+- **Canonical domain cleanup** — resolved the three-way `skrewww.com` /
+  `skrewww.dev` / `skrewww-ds.vercel.app` inconsistency OS-0 flagged.
+  `skrewww.com` is the single confirmed live domain everywhere now:
+  `lib/site-config.ts`'s `PRODUCTION_FALLBACK_ORIGIN`, `lib/project-status-facts.ts`,
+  `.env.example`, README, `docs/architecture/source-of-truth.md`,
+  `docs/architecture/shadcn-distribution.md`, both root instruction files,
+  and the two pinned test assertions in `lib/project-configuration.test.ts`.
+  Dated historical audit records intentionally left untouched.
+- **GitHub pre-launch settings audited and recorded**: CI (`.github/workflows/ci.yml`)
+  had already run successfully on the OS-0 push before this pass began.
+  License now GitHub-detected as MIT. Homepage still the old Vercel URL,
+  topics still empty, branch protection and secret scanning both confirmed
+  unavailable while private (verified via API — not assumed) — all deferred
+  to the actual launch since they require public visibility.
+- **Dependabot vulnerability alerts + automated security fixes enabled**
+  (previously off) — this is a real, functional repository setting, not
+  documentation.
+- **Created the missing `agent-kit` GitHub label** the Agent Kit issue
+  template already referenced but that didn't exist.
+- **Local gates**: lint/typecheck clean, full Vitest 987/987, clean build,
+  both generators clean from a deleted state, `git diff --check` clean.
+
+**Launch paused — new blocker found, not previously knowable.** Enabling
+Dependabot alerts surfaced 20 open advisories: **2 critical unauthenticated
+RCE in the pinned Next.js `16.2.10`** (Image Optimization API via AVIF; a
+Windows-hosted-server path), plus 10 high and 8 moderate — mostly further
+Next.js CVEs (SSRF in Server Actions/rewrites, cache confusion, DoS), with a
+handful in `sharp`, `js-yaml`, `browserslist`, `nanoid`, and Vitest's mocker
+(dev-only). Upgrading Next.js is out of scope for an open-source-readiness
+task and was judged too risky to do untested immediately before a public
+launch. **Human decision: pause OS-1, fix Next.js in a separate task, then
+resume.**
+
+**The repository visibility change was NOT performed — it remains PRIVATE.**
+Nothing after it in the launch sequence (post-public security settings,
+branch protection, repository metadata, Issues/feedback activation, README
+final pass, release/changelog, public smoke tests) was executed, since all
+of it depends on visibility having changed.
+
+**OS-1 Open Source Launch — PAUSED, not complete.** Next step: a focused
+Next.js security-upgrade task, then resume OS-1 from Part 8 (the visibility
+change) using the now-complete Parts 1–7 prep.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-6 (Public Beta)
 
@@ -1818,15 +1879,17 @@ here instead.
 | Agent Kit AK-4 Recipes / Feature Kits | ✅ Complete |
 | Agent Kit AK-5 Evaluations | ✅ Complete |
 | Agent Kit AK-6 Public Beta | ✅ Complete |
-| **OS-0 Open Source Readiness** | **← CURRENT** |
-| OS-1 Open Source Launch | Next, not started |
+| OS-0 Open Source Readiness | ✅ Complete (READY FOR OS-1) |
+| **OS-1 Open Source Launch** | **← CURRENT — PAUSED before visibility change, blocked on a Next.js security fix** |
 | Community / Beta Stabilization | Planned |
 | Skrewww Guard | Later — not next |
 
-**Guard is no longer the next milestone.** It sits behind the open-source
-track and Beta stabilization. See
-[`docs/open-source-readiness.md`](open-source-readiness.md) for the OS-0
-audit result and the OS-1 launch checklist.
+**Next required step: a focused Next.js security-upgrade task** (fixes 2
+critical unauthenticated-RCE advisories surfaced by enabling Dependabot in
+OS-1), then resume OS-1 from the visibility change. Guard is no longer the
+next milestone regardless — it sits behind the open-source track and Beta
+stabilization. See [`docs/open-source-readiness.md`](open-source-readiness.md)
+for the full audit result and current launch-checklist state.
 
 ### Component/distribution work (parallel track)
 
