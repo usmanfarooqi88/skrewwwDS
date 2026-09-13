@@ -30,8 +30,18 @@ prints the local URL on startup.
 |-----|------|
 | [`docs/getting-started.md`](docs/getting-started.md) | **Primary** developer onboarding |
 | [`docs/contributing.md`](docs/contributing.md) | Contribution / Git / staging rules |
-| [`docs/project-status.md`](docs/project-status.md) | Current status and open gaps |
+| [`docs/project-status.md`](docs/project-status.md) | Current status, open gaps, and the canonical phase roadmap |
 | [`docs/architecture/`](docs/architecture/) | Deep architecture and component notes |
+| [`docs/licensing.md`](docs/licensing.md) | MIT boundary, dependencies, brand, and commercial assets |
+| [`docs/open-source-readiness.md`](docs/open-source-readiness.md) | Open-source readiness audit and launch checklist |
+
+## License
+
+Code in this repository is [MIT](LICENSE). Third-party dependencies keep their
+own licenses, and the Skrewww name, logo, and brand identity are **not**
+granted by the code license — see [`TRADEMARKS.md`](TRADEMARKS.md) and
+[`docs/licensing.md`](docs/licensing.md). Skrewww Pro (paid Figma/Gumroad
+deliverables) is not included in this repository.
 
 ## Current status
 

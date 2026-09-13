@@ -1,0 +1,53 @@
+name: Agent Kit issue
+description: A component contract, the Agent Skill, a Recipe, ProjectContext, or distribution metadata is wrong or missing.
+labels: ["agent-kit"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Agent Kit is **Beta**. Contracts are generated from the canonical registry and authored docs —
+        so a wrong contract usually means a wrong source, which is exactly what this form helps find.
+        Overview: [/agent-kit](https://skrewww.com/agent-kit)
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Component contract (/agent/contracts/<slug>.json)
+        - Agent Skill (/agent/skill/SKILL.md)
+        - Recipe or Feature Kit
+        - ProjectContext detection
+        - Installability / distribution (@skrewww, /r/*)
+        - Retrieval surface (/agent/index.json, /agent/system.json)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: slug
+    attributes:
+      label: Component slug or Recipe id
+      placeholder: button, validated-text-field…
+
+  - type: textarea
+    id: incorrect
+    attributes:
+      label: What the contract/Skill/Recipe currently says
+      description: Paste the relevant field or line. Please do not paste an entire contract file.
+    validations:
+      required: true
+
+  - type: textarea
+    id: correct
+    attributes:
+      label: What it should say, and why
+      description: Point at the real source where possible — the component's implementation, its registry entry, or its docs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: agent-behavior
+    attributes:
+      label: Resulting agent behavior (if applicable)
+      description: What did the coding agent get wrong as a result? Invented prop, wrong install command, wrong maturity claim, etc.

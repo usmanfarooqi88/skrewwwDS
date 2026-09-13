@@ -1,0 +1,25 @@
+name: Documentation issue
+description: Something in the docs site or repository documentation is wrong, unclear, or missing.
+labels: ["documentation"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Where
+      description: Page URL or file path.
+      placeholder: /components/button, docs/getting-started.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong
+      description: Incorrect, outdated, confusing, or missing — please say which.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested correction

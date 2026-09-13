@@ -1,0 +1,53 @@
+name: Bug report
+description: Something in the library, docs site, or tooling behaves incorrectly.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a **security vulnerability**, do not use this form — see [SECURITY.md](../blob/main/SECURITY.md).
+        For a wrong **component contract / Skill / Recipe**, use the Agent Kit form instead.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, and what went wrong.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Steps, a minimal snippet, or a link. A repro is the single most useful thing you can include.
+    validations:
+      required: true
+
+  - type: input
+    id: component
+    attributes:
+      label: Component (if applicable)
+      placeholder: Button, Dialog, Data Table…
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      description: Package version, registry item version, or the commit you are on.
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        Node:
+        Framework/version:
+        Browser (if relevant):

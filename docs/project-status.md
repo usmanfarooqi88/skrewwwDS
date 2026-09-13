@@ -118,8 +118,10 @@ section all present; no `localhost` leak). `git diff --check` clean.
 Full architecture record: [`docs/architecture/agent-kit.md`](architecture/agent-kit.md#ak-6--public-beta).
 
 **Skrewww Agent Kit AK-6 — COMPLETE.** One open item requiring a human
-decision: the Beta feedback path (see above). **Skrewww Guard is NEXT,
-NOT STARTED.**
+decision: the Beta feedback path (see above). **OS-0 Open Source Readiness
+is NEXT** (see the OS-0 entry above, which also resolves the feedback-path
+plan). Skrewww Guard moves behind the open-source track — see the phase
+roadmap under "Active roadmap".
 
 ## 2026-09-13 — Skrewww Agent Kit AK-5 (Evaluations) — COMPLETE
 
@@ -1800,6 +1802,33 @@ panel fixed for Date Picker in Batch 2.
    correctness bug (Batch 1)
 
 ## Active roadmap
+
+### Phase roadmap (canonical)
+
+This is the canonical phase sequence. Do not duplicate it elsewhere — link
+here instead.
+
+| Phase | Status |
+|-------|--------|
+| Figma Presentation V2 | ✅ Complete (frozen) |
+| Agent Kit AK-0 Architecture | ✅ Complete |
+| Agent Kit AK-1 Contracts + Compiler | ✅ Complete |
+| Agent Kit AK-2 Universal Agent Skill | ✅ Complete |
+| Agent Kit AK-3 Retrieval + Project Context | ✅ Complete |
+| Agent Kit AK-4 Recipes / Feature Kits | ✅ Complete |
+| Agent Kit AK-5 Evaluations | ✅ Complete |
+| Agent Kit AK-6 Public Beta | ✅ Complete |
+| **OS-0 Open Source Readiness** | **← CURRENT** |
+| OS-1 Open Source Launch | Next, not started |
+| Community / Beta Stabilization | Planned |
+| Skrewww Guard | Later — not next |
+
+**Guard is no longer the next milestone.** It sits behind the open-source
+track and Beta stabilization. See
+[`docs/open-source-readiness.md`](open-source-readiness.md) for the OS-0
+audit result and the OS-1 launch checklist.
+
+### Component/distribution work (parallel track)
 
 **Scope discipline — "do not expand sideways" clarified**: this phrase governs starting **new React component/product scope** (new components, new industries, new product surfaces) — it does not apply to distribution work on components that are already built. The primary track (the Figma Surface/parity follow-ups and Timeline-class work below) remains the priority when choosing where to spend limited attention. shadcn distribution packaging (Card, Text Input, and future already-built components) is an explicitly allowed **parallel track**, not a violation of that discipline — it is distribution hardening on already-shipped components, not new component expansion, and it is not blocked or deferred by the primary track.
 

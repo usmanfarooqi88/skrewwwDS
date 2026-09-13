@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose a new component, API, or capability.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Proposals that compose existing components are much more likely to land than new primitives.
+        New components carry a Figma ↔ React parity and accessibility cost — see [docs/contributing.md](../blob/main/docs/contributing.md).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to build, and where does the current system fall short?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you tried instead
+      description: Which existing components did you attempt to compose, and why didn't they work?
