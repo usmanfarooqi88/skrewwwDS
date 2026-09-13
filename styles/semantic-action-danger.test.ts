@@ -9,6 +9,7 @@ const TEXT_DANGER = "#cc3b37";
 /** Runtime CSS modules that may reference BASE --semantic-action-danger. */
 const ALLOWED_BASE_CONSUMERS: Record<string, string[]> = {
   "components/ui/text-input.module.css": ["border/stroke", "focus ring"],
+  "components/ui/credit-card-field.module.css": ["border/stroke", "focus ring"],
   "components/ui/checkbox.module.css": ["border/stroke", "fill/background"],
   "components/ui/radio.module.css": ["border/stroke"],
   "components/ui/progress-bar.module.css": ["fill/background"],

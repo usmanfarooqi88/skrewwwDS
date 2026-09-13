@@ -184,6 +184,11 @@ export { RadioGroup } from "@/components/ui/RadioGroup";
 export type { RadioGroupOption, RadioGroupProps } from "@/components/ui/RadioGroup";
 export { SearchField } from "@/components/ui/SearchField";
 export type { SearchFieldProps } from "@/components/ui/SearchField";
+export { CreditCardField } from "@/components/ui/CreditCardField";
+export type {
+  CreditCardFieldProps,
+  CreditCardFieldValue,
+} from "@/components/ui/CreditCardField";
 export { Select } from "@/components/ui/Select";
 export type {
   SelectOption,

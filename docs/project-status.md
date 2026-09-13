@@ -1,6 +1,41 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-1C Split Button — COMPLETE)
+Last verified: **2026-09-14** (CE-1D Credit Card Field — COMPLETE)
+
+## 2026-09-14 — CE-1D Credit Card Field — COMPLETE
+
+Implemented the verified P3 Class B gap **Credit Card Field** as a Beta
+public React compound control. Figma contract read-only verified on Pro
+Forms/Credit Card Field (`2024:2714`) — State Default/Focused/Error/Disabled
+(4), Card Number + Expiry + CVC TEXT props, generic Icon/CreditCard (no
+network logos), Text Input token family, shell-level focus/error chrome.
+
+**Scope:** UI pattern for three independently labeled text segments in one
+shell. Digit-only value model with presentation formatting (spaces / MM/YY).
+Not a payment processor, tokenizer, brand detector, or PCI vault. `/r`
+deferred to CE-3.
+
+Inventory: [`docs/component-inventory.md`](component-inventory.md).
+
+### Inventory delta (source-verified)
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| React implemented | 50 | **51** |
+| Stable / Beta | 27 / 23 | **27 / 24** |
+| Docs (implemented) | 50 | **51** |
+| Agent contracts | 50 | **51** |
+| `/r` components | 8 + foundation | **unchanged** |
+| Class A | 47 | **48** |
+| Class B | 2 | **1** |
+
+### Remaining Class B gaps
+
+Phone Number Field (P3).
+
+**Next:** CE-1E Phone Number Field — **NOT STARTED**. CE-1 overall = **IN PROGRESS**.
+
+Stabilization register STAB-001…006 unchanged.
 
 ## 2026-09-14 — CE-1C Split Button — COMPLETE
 
@@ -2256,15 +2291,15 @@ here instead.
 | **CE-1A Slider** | ✅ **COMPLETE** |
 | **CE-1B Button Group** | ✅ **COMPLETE** |
 | **CE-1C Split Button** | ✅ **COMPLETE** |
-| **CE-1D Credit Card Field** | **← NEXT — NOT STARTED** |
-| CE-1E Phone Number Field | Later — not started |
+| **CE-1D Credit Card Field** | ✅ **COMPLETE** |
+| **CE-1E Phone Number Field** | **← NEXT — NOT STARTED** |
 | CE-2 Net-New Component Expansion | Later — not started |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-1D Credit Card Field is next. CE-1 overall is **IN PROGRESS**.
+**Current focus:** CE-1E Phone Number Field is next. CE-1 overall is **IN PROGRESS**.
 Community/Beta Stabilization remains steady-state (STAB-001…006 open, no P0/P1).
 Do not start CE-2, CE-3, Reference App, PH-0, or Guard from this status line alone.
 

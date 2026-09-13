@@ -229,14 +229,28 @@ export const formsComponents: ComponentDoc[] = [
     slug: "credit-card-field",
     name: "Credit Card Field",
     category: "Forms",
-    variants: "State — 4 variants",
-    purpose: "Credit Card Field is a compound field for entering card number, expiry, and CVC together as one visually unified control.",
-    whenToUse: "Payment forms collecting card details directly (most production flows should use a hosted/tokenized field from a payment provider rather than handling raw card data).",
-    whenNotToUse: "When using a payment provider's hosted card element (Stripe Elements, etc.).",
-    accessibility: "Each segment needs its own accessible label, since they're visually merged but functionally distinct inputs.",
-    commonMistakes: "Treating this as one text input in code — it must be three independently validated fields.",
-    tokensUsed: ["component/radius/control", "semantic/border/default"],
-    properties: "State as variants. Card Number, Expiry, CVC (text properties).",
+    variants: "State (Default/Focused/Error/Disabled) — 4 variants",
+    purpose:
+      "Credit Card Field is a compound UI control for card number, expiry, and CVC in one visually unified shell. It is a visual/input pattern only — not a payment processor, tokenizer, or PCI vault.",
+    whenToUse:
+      "When documenting or prototyping the joined card-details pattern. For production card capture, prefer a payment provider’s hosted/tokenized fields.",
+    whenNotToUse:
+      "When using Stripe Elements / Adyen / similar hosted card elements. Do not treat this React control as sufficient for PCI-sensitive production capture.",
+    accessibility:
+      "fieldset + legend for the group; each segment is a real text input with its own accessible name (number/expiry/CVC). Focus chrome is shell-level (:focus-within). Generic CreditCard icon is decorative (aria-hidden).",
+    commonMistakes:
+      "Treating this as one text input. Treating display spaces/slash as stored value. Assuming brand detection or payment authorization. Logging or persisting raw card digits.",
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "semantic/focus-ring",
+      "semantic/action/danger",
+      "color/neutral/200",
+    ],
+    properties:
+      "Figma: State + Card Number / Expiry / CVC text. React: label, value/defaultValue/onValueChange ({number,expiry,cvc} digit-only), segment labels/placeholders, disabled, readOnly, required, error, supportingText.",
+    knownLimitation:
+      "Figma demo TEXT may show masked bullets — React does not mask PANs. No brand logos. No Luhn/network validation. /r deferred to CE-3. This component does not claim PCI compliance.",
   },
   {
     slug: "phone-number-field",

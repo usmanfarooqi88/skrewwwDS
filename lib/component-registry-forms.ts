@@ -19,6 +19,10 @@ import {
   SLIDER_FIGMA_COMPONENT_SET_NODE_ID,
   SLIDER_FIGMA_FILE_URL,
 } from "@/lib/slider-figma-metadata";
+import {
+  CREDIT_CARD_FIELD_FIGMA_COMPONENT_SET_NODE_ID,
+  CREDIT_CARD_FIELD_FIGMA_FILE_URL,
+} from "@/lib/credit-card-field-figma-metadata";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -780,6 +784,154 @@ export function Example() {
       label="Search components"
       placeholder="Search the design system…"
       defaultValue=""
+    />
+  );
+}`,
+  },
+  {
+    slug: "credit-card-field",
+    name: "Credit Card Field",
+    category: "Forms",
+    summary:
+      "Credit Card Field is a compound UI control for card number, expiry, and CVC in one shell — visual pattern only, not a payment processor or PCI vault.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/forms.ts",
+    documentationLastUpdated: "2026-09-14",
+    reactLastUpdated: "2026-09-14",
+    figmaReference: "Forms / Credit Card Field — State Default/Focused/Error/Disabled (4)",
+    figmaSourceUrl: CREDIT_CARD_FIELD_FIGMA_FILE_URL,
+    figmaNodeId: CREDIT_CARD_FIELD_FIGMA_COMPONENT_SET_NODE_ID,
+    documentationUrl: getComponentDocumentationUrl("credit-card-field"),
+    supportedVariants: ["default", "focused", "error", "disabled"],
+    supportedSizes: [],
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "semantic/focus-ring",
+      "semantic/action/danger",
+      "semantic/text/primary",
+      "semantic/text/secondary",
+      "color/neutral/200",
+    ],
+    relatedComponents: [
+      { label: "Text Input — single-line field chrome family", href: "/components/text-input" },
+      { label: "Form Field — label/description/error pattern", href: "/components/form-field" },
+      { label: "Validation Message — error text", href: "/components/validation-message" },
+    ],
+    relatedTokens: [
+      { label: "semantic/border/default", href: "/foundations" },
+      { label: "semantic/focus-ring", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "Figma default TEXT shows masked demo digits (••••) — React does not mask PANs; apps must not treat UI masking as security.",
+      "No Size axis in Figma — shell matches Text Input md height.",
+      "Production card capture should prefer hosted/tokenized provider fields; this component is the visual pattern only.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "CreditCardField = fieldset/legend + shared shell (generic CreditCard icon + number input + divider + expiry input + divider + CVC input) + optional supporting/error text.",
+    keyboardBehavior:
+      "Standard text editing in each segment. Tab moves between number, expiry, and CVC. Shell focus-within shows the Focused chrome.",
+    focusBehavior:
+      "Focus ring is on the shared shell (:focus-within), matching Figma State=Focused. Segments themselves do not draw a second ring.",
+    comparisons: [
+      {
+        title: "Is this a payment integration?",
+        body: "No. It does not tokenize, authorize, store, or transmit card data. Prefer Stripe Elements / equivalent hosted fields for PCI-sensitive capture.",
+      },
+      {
+        title: "Does it detect Visa/Mastercard?",
+        body: "No. Figma uses a generic Icon/CreditCard deliberately — network logos are not reproduced.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "label",
+        type: "string",
+        description: "Visible fieldset legend for the compound control.",
+      },
+      {
+        name: "value",
+        type: "{ number: string; expiry: string; cvc: string }",
+        description:
+          "Controlled digit-only values (no spaces/slash). Display formatting is presentation-only.",
+      },
+      {
+        name: "defaultValue",
+        type: "{ number: string; expiry: string; cvc: string }",
+        description: "Uncontrolled initial digit-only values.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: { number; expiry; cvc }) => void",
+        description: "Fires with digit-only values after edits/paste.",
+      },
+      {
+        name: "numberLabel",
+        type: "string",
+        default: '"Card number"',
+        description: "Accessible name for the number segment.",
+      },
+      {
+        name: "expiryLabel",
+        type: "string",
+        default: '"Expiry"',
+        description: "Accessible name for the expiry segment.",
+      },
+      {
+        name: "cvcLabel",
+        type: "string",
+        default: '"CVC"',
+        description: "Accessible name for the CVC segment.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disables all segments and dims the shell.",
+      },
+      {
+        name: "readOnly",
+        type: "boolean",
+        default: "false",
+        description: "Read-only segments; shell remains interactive for focus.",
+      },
+      {
+        name: "required",
+        type: "boolean",
+        default: "false",
+        description: "Marks the group and each segment required.",
+      },
+      {
+        name: "error",
+        type: "string",
+        description: "Error message; sets invalid chrome on the shared shell.",
+      },
+      {
+        name: "supportingText",
+        type: "string",
+        description: "Help text when no error is present.",
+      },
+    ],
+    reactExample: `import { useState } from "react";
+import { CreditCardField } from "@/components/ui/CreditCardField";
+
+export function Example() {
+  const [value, setValue] = useState({ number: "", expiry: "", cvc: "" });
+  return (
+    <CreditCardField
+      label="Card details"
+      value={value}
+      onValueChange={setValue}
+      supportingText="UI pattern only — use a payment provider for real card capture."
     />
   );
 }`,
