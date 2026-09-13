@@ -130,7 +130,7 @@ change is made in this pass.
 ## URL shape
 
 Served as static files under `public/r/`, at `/r/{name}.json`:
-production shape `https://skrewww.dev/r/{name}.json` (per
+production shape `https://skrewww.com/r/{name}.json` (per
 `source-of-truth.md`'s domain table), currently nine items:
 `foundation`, `button`, `card`, `text-input`, `form-field`,
 `validation-message`, `spinner`, `divider`, `link`. This coexists with `/registry.json`

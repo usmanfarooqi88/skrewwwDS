@@ -1,6 +1,11 @@
 /** Canonical site configuration — single source for metadata, SEO, registry, and sitemap. */
 
-const PRODUCTION_FALLBACK_ORIGIN = "https://skrewww.dev";
+// skrewww.com is the confirmed live production domain (verified via
+// NEXT_PUBLIC_SITE_URL on the real deployment — see docs/project-status.md).
+// This fallback only matters when that env var is unset (e.g. an
+// unconfigured preview build); it must track the real canonical domain,
+// not an earlier placeholder.
+const PRODUCTION_FALLBACK_ORIGIN = "https://skrewww.com";
 
 function resolveSiteOrigin(): string {
   const configured =

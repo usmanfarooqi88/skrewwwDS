@@ -185,10 +185,9 @@ Additional work (not missing foundations):
 
 - The **Next.js documentation repository is already implemented** in this project.
 - Machine-readable registry, sitemap, LLM files (`llms.txt` / `llms-full.txt`), JSON-LD, and component pages exist.
-- Public deployment and the final canonical domain remain **deployment concerns**.
-- `skrewww.com` being **reserved** does not mean it is currently live.
+- `skrewww.com` is the **confirmed live production domain** (verified via `NEXT_PUBLIC_SITE_URL` on the real deployment — see `docs/project-status.md`).
 - `NEXT_PUBLIC_SITE_URL` controls the deployed React canonical origin.
-- `skrewww.dev` is the code fallback when that env var is unset in production.
+- `skrewww.com` is also the code fallback when that env var is unset in production.
 
 Do not claim that the documentation website is still a future phase.
 

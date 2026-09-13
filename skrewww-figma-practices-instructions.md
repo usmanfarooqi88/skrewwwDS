@@ -107,8 +107,7 @@ Those claims are **obsolete historical context**. They must not be restated as t
 
 ## Domain and documentation site
 
-- **`skrewww.com`** — reserved intended brand domain; not assumed live
-- **`skrewww.dev`** — code fallback when `NEXT_PUBLIC_SITE_URL` is unset in production
+- **`skrewww.com`** — confirmed live production domain; also the code fallback when `NEXT_PUBLIC_SITE_URL` is unset in production
 - **`NEXT_PUBLIC_SITE_URL`** — deployment authority for React canonical URLs in metadata, sitemap, JSON-LD, and registry
 - **Local development** — typically `http://localhost:3000`
 

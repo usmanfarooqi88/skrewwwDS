@@ -52,8 +52,8 @@ export function getProjectStatusFacts() {
     siteOriginPolicy: {
       deploymentAuthority: "NEXT_PUBLIC_SITE_URL",
       developmentDefault: "http://localhost:3000",
-      productionFallback: "https://skrewww.dev",
-      reservedBrandDomain: "skrewww.com",
+      productionFallback: "https://skrewww.com",
+      confirmedLiveDomain: "skrewww.com",
       testOrigin: "https://skrewww.test",
     },
     figmaMcpStatus: COMBOBOX_FIGMA_AUDIT_STATUS,

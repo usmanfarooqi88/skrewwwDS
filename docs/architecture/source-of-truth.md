@@ -51,8 +51,7 @@ Public component CSS modules must use CSS custom properties — not ad hoc hex v
 |--------|------|
 | `NEXT_PUBLIC_SITE_URL` | Deployment authority for canonical metadata |
 | `http://localhost:3000` | Local development default |
-| `https://skrewww.dev` | Production fallback when env unset |
-| `https://skrewww.com` | Production brand domain when configured via `NEXT_PUBLIC_SITE_URL` |
+| `https://skrewww.com` | Confirmed live production domain; also the code fallback when env unset |
 | `https://skrewww.test` | Test-only origin in unit tests |
 
 Do not hardcode assumptions about which domain is live in a given environment —

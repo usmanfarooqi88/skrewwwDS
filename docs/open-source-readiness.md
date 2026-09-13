@@ -296,7 +296,7 @@ Content updates in the launch commit:
 - [ ] `CODE_OF_CONDUCT.md` — real reporting route
 - [ ] `/agent-kit` Feedback section — point at the public issue tracker
 - [ ] `docs/project-status.md` — mark OS-1 complete, OS-0 superseded
-- [ ] Reconcile domain references if decided
+- [x] Reconcile domain references — resolved in OS-1: `skrewww.com` is the single confirmed canonical domain; `PRODUCTION_FALLBACK_ORIGIN` in `lib/site-config.ts` and all doc/instruction references to the `.dev` fallback were updated to match (dated audit records in `docs/audits/` intentionally left as historical, unedited findings)
 
 Verification before announcing:
 

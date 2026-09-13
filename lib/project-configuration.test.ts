@@ -269,26 +269,25 @@ describe("project configuration", () => {
 
     expect(figma.toLowerCase()).toMatch(/page existence is confirmed/);
     expect(figma.toLowerCase()).toMatch(/mcp is currently \*\*unavailable\*\*|figma mcp is currently \*\*unavailable\*\*/);
-    expect(figma.toLowerCase()).toMatch(/skrewww\.com[\s\S]{0,80}reserved/);
+    expect(figma.toLowerCase()).toMatch(/skrewww\.com[\s\S]{0,80}confirmed live/);
     expect(figma.toLowerCase()).toMatch(/documentation repository is \*\*built\*\*|react\/next\.js documentation repository is \*\*built\*\*/);
     expect(figma.toLowerCase()).toMatch(/data table[\s\S]{0,120}\*\*implemented\*\*/);
     expect(figma.toLowerCase()).toMatch(/compose table/);
   });
 
-  it("documents domain policy without conflating reserved and deployed domains", () => {
+  it("documents domain policy with skrewww.com as the single confirmed live domain", () => {
     const readme = readRootFile("README.md");
     const sourceOfTruth = readRootFile("docs/architecture/source-of-truth.md");
     expect(readme).toContain("skrewww.com");
-    expect(readme).toContain("skrewww.dev");
     expect(readme).toContain("NEXT_PUBLIC_SITE_URL");
     expect(sourceOfTruth).toContain("NEXT_PUBLIC_SITE_URL");
   });
 
-  it("resolves site origin from NEXT_PUBLIC_SITE_URL in production", () => {
+  it("resolves site origin from NEXT_PUBLIC_SITE_URL in production, falling back to the confirmed live domain", () => {
     const siteConfigSource = readRootFile("lib/site-config.ts");
     expect(siteConfigSource).toContain("NEXT_PUBLIC_SITE_URL");
     expect(siteConfigSource).toContain("PRODUCTION_FALLBACK_ORIGIN");
-    expect(siteConfigSource).toContain("https://skrewww.dev");
+    expect(siteConfigSource).toContain("https://skrewww.com");
   });
 
   it("keeps Skrewww 1.0 platform version metadata synchronized", () => {

@@ -211,8 +211,7 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 
 ## Domain policy
 
-- **`skrewww.com`** — reserved brand domain; not assumed live
-- **`skrewww.dev`** — production fallback origin in code when `NEXT_PUBLIC_SITE_URL` is unset
+- **`skrewww.com`** — confirmed live production domain; also the code fallback origin when `NEXT_PUBLIC_SITE_URL` is unset
 - **`NEXT_PUBLIC_SITE_URL`** — deployment authority for canonical URLs, sitemap, JSON-LD, registry
 - **`http://localhost:3000`** — local development default
 - **`https://skrewww.test`** — recommended test origin in unit tests
