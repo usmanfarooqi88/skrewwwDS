@@ -41,10 +41,9 @@ weakness. Neither is a critical invent/install/maturity/authority miss.
 **Release gate:** **PASSED** (zeros on invent/install/maturity/authority;
 a11y not worse than OFF; total hard errors improved).
 
-**Artifacts:** `evals/agent-kit/runs/ak5-v1-aa26a17-cursor-inherit/`.
-
-**Skrewww Agent Kit AK-5 — COMPLETE.** AK-6 (Public Beta) is next but
-**NOT STARTED**.
+**Verified:** lint/typecheck clean; Vitest **967/967** (104 files); production
+build green; generators + prompt generation green; scorer/prompt
+determinism covered; `git diff --check` clean.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-4 (Recipes / Feature Kits)
 
