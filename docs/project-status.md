@@ -1,6 +1,115 @@
 # Project status
 
-Last verified: **2026-09-13** (OS-1 Security Gate — PASSED; OS-1 Open Source Launch ready to resume from the visibility change)
+Last verified: **2026-09-13** (OS-1 Open Source Launch — COMPLETE; repository is PUBLIC)
+
+## 2026-09-13 — OS-1 Open Source Launch — COMPLETE (visibility change + launch)
+
+Full audit trail: [`docs/open-source-readiness.md`](open-source-readiness.md#os-1-launched-2026-09-13).
+This is the resume-from-visibility-change task the Security Gate and Remote
+CI Gate entries below deferred to. Both gates were re-verified immediately
+before acting, not assumed from their own prior entries.
+
+**Pre-flight (all 7 gates re-verified green immediately before changing
+anything):** HEAD matched the expected final SHA, `main == origin/main`,
+clean tree, repository still PRIVATE, GitHub Actions CI green on that SHA,
+Dependabot 0 open alerts, `npm audit` clean (full and `--omit=dev` scope).
+
+**Navigation badge (small pre-launch polish, done first):** extended
+`lib/sidebar-nav.ts`'s primary-nav data with an optional `badge` status
+(`new`/`updated`/`beta`/`pro`) instead of hardcoding a label; Agent Kit gets
+a compact "NEW" pill (reusing the brand-pill treatment its own separate Beta
+badge already established); no other nav item badged. Shared by desktop
+sidebar and mobile drawer nav automatically (same `SidebarNav` component).
+Verified in the browser at both sizes; no row-height jump, no separately-
+focusable element, no console errors. 3 new focused tests.
+
+**Final pre-launch doc pass found and fixed real issues, not just reviewed:**
+a stale duplicate README "License" section still said "Private project"
+(contradicted the correct MIT section above it, removed); the `/agent-kit`
+Feedback section still said a public issue tracker "is not yet published
+here" (a real, reported Beta gap tracked since AK-6 — see
+`docs/architecture/agent-kit.md`); `siteConfig.repositoryUrl` was still
+`undefined`. All three fixed and pushed **before** the visibility change so
+the content was already correct the moment the repository went public. This
+required updating `lib/agent-kit/beta-release.test.ts`'s "no private
+repository leak" guard, whose premise (repo is private, so referencing it
+leaks/misleads) no longer held — rewritten to verify any repository
+reference is the real public repo at its real intended surfaces (Issues,
+security policy), not deleted or weakened.
+
+**Visibility change:** `PRIVATE → PUBLIC`, done via `gh repo edit`,
+independently re-verified via a separate `gh api` read
+(`"private":false,"visibility":"public"`) rather than trusting the command's
+own success. Final pre-launch SHA: `ac03f2850180de35f47f3c1f0fffae1108284d29`.
+
+**Post-public settings, all individually verified via API (not assumed):**
+Private Vulnerability Reporting enabled (`{"enabled":true}`); secret
+scanning + push protection enabled; Dependabot alerts/security updates
+reconfirmed still enabled (never disabled to look clean); minimal branch
+protection on `main` (required CI status check, no force-push, no deletion;
+`enforce_admins` left off deliberately — solo-maintainer repo, existing
+direct-push workflow, no second reviewer to gain from blocking the admin);
+repository description/homepage/topics corrected (description previously
+referenced the retired `.dev` domain — an internal GitHub setting, not a
+tracked file, so the earlier domain-reconciliation pass had missed it).
+
+**Content activated post-fix, pre-verified-working post-launch:**
+`SECURITY.md` now points at GitHub Private Vulnerability Reporting and
+explicitly says not to open a public Issue for a vulnerability;
+`CODE_OF_CONDUCT.md` left with its existing honest wording since no private
+conduct-reporting destination exists yet (real gap, recorded as a
+post-launch admin follow-up, not papered over); a public changelog entry
+was added ("Skrewww is now open source").
+
+**Fresh public clone, unauthenticated, from a stripped shell environment (no
+git/gh credential helpers):** `npm ci` → 0 vulnerabilities; lint clean;
+typecheck clean; **Vitest 990/990**; production build succeeded; both
+generators (`generate:registry`, `generate:agent-context`) ran clean from a
+fully deleted `public/agent/`+`public/r/` state; tree stayed clean
+throughout.
+
+**Live production smoke against the real deployed site (`skrewww.com`),
+distinguished from repo-public status rather than assumed from it:**
+`/agent-kit`, `/agent/index.json`, `/agent/system.json`,
+`/agent/contracts/button.json`, `/agent/recipes/index.json`,
+`/agent/recipes/validated-text-field.json`, `/agent/feature-kits/index.json`,
+`/agent/skill/SKILL.md`, `/r/button.json` → 200; invalid contract/recipe →
+404. Confirmed the live deployment had already picked up the final launch
+commit — the new Feedback section wording and the sidebar NEW badge were
+both present in the live HTML, not just locally.
+
+**GitHub Release/tag decision:** a `v1.0.0` release already existed
+(published 2026-08-21, now publicly visible for the first time). No new
+release or tag was created for the visibility change itself — nothing about
+the codebase's version changed just because visibility did. Recorded, not
+deferred by omission.
+
+**shadcn Registry Directory submission:** explicitly out of scope for this
+task, per its own instructions. `/r/registry.json` remains unimplemented —
+recorded as a post-launch opportunity, not a launch blocker.
+
+**Remaining admin follow-ups (none block the launch):**
+- `CODE_OF_CONDUCT.md` still has no dedicated private conduct-reporting
+  contact — needs a real decision (email, form, or an accepted platform
+  mechanism) at some point post-launch.
+- Discussions left off — deliberate, revisit if community volume warrants it.
+- shadcn Registry Directory submission — deferred, needs `/r/registry.json`
+  first.
+- The Pro Figma file's sharing restriction could not be independently
+  re-verified through available tooling in this task (no Figma MCP/API
+  access this session) — **HUMAN CONFIRMATION: the Pro Figma file must
+  remain restricted/private.** This does not require a history rewrite; no
+  Figma Pro/Gumroad asset or `.fig` file is tracked in this repository
+  (re-confirmed via `git ls-files` this pass).
+
+**Verified:** lint/typecheck clean, full Vitest 990/990 (local and in the
+fresh public clone), full production build, GitHub Actions CI
+`completed`/`success` on the final SHA (verified via the API, not assumed
+from local tests), `git diff --check` clean, `main == origin/main`, working
+tree clean, repository visibility independently confirmed PUBLIC.
+
+**OS-1 Open Source Launch — COMPLETE.** Community/Beta Stabilization is
+next on the roadmap and was explicitly **not started** in this task.
 
 ## 2026-09-13 — OS-1 Open Source Launch (PAUSED before visibility change)
 
@@ -1933,17 +2042,21 @@ here instead.
 | Agent Kit AK-6 Public Beta | ✅ Complete |
 | OS-0 Open Source Readiness | ✅ Complete (READY FOR OS-1) |
 | OS-1 Security Gate (Next.js upgrade) | ✅ Complete (PASSED — 0 critical/high/moderate/low, full and production scope) |
-| **OS-1 Open Source Launch** | **← CURRENT — READY TO RESUME from the visibility change (Part 8)** |
-| Community / Beta Stabilization | Planned |
+| OS-1 Remote CI Gate | ✅ Complete (PASSED — GitHub Actions green on final pre-launch SHA) |
+| OS-1 Open Source Launch | ✅ Complete — repository is **PUBLIC** |
+| **Community / Beta Stabilization** | **← NEXT — not started** |
 | Skrewww Guard | Later — not next |
 
-**Next required step: resume OS-1 from the visibility change (Part 8)** —
-the Next.js security blocker (2 critical unauthenticated-RCE advisories
-surfaced by enabling Dependabot) is resolved; Next.js is now `16.3.5`, and
-`npm audit` is clean. Guard is no longer the next milestone regardless — it
-sits behind the open-source track and Beta stabilization. See
+**OS-1 Open Source Launch is complete.** The repository
+([github.com/usmanfarooqi88/skrewwwDS](https://github.com/usmanfarooqi88/skrewwwDS))
+is public; both the Security Gate and Remote CI Gate passed first, and all
+post-public settings (Private Vulnerability Reporting, secret scanning, push
+protection, minimal branch protection, corrected repository metadata,
+activated feedback/security-reporting paths) are verified enabled. Community
+/ Beta Stabilization is next on the roadmap and has **not** been started —
+this task was scoped to the launch only. See
 [`docs/open-source-readiness.md`](open-source-readiness.md) for the full
-audit result and current launch-checklist state.
+audit result and final launch-checklist state.
 
 ### Component/distribution work (parallel track)
 

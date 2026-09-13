@@ -22,27 +22,22 @@ route them here.
 
 ## Reporting a vulnerability
 
-**Open item — no private reporting channel is available yet.**
+**Use GitHub Private Vulnerability Reporting** — verified enabled for this
+repository:
+[github.com/usmanfarooqi88/skrewwwDS/security/advisories/new](https://github.com/usmanfarooqi88/skrewwwDS/security/advisories/new).
+This opens a private advisory visible only to you and the maintainer, with
+its own discussion thread, so you can share exploit details and reproduction
+steps safely.
 
-This is a genuine gap, stated plainly rather than papered over with a contact
-address that does not exist:
+**Do not open a public GitHub Issue for a security vulnerability.** Public
+issues are for normal bugs (see the distinction above) — a public issue
+containing exploit details for a genuine vulnerability puts other users at
+risk before a fix ships.
 
-- GitHub's private vulnerability reporting is **not currently enabled** for
-  this repository (verified, not assumed) — and GitHub only offers it for
-  public repositories, so it cannot be enabled while this repository is
-  private.
-- No dedicated security email or form has been established.
-
-**Planned resolution:** enable GitHub private vulnerability reporting
-(Settings → Code security → Private vulnerability reporting) as part of making
-this repository public, and update this file with that route in the same
-change. Tracked in
-[`docs/open-source-readiness.md`](docs/open-source-readiness.md).
-
-Until that is in place, please **do not** open a public issue containing
-exploit details for a genuine vulnerability. Contact the maintainer through
-whatever direct channel you already have, and a private route will be
-established for the exchange.
+If you are unable to use private reporting for some reason, do not post
+exploit details publicly; open a minimal public issue asking for a private
+contact route instead, and the maintainer will follow up through GitHub's
+private advisory flow.
 
 ## Supported versions
 

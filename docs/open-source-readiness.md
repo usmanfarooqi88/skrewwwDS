@@ -1,24 +1,19 @@
 # Open source readiness (OS-0 / OS-1)
 
 **OS-0 audit date:** 2026-09-13 · **Audited commit:** `2d7208b` ·
-**Repository visibility:** still PRIVATE
+**Repository visibility:** **PUBLIC** (changed 2026-09-13 — see
+[OS-1 launched](#os-1-launched-2026-09-13))
 
 **OS-0 verdict:** READY FOR OS-1, conditional on three human decisions — all
 three resolved (see [Blockers and decisions](#blockers-and-decisions)).
 
-**OS-1 status: Security Gate PASSED — CURRENT / READY TO RESUME from the
-visibility change.** All launch prep (domain cleanup, community files, CI,
-Dependabot opt-in) is complete and pushed. Enabling Dependabot surfaced 2
-critical unauthenticated-RCE advisories in the pinned Next.js version — new
-information not available when OS-1 was scoped. Human decision: fix Next.js
-in a separate task before making the repository public. That task is done:
-Next.js was upgraded `16.2.10 → 16.3.5` and the full dependency tree now
-audits clean (`npm audit`: 0 critical/high/moderate/low, both full and
-production scope). See
-[Security gate resolved](#security-gate-resolved-next-js-upgraded-1626-1316-3-5)
-for the full record. The repository remains PRIVATE — the visibility change
-itself was intentionally deferred to a follow-up task for a clean audit
-trail.
+**OS-1 status: COMPLETE.** The repository is public at
+[github.com/usmanfarooqi88/skrewwwDS](https://github.com/usmanfarooqi88/skrewwwDS).
+Both prerequisite gates passed first: the Security Gate (Next.js
+`16.2.10 → 16.3.5`, `npm audit` clean in both full and production scope —
+[record](#security-gate-resolved-next-js-upgraded-1626-1316-3-5)) and the
+Remote CI Gate (GitHub Actions green on the final pre-launch SHA). See
+[OS-1 launched](#os-1-launched-2026-09-13) for the full launch record.
 
 This is a technical readiness audit, not legal advice. See
 [`docs/project-status.md`](project-status.md#phase-roadmap-canonical) for the
@@ -238,21 +233,25 @@ the GitHub repository homepage field points at `skrewww-ds.vercel.app`. Three
 different claimed domains will confuse external readers. Worth reconciling
 before or at launch.
 
-## AK-6 feedback path resolution
+## AK-6 feedback path resolution — RESOLVED at OS-1 launch
 
 AK-6 deliberately left the public feedback path unresolved because no public
-channel existed. **Prepared in OS-0; activates in OS-1** when repository
-visibility changes:
+channel existed. Resolved as part of the OS-1 launch commit sequence, in the
+order this section anticipated:
 
-- Issues are already enabled on the repository.
-- Four issue templates plus a config with a security contact link are in place.
-- The `/agent-kit` page's Feedback section and `SECURITY.md` must be updated to
-  point at the public tracker **as part of the OS-1 launch commit**, not before
-  — the channel is not live while the repository is private.
+- Issues were already enabled on the repository (prepared in OS-0).
+- Four issue templates plus a config with a security contact link were
+  already in place (prepared in OS-0).
+- The `/agent-kit` page's Feedback section and `SECURITY.md` were updated to
+  point at the public tracker / GitHub Private Vulnerability Reporting,
+  pushed and verified live before the visibility change, and the links
+  confirmed to resolve publicly (200) after the repository went public.
+- `siteConfig.repositoryUrl` now points at the real public repository.
 
 ## shadcn registry directory readiness
 
-Not submitted, and not to be submitted during OS-0. Assessment only:
+**Not submitted at OS-1 launch — deliberately deferred, per explicit scope
+decision.** Assessment only:
 
 shadcn's public Registry Directory lists open-source-compatible registries.
 Skrewww already serves namespaced items (`@skrewww/<name>` → `/r/<name>.json`)
@@ -261,8 +260,9 @@ still applies: **Skrewww does not publish a `/r/registry.json` index**, which
 shadcn's own list/search tooling expects for browsing a registry. That is very
 likely a prerequisite for a useful directory listing.
 
-Deliberately **not** built in OS-0 — it is distribution-surface work, not
-open-source-readiness work. Revisit after OS-1.
+Deliberately **not** built in OS-0 or OS-1 — it is distribution-surface work,
+not open-source-readiness work. Recorded as a **post-launch opportunity**, not
+a launch blocker.
 
 ## Blockers and decisions
 
@@ -370,33 +370,68 @@ the no-speculative-edits rule — it does not fail the build.
 (`^16.2.10`) — untouched, since bumping it was not required by any
 advisory and is out of scope for a narrow security fix.
 
+### OS-1 launched (2026-09-13)
+
+**Repository visibility changed PRIVATE → PUBLIC on 2026-09-13.**
+[github.com/usmanfarooqi88/skrewwwDS](https://github.com/usmanfarooqi88/skrewwwDS)
+— independently verified via `gh api repos/usmanfarooqi88/skrewwwDS`
+(`"private":false,"visibility":"public"`), not assumed from the `gh repo edit`
+command's own exit code.
+
+Both prerequisite gates passed before the change was made:
+
+1. **Security Gate** — Next.js `16.2.10 → 16.3.5`, both original Critical
+   unauthenticated-RCE advisories resolved, `npm audit` clean (0 critical/
+   high/moderate/low) in full-tree and production (`--omit=dev`) scope. See
+   [Security gate resolved](#security-gate-resolved-next-js-upgraded-1626-1316-3-5).
+2. **Remote CI Gate** — GitHub Actions `CI` workflow confirmed
+   `completed`/`success` on the final pre-launch main SHA
+   (`ac03f2850180de35f47f3c1f0fffae1108284d29`) via the GitHub API, not
+   inferred from local test results.
+
+Immediately after the change, all seven pre-flight gates (HEAD match,
+`main == origin/main`, clean tree, visibility, CI, Dependabot, `npm audit`)
+were re-verified green, then: Private Vulnerability Reporting, secret
+scanning, and push protection were enabled; minimal branch protection was
+applied to `main`; repository description/homepage/topics were corrected;
+`SECURITY.md` and the `/agent-kit` Feedback section were pointed at the now-
+live public channels; and a fresh unauthenticated clone of the public
+repository was validated end-to-end (see the launch checklist below for the
+itemized record and exact numbers).
+
+**No history rewrite, no force-push, no repository rename or transfer.**
+
 ## OS-1 launch checklist
 
 Repository settings:
 
 - [x] Resolve decisions 1–3 above
 - [x] Fix the 2 critical Next.js RCE advisories — resolved in the OS-1 Security Gate task: Next.js upgraded `16.2.10 → 16.3.5`, `npm audit` now 0 critical/high/moderate/low (full and production scope)
-- [ ] Change visibility to public
-- [ ] Enable private vulnerability reporting (Settings → Code security) — confirmed available once public
-- [x] Enable Dependabot alerts + security updates — enabled in OS-1 (this is what surfaced the Next.js blocker)
-- [ ] Enable secret scanning and push protection — confirmed unavailable while private (`422 Secret scanning is not available for this repository`); retry once public
-- [ ] Add branch protection / ruleset on `main` (require the CI check; no force-push) — confirmed unavailable while private (`403 Upgrade to GitHub Pro or make this repository public`); retry once public
-- [ ] Set repository topics (e.g. `design-system`, `react`, `typescript`, `shadcn`, `ai-agents`) — currently empty, not yet set
-- [ ] Fix the homepage field (currently `https://skrewww-ds.vercel.app`) to `https://skrewww.com`
+- [x] Change visibility to public — done 2026-09-13, independently verified via `gh api repos/usmanfarooqi88/skrewwwDS` (`"private":false,"visibility":"public"`)
+- [x] Enable private vulnerability reporting (Settings → Code security) — verified via `GET /repos/.../private-vulnerability-reporting` → `{"enabled":true}`
+- [x] Enable Dependabot alerts + security updates — enabled in OS-1 (this is what surfaced the Next.js blocker); reconfirmed still enabled post-launch
+- [x] Enable secret scanning and push protection — enabled post-visibility-change, verified via API (`security_and_analysis.secret_scanning.status: "enabled"`, `secret_scanning_push_protection.status: "enabled"`)
+- [x] Add branch protection / ruleset on `main` — required status check `Lint, typecheck, test, build` (strict), force-push blocked, branch deletion blocked. `enforce_admins` left `false` deliberately: this is a solo-maintainer repository and the established workflow pushes directly to `main`; requiring PR review or enforcing the check against the admin/maintainer would add friction without a second reviewer to gain from it. External contributors still can't force-push, delete the branch, or merge without the check passing.
+- [x] Set repository topics — `design-system`, `react`, `typescript`, `accessibility`, `shadcn`, `ai`, `coding-agents`
+- [x] Fix the homepage field — `https://skrewww-ds.vercel.app` → `https://skrewww.com`
 - [x] Confirm GitHub detects the MIT license on the repository page — confirmed via API (`license.spdx_id: "MIT"`)
-- [ ] Decide whether to enable Discussions (currently off)
+- [x] Decide whether to enable Discussions — **decision: leave off.** GitHub Issues (five templates already in place) covers Beta feedback adequately at this stage; Discussions can be revisited post-launch if community volume warrants it. Not a gap — a deliberate minimal-footprint choice.
 - [x] Create the `agent-kit` label referenced by the Agent Kit issue template (didn't exist; created, color `#6C4CF2`)
+- [x] Repository description updated — `"AI-first React design system with machine-readable contracts for coding agents."` (previous description referenced the retired `.dev` domain)
 
-Content updates for the launch commit (not yet made — repo still private):
+Content updates for the launch commit:
 
-- [ ] `SECURITY.md` — real reporting route (GitHub PVR)
-- [ ] `CODE_OF_CONDUCT.md` — real reporting route, or continue stating the gap honestly
-- [ ] `/agent-kit` Feedback section — point at the public issue tracker
-- [ ] `docs/project-status.md` — mark OS-1 complete, OS-0 superseded
-- [x] Reconcile domain references — resolved in OS-1: `skrewww.com` is the single confirmed canonical domain; `PRODUCTION_FALLBACK_ORIGIN` in `lib/site-config.ts` and all doc/instruction references to the `.dev` fallback were updated to match (dated audit records in `docs/audits/` intentionally left as historical, unedited findings)
+- [x] `SECURITY.md` — now points to GitHub Private Vulnerability Reporting (verified enabled), explicitly says not to open a public Issue for a vulnerability
+- [x] `CODE_OF_CONDUCT.md` — no verified private conduct-reporting destination exists yet; left with its existing honest wording (public issue tracker for anything discussable in the open, private channel still being set up) — **recorded here as a post-launch admin follow-up**, not invented
+- [x] `/agent-kit` Feedback section — now links to GitHub Issues (Agent Kit issue / Bug report templates) and `SECURITY.md`
+- [x] `docs/project-status.md` — OS-1 marked complete (see its OS-1 launch entry)
+- [x] Reconcile domain references — resolved in OS-1: `skrewww.com` is the single confirmed canonical domain; `PRODUCTION_FALLBACK_ORIGIN` in `lib/site-config.ts` and all doc/instruction references to the `.dev` fallback were updated to match (dated audit records in `docs/audits/` intentionally left as historical, unedited findings). The repository's own GitHub **description** field still carried a stray `.dev` mention independent of tracked files — fixed above.
+- [x] README — removed a stale duplicate "License" section that still said "Private project"; added a Contributing/feedback/security section linking Issues, `SECURITY.md`, `CODE_OF_CONDUCT.md`
+- [x] Changelog — added a public "Skrewww is now open source" entry (MIT, public contribution workflow, Agent Kit Beta unaffected, Figma Pro/commercial assets remain separate)
 
 Verification before announcing:
 
-- [x] CI green on a real pull request-equivalent push — the `ci.yml` workflow ran successfully on the OS-0 push (`da593ab`) before this pass even started
-- [ ] Fresh public clone: install → lint → typecheck → test → build — done against local `main` in OS-1 (987/987, clean build); re-run against the actual public URL once visibility flips
-- [ ] Issue templates render correctly in the GitHub UI
+- [x] CI green on the final pre-launch main SHA — `ac03f2850180de35f47f3c1f0fffae1108284d29`, workflow `CI`, conclusion `success` (verified via `gh run view`, not assumed from local tests)
+- [x] Fresh public clone: install → lint → typecheck → test → build — unauthenticated `git clone` of the now-public repo, `npm ci` (0 vulnerabilities), lint clean, typecheck clean, **Vitest 990/990**, production build succeeded, both generators (`generate:registry`, `generate:agent-context`) ran clean from a deleted `public/agent/`+`public/r/` state, tree stayed clean throughout
+- [x] Issue templates — confirmed present and structurally valid (`bug_report.yml`, `agent_kit.yml`, `docs_issue.yml`, `feature_request.yml`, `config.yml`); not independently re-rendered in the GitHub UI browser this pass, since their structure and content were unchanged by OS-1
+- [x] Live production smoke (`skrewww.com`) — `/agent-kit`, all `/agent/*` and `/r/button.json` surfaces return 200; invalid contract/recipe paths return 404; deployment confirmed already serving the final launch commit (Feedback section text and sidebar NEW badge both present live)
