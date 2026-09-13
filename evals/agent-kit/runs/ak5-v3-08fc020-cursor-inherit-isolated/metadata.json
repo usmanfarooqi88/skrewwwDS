@@ -1,0 +1,241 @@
+{
+  "runId": "ak5-v3-08fc020-cursor-inherit-isolated",
+  "suiteVersion": "1.0.0",
+  "predecessorRunId": "ak5-v2-32a908b-cursor-inherit-isolated",
+  "predecessorReportSha256": "55e2c92beab633bae9c764b20909597119c32d7ead5990bbc119e4d297ffa499",
+  "v1BaselineRunId": "ak5-v1-aa26a17-cursor-inherit",
+  "v1BaselineReportSha256": "7d8ec34cbf983efdf418eb070491e55e33cc28e65530910417a711ab0dd845c1",
+  "sourceGitSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+  "sourceGitCommitTimestamp": "2026-09-13T20:48:57+05:00",
+  "agentKitFreezeSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+  "modelIdentifier": "not exposed (Cursor Task subagent, model=inherit)",
+  "executionEnvironment": "Cursor IDE Task tool — one fresh subagent per case per condition (no batching)",
+  "isolationNotes": "AK-5 remediation pass 2 after v2 gate fail (inventedApis=1 empty-state.variant). Skill clarifies api.properties vs descriptive api.variants; scorer rejects usage-shaped forbidden claims only; a11y uses token groups. v1 and v2 artifacts preserved.",
+  "weightsLockedIn": "lib/agent-kit/evaluation-schema.ts EVAL_SCORE_WEIGHTS",
+  "isolationManifest": [
+    {
+      "caseId": "single-button-api",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "31d4fd48-7866-4e7b-b3ba-3cce2128b94b"
+    },
+    {
+      "caseId": "single-button-api",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "3b2214c3-779f-4b30-b393-24169d4af61b"
+    },
+    {
+      "caseId": "invalid-prop-bait-tertiary",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "0853a322-f351-4e2f-af2e-236dbf67eefb"
+    },
+    {
+      "caseId": "invalid-prop-bait-tertiary",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "d9420f81-02b2-46c5-8995-0447f9802a4a"
+    },
+    {
+      "caseId": "identity-icon-button",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "ae5d45bd-829a-4fe2-8a87-f69046347217"
+    },
+    {
+      "caseId": "identity-icon-button",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "51aba5b3-9714-4a33-a59a-ab53baca264c"
+    },
+    {
+      "caseId": "maturity-empty-state-beta",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "d9a0c9b5-6094-4006-9b06-e16ff1169b05"
+    },
+    {
+      "caseId": "maturity-empty-state-beta",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "811f02d4-4207-4777-825b-8faa4142435d"
+    },
+    {
+      "caseId": "install-distributed-spinner",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "4340e3ad-09c8-4703-b2d9-e80596723ef9"
+    },
+    {
+      "caseId": "install-distributed-spinner",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "c71a4c0b-5290-4f8c-9cbb-e52c3577fe57"
+    },
+    {
+      "caseId": "install-undistributed-checkbox",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "7e41315e-76d9-434d-8d49-72e40e813f5c"
+    },
+    {
+      "caseId": "install-undistributed-checkbox",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "10d5ecf8-1c93-4607-b698-0ca1eabb6189"
+    },
+    {
+      "caseId": "project-context-preserve-shape",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "47c2eb97-63a9-4c76-a9c6-6fabf4e78bc7"
+    },
+    {
+      "caseId": "project-context-preserve-shape",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "1c144489-e0e2-40b7-ae23-85f19e2ac59e"
+    },
+    {
+      "caseId": "project-context-unknown",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "1d32894c-eedc-4b90-8c11-7d20dcfa9b03"
+    },
+    {
+      "caseId": "project-context-unknown",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "9d3fb20b-bac3-41b8-9707-9e5505f5b7d2"
+    },
+    {
+      "caseId": "a11y-form-field-label",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "54f964c0-1087-45ee-babc-64db8170b9e8"
+    },
+    {
+      "caseId": "a11y-form-field-label",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "051c9a73-4c15-44d1-a4bd-a977d1a3f9d0"
+    },
+    {
+      "caseId": "recipe-validated-text-field",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "a19d28fd-f0ba-4f59-b90f-b2352125b7bf"
+    },
+    {
+      "caseId": "recipe-validated-text-field",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "040a7e2d-621a-4531-9163-e12a40718f8a"
+    },
+    {
+      "caseId": "recipe-destructive-confirmation",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "b232c666-fe7f-4b12-afcb-cc0f47915d66"
+    },
+    {
+      "caseId": "recipe-destructive-confirmation",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "d26700c1-e3f4-4724-9cb0-52641a3a4d73"
+    },
+    {
+      "caseId": "recipe-conflict-dialog-title-prop",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "2b848096-c9d6-4e70-b5c1-cef6fcfabb07"
+    },
+    {
+      "caseId": "recipe-conflict-dialog-title-prop",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "ed3b2644-6e5e-4297-a5c6-6a58404eabdf"
+    },
+    {
+      "caseId": "recipe-search-no-results-beta",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "228a2269-1adb-4f25-81da-b5ff4b3daf8c"
+    },
+    {
+      "caseId": "recipe-search-no-results-beta",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "2bd29f9d-af07-4700-8e14-bf62787efd2d"
+    },
+    {
+      "caseId": "hostile-readme-fake-api",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "eed80f8a-21ef-4965-a3c3-02a53a6ed6ba"
+    },
+    {
+      "caseId": "hostile-readme-fake-api",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+      "taskId": "07796fd3-a6dc-4ab1-9cd4-ba57e11f783b"
+    }
+  ]
+}

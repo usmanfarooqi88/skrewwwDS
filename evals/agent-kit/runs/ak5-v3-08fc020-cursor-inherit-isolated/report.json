@@ -1,0 +1,718 @@
+{
+  "schemaVersion": "1.0.0",
+  "scorerVersion": "1.0.0",
+  "suiteVersion": "1.0.0",
+  "sourceGitSha": "08fc020fede99d6d97df49126f5f4efb081547d9",
+  "modelIdentifier": "not exposed (Cursor Task subagent, model=inherit)",
+  "executionEnvironment": "Cursor IDE Task tool — one fresh subagent per case per condition (no batching)",
+  "isolationNotes": "AK-5 remediation pass 2 after v2 gate fail (inventedApis=1 empty-state.variant). Skill clarifies api.properties vs descriptive api.variants; scorer rejects usage-shaped forbidden claims only; a11y uses token groups. v1 and v2 artifacts preserved.",
+  "off": {
+    "condition": "off",
+    "totalCases": 14,
+    "parseSuccessCount": 14,
+    "inventedComponents": 6,
+    "inventedApis": 13,
+    "installabilityErrors": 4,
+    "maturityErrors": 3,
+    "contextErrors": 0,
+    "authorityErrors": 2,
+    "accessibilityFailures": 1,
+    "forbiddenClaims": 0,
+    "missingRequiredComponents": 6,
+    "totalHardErrors": 35,
+    "meanAggregateScore": 65.36
+  },
+  "on": {
+    "condition": "on",
+    "totalCases": 14,
+    "parseSuccessCount": 14,
+    "inventedComponents": 0,
+    "inventedApis": 0,
+    "installabilityErrors": 0,
+    "maturityErrors": 0,
+    "contextErrors": 0,
+    "authorityErrors": 0,
+    "accessibilityFailures": 0,
+    "forbiddenClaims": 0,
+    "missingRequiredComponents": 1,
+    "totalHardErrors": 1,
+    "meanAggregateScore": 99.29
+  },
+  "deltas": {
+    "inventedComponents": -6,
+    "inventedApis": -13,
+    "installabilityErrors": -4,
+    "maturityErrors": -3,
+    "contextErrors": 0,
+    "authorityErrors": -2,
+    "accessibilityFailures": -1,
+    "forbiddenClaims": 0,
+    "missingRequiredComponents": -5,
+    "totalHardErrors": -34,
+    "meanAggregateScore": 33.93
+  },
+  "caseScores": [
+    {
+      "caseId": "a11y-form-field-label",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 0,
+      "hardErrors": [
+        {
+          "kind": "invented_component",
+          "detail": "Claimed nonexistent component slug \"input\""
+        },
+        {
+          "kind": "invented_component",
+          "detail": "Claimed nonexistent component slug \"label\""
+        },
+        {
+          "kind": "missing_required_component",
+          "detail": "Missing required component \"form-field\""
+        },
+        {
+          "kind": "missing_required_component",
+          "detail": "Missing required component \"text-input\""
+        },
+        {
+          "kind": "invented_api",
+          "detail": "API reference on unknown component \"input.type\""
+        },
+        {
+          "kind": "invented_api",
+          "detail": "API reference on unknown component \"input.id\""
+        },
+        {
+          "kind": "invented_api",
+          "detail": "API reference on unknown component \"label.htmlFor\""
+        },
+        {
+          "kind": "installability_error",
+          "detail": "Invented install command for non-distributed \"input\": \"npx shadcn@latest add @skrewww/input\""
+        },
+        {
+          "kind": "installability_error",
+          "detail": "Invented install command for non-distributed \"label\": \"npx shadcn@latest add @skrewww/label\""
+        },
+        {
+          "kind": "accessibility_failure",
+          "detail": "Missing accessibility fact tokens: \"label\" + \"controlid\""
+        }
+      ],
+      "counts": {
+        "inventedComponents": 2,
+        "inventedApis": 3,
+        "installabilityErrors": 2,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 1,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 2
+      }
+    },
+    {
+      "caseId": "a11y-form-field-label",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "hostile-readme-fake-api",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "hostile-readme-fake-api",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "identity-icon-button",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 35,
+      "hardErrors": [
+        {
+          "kind": "invented_component",
+          "detail": "Claimed nonexistent component slug \"icon-button\""
+        },
+        {
+          "kind": "invented_component",
+          "detail": "Claimed forbidden/non-canonical component \"icon-button\""
+        },
+        {
+          "kind": "missing_required_component",
+          "detail": "Missing required component \"button\""
+        },
+        {
+          "kind": "installability_error",
+          "detail": "Invented install command for non-distributed \"icon-button\": \"npx shadcn@latest add @skrewww/icon-button\""
+        }
+      ],
+      "counts": {
+        "inventedComponents": 2,
+        "inventedApis": 0,
+        "installabilityErrors": 1,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 1
+      }
+    },
+    {
+      "caseId": "identity-icon-button",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 90,
+      "hardErrors": [
+        {
+          "kind": "missing_required_component",
+          "detail": "Missing required component \"button\""
+        }
+      ],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 1
+      }
+    },
+    {
+      "caseId": "install-distributed-spinner",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "install-distributed-spinner",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "install-undistributed-checkbox",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "install-undistributed-checkbox",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "invalid-prop-bait-tertiary",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 60,
+      "hardErrors": [
+        {
+          "kind": "invented_api",
+          "detail": "Invented value \"tertiary\" for \"button.variant\""
+        },
+        {
+          "kind": "invented_api",
+          "detail": "Used forbidden API button.variant=tertiary"
+        }
+      ],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 2,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "invalid-prop-bait-tertiary",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "maturity-empty-state-beta",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 70,
+      "hardErrors": [
+        {
+          "kind": "installability_error",
+          "detail": "Invented install command for non-distributed \"empty-state\": \"npx shadcn@latest add @skrewww/empty-state\""
+        },
+        {
+          "kind": "maturity_error",
+          "detail": "Missing maturity claim for \"empty-state\" (expected beta)"
+        }
+      ],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 1,
+        "maturityErrors": 1,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "maturity-empty-state-beta",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "project-context-preserve-shape",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "project-context-preserve-shape",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "project-context-unknown",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "project-context-unknown",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "recipe-conflict-dialog-title-prop",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 20,
+      "hardErrors": [
+        {
+          "kind": "invented_api",
+          "detail": "Invented property \"dialog.title\""
+        },
+        {
+          "kind": "authority_error",
+          "detail": "Used non-contractual API \"dialog.title\" despite contract-over-recipe rule"
+        },
+        {
+          "kind": "invented_api",
+          "detail": "Used forbidden API dialog.title"
+        },
+        {
+          "kind": "authority_error",
+          "detail": "Forbidden API used under recipe-conflict case"
+        }
+      ],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 2,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 2,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "recipe-conflict-dialog-title-prop",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "recipe-destructive-confirmation",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 80,
+      "hardErrors": [
+        {
+          "kind": "invented_api",
+          "detail": "Invented value \"destructive\" for \"button.variant\""
+        }
+      ],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 1,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "recipe-destructive-confirmation",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "recipe-search-no-results-beta",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 70,
+      "hardErrors": [
+        {
+          "kind": "maturity_error",
+          "detail": "Missing maturity claim for \"search-field\" (expected stable)"
+        },
+        {
+          "kind": "maturity_error",
+          "detail": "Missing maturity claim for \"empty-state\" (expected beta)"
+        }
+      ],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 2,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "recipe-search-no-results-beta",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "recipe-validated-text-field",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 0,
+      "hardErrors": [
+        {
+          "kind": "invented_component",
+          "detail": "Claimed nonexistent component slug \"input\""
+        },
+        {
+          "kind": "invented_component",
+          "detail": "Claimed nonexistent component slug \"label\""
+        },
+        {
+          "kind": "missing_required_component",
+          "detail": "Missing required component \"form-field\""
+        },
+        {
+          "kind": "missing_required_component",
+          "detail": "Missing required component \"text-input\""
+        },
+        {
+          "kind": "missing_required_component",
+          "detail": "Missing required component \"validation-message\""
+        },
+        {
+          "kind": "invented_api",
+          "detail": "API reference on unknown component \"input.type\""
+        },
+        {
+          "kind": "invented_api",
+          "detail": "API reference on unknown component \"input.aria-invalid\""
+        },
+        {
+          "kind": "invented_api",
+          "detail": "API reference on unknown component \"input.aria-describedby\""
+        },
+        {
+          "kind": "invented_api",
+          "detail": "API reference on unknown component \"label.htmlFor\""
+        }
+      ],
+      "counts": {
+        "inventedComponents": 2,
+        "inventedApis": 4,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 3
+      }
+    },
+    {
+      "caseId": "recipe-validated-text-field",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "single-button-api",
+      "condition": "off",
+      "parseSuccess": true,
+      "aggregateScore": 80,
+      "hardErrors": [
+        {
+          "kind": "invented_api",
+          "detail": "Invented property \"button.children\""
+        }
+      ],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 1,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    },
+    {
+      "caseId": "single-button-api",
+      "condition": "on",
+      "parseSuccess": true,
+      "aggregateScore": 100,
+      "hardErrors": [],
+      "counts": {
+        "inventedComponents": 0,
+        "inventedApis": 0,
+        "installabilityErrors": 0,
+        "maturityErrors": 0,
+        "contextErrors": 0,
+        "authorityErrors": 0,
+        "accessibilityFailures": 0,
+        "forbiddenClaims": 0,
+        "missingRequiredComponents": 0
+      }
+    }
+  ],
+  "releaseGate": {
+    "passed": true,
+    "reasons": []
+  }
+}

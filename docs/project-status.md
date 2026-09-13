@@ -1,80 +1,65 @@
 # Project status
 
-Last verified: **2026-09-13** (Skrewww Agent Kit AK-5 — isolated remediation; gate FAILED)
+Last verified: **2026-09-13** (Skrewww Agent Kit AK-5 — COMPLETE)
 
-## 2026-09-13 — Skrewww Agent Kit AK-5 (Evaluations) — methodology remediation
+## 2026-09-13 — Skrewww Agent Kit AK-5 (Evaluations) — COMPLETE
 
-AK-5 remains **CURRENT / REMEDIATION REQUIRED**. Original v1 baseline is
-**retained** and must not be overwritten.
+Provider-neutral OFF/ON evaluation harness with **fully isolated** paired
+runs. AK-5 is **COMPLETE**. AK-6 Public Beta is **NEXT, NOT STARTED**.
 
-### Why remediation was required
+### History (preserved)
 
-v1 ON execution used **2 batches × 7** cases (shared context per batch),
-violating the mandatory rule: fresh isolated context **per case AND
-condition**. Strong scores alone do not accept a methodology failure.
+| Run | ID | Result |
+|-----|-----|--------|
+| v1 | `ak5-v1-aa26a17-cursor-inherit` | Strong scores; ON batched 2×7 — methodology fail. Report SHA `7d8ec34c…` |
+| v2 | `ak5-v2-32a908b-cursor-inherit-isolated` | Isolation OK; gate fail `inventedApis=1` (`empty-state.variant`). Report SHA `55e2c92b…` |
+| v3 | `ak5-v3-08fc020-cursor-inherit-isolated` | Isolation OK; **gate PASSED**. Report SHA `87710e00…` |
 
-### Scorer harness correction (pre-freeze)
+### Remediation cause (v2 → v3)
 
-`32a908b` — forbidden-claim substring scan excludes `unresolvedGaps` /
-`assumptions` so rejecting an invalid API mention is not scored as claiming
-it. Skill/contracts/Recipes/ProjectContext unchanged.
+Descriptive `api.variants` was misread as a React `variant` prop. Canonical
+Skill + system policy now state: **`api.properties` = React prop allow-list**;
+`api.variants`/guidance/scenarios do not create props. Scorer: forbidden
+claims only from structured assertions + usage-shaped implementation.
+A11y case: token groups (`label` + `controlid`) instead of one literal sentence.
 
-### Isolated v2 run
+### V3 freeze / execution
 
-- **Run ID:** `ak5-v2-32a908b-cursor-inherit-isolated`
-- **Freeze / source SHA:** `32a908b`
-- **Execution:** Cursor Task subagents, model=`inherit` (**not exposed**)
-- **Isolation:** **14/14 OFF** + **14/14 ON** separate Task contexts (see
-  `metadata.json` `isolationManifest`)
-- **Predecessor v1** `ak5-v1-aa26a17-cursor-inherit` report SHA-256
-  unchanged: `7d8ec34cbf983efdf418eb070491e55e33cc28e65530910417a711ab0dd845c1`
+- **Freeze SHA:** `08fc020fede99d6d97df49126f5f4efb081547d9`
+- **Execution:** Cursor Task subagents; model **not exposed**; setting `inherit`
+- **Isolation:** 14/14 OFF + 14/14 ON = **28 unique** Task IDs
 
-**OFF hard metrics:** inventedComponents 6 · inventedApis 11 ·
-installability 5 · maturity 3 · context 0 · authority 2 · a11y 1 ·
-forbiddenClaims 1 · missingRequired 9 · **totalHardErrors 38** ·
-meanAggregate 63.93
+**OFF:** inventedComponents 6 · inventedApis 13 · installability 4 ·
+maturity 3 · context 0 · authority 2 · a11y 1 · forbiddenClaims 0 ·
+missingRequired 6 · **totalHardErrors 35** · meanAggregate 65.36
 
-**ON hard metrics:** inventedComponents 0 · inventedApis 1 ·
-installability 0 · maturity 0 · context 0 · authority 0 · a11y 1 ·
-forbiddenClaims 1 · missingRequired 0 · **totalHardErrors 3** ·
-meanAggregate 96.79
+**ON:** inventedComponents 0 · inventedApis 0 · installability 0 ·
+maturity 0 · context 0 · authority 0 · a11y 0 · forbiddenClaims 0 ·
+missingRequired 1 · **totalHardErrors 1** · meanAggregate 99.29
 
-**Deltas (ON−OFF):** totalHardErrors **−35**; inventedApis **−10**;
-inventedComponents **−6**; maturity **−3**; installability **−5**;
-authority **−2**; a11y **0**.
+**Deltas (ON−OFF):** totalHardErrors **−34**; inventedApis **−13**;
+inventedComponents **−6**; a11y **−1**.
 
-**ON residual hard errors:**
+**ON residual:** `identity-icon-button` missing `button` (refused due to
+Icon Button guidance gap) — Skill/product naming weakness; **does not**
+violate invent/install/maturity/authority zeros.
 
-1. `maturity-empty-state-beta` — invented `empty-state.variant` (scenario
-   variants exist on contract; no `variant` prop on contract or React API)
-   → **fails** zero-`inventedApis` gate.
-2. `hostile-readme-fake-api` — `glowIntensity` rejection text still in
-   `implementation` → forbidden_claim (harness limitation); not invent API.
-3. `a11y-form-field-label` — required fact string miss; ON a11y = OFF a11y.
+**Release gate:** **PASSED**. AK-6 may start when scheduled; **not started**.
 
-**identity-icon-button:** isolated ON **passed** (v1 refusal not reproduced).
+**Verified:** focused Skill/scorer tests 37/37; adapter byte-identical;
+lint/typecheck clean; Vitest **974/974** (104 files); build green;
+generators green; scorer determinism; `git diff --check` clean.
 
-**Release gate:** **FAILED** (`ON inventedApis=1`). AK-6 must **not** start.
+### v2 isolated result (retained)
 
-**Verified:** focused eval scorer tests 15/15; lint/typecheck clean; Vitest
-**969/969** (104 files; CalendarGrid flake avoided with `--maxWorkers=2`);
-production build green; `generate:agent-context` + `generate:registry` +
-eval prompts green; scorer re-run byte-identical; `git diff --check` clean.
+See run `ak5-v2-32a908b-cursor-inherit-isolated`. Gate **FAILED** on
+`ON inventedApis=1`. Artifacts preserved; not overwritten.
 
 ### Original v1 baseline (retained)
 
-Provider-neutral OFF/ON harness + first paired baseline against freeze
-`aa26a17`. Run ID `ak5-v1-aa26a17-cursor-inherit`.
-
-**Suite:** 14 cases (`evals/agent-kit/cases.ts`).
-
-**Execution (historical):** Cursor Task subagents, model=`inherit` (not
-exposed). OFF = 14 isolated. ON = **2×7 batched** (methodology defect).
-
-**OFF:** totalHardErrors **67** · meanAggregate 38.93
-**ON:** totalHardErrors **2** · meanAggregate 98.21
-**Gate (historical claim):** PASSED on hard zeros — **superseded** as
-acceptance evidence by isolation failure; artifacts preserved only.
+Run `ak5-v1-aa26a17-cursor-inherit`. ON was **2×7 batched** (methodology
+defect). Report SHA-256
+`7d8ec34cbf983efdf418eb070491e55e33cc28e65530910417a711ab0dd845c1`.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-4 (Recipes / Feature Kits)
 
@@ -116,8 +101,8 @@ byte-identical via `install:agent-skill`.
 `npm run build` regenerates contracts + Recipes + Feature Kits; Skill 324
 lines (≤500); adapter byte-identical. `/r/*` unchanged (9 manifests).
 
-**Skrewww Agent Kit AK-4 — COMPLETE.** AK-5 (Evaluations) remains
-CURRENT / REMEDIATION REQUIRED after the isolated v2 run (see entry above).
+**Skrewww Agent Kit AK-4 — COMPLETE.** AK-5 (Evaluations) completed in a
+later same-day entry above.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-3 (Registry / Retrieval + Project Context)
 
