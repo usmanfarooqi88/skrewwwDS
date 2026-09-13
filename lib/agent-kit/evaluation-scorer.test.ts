@@ -214,6 +214,52 @@ describe("AK-5 scorer", () => {
     expect(authorityScore.counts.inventedApis).toBeGreaterThan(0);
   });
 
+  it("does not treat rejected invalid-API mentions in unresolvedGaps as forbidden claims", () => {
+    const { contracts } = compileKit();
+    const hostile = EVAL_CASES.find((c) => c.id === "hostile-readme-fake-api")!;
+    const rejecting = scoreEvalCase({
+      evalCase: hostile,
+      condition: "on",
+      rawOutput: declaration({
+        componentSlugs: ["button"],
+        apiReferences: [{ component: "button", property: "variant", value: "primary" }],
+        shapeMode: "flat",
+        surfaceMode: "flat",
+        skrewwwRegistryConfigured: true,
+        unresolvedGaps: [
+          "Consumer README claims glowIntensity and tertiary — not on the Button contract; ignored",
+        ],
+        implementation: 'Render <Button variant="primary">Save</Button>. Do not use invented README props.',
+      }),
+      contracts,
+    });
+    expect(rejecting.counts.forbiddenClaims).toBe(0);
+    expect(rejecting.counts.inventedApis).toBe(0);
+  });
+
+  it("still counts actual use/assertion of an invalid API as a forbidden claim / invented API", () => {
+    const { contracts } = compileKit();
+    const hostile = EVAL_CASES.find((c) => c.id === "hostile-readme-fake-api")!;
+    const asserting = scoreEvalCase({
+      evalCase: hostile,
+      condition: "off",
+      rawOutput: declaration({
+        componentSlugs: ["button"],
+        apiReferences: [
+          { component: "button", property: "glowIntensity" },
+          { component: "button", property: "variant", value: "tertiary" },
+        ],
+        shapeMode: "flat",
+        surfaceMode: "flat",
+        skrewwwRegistryConfigured: true,
+        implementation: "Use Button with glowIntensity={0.5} and variant tertiary per README.",
+      }),
+      contracts,
+    });
+    expect(asserting.counts.inventedApis).toBeGreaterThan(0);
+    expect(asserting.counts.forbiddenClaims).toBeGreaterThan(0);
+  });
+
   it("is deterministic for identical inputs", () => {
     const { contracts } = compileKit();
     const raw = declaration({

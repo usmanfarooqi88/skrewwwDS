@@ -370,13 +370,22 @@ export function scoreEvalCase(options: {
     }
   }
 
-  // Forbidden claims in implementation + serialized declaration
-  const blob = `${declaration.implementation}\n${JSON.stringify(declaration)}`;
+  // Forbidden claims — only count usages/assertions, not rejection notes.
+  // Mentions inside unresolvedGaps/assumptions (e.g. "README invented glowIntensity;
+  // ignored") must NOT count as claiming the invalid API is real.
+  const usageBlob = JSON.stringify({
+    componentSlugs: declaration.componentSlugs,
+    apiReferences: declaration.apiReferences,
+    installCommands: declaration.installCommands,
+    maturityClaims: declaration.maturityClaims,
+    recipeIdsUsed: declaration.recipeIdsUsed,
+    implementation: declaration.implementation,
+  });
   for (const claim of evalCase.forbiddenClaims ?? []) {
-    if (blob.toLowerCase().includes(claim.toLowerCase())) {
+    if (usageBlob.toLowerCase().includes(claim.toLowerCase())) {
       hardErrors.push({
         kind: "forbidden_claim",
-        detail: `Forbidden claim present: "${claim}"`,
+        detail: `Forbidden claim present in usage/assertion fields: "${claim}"`,
       });
       counts.forbiddenClaims += 1;
       aggregateScore = applyPenalty(aggregateScore, EVAL_SCORE_WEIGHTS.forbiddenClaim);
