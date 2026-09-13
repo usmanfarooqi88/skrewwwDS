@@ -1,6 +1,81 @@
 # Project status
 
-Last verified: **2026-09-13** (Form Field icon color parity verified)
+Last verified: **2026-09-13** (Skrewww Agent Kit AK-1 — Contracts + Compiler complete)
+
+## 2026-09-13 — Skrewww Agent Kit AK-1 (Contracts + Compiler)
+
+Implements the AK-1 scope approved in the AK-0 architecture audit: a
+deterministic, zero-LLM compiler that projects the canonical component
+registry and authored docs into per-component Agent Contracts, plus one
+authored System Contract. Local-only output; no new public surface.
+
+**R1 reconciliation (AK-1 prerequisite).** The AK-0 audit found 12
+components where `content.tokensUsed` (editorial, `content/*.ts`) was not
+a subset of `registry.tokensUsed` (canonical, `lib/component-registry*.ts`)
+— the precondition Agent Kit contract generation requires. Each was traced
+against its actual CSS module and classified before correcting the stale
+source (never both, never a union): `badge` was formatting-only (a
+compound `"A → B"` string split into two entries already present in
+registry); `file-upload`, `empty-state`, `popover`, `link` had registry
+gaps for genuinely-consumed tokens (added); `toast`, `accordion`,
+`list-item`, `dialog`, `drawer` had stale content claims not consumed by
+current implementation, corrected to the real tokens already in registry
+(`dialog`/`drawer` specifically: both render `box-shadow: none`, so the
+content-side `shadow-blur/N`/`shadow-color/N` references were never real —
+confirmed absent from `styles/tokens.css` entirely, not merely omitted).
+`avatar` and `pagination` surfaced a sharper distinction: their registry
+`tokensUsed` arrays are locked by existing tests as **verified Figma
+bindings**, deliberately narrower than "every CSS custom property the
+component's stylesheet references" — an initial CSS-first pass incorrectly
+tried to widen both, caught by the pre-existing
+`lib/component-registry.test.ts` assertions, and corrected by narrowing
+content instead. Final result: 47/47 joinable components pass
+`content.tokensUsed ⊆ registry.tokensUsed`. `docs/architecture/agent-kit.md`
+records the rule and this distinction as the canonical reference going
+forward.
+
+**AK-1 implementation.**
+
+| Artifact | Purpose |
+|---|---|
+| `lib/agent-kit/contract-schema.ts` | `ComponentAgentContract` / `SystemAgentContract` / `AgentContractIndex` types; `CANONICAL_AGENT_CONTRACT_SCHEMA_VERSION = "1.0.0"` |
+| `lib/agent-kit/contract-compiler.ts` | Pure join/validate/reconcile — throws on join failure or an R1 violation rather than emitting contradictory contracts |
+| `lib/agent-kit/contract-compiler.test.ts` | 19 tests: join integrity, R1 guard, token precedence, status/API preservation, sparse-field omission, determinism, leak protection |
+| `lib/agent-kit/system-contract.ts` | The one new authored artifact — never/invent rules, token/Shape/Surface policy framing, naming rules |
+| `scripts/generate-agent-context.ts` | Writes `public/agent/{index,system,contracts/<slug>}.json`; resolves git SHA + commit timestamp, never wall-clock |
+
+**Verified facts (not a snapshot claim — re-derive from source):** 47
+implemented components, 27 Stable / 20 Beta, 263 total API props, 47/47
+`ComponentDoc` joins, 0 join failures, 0 detached/invented fields.
+
+**Determinism:** two `npm run generate:agent-context` runs at the same
+commit produced byte-for-byte identical output across all 49 generated
+files (`diff -r` clean).
+
+**Gates:** lint clean, typecheck clean, 880/880 Vitest (98 files, +1 new),
+production build passes, `git diff --check` clean. `/registry.json`,
+`/r/*`, the shadcn generator, and `/llms.txt`/`/llms-full.txt` generation
+**logic** is fully untouched — `lib/registry-public.ts`,
+`lib/shadcn-registry-generator.ts`, and `lib/llms-content.ts` were not
+modified. Their **output data** for the tokens the R1 reconciliation
+corrected necessarily reflects those corrections (they read
+`tokensUsed` straight through from the same canonical registry) — this is
+the intended, required effect of fixing stale metadata, not a regression;
+verified `/r/*`'s own generated files are byte-identical before/after the
+build that also regenerates them, confirming the shadcn layer's own
+mechanism produced no incidental drift.
+
+**`public/agent/`** is gitignored (same treatment as `public/r/`), not
+wired into `npm run build`, and has no public route — deliberately opt-in
+until a real consumer (AK-2 Skill, AK-3 retrieval) exists.
+
+**Scope preserved:** no Figma work, no `states`/Slot/composition modeling,
+no Skill, no MCP, no CLI, no Guard, no change to public component APIs.
+Full architecture rationale, the R1 rule, and the `avatar`/`pagination`
+Figma-binding distinction: [`docs/architecture/agent-kit.md`](architecture/agent-kit.md).
+
+**Skrewww Agent Kit AK-1 — COMPLETE.** AK-2 (Skill) is unblocked but not
+started.
 
 ## 2026-09-13 — Form Field icon color parity verified (no runtime change)
 

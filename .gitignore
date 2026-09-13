@@ -11,6 +11,12 @@ out/
 # never hand-edited. See docs/architecture/shadcn-distribution.md.
 public/r/
 
+# Generated Agent Kit contracts (scripts/generate-agent-context.ts) — derived
+# from lib/component-registry*.ts + content/*.ts, never hand-edited. Local/
+# build-generated only, not publicly routed in AK-1. See
+# docs/architecture/agent-kit.md.
+public/agent/
+
 # Production
 build/
 dist/
