@@ -304,7 +304,9 @@ describe("Combobox pointer active sync", () => {
     const canada = screen.getByRole("option", { name: "Canada" });
     await user.hover(canada);
     expect(input).toHaveFocus();
-    expect(input.getAttribute("aria-activedescendant")).toBe(canada.id);
+    await waitFor(() => {
+      expect(input.getAttribute("aria-activedescendant")).toBe(canada.id);
+    });
   });
 });
 
