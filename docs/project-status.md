@@ -1,6 +1,75 @@
 # Project status
 
-Last verified: **2026-09-13** (shadcn distribution expansion — Spinner / Divider / Link)
+Last verified: **2026-09-13** (Figma Presentation V2 — FROZEN)
+
+## 2026-09-13 — Figma Presentation V2 campaign closeout (FROZEN)
+
+Live audit + completion pass across the canonical Pro Figma file
+(`U6KUuNf7DF4CP9QBOkLSUx`). Free file (`KrQIUWznpBdP0ZuWjOu2e3`) was not
+modified this campaign — a Desktop Bridge mis-connection to Free was caught
+and corrected before any write occurred.
+
+**Containers & Overlays — V2 complete.** Card and Accordion Item were already
+complete; Dialog, Drawer, and Popover were completed this campaign (prior
+sessions), each with real attached-instance Anatomy/Content-resilience/Surface
+(Flat/Gradient/Glass, mode-switched and verified)/Accessibility blocks, and an
+honest Shape-omitted note where radius is bound to a fixed Primitive rather
+than the Shape collection. A genuine Title/Close-Icon collision was found and
+fixed identically across Dialog and Drawer (Title now `FILL`+`HUG`+
+`textTruncation:DISABLED`, wraps rather than truncates, per an explicit
+locked correction — Dialog/Drawer/Popover contextual titles WRAP, unlike
+compact row labels which truncate). Live-reverified this pass: Dialog
+`1124×1884`, Drawer `1044×3536`, Popover `684×1359`, all intact, 0 detached
+instances, 0 unresolved collisions. Protected `Native Slots — QA` (`2698:784`)
+and `Native Slots` (`2699:910`) untouched.
+
+**Content & Data — V2 complete + cleaned.** Avatar, Divider, Tag, List Item,
+Empty State, the Table family (Table Cell, Data Table Column Header, Table
+Header/Body Row, Table — composed, no monolithic Data Table master invented),
+Tree View, Timeline, and Calendar Day all converted to V2 grammar with real
+attached instances. Data Grid and Charts have no canonical component and are
+explicitly labeled reference-only. One real canonical defect was found and
+fixed: Tree Item's Label was `HUG` inside a `FIXED`-width row, overflowing on
+long content — corrected to `FILL` + `ENDING` truncation (compact row label,
+correctly distinct from the WRAP rule above). A legacy pre-V2 presentation
+frame (407 instances, 0 canonical masters, fully superseded), an abandoned
+Table QA instance, an orphaned empty frame, and an orphaned chart data-point
+were deleted from the active Pro file after a full pre-cleanup archive
+snapshot was taken (`28bittu5TEn0ZrHBRyfwII`). Live-reverified this pass: 11
+root children, all classified canonical-active-V2 or active-reference, 0
+legacy, 0 unknown, 0 stray, 0 detached instances, 0 unresolved collisions.
+
+**Whole-file QA (Actions, Forms, Navigation, Feedback, Containers & Overlays,
+Content & Data).** Live-audited, not rebuilt — these four categories were
+already V2-mature going into this campaign and were not part of this
+session's build work. Detached-instance scan: 0 detached across 1,574+
+instances (Actions 622, Forms 553, Navigation 251, Feedback 148), plus
+Containers & Overlays and Content & Data separately verified. Page-root
+collision scan: 0 collisions on all six pages. Surface mode-switching
+spot-verified on Button (`Surface panel / Flat|Gradient|Glass` genuinely
+bound to `VariableCollectionId:2057:10` modes `2057:0/1/2`, not faked).
+
+**Known non-blocking debt — presentation grammar bifurcation.** Two
+legitimate V2 grammars coexist: an older topic-first pattern (Icon
+configuration → Shape → Surface → State, used by Actions/Button, Forms/Text
+Input, Feedback/Alert-Tooltip-Skeleton) and the newer `Examples` (left) /
+`Main components` (right) canonical-source-reference pattern (used
+throughout Navigation, parts of Forms — Checkbox pure, Select mixed — and all
+of this campaign's Containers & Overlays / Content & Data work). Both are
+internally consistent and real (not faked); per this campaign's own
+instruction not to impose a new grammar late or arbitrarily normalize
+intentional differences, no retroactive mass-migration was attempted. Flagged
+as a documented follow-up, not a freeze blocker.
+
+**Freeze exit criteria:** all 15 PASS (grammar bifurcation noted as
+non-blocking debt under criterion 11, consistent with this file's existing
+"PASS WITH DEBT" convention). No P0/P1 presentation issue found. No source
+component master was redesigned, mutated, or had a variant/property invented.
+
+**Figma Presentation V2 — FROZEN.** No further open-ended aesthetic polishing;
+future Figma presentation edits only when component/system changes require
+them. **Skrewww Agent Kit AK-0 (read-only architecture audit) is now
+unblocked** — not started this campaign.
 
 ## 2026-09-13 — shadcn distribution expansion (Spinner / Divider / Link)
 
@@ -233,10 +302,10 @@ Documentation-only. No implementation started.
 
 **Skrewww Agent Kit is the next major development initiative after Figma
 Presentation V2 completes.** Execution gate: finish Presentation V2 → final
-whole-file Presentation QA/freeze → Agent Kit AK-0. **The current active
-development priority remains Figma Presentation V2** — this entry does not
-pause or supersede that work. Agent Kit does not begin until the gate is
-reached and AK-0 is explicitly started by the user.
+whole-file Presentation QA/freeze → Agent Kit AK-0. **Gate reached
+2026-09-13** — see the Figma Presentation V2 campaign closeout entry above
+(`Figma Presentation V2 — FROZEN`). Agent Kit AK-0 is now unblocked but has
+not been started; it begins only when explicitly started by the user.
 
 **Planned phases (high-level only):**
 
