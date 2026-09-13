@@ -194,6 +194,8 @@ export type {
   PhoneCountryOption,
   PhoneNumberFieldProps,
 } from "@/components/ui/PhoneNumberField";
+export { NumberInput } from "@/components/ui/NumberInput";
+export type { NumberInputProps, NumberInputSize } from "@/components/ui/NumberInput";
 export { Select } from "@/components/ui/Select";
 export type {
   SelectOption,

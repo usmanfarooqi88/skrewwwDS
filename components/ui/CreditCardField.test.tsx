@@ -37,7 +37,7 @@ describe("CreditCardField discovery and registry", () => {
     expect(entry?.figmaAvailability).toBe("available");
     expect(entry?.figmaNodeId).toBe(CREDIT_CARD_FIELD_FIGMA_COMPONENT_SET_NODE_ID);
     expect(CREDIT_CARD_FIELD_FIGMA_VARIANT_COUNT).toBe(4);
-    expect(getImplementedComponentCount()).toBeGreaterThanOrEqual(52);
+    expect(getImplementedComponentCount()).toBeGreaterThanOrEqual(53);
   });
 
   it("exports CreditCardField publicly", () => {

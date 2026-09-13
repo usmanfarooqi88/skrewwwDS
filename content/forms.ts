@@ -278,4 +278,31 @@ export const formsComponents: ComponentDoc[] = [
     knownLimitation:
       "Flag is a generic two-stripe placeholder, not real national flags. Default country list is illustrative (12). No national formatting engine — digits and common punctuation (+ spaces () . -) are allowed; no E.164 ownership claim. /r deferred to CE-3. Does not send network requests or verify numbers.",
   },
+  {
+    slug: "number-input",
+    name: "Number Input",
+    category: "Forms",
+    variants: "State via Form Field (default/error/disabled/readOnly) — React-first (no Figma master yet)",
+    purpose:
+      "Number Input is a direct numeric entry field with optional increment/decrement steppers, min/max/step constraints, and Form Field label/validation integration. It is not a currency field, quantity cart control, calculator, or Slider.",
+    whenToUse:
+      "When users must type or step a numeric value (counts, thresholds, settings). Prefer Slider when a bounded visual adjustment is a better interaction.",
+    whenNotToUse:
+      "Currency/money formatting, unit conversion, range selection (use two fields or a dedicated range control), or visual continuous adjustment (use Slider).",
+    accessibility:
+      "spinbutton semantics on a text input (not native type=number): aria-valuemin/max/now when applicable, labeled via Form Field, Increment/Decrement buttons with accessible names. Constraints commit on blur/step/arrows so intermediate drafts remain editable.",
+    commonMistakes:
+      "Using native type=number for Skrewww chrome. Treating this as currency. Clamping on every keystroke. Confusing with Slider. Assuming a Figma master exists (React-first / Figma pending).",
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "semantic/focus-ring",
+      "semantic/icon/muted",
+      "semantic/action/danger",
+    ],
+    properties:
+      "React: label, value/defaultValue/onValueChange (number | null), min, max, step, showSteppers, size, disabled, readOnly, required, error, supportingText, placeholder.",
+    knownLimitation:
+      "React-first CE-2B — no Figma component set yet (Figma pending). No locale/currency/precision APIs. /r deferred to CE-3. Empty value is null.",
+  },
 ];

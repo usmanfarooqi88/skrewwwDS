@@ -1113,6 +1113,168 @@ export function Example() {
 }`,
   },
   {
+    slug: "number-input",
+    name: "Number Input",
+    category: "Forms",
+    summary:
+      "Number Input is direct numeric entry with optional steppers and min/max/step — not currency, quantity business logic, or a Slider.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/forms.ts",
+    documentationLastUpdated: "2026-09-14",
+    reactLastUpdated: "2026-09-14",
+    figmaReference: "None yet — React-first CE-2B; Figma master pending",
+    documentationUrl: getComponentDocumentationUrl("number-input"),
+    supportedVariants: ["default", "error", "disabled", "readOnly"],
+    supportedSizes: ["sm", "md", "lg"],
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "semantic/focus-ring",
+      "semantic/icon/muted",
+      "semantic/action/danger",
+      "semantic/text/primary",
+      "semantic/text/secondary",
+    ],
+    relatedComponents: [
+      { label: "Text Input — field chrome family", href: "/components/text-input" },
+      { label: "Form Field — label/description/error", href: "/components/form-field" },
+      { label: "Slider — bounded visual numeric adjustment", href: "/components/slider" },
+      { label: "Validation Message — error text", href: "/components/validation-message" },
+    ],
+    relatedTokens: [
+      { label: "semantic/border/default", href: "/foundations" },
+      { label: "semantic/focus-ring", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "Figma master not created yet — intentional React-first CE-2 sequence; design follow-up later.",
+      "Locale/currency formatting explicitly out of scope for 0.1.0-beta.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "NumberInput = FormField + TextInputControl (type=text, role=spinbutton) + optional Increment/Decrement stepper buttons.",
+    keyboardBehavior:
+      "Type digits/decimal/minus. Arrow Up/Down step by `step`. Enter commits. Blur clamps/snaps to min/max/step. Intermediate drafts (-, 1.) allowed while focused.",
+    focusBehavior:
+      "Focus ring on the text control. Stepper buttons are mouse/pointer aids (tabIndex=-1) and do not steal focus from the input.",
+    comparisons: [
+      {
+        title: "Number Input vs Slider?",
+        body: "Use Number Input for direct numeric entry and stepping. Use Slider when a bounded visual adjustment is the primary interaction.",
+      },
+      {
+        title: "Is this a currency field?",
+        body: "No. There is no locale, currency symbol, or money-precision API. Build currency on top of app logic, not this primitive.",
+      },
+      {
+        title: "Why not input type=number?",
+        body: "Native number inputs have inconsistent spinner chrome, awkward intermediate values, and weaker styling control. Skrewww uses text + spinbutton ARIA with optional steppers.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "label",
+        type: "string",
+        description: "Visible Form Field label.",
+      },
+      {
+        name: "value",
+        type: "number | null",
+        description: "Controlled value. null means empty.",
+      },
+      {
+        name: "defaultValue",
+        type: "number | null",
+        description: "Uncontrolled initial value. null means empty.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: number | null) => void",
+        description: "Fires when the committed numeric value changes.",
+      },
+      {
+        name: "min",
+        type: "number",
+        description: "Minimum. Applied on blur/step/arrows, not every keystroke.",
+      },
+      {
+        name: "max",
+        type: "number",
+        description: "Maximum. Applied on blur/step/arrows, not every keystroke.",
+      },
+      {
+        name: "step",
+        type: "number",
+        default: "1",
+        description: "Step size for arrows and steppers; used for snap on commit.",
+      },
+      {
+        name: "showSteppers",
+        type: "boolean",
+        default: "true",
+        description: "Shows increment/decrement controls.",
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        default: '"md"',
+        description: "Control size matching Text Input.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disables input and steppers.",
+      },
+      {
+        name: "readOnly",
+        type: "boolean",
+        default: "false",
+        description: "Read-only input; steppers disabled.",
+      },
+      {
+        name: "required",
+        type: "boolean",
+        default: "false",
+        description: "Marks the field required.",
+      },
+      {
+        name: "error",
+        type: "string",
+        description: "Error message via Form Field.",
+      },
+      {
+        name: "supportingText",
+        type: "string",
+        description: "Help text when no error is present.",
+      },
+    ],
+    reactExample: `import { useState } from "react";
+import { NumberInput } from "@/components/ui/NumberInput";
+
+export function Example() {
+  const [value, setValue] = useState<number | null>(1);
+  return (
+    <NumberInput
+      label="Quantity"
+      value={value}
+      onValueChange={setValue}
+      min={0}
+      max={99}
+      step={1}
+      supportingText="Direct numeric entry — not currency formatting."
+    />
+  );
+}`,
+  },
+  {
     slug: "date-picker",
     name: "Date Picker",
     category: "Forms",

@@ -37,6 +37,7 @@ import { TooltipPreview } from "@/components/previews/TooltipPreview";
 import { SearchFieldPreview } from "@/components/previews/SearchFieldPreview";
 import { CreditCardFieldPreview } from "@/components/previews/CreditCardFieldPreview";
 import { PhoneNumberFieldPreview } from "@/components/previews/PhoneNumberFieldPreview";
+import { NumberInputPreview } from "@/components/previews/NumberInputPreview";
 import { MenuPreview } from "@/components/previews/MenuPreview";
 import { ComboboxPreview } from "@/components/previews/ComboboxPreview";
 import { FileUploadPreview } from "@/components/previews/FileUploadPreview";
@@ -85,6 +86,7 @@ const previewMap: Record<string, ComponentType> = {
   "search-field": SearchFieldPreview,
   "credit-card-field": CreditCardFieldPreview,
   "phone-number-field": PhoneNumberFieldPreview,
+  "number-input": NumberInputPreview,
   "form-field": FormFieldPreview,
   "validation-message": ValidationMessagePreview,
   checkbox: CheckboxPreview,

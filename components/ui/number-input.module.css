@@ -1,0 +1,59 @@
+.control {
+  width: 100%;
+}
+
+.control :global(input) {
+  /* Room for stacked steppers (override TextInputControl withTrailing). */
+  padding-right: 2.75rem;
+}
+
+.steppers {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 1px;
+  height: calc(100% - 0.5rem);
+  max-height: 2.25rem;
+}
+
+.stepButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 1.75rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--semantic-icon-muted);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.stepButton:hover:not(:disabled) {
+  color: var(--semantic-text-primary);
+  background: var(--semantic-surface-subtle);
+}
+
+.stepButton:focus {
+  outline: none;
+}
+
+.stepButton:focus-visible {
+  box-shadow: 0 0 0 2px var(--semantic-focus-ring);
+}
+
+.stepButton:disabled {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepButton {
+    transition: none;
+  }
+}

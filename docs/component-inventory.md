@@ -1,7 +1,7 @@
-# Skrewww component inventory (CE-0 → CE-1E)
+# Skrewww component inventory (CE-0 → CE-2B)
 
-> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1A–CE-1E:** COMPLETE through Phone Number Field (CE-1 closed)
-> Planning source for completed CE-1. Do **not** start CE-2 / CE-3 / PH-0 / Guard here.
+> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A/B:** Number Input shipped (CE-2 IN PROGRESS)
+> Class B = **0**. CE-2 net-new expansion. See [`docs/component-expansion.md`](component-expansion.md).
 
 This document is the durable planning source for CE-1. Prefer the tables over
 prose. Re-derive volatile counts from `lib/component-registry*.ts` and
@@ -21,28 +21,28 @@ prose. Re-derive volatile counts from `lib/component-registry*.ts` and
 **Do not equate** `content/` count with “missing React components.” Many content
 entries are Figma item primitives that React correctly models via composition.
 
-## Exact totals (verified 2026-09-14, post CE-1E)
+## Exact totals (verified 2026-09-14, post CE-2B)
 
 ### React (canonical registry)
 
 | Metric | Count |
 |--------|------:|
-| Implemented public React components | **52** |
+| Implemented public React components | **53** |
 | Stable | **27** |
-| Beta | **25** |
-| Public docs pages (implemented) | **52** |
-| Agent Kit contracts | **52** |
+| Beta | **26** |
+| Public docs pages (implemented) | **53** |
+| Agent Kit contracts | **53** |
 | `/r` component manifests | **8** (+ `foundation` shared cut = 9 files) |
 
 `/r` components: button, card, divider, form-field, link, spinner, text-input, validation-message.
-Slider / Button Group / Split Button / Credit Card Field / Phone Number Field `/r` deferred to **CE-3**.
+CE-1 specialists + Number Input `/r` deferred to **CE-3**.
 
 ### Figma / documentation inventory
 
 | Metric | Count |
 |--------|------:|
-| `content/` documented entries | **63** |
-| With React counterpart (registry) | **52** |
+| `content/` documented entries | **64** |
+| With React counterpart (registry) | **53** |
 | Docs-only (no React registry entry) | **11** |
 | Of those: internal / building-block (Class C) | **10** |
 | Of those: genuine public Figma→React gap candidates (Class B) | **0** |
@@ -55,7 +55,7 @@ Slider / Button Group / Split Button / Credit Card Field / Phone Number Field `/
 | **A** | Public parity (both sides) | **49** |
 | **B** | Genuine Figma→React gap | **0** |
 | **C** | Figma internal / building block | **10** |
-| **D** | React→Figma gap (confirmed no Figma master) | **3** |
+| **D** | React→Figma gap (confirmed no / pending Figma master) | **4** |
 | **E** | Naming / modeling difference | **1** |
 | **F** | Legacy / unknown | **0** |
 
@@ -65,7 +65,7 @@ Slider / Button Group / Split Button / Credit Card Field / Phone Number Field `/
 |---------------|------:|-------|
 | VERIFIED (`figmaAvailability: available`) | **46** | Includes Slider + Button Group + Split Button + Credit Card Field + Phone Number Field |
 | PARTIAL | **3** | radio-group, data-table, calendar-grid |
-| UNKNOWN (no Figma / Class D) | **3** | Banking pilot trio |
+| UNKNOWN / unavailable (Class D) | **4** | Banking pilot trio + Number Input |
 
 ## Why Figma can have more entries than React
 
@@ -83,46 +83,37 @@ Numerical Figma−React equality is **not** a product goal.
 |----------|------:|-------------:|----------:|-------------:|---------------:|
 | Actions | 4 | 5 | 1 | 0 | 0 (+ Icon Button = E) |
 | Containers & Overlays | 5 | 6 | 1 | 0 | 1 (accordion-item) |
-| Forms | 16 | 16 | 0 | 0 | 0 |
+| Forms | 17 | 17 | 0 | 0 | 0 |
 | Feedback | 7 | 7 | 0 | 0 | 0 |
 | Navigation | 4 | 11 | 7 | 0 | 7 |
 | Content & Data | 16 | 18 | 2 | 0 | 2 (tree-item, timeline-item) |
 
-Largest remaining **product** gap pressure: none for Class B. CE-2 candidates are separate.
+Class B = 0. CE-2B Number Input shipped (Class D React-first). Next CE-2: Toggle Group — NOT STARTED.
 
 ## CE-1 status
 
 | Item | Status |
 |------|--------|
-| **CE-1A Slider** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
-| **CE-1B Button Group** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
-| **CE-1C Split Button** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
-| **CE-1D Credit Card Field** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
-| **CE-1E Phone Number Field** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
+| **CE-1A–CE-1E** | ✅ COMPLETE |
 | **CE-1 overall** | ✅ **COMPLETE** |
+| Class B gaps | **0** |
 
-Remaining genuine **Class B** gaps: **none**.
+## CE-2 status
+
+| Item | Status |
+|------|--------|
+| **CE-2A Expansion Prioritization** | ✅ COMPLETE — [`docs/component-expansion.md`](component-expansion.md) |
+| **CE-2B Number Input** | ✅ COMPLETE — Beta `0.1.0-beta`; React-first / Figma pending; `/r` deferred to CE-3 |
+| **CE-2 overall** | **IN PROGRESS** |
+| **Next candidate** | Toggle Group (P2) — **NOT STARTED** |
+
+See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 
 **Also track (not auto-implement):**
 
 - **Icon Button (Class E)** — product decision whether to keep Button+`aria-label` or add a public React API matching Figma.
 - **PARTIAL parity** — Data Table shell, Radio Group Figma framing, Calendar Grid range/grid verification — dedicated parity tasks, not greenfield components.
-- **Class D Banking** — React→Figma documentation/design follow-up if Industry Systems expands in Figma.
-
-## CE-2 candidates — NOT YET APPROVED / NOT STARTED
-
-Absent from both registry and content inventory (except as noted). Candidates for later product review only:
-
-| Candidate | Notes |
-|-----------|-------|
-| Number Input | Forms; often paired with Slider |
-| Toggle Group / Segmented Control | Exclusive multi-option control |
-| Multi Select | Combobox intentionally dropped multi-select in Figma |
-| Stepper | Multi-step flows (distinct from Pagination Page Item) |
-| Command Palette | App command surface (related to Menu but distinct) |
-| Notification center | Beyond Toast |
-| App shell / richer navigation chrome | Beyond item primitives |
-| Advanced filters / denser data patterns | Beyond Data Table MVP |
+- **Class D** — Banking + Number Input Figma follow-up through normal design workflow.
 
 ## Reference-app readiness
 
@@ -130,16 +121,16 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 |----------|-----------|---------------|
 | SaaS dashboard | **READY WITH GAPS** | denser filters; notification center; optional Icon Button clarity |
 | Settings / admin | **READY WITH GAPS** | Toggle Group; denser form composites |
-| Form-heavy product | **READY WITH GAPS** | Number Input (CE-2 candidate); specialists now shipped |
+| Form-heavy product | **READY WITH GAPS** | Number Input shipped; denser composites / filters remain |
 | Marketing / content site | **READY** | Core content + actions + feedback sufficient |
 
 ## Distribution coverage (inventory only)
 
 | Layer | Count | Note |
 |-------|------:|------|
-| Implemented | 52 | |
-| Docs | 52 implemented + 11 docs-only | |
-| Agent contracts | 52 | |
+| Implemented | 53 | |
+| Docs | 53 implemented + 11 docs-only | |
+| Agent contracts | 53 | |
 | `/r` distributed components | 8 | + foundation |
 | `/r/registry.json` | 0 | STAB-001 / CE-3 — not this pass |
 
@@ -176,6 +167,7 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 | Link | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Actions; figmaAvailability=available |
 | List Item | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Menu | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
+| Number Input | no (React-first / Figma pending) | yes | D | public | Beta | yes | yes | no (CE-3) | UNKNOWN | — | Maintain / later Figma | Forms; CE-2B; text+spinbutton; steppers; not currency/Slider |
 | Pagination | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
 | Phone Number Field | yes (Forms/Phone Number Field `2024:2776`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1E; country Select + type=tel; flag placeholder decorative; not SMS/carrier verification |
 | Popover | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Containers & Overlays; figmaAvailability=available |
@@ -222,15 +214,13 @@ CE-0 does not close STAB-001…STAB-006. Those remain Community/Beta
 steady-state items (`/r/registry.json`, CoC private contact, Figma Pro
 sharing confirmation, Free Figma terms, early external signal, NEW badge).
 
-## Roadmap after CE-1E
+## Roadmap after CE-2B
 
 - Community/Beta Stabilization = steady-state monitoring
 - **CE-0 = COMPLETE**
-- **CE-1A Slider = COMPLETE**
-- **CE-1B Button Group = COMPLETE**
-- **CE-1C Split Button = COMPLETE**
-- **CE-1D Credit Card Field = COMPLETE**
-- **CE-1E Phone Number Field = COMPLETE**
-- **CE-1 overall = COMPLETE**
-- **CE-2 = NEXT, NOT STARTED**
+- **CE-1 = COMPLETE**
+- **CE-2A Expansion Prioritization = COMPLETE**
+- **CE-2B Number Input = COMPLETE**
+- **CE-2 overall = IN PROGRESS**
+- **Next CE-2 candidate = Toggle Group — NOT STARTED**
 - CE-3 / Reference App / PH-0 / Guard = later / NOT STARTED
