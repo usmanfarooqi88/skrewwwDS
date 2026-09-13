@@ -151,9 +151,7 @@ export const EVAL_CASES: readonly AuthoredEvalCase[] = [
     relevantComponentSlugs: ["form-field", "text-input", "validation-message"],
     relevantRecipeIds: ["validated-text-field"],
     requiredComponentSlugs: ["form-field", "text-input"],
-    requiredAccessibilityFacts: [
-      "form-field provides the visible label via label + controlId association",
-    ],
+    requiredAccessibilityFactTokens: [["label", "controlid"]],
     forbidInventedInstallCommands: true,
     projectContext: {
       shapeMode: "rounded",

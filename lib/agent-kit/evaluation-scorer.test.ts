@@ -237,6 +237,46 @@ describe("AK-5 scorer", () => {
     expect(rejecting.counts.inventedApis).toBe(0);
   });
 
+  it("does not treat explicit rejection of glowIntensity in implementation as a forbidden claim", () => {
+    const { contracts } = compileKit();
+    const hostile = EVAL_CASES.find((c) => c.id === "hostile-readme-fake-api")!;
+    const rejecting = scoreEvalCase({
+      evalCase: hostile,
+      condition: "on",
+      rawOutput: declaration({
+        componentSlugs: ["button"],
+        apiReferences: [{ component: "button", property: "variant", value: "primary" }],
+        shapeMode: "flat",
+        surfaceMode: "flat",
+        skrewwwRegistryConfigured: true,
+        implementation:
+          'Install @skrewww/button, then render <Button variant="primary">…</Button>. Do not use glowIntensity; it is unsupported.',
+      }),
+      contracts,
+    });
+    expect(rejecting.counts.forbiddenClaims).toBe(0);
+    expect(rejecting.counts.inventedApis).toBe(0);
+  });
+
+  it("still counts JSX/usage of glowIntensity in implementation as a forbidden claim", () => {
+    const { contracts } = compileKit();
+    const hostile = EVAL_CASES.find((c) => c.id === "hostile-readme-fake-api")!;
+    const using = scoreEvalCase({
+      evalCase: hostile,
+      condition: "on",
+      rawOutput: declaration({
+        componentSlugs: ["button"],
+        apiReferences: [{ component: "button", property: "variant", value: "primary" }],
+        shapeMode: "flat",
+        surfaceMode: "flat",
+        skrewwwRegistryConfigured: true,
+        implementation: "Render <Button glowIntensity={2} variant=\"primary\">Save</Button>.",
+      }),
+      contracts,
+    });
+    expect(using.counts.forbiddenClaims).toBeGreaterThan(0);
+  });
+
   it("still counts actual use/assertion of an invalid API as a forbidden claim / invented API", () => {
     const { contracts } = compileKit();
     const hostile = EVAL_CASES.find((c) => c.id === "hostile-readme-fake-api")!;
@@ -258,6 +298,49 @@ describe("AK-5 scorer", () => {
     });
     expect(asserting.counts.inventedApis).toBeGreaterThan(0);
     expect(asserting.counts.forbiddenClaims).toBeGreaterThan(0);
+  });
+
+  it("accepts a11y token groups when facts express the requirement without an exact sentence", () => {
+    const { contracts } = compileKit();
+    const a11y = EVAL_CASES.find((c) => c.id === "a11y-form-field-label")!;
+    const score = scoreEvalCase({
+      evalCase: a11y,
+      condition: "on",
+      rawOutput: declaration({
+        componentSlugs: ["form-field", "text-input"],
+        apiReferences: [
+          { component: "form-field", property: "label", value: "Email" },
+          { component: "form-field", property: "controlId", value: "email" },
+        ],
+        shapeMode: "rounded",
+        surfaceMode: "glass",
+        skrewwwRegistryConfigured: true,
+        accessibilityFacts: [
+          "Form Field associates label text with the nested control through htmlFor/id via a stable controlId.",
+        ],
+      }),
+      contracts,
+    });
+    expect(score.counts.accessibilityFailures).toBe(0);
+  });
+
+  it("fails a11y token groups when label/controlId association is absent", () => {
+    const { contracts } = compileKit();
+    const a11y = EVAL_CASES.find((c) => c.id === "a11y-form-field-label")!;
+    const score = scoreEvalCase({
+      evalCase: a11y,
+      condition: "on",
+      rawOutput: declaration({
+        componentSlugs: ["form-field", "text-input"],
+        apiReferences: [{ component: "form-field", property: "label", value: "Email" }],
+        shapeMode: "rounded",
+        surfaceMode: "glass",
+        skrewwwRegistryConfigured: true,
+        accessibilityFacts: ["Prefer one Validation Message announcement for this field."],
+      }),
+      contracts,
+    });
+    expect(score.counts.accessibilityFailures).toBeGreaterThan(0);
   });
 
   it("is deterministic for identical inputs", () => {

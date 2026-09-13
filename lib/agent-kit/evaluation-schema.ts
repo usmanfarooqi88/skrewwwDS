@@ -80,9 +80,15 @@ export type AuthoredEvalCase = {
   forbidInventedInstallCommands?: boolean;
   /** ProjectContext expectations for this fixture. */
   projectContext?: EvalProjectContextExpectation;
-  /** Deterministic accessibility declarations the agent must include. */
+  /** Deterministic accessibility declarations the agent must include (legacy exact/phrase match). */
   requiredAccessibilityFacts?: string[];
-  /** Free-text claims (normalized substring) that must not appear. */
+  /**
+   * Structured accessibility requirements: each token group must appear
+   * (normalized, case-insensitive) inside at least one accessibilityFacts
+   * string. Prefer this over free-text sentence matching.
+   */
+  requiredAccessibilityFactTokens?: readonly (readonly string[])[];
+  /** Free-text claims that must not appear as asserted/used APIs. */
   forbiddenClaims?: string[];
   /**
    * When true, using a Recipe to justify an API that the component contract

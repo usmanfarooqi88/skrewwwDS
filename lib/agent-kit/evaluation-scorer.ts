@@ -108,6 +108,44 @@ function normalizeFact(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * True when `implementation` contains a usage-shaped reference to `claim`
+ * (JSX/attr assignment / object key), not merely a rejection mention.
+ */
+export function implementationUsesForbiddenClaim(implementation: string, claim: string): boolean {
+  const escaped = escapeRegExp(claim);
+  // prop= / prop={ / prop:  OR claim inside an opening JSX tag
+  const usage = new RegExp(
+    String.raw`(?:\b${escaped}\s*=|\b${escaped}\s*:|<[^>\n]*\b${escaped}\b)`,
+    "i",
+  );
+  return usage.test(implementation);
+}
+
+function structuredFieldsAssertClaim(
+  declaration: {
+    componentSlugs: string[];
+    apiReferences: Array<{ component: string; property: string; value?: string }>;
+    installCommands: string[];
+    maturityClaims: Array<{ component: string; status: string }>;
+    recipeIdsUsed: string[];
+  },
+  claim: string,
+): boolean {
+  const blob = JSON.stringify({
+    componentSlugs: declaration.componentSlugs,
+    apiReferences: declaration.apiReferences,
+    installCommands: declaration.installCommands,
+    maturityClaims: declaration.maturityClaims,
+    recipeIdsUsed: declaration.recipeIdsUsed,
+  }).toLowerCase();
+  return blob.includes(claim.toLowerCase());
+}
+
 /**
  * Pure deterministic scorer: same case + contracts + declaration → same score.
  */
@@ -370,22 +408,33 @@ export function scoreEvalCase(options: {
     }
   }
 
-  // Forbidden claims — only count usages/assertions, not rejection notes.
-  // Mentions inside unresolvedGaps/assumptions (e.g. "README invented glowIntensity;
-  // ignored") must NOT count as claiming the invalid API is real.
-  const usageBlob = JSON.stringify({
-    componentSlugs: declaration.componentSlugs,
-    apiReferences: declaration.apiReferences,
-    installCommands: declaration.installCommands,
-    maturityClaims: declaration.maturityClaims,
-    recipeIdsUsed: declaration.recipeIdsUsed,
-    implementation: declaration.implementation,
-  });
+  for (const tokenGroup of evalCase.requiredAccessibilityFactTokens ?? []) {
+    const tokens = tokenGroup.map((t) => normalizeFact(t)).filter(Boolean);
+    if (tokens.length === 0) continue;
+    const found = declaration.accessibilityFacts.some((fact) => {
+      const normalized = normalizeFact(fact);
+      return tokens.every((token) => normalized.includes(token));
+    });
+    if (!found) {
+      hardErrors.push({
+        kind: "accessibility_failure",
+        detail: `Missing accessibility fact tokens: ${tokens.map((t) => `"${t}"`).join(" + ")}`,
+      });
+      counts.accessibilityFailures += 1;
+      aggregateScore = applyPenalty(aggregateScore, EVAL_SCORE_WEIGHTS.accessibilityFailure);
+    }
+  }
+
+  // Forbidden claims — structured assertions + usage-shaped implementation only.
+  // Rejection prose ("Do not use glowIntensity") must NOT count; JSX/prop use must.
   for (const claim of evalCase.forbiddenClaims ?? []) {
-    if (usageBlob.toLowerCase().includes(claim.toLowerCase())) {
+    const asserted =
+      structuredFieldsAssertClaim(declaration, claim) ||
+      implementationUsesForbiddenClaim(declaration.implementation, claim);
+    if (asserted) {
       hardErrors.push({
         kind: "forbidden_claim",
-        detail: `Forbidden claim present in usage/assertion fields: "${claim}"`,
+        detail: `Forbidden claim asserted or used: "${claim}"`,
       });
       counts.forbiddenClaims += 1;
       aggregateScore = applyPenalty(aggregateScore, EVAL_SCORE_WEIGHTS.forbiddenClaim);
