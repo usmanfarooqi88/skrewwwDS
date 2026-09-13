@@ -189,6 +189,11 @@ export type {
   CreditCardFieldProps,
   CreditCardFieldValue,
 } from "@/components/ui/CreditCardField";
+export { PhoneNumberField } from "@/components/ui/PhoneNumberField";
+export type {
+  PhoneCountryOption,
+  PhoneNumberFieldProps,
+} from "@/components/ui/PhoneNumberField";
 export { Select } from "@/components/ui/Select";
 export type {
   SelectOption,

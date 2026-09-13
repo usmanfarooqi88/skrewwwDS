@@ -256,14 +256,26 @@ export const formsComponents: ComponentDoc[] = [
     slug: "phone-number-field",
     name: "Phone Number Field",
     category: "Forms",
-    variants: "State — 4 variants",
-    purpose: "Phone Number Field is a compound field pairing a country/dial-code selector with a phone number input, shown as two adjacent but visually separate controls.",
-    whenToUse: "Any international phone number entry where the country code matters.",
-    whenNotToUse: "Domestic-only phone entry — use a plain Text Input with input masking.",
-    accessibility: "The country selector needs its own accessible label distinct from the phone number input's label.",
-    commonMistakes: "Treating the flag as purely decorative — it should be operable, since it changes the selected country/dial code.",
-    tokensUsed: ["component/radius/control", "semantic/border/default"],
-    properties: "State as variants. Dial Code (text), Value (text).",
-    knownLimitation: "The flag is a generic two-stripe placeholder shape, not a real national flag.",
+    variants: "State (Default/Focused/Error/Disabled) — 4 variants",
+    purpose:
+      "Phone Number Field is a compound UI control pairing a country/dial-code selector with a phone number input as two adjacent bordered controls. It is a visual/input pattern only — not SMS verification, carrier lookup, or reachability checks.",
+    whenToUse:
+      "When documenting or collecting an international phone number where the dialing country matters. Override `countries` with your production country list.",
+    whenNotToUse:
+      "When you need OTP/SMS verification, number ownership confirmation, or carrier validation — use a dedicated verification service. For a plain national number with no country selector, use Text Input `type=\"tel\"`.",
+    accessibility:
+      "fieldset + legend for the group; country Select and number input each have their own accessible names. Flag placeholder is decorative (aria-hidden); country identity comes from Select option text (name + dial code). Number input is type=tel with autocomplete=tel.",
+    commonMistakes:
+      "Treating the flag as the accessible country label. Assuming the default country list is complete. Treating sanitization as phone verification. Using type=number. Logging or persisting entered numbers from the design-system component.",
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "semantic/focus-ring",
+      "semantic/text/danger",
+    ],
+    properties:
+      "Figma: State + Dial Code / Value text. React: label, country/defaultCountry/onCountryChange, value/defaultValue/onValueChange, countries, countryLabel/numberLabel, placeholder, disabled, readOnly, required, error, supportingText.",
+    knownLimitation:
+      "Flag is a generic two-stripe placeholder, not real national flags. Default country list is illustrative (12). No national formatting engine — digits and common punctuation (+ spaces () . -) are allowed; no E.164 ownership claim. /r deferred to CE-3. Does not send network requests or verify numbers.",
   },
 ];

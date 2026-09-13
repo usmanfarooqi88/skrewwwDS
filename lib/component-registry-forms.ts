@@ -23,6 +23,10 @@ import {
   CREDIT_CARD_FIELD_FIGMA_COMPONENT_SET_NODE_ID,
   CREDIT_CARD_FIELD_FIGMA_FILE_URL,
 } from "@/lib/credit-card-field-figma-metadata";
+import {
+  PHONE_NUMBER_FIELD_FIGMA_COMPONENT_SET_NODE_ID,
+  PHONE_NUMBER_FIELD_FIGMA_FILE_URL,
+} from "@/lib/phone-number-field-figma-metadata";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -932,6 +936,178 @@ export function Example() {
       value={value}
       onValueChange={setValue}
       supportingText="UI pattern only — use a payment provider for real card capture."
+    />
+  );
+}`,
+  },
+  {
+    slug: "phone-number-field",
+    name: "Phone Number Field",
+    category: "Forms",
+    summary:
+      "Phone Number Field pairs a country/dial-code selector with a phone number input — UI pattern only, not SMS verification or carrier lookup.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/forms.ts",
+    documentationLastUpdated: "2026-09-14",
+    reactLastUpdated: "2026-09-14",
+    figmaReference: "Forms / Phone Number Field — State Default/Focused/Error/Disabled (4)",
+    figmaSourceUrl: PHONE_NUMBER_FIELD_FIGMA_FILE_URL,
+    figmaNodeId: PHONE_NUMBER_FIELD_FIGMA_COMPONENT_SET_NODE_ID,
+    documentationUrl: getComponentDocumentationUrl("phone-number-field"),
+    supportedVariants: ["default", "focused", "error", "disabled"],
+    supportedSizes: [],
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "semantic/focus-ring",
+      "semantic/text/primary",
+      "semantic/text/secondary",
+      "semantic/text/danger",
+      "semantic/surface/default",
+    ],
+    relatedComponents: [
+      { label: "Select — country / dial-code control", href: "/components/select" },
+      { label: "Text Input — number segment chrome family", href: "/components/text-input" },
+      { label: "Form Field — label/description/error pattern", href: "/components/form-field" },
+      { label: "Validation Message — error text", href: "/components/validation-message" },
+    ],
+    relatedTokens: [
+      { label: "semantic/border/default", href: "/foundations" },
+      { label: "semantic/focus-ring", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "Figma flag is a generic two-stripe placeholder — React keeps it decorative (aria-hidden); country identity comes from Select option text.",
+      "Default country list is illustrative (12 entries) — pass `countries` for production datasets.",
+      "No national formatting engine — sanitization only allows digits and common phone punctuation.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "PhoneNumberField = fieldset/legend + Country Selector (decorative flag placeholder + Select dial-code) + Number Input (type=tel) + optional supporting/error text.",
+    keyboardBehavior:
+      "Tab moves between country Select and phone number input. Select opens listbox with arrow keys; number input uses standard text editing.",
+    focusBehavior:
+      "Each control owns its own focus chrome (Select trigger / Text Input), matching Figma’s two adjacent bordered controls.",
+    comparisons: [
+      {
+        title: "Does this verify the phone number?",
+        body: "No. It does not send SMS, check ownership, look up carriers, or confirm reachability. It is a UI input pattern only.",
+      },
+      {
+        title: "Are the flags real national flags?",
+        body: "No. Figma and React use a generic two-stripe placeholder. Accessible country identity is the Select option label (name + dial code).",
+      },
+    ],
+    apiProps: [
+      {
+        name: "label",
+        type: "string",
+        description: "Visible fieldset legend for the compound control.",
+      },
+      {
+        name: "country",
+        type: "string",
+        description: "Controlled country option value (e.g. ISO alpha-2).",
+      },
+      {
+        name: "defaultCountry",
+        type: "string",
+        description: "Uncontrolled initial country option value.",
+      },
+      {
+        name: "onCountryChange",
+        type: "(country: string) => void",
+        description: "Fires when the selected country changes.",
+      },
+      {
+        name: "value",
+        type: "string",
+        description: "Controlled phone number string (sanitized punctuation allowed).",
+      },
+      {
+        name: "defaultValue",
+        type: "string",
+        description: "Uncontrolled initial phone number string.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: string) => void",
+        description: "Fires with the sanitized phone number after edits/paste.",
+      },
+      {
+        name: "countries",
+        type: "PhoneCountryOption[]",
+        description:
+          "Country options ({ value, dialCode, label }). Defaults to a small illustrative list.",
+      },
+      {
+        name: "countryLabel",
+        type: "string",
+        default: '"Country"',
+        description: "Accessible name for the country selector.",
+      },
+      {
+        name: "numberLabel",
+        type: "string",
+        default: '"Phone number"',
+        description: "Accessible name for the phone number input.",
+      },
+      {
+        name: "placeholder",
+        type: "string",
+        default: '"Phone number"',
+        description: "Placeholder for the number input.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disables country selector and number input.",
+      },
+      {
+        name: "readOnly",
+        type: "boolean",
+        default: "false",
+        description: "Read-only number input; country selector is non-editable.",
+      },
+      {
+        name: "required",
+        type: "boolean",
+        default: "false",
+        description: "Marks the group and both controls required.",
+      },
+      {
+        name: "error",
+        type: "string",
+        description: "Error message; sets invalid chrome on both controls.",
+      },
+      {
+        name: "supportingText",
+        type: "string",
+        description: "Help text when no error is present.",
+      },
+    ],
+    reactExample: `import { useState } from "react";
+import { PhoneNumberField } from "@/components/ui/PhoneNumberField";
+
+export function Example() {
+  const [country, setCountry] = useState("US");
+  const [value, setValue] = useState("");
+  return (
+    <PhoneNumberField
+      label="Mobile number"
+      country={country}
+      onCountryChange={setCountry}
+      value={value}
+      onValueChange={setValue}
+      supportingText="UI pattern only — not SMS verification or carrier lookup."
     />
   );
 }`,

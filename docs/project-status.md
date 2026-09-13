@@ -1,6 +1,41 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-1D Credit Card Field — COMPLETE)
+Last verified: **2026-09-14** (CE-1E Phone Number Field — COMPLETE; CE-1 closed)
+
+## 2026-09-14 — CE-1E Phone Number Field — COMPLETE
+
+Implemented the verified P3 Class B gap **Phone Number Field** as a Beta
+public React compound control. Figma contract read-only verified on Pro
+Forms/Phone Number Field (`2024:2776`) — State Default/Focused/Error/Disabled
+(4), Country Selector (flag placeholder + dial code + caret) + Number Input,
+spacing/8 gap, Text Input / Select token family.
+
+**Scope:** UI pattern for country Select + `type="tel"` number input. Sanitization
+allows digits and common punctuation; no national formatting engine. Flag is
+decorative placeholder; country identity is Select option text. Not SMS
+verification, carrier lookup, or reachability checks. `/r` deferred to CE-3.
+
+Inventory: [`docs/component-inventory.md`](component-inventory.md).
+
+### Inventory delta (source-verified)
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| React implemented | 51 | **52** |
+| Stable / Beta | 27 / 24 | **27 / 25** |
+| Docs (implemented) | 51 | **52** |
+| Agent contracts | 51 | **52** |
+| `/r` components | 8 + foundation | **unchanged** |
+| Class A | 48 | **49** |
+| Class B | 1 | **0** |
+
+### Remaining Class B gaps
+
+**None.** CE-1 genuine Figma→React gaps are closed.
+
+**Next:** CE-2 — Net-New Component Expansion — **NOT STARTED**.
+
+Stabilization register STAB-001…006 unchanged.
 
 ## 2026-09-14 — CE-1D Credit Card Field — COMPLETE
 
@@ -2292,14 +2327,15 @@ here instead.
 | **CE-1B Button Group** | ✅ **COMPLETE** |
 | **CE-1C Split Button** | ✅ **COMPLETE** |
 | **CE-1D Credit Card Field** | ✅ **COMPLETE** |
-| **CE-1E Phone Number Field** | **← NEXT — NOT STARTED** |
-| CE-2 Net-New Component Expansion | Later — not started |
+| **CE-1E Phone Number Field** | ✅ **COMPLETE** |
+| **CE-1 — Close genuine public Figma → React gaps** | ✅ **COMPLETE** |
+| CE-2 Net-New Component Expansion | **NEXT — NOT STARTED** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-1E Phone Number Field is next. CE-1 overall is **IN PROGRESS**.
+**Current focus:** CE-1 closed. CE-2 is next and **NOT STARTED**.
 Community/Beta Stabilization remains steady-state (STAB-001…006 open, no P0/P1).
 Do not start CE-2, CE-3, Reference App, PH-0, or Guard from this status line alone.
 
