@@ -24,6 +24,7 @@ import { TabsPreview } from "@/components/previews/TabsPreview";
 import { PaginationPreview } from "@/components/previews/PaginationPreview";
 import { RadioPreview } from "@/components/previews/RadioPreview";
 import { SwitchPreview } from "@/components/previews/SwitchPreview";
+import { SliderPreview } from "@/components/previews/SliderPreview";
 import { TextInputPreview } from "@/components/previews/TextInputPreview";
 import { ValidationMessagePreview } from "@/components/previews/ValidationMessagePreview";
 import { ProgressBarPreview } from "@/components/previews/ProgressBarPreview";
@@ -82,6 +83,7 @@ const previewMap: Record<string, ComponentType> = {
   radio: RadioPreview,
   "radio-group": RadioPreview,
   switch: SwitchPreview,
+  slider: SliderPreview,
   link: LinkPreview,
   menu: MenuPreview,
   breadcrumb: BreadcrumbPreview,

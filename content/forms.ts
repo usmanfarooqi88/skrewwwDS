@@ -146,15 +146,28 @@ export const formsComponents: ComponentDoc[] = [
     slug: "slider",
     name: "Slider",
     category: "Forms",
-    variants: "Style (Default/Success/Warning/Danger) — 4 variants",
-    purpose: "Slider is a control for selecting a numeric value or range within a defined min/max by dragging a handle along a track.",
-    whenToUse: "A value with a naturally continuous or steppable range (volume, brightness, price range filters).",
-    whenNotToUse: "When precise exact-number entry matters more than approximate visual positioning.",
-    accessibility: "Renders as role=\"slider\" with aria-valuenow/min/max, and must support arrow-key adjustment, not just drag.",
+    variants: "State (Default/Hover/Focused/Disabled) — 4 variants",
+    purpose:
+      "Slider is a single-value control for selecting a numeric value within a defined min/max by dragging a thumb along a track or adjusting with the keyboard.",
+    whenToUse:
+      "A value with a naturally continuous or steppable range where dragging is more intuitive than typing (volume, brightness, intensity).",
+    whenNotToUse:
+      "When precise exact-number entry matters more than approximate visual positioning — use Text Input, or pair both.",
+    accessibility:
+      "Renders as role=\"slider\" with aria-valuenow/min/max and a visible label. Supports arrow keys, Home/End, and Page Up/Down — not drag alone.",
     commonMistakes: "Implementing drag-only interaction with no keyboard support.",
-    tokensUsed: ["semantic/border/default", "semantic/action/primary", "semantic/surface/default"],
-    properties: "Style as variants, shown at a fixed demo fill percentage.",
-    knownLimitation: "No numeric \"value\" property exists — Figma component properties don't support a float/number type.",
+    tokensUsed: [
+      "semantic/border/default",
+      "semantic/action/primary",
+      "semantic/action/primary-hover",
+      "semantic/surface/default",
+      "semantic/focus-ring",
+      "opacity/disabled",
+    ],
+    properties:
+      "State as interactive variants (Default/Hover/Focused/Disabled). Runtime value/min/max/step are React props — Figma has no numeric value property.",
+    knownLimitation:
+      "Beta is horizontal single-thumb only. Dual-thumb range and vertical orientation are not in the verified Figma set. Older Style (Success/Warning/Danger) docs text does not match the live component set.",
   },
   {
     slug: "combobox",

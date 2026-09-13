@@ -15,6 +15,10 @@ import {
   SEARCH_FIELD_FIGMA_COMPONENT_SET_NODE_ID,
   SEARCH_FIELD_FIGMA_FILE_URL,
 } from "@/lib/search-field-figma-metadata";
+import {
+  SLIDER_FIGMA_COMPONENT_SET_NODE_ID,
+  SLIDER_FIGMA_FILE_URL,
+} from "@/lib/slider-figma-metadata";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -994,6 +998,86 @@ export function Example() {
       supportingText="PNG, JPG, or PDF up to 5 MB. Your app owns the upload request."
     />
   );
+}`,
+  },
+  {
+    slug: "slider",
+    name: "Slider",
+    category: "Forms",
+    summary:
+      "Slider is a single-value control for selecting a number within min/max by dragging or keyboard-adjusting a thumb along a track.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/forms.ts",
+    documentationLastUpdated: "2026-09-13",
+    reactLastUpdated: "2026-09-13",
+    figmaReference: "Forms / Slider — State (Default/Hover/Focused/Disabled)",
+    figmaSourceUrl: SLIDER_FIGMA_FILE_URL,
+    figmaNodeId: SLIDER_FIGMA_COMPONENT_SET_NODE_ID,
+    documentationUrl: getComponentDocumentationUrl("slider"),
+    supportedVariants: ["default", "hover", "focused", "disabled"],
+    supportedSizes: [],
+    tokensUsed: [
+      "semantic/border/default",
+      "semantic/action/primary",
+      "semantic/action/primary-hover",
+      "semantic/surface/default",
+      "semantic/focus-ring",
+      "opacity/disabled",
+    ],
+    relatedComponents: [
+      { label: "Progress Bar — read-only completion, not value selection", href: "/components/progress-bar" },
+      { label: "Switch — boolean settings toggle", href: "/components/switch" },
+      { label: "Text Input — precise numeric entry", href: "/components/text-input" },
+      { label: "Form Field — label and validation composition", href: "/components/form-field" },
+    ],
+    relatedTokens: [
+      { label: "semantic/action/primary", href: "/foundations" },
+      { label: "semantic/border/default", href: "/foundations" },
+      { label: "semantic/focus-ring", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape],
+    openQuestions: [
+      "Figma Style (Success/Warning/Danger) prose in older docs is superseded by verified State variants — no status-color Style prop in Beta.",
+      "Dual-thumb range and vertical orientation are not in the verified Figma component set.",
+      "Individual /r manifest deferred to CE-3 — not part of the current 8-component + foundation distribution cut.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy: "Slider = visible label + role=slider control (track + fill + thumb).",
+    keyboardBehavior:
+      "Arrow keys adjust by step; Home/End jump to min/max; Page Up/Down move by ~10% of the range (snapped to step). Pointer drag and track click set the value.",
+    focusBehavior:
+      "Focus-visible paints the thumb stroke with semantic/focus-ring and a matching outline ring.",
+    comparisons: [
+      {
+        title: "When should Progress Bar be used instead?",
+        body: "Use Progress Bar for read-only completion. Use Slider when the user must choose a value.",
+      },
+      {
+        title: "Does Beta Slider support a dual-thumb range?",
+        body: "No. The verified Figma set is a single thumb. Range selection is deferred.",
+      },
+    ],
+    apiProps: [
+      { name: "label", type: "string", description: "Accessible name via aria-labelledby." },
+      { name: "value", type: "number", description: "Controlled numeric value." },
+      { name: "defaultValue", type: "number", default: "0", description: "Uncontrolled initial value." },
+      { name: "onValueChange", type: "(value: number) => void", description: "Fires when the value changes." },
+      { name: "min", type: "number", default: "0", description: "Minimum value (aria-valuemin)." },
+      { name: "max", type: "number", default: "100", description: "Maximum value (aria-valuemax)." },
+      { name: "step", type: "number", default: "1", description: "Increment for keyboard and snapped pointer changes." },
+      { name: "disabled", type: "boolean", default: "false", description: "Prevents interaction and dims via opacity/disabled." },
+    ],
+    reactExample: `import { Slider } from "@/components/ui/Slider";
+
+export function Example() {
+  return <Slider label="Volume" defaultValue={40} min={0} max={100} step={1} />;
 }`,
   },
 ];

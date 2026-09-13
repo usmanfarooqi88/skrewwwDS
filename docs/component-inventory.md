@@ -1,7 +1,7 @@
-# Skrewww component inventory (CE-0)
+# Skrewww component inventory (CE-0 → CE-1A)
 
-> **Audit date:** 2026-09-13 · **Freeze SHA:** `7593ea4` (audit start) · **Status:** COMPLETE
-> Inventory only — does **not** start CE-1 / CE-2 / CE-3 / PH-0 / Guard.
+> **Last updated:** 2026-09-13 · **CE-0 freeze SHA:** `7593ea4` · **CE-1A Slider:** COMPLETE
+> Planning source for remaining CE-1 work. Do **not** start CE-2 / CE-3 / PH-0 / Guard here.
 
 This document is the durable planning source for CE-1. Prefer the tables over
 prose. Re-derive volatile counts from `lib/component-registry*.ts` and
@@ -16,43 +16,44 @@ prose. Re-derive volatile counts from `lib/component-registry*.ts` and
 | Agent Kit | `public/agent/contracts/*.json` (generated) | One contract per implemented registry component |
 | Distribution | `public/r/*.json` (generated) | shadcn `@skrewww` manifests (+ `foundation`) |
 | Figma evidence | `lib/*-figma-metadata.ts`, registry `figmaAvailability`, content prose | Verified parity notes |
-| Live Figma | Pro file `U6KUuNf7DF4CP9QBOkLSUx` (read-only MCP) | Library present; full page inventory not fully enumerable via MCP in this session |
+| Live Figma | Pro file `U6KUuNf7DF4CP9QBOkLSUx` (read-only MCP) | Forms page `2002:2368`; Slider set `2024:2373` verified CE-1A |
 
 **Do not equate** `content/` count with “missing React components.” Many content
 entries are Figma item primitives that React correctly models via composition.
 
-## Exact totals (verified 2026-09-13)
+## Exact totals (verified 2026-09-13, post CE-1A)
 
 ### React (canonical registry)
 
 | Metric | Count |
 |--------|------:|
-| Implemented public React components | **47** |
+| Implemented public React components | **48** |
 | Stable | **27** |
-| Beta | **20** |
-| Public docs pages (implemented) | **47** |
-| Agent Kit contracts | **47** |
+| Beta | **21** |
+| Public docs pages (implemented) | **48** |
+| Agent Kit contracts | **48** |
 | `/r` component manifests | **8** (+ `foundation` shared cut = 9 files) |
 
 `/r` components: button, card, divider, form-field, link, spinner, text-input, validation-message.
+Slider `/r` deferred to **CE-3**.
 
 ### Figma / documentation inventory
 
 | Metric | Count |
 |--------|------:|
 | `content/` documented entries | **63** |
-| With React counterpart (registry) | **47** |
-| Docs-only (no React registry entry) | **16** |
+| With React counterpart (registry) | **48** |
+| Docs-only (no React registry entry) | **15** |
 | Of those: internal / building-block (Class C) | **10** |
-| Of those: genuine public Figma→React gap candidates (Class B) | **5** |
+| Of those: genuine public Figma→React gap candidates (Class B) | **4** |
 | Of those: modeling difference (Class E) | **1** (Icon Button) |
 
 ### Classification totals
 
 | Class | Meaning | Count |
 |-------|---------|------:|
-| **A** | Public parity (both sides) | **44** |
-| **B** | Genuine Figma→React gap | **5** |
+| **A** | Public parity (both sides) | **45** |
+| **B** | Genuine Figma→React gap | **4** |
 | **C** | Figma internal / building block | **10** |
 | **D** | React→Figma gap (confirmed no Figma master) | **3** |
 | **E** | Naming / modeling difference | **1** |
@@ -62,7 +63,7 @@ entries are Figma item primitives that React correctly models via composition.
 
 | Parity status | Count | Notes |
 |---------------|------:|-------|
-| VERIFIED (`figmaAvailability: available`) | **41** | Lightweight — not a full visual re-audit |
+| VERIFIED (`figmaAvailability: available`) | **42** | Includes Slider (CE-1A) |
 | PARTIAL | **3** | radio-group, data-table, calendar-grid |
 | UNKNOWN (no Figma / Class D) | **3** | Banking pilot trio |
 
@@ -82,20 +83,27 @@ Numerical Figma−React equality is **not** a product goal.
 |----------|------:|-------------:|----------:|-------------:|---------------:|
 | Actions | 2 | 5 | 3 | 2 (button-group, split-button) | 0 (+ Icon Button = E) |
 | Containers & Overlays | 5 | 6 | 1 | 0 | 1 (accordion-item) |
-| Forms | 13 | 16 | 3 | 3 (slider, credit-card-field, phone-number-field) | 0 |
+| Forms | 14 | 16 | 2 | 2 (credit-card-field, phone-number-field) | 0 |
 | Feedback | 7 | 7 | 0 | 0 | 0 |
 | Navigation | 4 | 11 | 7 | 0 | 7 |
 | Content & Data | 16 | 18 | 2 | 0 | 2 (tree-item, timeline-item) |
 
-Largest **product** gap pressure: Forms (Slider) and Actions composition (Button Group / Split Button). Navigation’s high docs-only count is mostly **items**, not missing appshells.
+Largest remaining **product** gap pressure: Actions composition (Button Group / Split Button). Navigation’s high docs-only count is mostly **items**, not missing appshells.
 
-## CE-1 recommended scope (NOT STARTED)
+## CE-1 status
 
-Genuine **Class B** gaps only:
+| Item | Status |
+|------|--------|
+| **CE-1A Slider** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
+| **CE-1B Button Group** | ← NEXT — NOT STARTED |
+| **CE-1C Split Button** | later |
+| **CE-1D Credit Card Field** | later |
+| **CE-1E Phone Number Field** | later |
+
+Remaining genuine **Class B** gaps:
 
 | Priority | Component | Rationale |
 |----------|-----------|-----------|
-| **P1** | Slider | Foundational continuous-value control; high frequency; users invent custom UI |
 | **P2** | Button Group | Common action clustering pattern |
 | **P2** | Split Button | Common primary+menu action pattern |
 | **P3** | Credit Card Field | Specialist / industry-adjacent |
@@ -126,18 +134,18 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 
 | App type | Readiness | Material gaps |
 |----------|-----------|---------------|
-| SaaS dashboard | **READY WITH GAPS** | Slider; denser filters; notification center; optional Icon Button clarity |
-| Settings / admin | **READY WITH GAPS** | Slider; Toggle Group; denser form composites |
-| Form-heavy product | **READY WITH GAPS** | Slider; Number Input; phone/credit specialists |
+| SaaS dashboard | **READY WITH GAPS** | denser filters; notification center; optional Icon Button clarity |
+| Settings / admin | **READY WITH GAPS** | Toggle Group; denser form composites |
+| Form-heavy product | **READY WITH GAPS** | Number Input; phone/credit specialists |
 | Marketing / content site | **READY** | Core content + actions + feedback sufficient |
 
 ## Distribution coverage (inventory only)
 
 | Layer | Count | Note |
 |-------|------:|------|
-| Implemented | 47 | |
-| Docs | 47 implemented + 16 docs-only | |
-| Agent contracts | 47 | |
+| Implemented | 48 | |
+| Docs | 48 implemented + 15 docs-only | |
+| Agent contracts | 48 | |
 | `/r` distributed components | 8 | + foundation |
 | `/r/registry.json` | 0 | STAB-001 / CE-3 — not this pass |
 
@@ -182,6 +190,7 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 | Skeleton | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Spinner | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Switch | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
+| Slider | yes (Forms/Slider `2024:2373`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1A; State Default/Hover/Focused/Disabled; single-thumb |
 | Table | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Tabs | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
 | Tag | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
@@ -207,7 +216,6 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 | Page Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
 | Phone Number Field | yes (content/) | no | B | public | — | docs-only | no | no | — | P3 | CE-1 candidate | Forms; content inventory; no registry entry |
 | Sidebar Nav Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
-| Slider | yes (content/) | no | B | public | — | docs-only | no | no | — | P1 | CE-1 candidate | Forms; content inventory; no registry entry |
 | Split Button | yes (content/) | no | B | public | — | docs-only | no | no | — | P2 | CE-1 candidate | Actions; content inventory; no registry entry |
 | Step Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
 | Timeline Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Content & Data; building-block / item |
@@ -220,9 +228,11 @@ CE-0 does not close STAB-001…STAB-006. Those remain Community/Beta
 steady-state items (`/r/registry.json`, CoC private contact, Figma Pro
 sharing confirmation, Free Figma terms, early external signal, NEW badge).
 
-## Roadmap after CE-0
+## Roadmap after CE-1A
 
 - Community/Beta Stabilization = steady-state monitoring
 - **CE-0 = COMPLETE**
-- **CE-1 = NEXT, NOT STARTED** (Class B gaps above)
+- **CE-1A Slider = COMPLETE**
+- **CE-1B Button Group = NEXT**
+- **CE-1 overall = IN PROGRESS**
 - CE-2 / CE-3 / Reference App / PH-0 / Guard = later / NOT STARTED

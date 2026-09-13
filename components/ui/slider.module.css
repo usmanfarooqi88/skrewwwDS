@@ -1,0 +1,100 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  color: var(--semantic-text-primary);
+}
+
+.rootDisabled {
+  cursor: not-allowed;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.labelDisabled {
+  opacity: var(--opacity-disabled);
+}
+
+.control {
+  position: relative;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: var(--slider-control-height);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.control[data-disabled] {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+  pointer-events: none;
+}
+
+.control:focus {
+  outline: none;
+}
+
+.track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: var(--slider-track-height);
+  transform: translateY(-50%);
+  border-radius: 9999px;
+  background: var(--semantic-border-default);
+  pointer-events: none;
+}
+
+.fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: var(--slider-track-height);
+  width: var(--slider-fill-percent);
+  max-width: 100%;
+  transform: translateY(-50%);
+  border-radius: 9999px;
+  background: var(--semantic-action-primary);
+  pointer-events: none;
+}
+
+.thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--slider-thumb-left);
+  width: var(--slider-thumb-size);
+  height: var(--slider-thumb-size);
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: var(--slider-thumb-stroke) solid var(--semantic-action-primary);
+  background: var(--semantic-surface-default);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.control:hover:not([data-disabled]) .fill {
+  background: var(--semantic-action-primary-hover);
+}
+
+.control:hover:not([data-disabled]) .thumb {
+  border-color: var(--semantic-action-primary-hover);
+}
+
+.control:focus-visible .thumb {
+  border-color: var(--semantic-focus-ring);
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: 2px;
+}

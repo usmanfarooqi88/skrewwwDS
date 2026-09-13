@@ -80,7 +80,7 @@ Beta — overview, getting started, and known limitations:
 | Actions | Button, Link |
 | Containers & Overlays | Accordion, Card, Dialog, Drawer, Popover |
 | Content & Data | Avatar, Banking Account Card, Banking Balance Summary, Banking Transaction Row, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
-| Forms | Checkbox, Combobox, Date Picker, File Upload, Form Field, Radio, Radio Group, Search Field, Select, Switch, Text Input, Textarea, Validation Message |
+| Forms | Checkbox, Combobox, Date Picker, File Upload, Form Field, Radio, Radio Group, Search Field, Select, Slider, Switch, Text Input, Textarea, Validation Message |
 | Feedback | Alert, Badge, Progress Bar, Skeleton, Spinner, Toast, Tooltip |
 | Navigation | Breadcrumb, Menu, Pagination, Tabs |
 
@@ -88,7 +88,7 @@ Documentation-only pages clearly state **Figma documented · React not implement
 
 ### Control semantics (high level)
 
-- **Checkbox, Radio, Switch, Textarea, Text Input, Search Field** — native or native-first semantics.
+- **Checkbox, Radio, Switch, Slider, Textarea, Text Input, Search Field** — native or native-first semantics.
 - **Select** — custom non-searchable combobox/listbox with hidden native form fallback.
 - **Combobox** — editable searchable combobox/listbox with predefined options.
 - **Menu** — command menu built on Popover overlay infrastructure.

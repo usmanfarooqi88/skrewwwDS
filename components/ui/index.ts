@@ -199,6 +199,8 @@ export { ToastProvider, useToast } from "@/components/ui/ToastProvider";
 export type { ToastInput } from "@/components/ui/ToastProvider";
 export { Switch } from "@/components/ui/Switch";
 export type { SwitchProps } from "@/components/ui/Switch";
+export { Slider } from "@/components/ui/Slider";
+export type { SliderProps } from "@/components/ui/Slider";
 export { Textarea } from "@/components/ui/Textarea";
 export type { TextareaProps, TextareaSize } from "@/components/ui/Textarea";
 export { TextInput } from "@/components/ui/TextInput";

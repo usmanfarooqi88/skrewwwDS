@@ -1,6 +1,36 @@
 # Project status
 
-Last verified: **2026-09-13** (CE-0 Figma ↔ React inventory — COMPLETE)
+Last verified: **2026-09-13** (CE-1A Slider — COMPLETE)
+
+## 2026-09-13 — CE-1A Slider — COMPLETE
+
+Implemented the verified P1 Class B gap **Slider** as a Beta public React
+component. Figma contract read-only verified on Pro Forms/Slider
+(`2024:2373`) — State Default/Hover/Focused/Disabled; single horizontal
+thumb; track/fill/thumb tokens as documented in
+[`lib/slider-figma-metadata.ts`](../lib/slider-figma-metadata.ts).
+
+Inventory: [`docs/component-inventory.md`](component-inventory.md).
+
+### Inventory delta (source-verified)
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| React implemented | 47 | **48** |
+| Stable / Beta | 27 / 20 | **27 / 21** |
+| Docs (implemented) | 47 | **48** |
+| Agent contracts | 47 | **48** |
+| `/r` components | 8 + foundation | **unchanged** (Slider deferred to CE-3) |
+| Class A | 44 | **45** |
+| Class B | 5 | **4** |
+
+### Remaining Class B gaps
+
+Button Group (P2) · Split Button (P2) · Credit Card Field (P3) · Phone Number Field (P3).
+
+**Next:** CE-1B Button Group — **NOT STARTED**. CE-1 overall = **IN PROGRESS**.
+
+Stabilization register STAB-001…006 unchanged.
 
 ## 2026-09-13 — CE-0 Figma ↔ React Component Inventory & Parity Audit — COMPLETE
 
@@ -8,9 +38,10 @@ Durable artifact: [`docs/component-inventory.md`](component-inventory.md).
 
 **Purpose:** Classify Figma-documented vs React-implemented components so
 CE-1 does not treat every Figma entry as a missing React API. Inventory
-only — **CE-1 NOT STARTED**.
+only — **CE-1A later completed Slider**; remaining CE-1 items not started
+at CE-0 close.
 
-### Exact totals (source-verified)
+### Exact totals (source-verified at CE-0 close)
 
 | Layer | Count |
 |-------|------:|
@@ -34,7 +65,7 @@ only — **CE-1 NOT STARTED**.
 
 Parity depth (lightweight): 41 VERIFIED · 3 PARTIAL (radio-group, data-table, calendar-grid) · 3 UNKNOWN (banking).
 
-### CE-1 recommended scope (NOT STARTED)
+### CE-1 recommended scope (as of CE-0; CE-1A later closed Slider)
 
 Implement / product-decide Class B only: **Slider**, **Button Group**,
 **Split Button**, then specialist fields. Do **not** promote Class C items
@@ -2149,17 +2180,20 @@ here instead.
 | OS-1 Open Source Launch | ✅ Complete — repository is **PUBLIC** |
 | Community / Beta Stabilization | ✅ Initial audit complete — **steady-state monitoring** |
 | **CE-0 Figma ↔ React Inventory & Parity Audit** | ✅ **COMPLETE** — [`docs/component-inventory.md`](component-inventory.md) |
-| **CE-1 Close genuine public Figma → React gaps** | **← NEXT — NOT STARTED** |
+| **CE-1A Slider** | ✅ **COMPLETE** |
+| **CE-1B Button Group** | **← NEXT — NOT STARTED** |
+| CE-1C Split Button | Later — not started |
+| CE-1D Credit Card Field | Later — not started |
+| CE-1E Phone Number Field | Later — not started |
 | CE-2 Net-New Component Expansion | Later — not started |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-1 is next (Class B gaps only — see CE-0 entry and
-[`docs/component-inventory.md`](component-inventory.md)). Community/Beta
-Stabilization remains steady-state (STAB-001…006 open, no P0/P1). Do not
-start CE-2, CE-3, Reference App, PH-0, or Guard from this status line alone.
+**Current focus:** CE-1B Button Group is next. CE-1 overall is **IN PROGRESS**.
+Community/Beta Stabilization remains steady-state (STAB-001…006 open, no P0/P1).
+Do not start CE-2, CE-3, Reference App, PH-0, or Guard from this status line alone.
 
 ### Component/distribution work (parallel track)
 
