@@ -1,6 +1,46 @@
 # Project status
 
-Last verified: **2026-09-13** (Community / Beta Stabilization — initial post-launch audit)
+Last verified: **2026-09-13** (CE-0 Figma ↔ React inventory — COMPLETE)
+
+## 2026-09-13 — CE-0 Figma ↔ React Component Inventory & Parity Audit — COMPLETE
+
+Durable artifact: [`docs/component-inventory.md`](component-inventory.md).
+
+**Purpose:** Classify Figma-documented vs React-implemented components so
+CE-1 does not treat every Figma entry as a missing React API. Inventory
+only — **CE-1 NOT STARTED**.
+
+### Exact totals (source-verified)
+
+| Layer | Count |
+|-------|------:|
+| React implemented | **47** (27 Stable / 20 Beta) |
+| Public docs (implemented) | **47** |
+| Agent Kit contracts | **47** |
+| `/r` component manifests | **8** (+ foundation) |
+| `content/` Figma-documented entries | **63** |
+| Docs-only (no React registry) | **16** |
+
+### Classification
+
+| Class | Count | Summary |
+|-------|------:|---------|
+| A public parity | 44 | Both sides |
+| B Figma→React gaps | **5** | Slider (P1); Button Group, Split Button (P2); Credit Card Field, Phone Number Field (P3) |
+| C internal/building blocks | **10** | *-item / trigger / nav-item primitives |
+| D React→Figma gaps | **3** | Banking pilot (confirmed no Figma) |
+| E modeling difference | **1** | Icon Button (Figma product; React = Button+aria-label) |
+| F unknown | 0 | |
+
+Parity depth (lightweight): 41 VERIFIED · 3 PARTIAL (radio-group, data-table, calendar-grid) · 3 UNKNOWN (banking).
+
+### CE-1 recommended scope (NOT STARTED)
+
+Implement / product-decide Class B only: **Slider**, **Button Group**,
+**Split Button**, then specialist fields. Do **not** promote Class C items
+to standalone React APIs. Icon Button remains a product decision (E).
+
+Stabilization register STAB-001…006 unchanged.
 
 ## 2026-09-13 — Community / Beta Stabilization (initial pass)
 
@@ -2107,19 +2147,19 @@ here instead.
 | OS-1 Security Gate (Next.js upgrade) | ✅ Complete (PASSED — 0 critical/high/moderate/low, full and production scope) |
 | OS-1 Remote CI Gate | ✅ Complete (PASSED — GitHub Actions green on final pre-launch SHA) |
 | OS-1 Open Source Launch | ✅ Complete — repository is **PUBLIC** |
-| **Community / Beta Stabilization** | **← NEXT — not started** |
-| Skrewww Guard | Later — not next |
+| Community / Beta Stabilization | ✅ Initial audit complete — **steady-state monitoring** |
+| **CE-0 Figma ↔ React Inventory & Parity Audit** | ✅ **COMPLETE** — [`docs/component-inventory.md`](component-inventory.md) |
+| **CE-1 Close genuine public Figma → React gaps** | **← NEXT — NOT STARTED** |
+| CE-2 Net-New Component Expansion | Later — not started |
+| CE-3 Distribution Expansion | Later — not started |
+| Reference App / Composition Validation | Later — not started |
+| PH-0 Pre-Guard Hardening | Later — not started |
+| Skrewww Guard | Later — NOT STARTED |
 
-**OS-1 Open Source Launch is complete.** The repository
-([github.com/usmanfarooqi88/skrewwwDS](https://github.com/usmanfarooqi88/skrewwwDS))
-is public; both the Security Gate and Remote CI Gate passed first, and all
-post-public settings (Private Vulnerability Reporting, secret scanning, push
-protection, minimal branch protection, corrected repository metadata,
-activated feedback/security-reporting paths) are verified enabled. Community
-/ Beta Stabilization is next on the roadmap and has **not** been started —
-this task was scoped to the launch only. See
-[`docs/open-source-readiness.md`](open-source-readiness.md) for the full
-audit result and final launch-checklist state.
+**Current focus:** CE-1 is next (Class B gaps only — see CE-0 entry and
+[`docs/component-inventory.md`](component-inventory.md)). Community/Beta
+Stabilization remains steady-state (STAB-001…006 open, no P0/P1). Do not
+start CE-2, CE-3, Reference App, PH-0, or Guard from this status line alone.
 
 ### Component/distribution work (parallel track)
 

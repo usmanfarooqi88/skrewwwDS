@@ -29,6 +29,7 @@ prints the local URL on startup.
 | Doc | Role |
 |-----|------|
 | [`docs/getting-started.md`](docs/getting-started.md) | **Primary** developer onboarding |
+| [`docs/component-inventory.md`](docs/component-inventory.md) | CE-0 Figma ↔ React inventory & parity classes |
 | [`docs/contributing.md`](docs/contributing.md) | Contribution / Git / staging rules |
 | [`docs/project-status.md`](docs/project-status.md) | Current status, open gaps, and the canonical phase roadmap |
 | [`docs/architecture/`](docs/architecture/) | Deep architecture and component notes |
