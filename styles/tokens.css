@@ -218,12 +218,29 @@
 
   --opacity-disabled: var(--primitive-opacity-disabled);
 
+  /* ── Shared indicator / separator geometry (Foundation-transported) ──
+     Spinner and Divider size/spacing tokens are shared system infrastructure
+     (not owned by a single visual skin). Kept above the Foundation cut so
+     `/r/foundation.json` delivers them to distributed Spinner/Divider consumers
+     without duplicating declarations into each component payload. */
+  --spinner-size-sm: 1rem;
+  --spinner-size-md: 1.25rem;
+  --spinner-size-lg: 1.5rem;
+  --spinner-animation-duration: 0.8s;
+  --divider-thickness: 1px;
+  --divider-color: var(--semantic-border-default);
+  --divider-spacing-y: 1rem;
+  --divider-spacing-x: 0.75rem;
+  --divider-vertical-min-height: 2rem;
+
   /*
-   * ══ Foundation boundary (verified 2026-08-08) ══
+   * ══ Foundation boundary (verified 2026-08-08; spinner/divider geometry
+   * promoted into Foundation 2026-09-13 for shadcn distribution) ══
    *
    * Everything above this line in this file — Primitive, Semantic, Brand,
-   * the Shape/Surface aliased defaults, and Control sizing — is the
-   * universal Foundation tier: needed by every component, owned by none
+   * the Shape/Surface aliased defaults, Control sizing, and shared
+   * Spinner/Divider geometry — is the universal Foundation tier: needed by
+   * every component (or by multiple independent components), owned by none
    * of them individually. The Shape mode blocks ([data-skrewww-shape=...],
    * further down this file) and Surface mode blocks
    * ([data-skrewww-surface=...], further down still) are ALSO part of
@@ -232,7 +249,7 @@
    * anything component-specific.
    *
    * Everything below this line, from "Form control geometry" onward
-   * through the ~28 named "<Component> geometry" blocks, is
+   * through the named "<Component> geometry" blocks, is
    * component-specific: it belongs to one component (or a small family,
    * e.g. Checkbox/Radio/Switch/Textarea share "Form control geometry"),
    * not to every component. Button does not read any custom property
@@ -299,10 +316,6 @@
   --toast-viewport-offset: 1rem;
   --progress-track-height: 0.5rem;
   --progress-animation-duration: 1.4s;
-  --spinner-size-sm: 1rem;
-  --spinner-size-md: 1.25rem;
-  --spinner-size-lg: 1.5rem;
-  --spinner-animation-duration: 0.8s;
 
   /* ── Badge geometry [TEMPORARY] ── */
   --badge-gap: 0.25rem;
@@ -362,15 +375,9 @@
   --skeleton-circle-size: 2.5rem;
   --skeleton-rectangle-height: 5rem;
 
-  /* ── Link geometry [TEMPORARY] ── */
-  --link-text-default: var(--semantic-action-primary);
-  --link-text-hover: var(--semantic-action-primary-hover);
-  --link-font-size-sm: 0.8125rem;
-  --link-font-size-md: 0.875rem;
-  --link-font-size-lg: 1rem;
-  --link-icon-gap: 0.25rem;
-  --link-underline-thickness: 1px;
-  --link-underline-offset: 0.15em;
+  /* ── Link geometry — declared on .link in link.module.css for distribution
+     self-containment (Foundation delivers semantic aliases; Link owns its
+     local geometry). Kept out of the Foundation cut intentionally. ── */
 
   /* ── Breadcrumb geometry [TEMPORARY] ── */
   --breadcrumb-font-size: 0.75rem;
@@ -623,12 +630,7 @@
   --avatar-radius: 9999px; /* [VERIFIED] radius/full — always circular */
   --avatar-image-fit: cover;
 
-  /* ── Divider geometry [VERIFIED] ── */
-  --divider-thickness: 1px;
-  --divider-color: var(--semantic-border-default);
-  --divider-spacing-y: 1rem;
-  --divider-spacing-x: 0.75rem;
-  --divider-vertical-min-height: 2rem;
+  /* Divider geometry lives in Foundation (above the cut) as of 2026-09-13. */
 
   /* ── List Item geometry [VERIFIED] — Content/List Item 2044:26095 ── */
   --list-item-min-height: 3.5rem;

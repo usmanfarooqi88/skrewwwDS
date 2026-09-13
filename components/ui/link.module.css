@@ -1,4 +1,15 @@
 .link {
+  /* Component-owned geometry — travels with /r/link.json; semantic colors
+     resolve from Foundation. */
+  --link-text-default: var(--semantic-action-primary);
+  --link-text-hover: var(--semantic-action-primary-hover);
+  --link-font-size-sm: 0.8125rem;
+  --link-font-size-md: 0.875rem;
+  --link-font-size-lg: 1rem;
+  --link-icon-gap: 0.25rem;
+  --link-underline-thickness: 1px;
+  --link-underline-offset: 0.15em;
+
   display: inline-flex;
   align-items: center;
   gap: var(--link-icon-gap);

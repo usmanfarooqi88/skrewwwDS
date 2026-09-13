@@ -1,6 +1,38 @@
 # Project status
 
-Last verified: **2026-09-13** (Icon Size dual-bind repair + Stable-v1 maturity promotion)
+Last verified: **2026-09-13** (shadcn distribution expansion — Spinner / Divider / Link)
+
+## 2026-09-13 — shadcn distribution expansion (Spinner / Divider / Link)
+
+### Architecture — shared token transport
+
+**Choice: extend the existing Foundation transport cut** in `styles/tokens.css`.
+
+Spinner and Divider geometry tokens (`--spinner-size-*`, `--spinner-animation-duration`, `--divider-thickness`, `--divider-color`, `--divider-spacing-*`, `--divider-vertical-min-height`) are shared system infrastructure used by multiple Stable surfaces, not component-private skins. Promoting them above the Foundation boundary lets `/r/foundation.json` deliver them once — no per-component token duplication, deterministic install order via `@skrewww/foundation`, no fake packages.
+
+Link geometry (`--link-*`) is component-owned: declared on `.link` in `link.module.css` so `/r/link.json` transports it without expanding Foundation for Link-only vars. Semantic colors still come from Foundation.
+
+### Link `site-config` decoupling
+
+`components/ui/internal/link-utils.ts` no longer imports `lib/site-config`. Origin is an explicit argument or `globalThis.location?.origin`. Absolute http(s) without origin treats as external (safe for SSR). Docs-site Link / ListItem / Pagination call sites unchanged. Regression: Vitest + generator assert distributed Link graph has no `site-config` string.
+
+### Distribution status
+
+| Metric | Value |
+|--------|------:|
+| Public `/r/*` items | **9** (was 6) |
+| New items | `spinner`, `divider`, `link` |
+| Schema | `1.4.0` (unchanged) |
+
+**External consumer proof** (`npm run smoke:consumer`): `spinner`, `divider`, `link`, and composed `spinner-divider-link` — clean install, typecheck, build, no manual repair.
+
+**Remaining Stable not yet distributed (19):** alert, avatar, breadcrumb, calendar-day, checkbox, dialog, pagination, popover, progress-bar, radio, radio-group, search-field, select, skeleton, switch, tabs, textarea, toast, tooltip.
+
+Typical blockers: missing canonical `files` / `registryDependencies` metadata and/or component geometry still below the Foundation cut (colocate in module CSS or promote genuinely shared tokens — same pattern as this batch).
+
+**Exact next batch (recommended):** Batch A — low-dependency Stable primitives once CLI fields + local CSS transport are wired: `skeleton`, `progress-bar`, `avatar`, then `alert` / `toast` if their token cuts are clean. Do **not** start overlays (`dialog`, `popover`, `tooltip`) until Batch A is proven.
+
+No further public architecture approval required for the Foundation-cut / Link-utils pattern established here.
 
 ## 2026-09-13 — Icon Size dual-bind repair + Stable-v1 maturity promotion
 
@@ -49,7 +81,7 @@ Canonical record: `lib/icon-size-figma-metadata.ts`
 |-------|------:|-------|
 | **Stable** (`status: stable`, `version: 1.0.0`) | 27 | alert, avatar, breadcrumb, button, calendar-day, card, checkbox, dialog, divider, form-field, link, pagination, popover, progress-bar, radio, radio-group, search-field, select, skeleton, spinner, switch, tabs, text-input, textarea, toast, tooltip, validation-message |
 | **Beta** | 20 | accordion, badge, banking-*, bar-chart, calendar-grid, combobox, data-table, date-picker, drawer, empty-state, file-upload, line-chart, list-item, menu, table, tag, timeline, tree-view |
-| **Blocked (product invent)** | — | Calendar range Figma variants; Menu selected API invent; separate Icon Button product; Data Table shell master; shadcn Spinner/Divider/Link expansion |
+| **Blocked (product invent)** | — | Calendar range Figma variants; Menu selected API invent; separate Icon Button product; Data Table shell master |
 
 **Non-Stable reasons (summary):**
 
@@ -140,12 +172,12 @@ Duplicate Badge vs Alert/Toast tint token names remain non-blocking cleanup (ide
 | ID | Criterion | Result | Evidence |
 |----|-----------|--------|----------|
 | A | Public API freeze / naming preserved (Search Field, Spinner, Divider, Empty State, Form Field, Accordion, Data Table≠Grid) | **PASS** | Registry APIs unchanged this campaign; no renames |
-| B | Layer 1 + Layer 3 Shape/Surface integrity; no critical unresolved token gaps that break shipped contracts | **PASS WITH DEBT** | Button Glass closed Phase 1; Surface N/A cleanup Phase 3; Badge/Alert/Toast duplicate tint names non-blocking; spinner/divider locals remain below Foundation cut line |
+| B | Layer 1 + Layer 3 Shape/Surface integrity; no critical unresolved token gaps that break shipped contracts | **PASS WITH DEBT** | Button Glass closed Phase 1; Surface N/A cleanup Phase 3; Badge/Alert/Toast duplicate tint names non-blocking; spinner/divider geometry promoted into Foundation for distribution (2026-09-13) |
 | C | WCAG 2.2 AA baseline for shipped interactive patterns (keyboard, focus, overlays, forms, disabled, reduced motion) | **PASS WITH DEBT** | Existing unit + Playwright a11y contracts green; no full third-party audit claimed |
 | D | Responsive: mobile docs nav, drawer, overflow | **PASS** | `e2e/responsive-nav.spec.ts` + `e2e/sidebar-nav-surface.spec.ts` green 2026-09-13 |
 | E | Lint / typecheck / Vitest / Playwright / build / `git diff --check` | **PASS** | Phase gates this campaign; full Playwright re-run in Phase 6 |
 | F | Docs / registry / Figma node IDs accuracy for audited masters | **PASS WITH DEBT** | Phases 1–5 metadata updated; stale Menu “no Panel master” prose corrected below |
-| G | shadcn `/r/*` distribution valid; `hostRequirements` never public; no metadata leakage | **PASS WITH SCOPE LIMIT** | Six manifests only (foundation, button, card, text-input, form-field, validation-message). Next batch blocked without architecture decision (see below) |
+| G | shadcn `/r/*` distribution valid; `hostRequirements` never public; no metadata leakage | **PASS** | Nine manifests (prior six + spinner, divider, link). Architecture blockers resolved 2026-09-13 — see distribution expansion entry |
 | H | Per-component maturity classified with evidence; no blanket Stable promotion | **PASS** | **27 Stable / 20 Beta** (2026-09-13 promotion) |
 
 **Stable-v1 technical readiness:** `STABLE-CORE-READY` (27 Stable · 20 Beta; see Icon Size + maturity promotion entry).
@@ -167,11 +199,11 @@ Duplicate Badge vs Alert/Toast tint token names remain non-blocking cleanup (ide
 | Separate Icon Button Figma/React product | React uses Button + `aria-label`; inventing separate public component needs approval |
 | Data Table interaction shell Figma master | React-ahead; do not invent shell |
 | Semantic Icon Size dual-bind migration | **Repaired 2026-09-13** — height + minWidth/maxWidth lock on Icon INSTANCEs (Pro+Free) |
-| shadcn Spinner/Divider/Link expansion | Spinner/Divider tokens live below Foundation cut line; Link pulls `site-config` via `link-utils` |
+| shadcn Spinner/Divider/Link expansion | **Resolved 2026-09-13** — Foundation cut extended; Link decoupled from `site-config`; `/r/*` = 9 |
 
 ### Distribution status
 
-Supported `/r` install surface remains exactly six. Expanding Spinner/Divider without moving their geometry tokens into Foundation (or inventing a co-transport pattern) would ship broken consumers. Expanding Link without decoupling from `lib/site-config` would leak docs-site origin logic. Both require human architecture approval — not done in this closeout.
+Public `/r/*` = **9** (foundation, button, card, text-input, form-field, validation-message, spinner, divider, link). See top-of-file **shadcn distribution expansion** entry for architecture, consumer proof, and next batch.
 
 ### Figma Free / Pro / Gumroad sync checklist (do **not** publish yet)
 

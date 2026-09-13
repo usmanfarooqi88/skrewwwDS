@@ -316,6 +316,9 @@ describe("project configuration", () => {
   it("preserves the supported /r install surface and Phosphor transport", () => {
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("validation-message.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("text-input.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("spinner.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("divider.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("link.json");
     const validationMessage = getImplementedRegistryEntries().find(
       (entry) => entry.slug === "validation-message",
     );

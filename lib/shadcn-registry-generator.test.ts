@@ -6,8 +6,11 @@ import {
   assertValidShadcnRegistryItem,
   buildButtonManifest,
   buildCardManifest,
+  buildDividerManifest,
   buildFormFieldManifest,
   buildFoundationManifest,
+  buildLinkManifest,
+  buildSpinnerManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
   classifyFile,
@@ -209,6 +212,9 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildTextInputManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildFormFieldManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildValidationMessageManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildSpinnerManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildDividerManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildLinkManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -280,6 +286,48 @@ describe("shadcn registry generator", () => {
     expect(buildTextInputManifest().docs).not.toContain("next");
     expect(buildFormFieldManifest().docs).toContain("react, react-dom");
     expect(buildFormFieldManifest().docs).not.toContain("next");
+  });
+
+  it("transports Spinner with Foundation spinner geometry tokens", () => {
+    const manifest = buildSpinnerManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Spinner.tsx",
+      "components/ui/spinner.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(extractFoundationCss()).toMatch(/--spinner-size-md:\s*1\.25rem/);
+    expect(extractFoundationCss()).toMatch(/--spinner-animation-duration:\s*0\.8s/);
+  });
+
+  it("transports Divider with Foundation divider geometry tokens", () => {
+    const manifest = buildDividerManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Divider.tsx",
+      "components/ui/divider.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(extractFoundationCss()).toMatch(/--divider-color:\s*var\(--semantic-border-default\)/);
+    expect(extractFoundationCss()).toMatch(/--divider-thickness:\s*1px/);
+  });
+
+  it("transports Link without site-config and with local link geometry in CSS", () => {
+    const manifest = buildLinkManifest();
+    const paths = manifest.files.map((file) => file.path).sort();
+    expect(paths).toEqual([
+      "components/ui/Link.tsx",
+      "components/ui/internal/link-utils.ts",
+      "components/ui/link.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.docs).toContain("next");
+    const joined = manifest.files.map((file) => file.content).join("\n");
+    expect(joined).not.toMatch(/site-config/);
+    expect(joined).toMatch(/--link-text-default:\s*var\(--semantic-action-primary\)/);
+    expect(joined).not.toMatch(/\/Users\//);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

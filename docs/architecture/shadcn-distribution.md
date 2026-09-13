@@ -26,15 +26,16 @@ this layer.
 
 ## Scope of this pass
 
-Foundation + Button + Card + Text Input + Form Field + Validation Message.
+Foundation + Button + Card + Text Input + Form Field + Validation Message +
+Spinner + Divider + Link (2026-09-13 expansion).
 The mechanism (generator, lookup table, extraction) is structurally able
 to support more components — adding one means adding its files to
 `lib/component-registry.ts` (already the convention), an entry per new
 file to `FILE_DESTINATIONS` in `lib/shadcn-registry-generator.ts`, and
 a thin `buildXManifest()` wrapper around the generic
 `buildComponentManifest(slug)` (extracted when Card was added — see the
-Card section below) — but no additional component beyond these six, native
-CLI, community registry infrastructure, or Vite/Remix generalization is
+Card section below) — but no additional component beyond the current nine,
+native CLI, community registry infrastructure, or Vite/Remix generalization is
 in scope here.
 
 ## How it works
@@ -130,8 +131,9 @@ change is made in this pass.
 
 Served as static files under `public/r/`, at `/r/{name}.json`:
 production shape `https://skrewww.dev/r/{name}.json` (per
-`source-of-truth.md`'s domain table), currently `/r/foundation.json`,
-`/r/button.json`, and `/r/card.json`. This coexists with `/registry.json`
+`source-of-truth.md`'s domain table), currently nine items:
+`foundation`, `button`, `card`, `text-input`, `form-field`,
+`validation-message`, `spinner`, `divider`, `link`. This coexists with `/registry.json`
 at the root — a different path, a different purpose (shadcn CLI
 consumption vs. the existing public registry feed) — with zero changes to
 `app/registry.json/route.ts`, `lib/registry-public.ts`, or
@@ -371,3 +373,25 @@ text-input
 **Milestone fact**: This is the first verified case of a real, multi-hop shadcn registry dependency chain with non-empty npm `dependencies`, proving that the transport and resolution layers handle both registry-to-registry composition and npm-package pull-in correctly.
 
 **No public registry schema-version bump was needed.** Adding three more components to `/r/*.json` and resolving a three-component chain introduced no new field or structural change to the shadcn registry-item shape.
+
+## Spinner + Divider + Link expansion — 2026-09-13
+
+**Token transport rule:** genuinely shared geometry that multiple
+independent components need belongs **above** the Foundation cut in
+`styles/tokens.css` so `/r/foundation.json` delivers it once.
+Component-private geometry belongs in that component's CSS module and
+travels with its own `/r/{name}.json` payload.
+
+Applied here:
+
+- Spinner/Divider shared geometry → Foundation cut (no duplication).
+- Link geometry (`--link-*`) → `link.module.css` (Link-owned).
+- Link helpers must not import docs-site `lib/site-config`; origin is
+  explicit or runtime `location.origin`.
+
+**Manifests:** `/r/spinner.json`, `/r/divider.json`, `/r/link.json` —
+each `registryDependencies: ["@skrewww/foundation"]`, empty npm
+`dependencies`, no `hostRequirements` in serialized output.
+
+**Consumer proof:** `npm run smoke:consumer -- spinner|divider|link` and
+composed `spinner-divider-link`. Schema remains `1.4.0`.

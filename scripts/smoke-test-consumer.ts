@@ -42,8 +42,11 @@ import { join, relative } from "node:path";
 import {
   buildButtonManifest,
   buildCardManifest,
+  buildDividerManifest,
   buildFormFieldManifest,
   buildFoundationManifest,
+  buildLinkManifest,
+  buildSpinnerManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
   type ShadcnRegistryItem,
@@ -62,6 +65,9 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   "text-input": buildTextInputManifest,
   "form-field": buildFormFieldManifest,
   "validation-message": buildValidationMessageManifest,
+  spinner: buildSpinnerManifest,
+  divider: buildDividerManifest,
+  link: buildLinkManifest,
 };
 
 /**
@@ -90,6 +96,8 @@ type ComponentSmokeDescriptor = {
   harnessAssertionLabel: string;
   expectedSharedTargets?: string[];
   closeStdinOnAdd?: boolean;
+  /** Additional @skrewww/* items to install after the primary (composed proofs). */
+  extraAdds?: string[];
 };
 
 const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
@@ -186,6 +194,127 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     harnessAssertionLabel:
       "consumer page imports TextInput and renders it with a real label + error, exercising TextInput -> FormField -> ValidationMessage -> @phosphor-icons/react",
   },
+  spinner: {
+    criticalPaths: [
+      "components/ui/Spinner.tsx",
+      "components/ui/spinner.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Spinner } from "@/components/ui/Spinner";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", gap: 12, alignItems: "center" }}>',
+        '      <Spinner label="Smoke loading" />',
+        "      <Spinner decorative />",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Spinner"/.test(pageSource) && /Smoke loading/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Spinner and renders labeled + decorative instances",
+  },
+  divider: {
+    criticalPaths: [
+      "components/ui/Divider.tsx",
+      "components/ui/divider.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Divider } from "@/components/ui/Divider";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        "      <p>Above</p>",
+        "      <Divider />",
+        "      <p>Below</p>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) => /from "@\/components\/ui\/Divider"/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Divider and renders a thematic separator",
+  },
+  link: {
+    criticalPaths: [
+      "components/ui/Link.tsx",
+      "components/ui/link.module.css",
+      "components/ui/internal/link-utils.ts",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Link } from "@/components/ui/Link";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", gap: 16, flexDirection: "column" }}>',
+        '      <Link href="/components/button">Internal docs link</Link>',
+        '      <Link href="https://example.com" target="_blank">External example</Link>',
+        '      <Link href="mailto:hello@example.com">Mail link</Link>',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Link"/.test(pageSource) &&
+      /Internal docs link/.test(pageSource) &&
+      /example\.com/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports Link and renders internal, external, and mailto destinations",
+  },
+  "spinner-divider-link": {
+    criticalPaths: [
+      "components/ui/Spinner.tsx",
+      "components/ui/spinner.module.css",
+      "components/ui/Divider.tsx",
+      "components/ui/divider.module.css",
+      "components/ui/Link.tsx",
+      "components/ui/link.module.css",
+      "components/ui/internal/link-utils.ts",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    extraAdds: ["spinner", "divider"],
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { Divider } from "@/components/ui/Divider";',
+        'import { Link } from "@/components/ui/Link";',
+        'import { Spinner } from "@/components/ui/Spinner";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", flexDirection: "column", gap: 16 }}>',
+        '      <Spinner label="Composed loading" />',
+        "      <Divider />",
+        '      <Link href="/components/button">Composed internal link</Link>',
+        '      <Link href="https://example.com" target="_blank">Composed external link</Link>',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Spinner"/.test(pageSource) &&
+      /from "@\/components\/ui\/Divider"/.test(pageSource) &&
+      /from "@\/components\/ui\/Link"/.test(pageSource) &&
+      /Composed loading/.test(pageSource),
+    harnessAssertionLabel:
+      "composed consumer installs Link+Spinner+Divider and renders them together without manual repair",
+  },
 };
 
 const componentArg = cliArgs.find((arg) => !arg.startsWith("--"));
@@ -198,6 +327,12 @@ if (!descriptor) {
   );
   process.exit(1);
 }
+
+/** Composed descriptors install a primary registry item plus extras. */
+const PRIMARY_ADD_BY_DESCRIPTOR: Record<string, string> = {
+  "spinner-divider-link": "link",
+};
+const PRIMARY_ADD = PRIMARY_ADD_BY_DESCRIPTOR[COMPONENT_NAME] ?? COMPONENT_NAME;
 
 function log(line: string): void {
   console.log(line);
@@ -436,16 +571,23 @@ async function main(): Promise<void> {
 
   try {
     log(`\n[1/13] Building manifests in-memory from the current skrewwwDS working tree (no filesystem writes to the repo)`);
-    const graph = resolveGraph(COMPONENT_NAME);
-    const componentItem = graph.find((item) => item.name === COMPONENT_NAME);
-    if (!componentItem) throw new Error(`${COMPONENT_NAME} item missing from resolved graph`);
+    const graphNames = [PRIMARY_ADD, ...(descriptor.extraAdds ?? [])];
+    const graphByName = new Map<string, ShadcnRegistryItem>();
+    for (const name of graphNames) {
+      for (const item of resolveGraph(name)) {
+        graphByName.set(item.name, item);
+      }
+    }
+    const graph = Array.from(graphByName.values());
+    const componentItem = graph.find((item) => item.name === PRIMARY_ADD);
+    if (!componentItem) throw new Error(`${PRIMARY_ADD} item missing from resolved graph`);
     mkdirSync(registryRDir, { recursive: true });
     for (const item of graph) {
       writeFileSync(join(registryRDir, `${item.name}.json`), JSON.stringify(item, null, 2));
     }
     assert(
-      `manifests built for ${COMPONENT_NAME} + foundation`,
-      graph.some((item) => item.name === COMPONENT_NAME) && graph.some((item) => item.name === "foundation"),
+      `manifests built for ${PRIMARY_ADD} + foundation`,
+      graph.some((item) => item.name === PRIMARY_ADD) && graph.some((item) => item.name === "foundation"),
       `graph: ${graph.map((i) => i.name).join(", ")}`,
     );
 
@@ -455,8 +597,8 @@ async function main(): Promise<void> {
     const registryBaseUrl = started.baseUrl;
     log(`  Registry base URL: ${registryBaseUrl}`);
 
-    log(`\n[3/13] Readiness check on /r/${COMPONENT_NAME}.json`);
-    await waitUntilReady(`${registryBaseUrl}/r/${COMPONENT_NAME}.json`);
+    log(`\n[3/13] Readiness check on /r/${PRIMARY_ADD}.json`);
+    await waitUntilReady(`${registryBaseUrl}/r/${PRIMARY_ADD}.json`);
     assert("local registry server ready", true);
 
     log(`\n[4/13] Scaffolding Tailwind-free consumer (create-next-app@${CREATE_NEXT_APP_VERSION}, pinned)`);
@@ -507,8 +649,8 @@ async function main(): Promise<void> {
       ),
     );
 
-    log(`\n[7/13] shadcn@${SHADCN_VERSION} view @skrewww/${COMPONENT_NAME} (before any files are written)`);
-    const { stdout: viewOutput } = await run("npx", [`shadcn@${SHADCN_VERSION}`, "view", `@skrewww/${COMPONENT_NAME}`], {
+    log(`\n[7/13] shadcn@${SHADCN_VERSION} view @skrewww/${PRIMARY_ADD} (before any files are written)`);
+    const { stdout: viewOutput } = await run("npx", [`shadcn@${SHADCN_VERSION}`, "view", `@skrewww/${PRIMARY_ADD}`], {
       cwd: consumerDir,
       captureStdout: true,
     });
@@ -520,7 +662,7 @@ async function main(): Promise<void> {
     }
     assert("view resolves to a JSON array with one item", Array.isArray(viewJson) && viewJson.length === 1);
     const viewedItem = (viewJson as ShadcnRegistryItem[])[0];
-    assert(`view item name is ${COMPONENT_NAME}`, viewedItem.name === COMPONENT_NAME);
+    assert(`view item name is ${PRIMARY_ADD}`, viewedItem.name === PRIMARY_ADD);
     assert(
       "view item declares @skrewww/foundation as a registryDependency",
       viewedItem.registryDependencies.includes("@skrewww/foundation"),
@@ -529,11 +671,18 @@ async function main(): Promise<void> {
     log("\n[8/13] Pre-add filesystem snapshot");
     const preAddSnapshot = snapshotDir(consumerDir);
 
-    log(`\n[9/13] shadcn@${SHADCN_VERSION} add @skrewww/${COMPONENT_NAME}`);
-    await run("npx", [`shadcn@${SHADCN_VERSION}`, "add", `@skrewww/${COMPONENT_NAME}`, "--yes"], {
+    log(`\n[9/13] shadcn@${SHADCN_VERSION} add @skrewww/${PRIMARY_ADD}`);
+    await run("npx", [`shadcn@${SHADCN_VERSION}`, "add", `@skrewww/${PRIMARY_ADD}`, "--yes"], {
       cwd: consumerDir,
       closeStdin: descriptor.closeStdinOnAdd,
     });
+    for (const extra of descriptor.extraAdds ?? []) {
+      log(`\n[9b/13] shadcn@${SHADCN_VERSION} add @skrewww/${extra}`);
+      await run("npx", [`shadcn@${SHADCN_VERSION}`, "add", `@skrewww/${extra}`, "--yes"], {
+        cwd: consumerDir,
+        closeStdin: descriptor.closeStdinOnAdd,
+      });
+    }
 
     log("\n[10/13] Post-add filesystem + package.json snapshot, diff, and assertions");
     const postAddSnapshot = snapshotDir(consumerDir);

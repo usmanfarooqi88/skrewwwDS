@@ -1,7 +1,8 @@
 /**
  * Pure, importable generator for the shadcn-compatible distribution layer
  * (`/r/foundation.json`, `/r/button.json`, `/r/card.json`,
- * `/r/text-input.json`, `/r/form-field.json`, `/r/validation-message.json`).
+ * `/r/text-input.json`, `/r/form-field.json`, `/r/validation-message.json`,
+ * `/r/spinner.json`, `/r/divider.json`, `/r/link.json`).
  * Every function here is a pure transform of real repo files or the
  * canonical registry — importing this module performs no filesystem
  * writes. The file-writing CLI entry point lives in
@@ -14,10 +15,10 @@
  * docs/architecture/shadcn-distribution.md for how the two relate.
  *
  * Scope (see docs/architecture/shadcn-distribution.md): Foundation +
- * Button + Card + Text Input + Form Field + Validation Message. Adding
- * another component means adding its file(s) to FILE_DESTINATIONS and a
- * thin `buildXManifest() { return buildComponentManifest("x"); }` wrapper
- * — buildComponentManifest itself is already generic across any
+ * Button + Card + Text Input + Form Field + Validation Message + Spinner +
+ * Divider + Link. Adding another component means adding its file(s) to
+ * FILE_DESTINATIONS and a thin `buildXManifest() { return buildComponentManifest("x"); }`
+ * wrapper — buildComponentManifest itself is already generic across any
  * single-component canonical entry, including multi-hop
  * registryDependencies chains (text-input -> form-field ->
  * validation-message -> foundation) and real npm `dependencies`
@@ -115,6 +116,34 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
   "components/ui/validation-message.module.css": {
     type: "registry:ui",
     target: "~/components/ui/validation-message.module.css",
+  },
+  "components/ui/Spinner.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Spinner.tsx",
+  },
+  "components/ui/spinner.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/spinner.module.css",
+  },
+  "components/ui/Divider.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Divider.tsx",
+  },
+  "components/ui/divider.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/divider.module.css",
+  },
+  "components/ui/Link.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Link.tsx",
+  },
+  "components/ui/link.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/link.module.css",
+  },
+  "components/ui/internal/link-utils.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/link-utils.ts",
   },
   "lib/cn.ts": {
     type: "registry:lib",
@@ -299,6 +328,18 @@ export function buildFormFieldManifest(): ShadcnRegistryItem {
 
 export function buildValidationMessageManifest(): ShadcnRegistryItem {
   return buildComponentManifest("validation-message");
+}
+
+export function buildSpinnerManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("spinner");
+}
+
+export function buildDividerManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("divider");
+}
+
+export function buildLinkManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("link");
 }
 
 /**

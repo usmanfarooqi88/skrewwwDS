@@ -211,6 +211,35 @@ describe("component registry — Validation Message distribution metadata", () =
   });
 });
 
+describe("component registry — Spinner / Divider / Link distribution metadata", () => {
+  const spinner = componentRegistry.find((entry) => entry.slug === "spinner");
+  const divider = componentRegistry.find((entry) => entry.slug === "divider");
+  const link = componentRegistry.find((entry) => entry.slug === "link");
+
+  it("declares Spinner distribution fields", () => {
+    expect(spinner?.files).toEqual(["components/ui/Spinner.tsx", "components/ui/spinner.module.css"]);
+    expect(spinner?.internalDependencies).toEqual(["lib/cn.ts"]);
+    expect(spinner?.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(spinner?.hostRequirements).toEqual(["react", "react-dom"]);
+    expect(spinner?.dependencies).toEqual([]);
+  });
+
+  it("declares Divider distribution fields", () => {
+    expect(divider?.files).toEqual(["components/ui/Divider.tsx", "components/ui/divider.module.css"]);
+    expect(divider?.internalDependencies).toEqual(["lib/cn.ts"]);
+    expect(divider?.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(divider?.hostRequirements).toEqual(["react", "react-dom"]);
+  });
+
+  it("declares Link distribution fields without site-config as a transported file", () => {
+    expect(link?.files).toEqual(["components/ui/Link.tsx", "components/ui/link.module.css"]);
+    expect(link?.internalDependencies).toEqual(["lib/cn.ts", "components/ui/internal/link-utils.ts"]);
+    expect(link?.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(link?.hostRequirements).toEqual(["react", "react-dom", "next"]);
+    expect(link?.dependencies).toEqual([]);
+  });
+});
+
 describe("component registry — Badge R1 token documentation", () => {
   const badge = componentRegistry.find((entry) => entry.slug === "badge");
 
