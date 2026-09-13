@@ -1,6 +1,69 @@
 # Project status
 
-Last verified: **2026-09-13** (OS-1 Open Source Launch — COMPLETE; repository is PUBLIC)
+Last verified: **2026-09-13** (Community / Beta Stabilization — initial post-launch audit)
+
+## 2026-09-13 — Community / Beta Stabilization (initial pass)
+
+Post-OS-1 stabilization audit. **Not** a feature sprint. Guard remains
+**NOT STARTED**. Recommendation: **B — steady-state** (wait for external
+feedback before new architecture).
+
+**Baseline re-verified:** HEAD `dc75bc067fa7bdd566fc7b1e7027cde1a7042f4d`
+(OS-1 launch SHA); repository **PUBLIC**; `main == origin/main`; clean tree;
+latest Actions CI on that SHA = **success**; Dependabot open alerts = **0**;
+`npm audit` / `npm audit --omit=dev` = **0** findings; Next.js `^16.3.5`;
+PVR enabled; secret scanning + push protection enabled; Issues enabled;
+branch protection on `main` (required CI check, no force-push/delete);
+homepage `https://skrewww.com`; MIT license; topics present.
+
+### Public / community signals (evidence)
+
+Too early for meaningful external human signal:
+
+- Issues: **0** (open or closed human issues)
+- External PRs: **0** (only Dependabot/Vercel bot history)
+- Stars: **0** · Forks: **0** · Watchers: **0**
+- Releases: `v1.0.0` present
+- Post-launch CI on `dc75bc0`: success; earlier same-day failures tied to
+  pre-launch Next bump / Combobox historical SHA — not reproduced on current
+  `main`
+
+### Contributor validation (fresh unauthenticated clone)
+
+Clone of public `https://github.com/usmanfarooqi88/skrewwwDS.git` at
+`dc75bc0`: `npm ci` (0 vulns) → `verify:node` → lint → typecheck → Vitest
+**990/990** (`--maxWorkers=2`) → `npm run build` → delete `public/agent` +
+`public/r` → `generate:registry` + `generate:agent-context` → tree clean
+(generated paths gitignored). No undocumented tribal steps required beyond
+documented Node engines / `npm ci`.
+
+### Agent Kit Beta public health
+
+Live `skrewww.com`: `/agent-kit`, `/agent/index.json`, `/agent/system.json`,
+`/agent/contracts/button.json`, `/agent/recipes/index.json`,
+`/agent/feature-kits/index.json`, `/agent/skill/SKILL.md`, `/r/button.json`,
+`/registry.json` → **200**. `/r/registry.json` → **404** (known documented
+gap). Sidebar **NEW** + page **Beta** both present; NEW governance remains
+~30–45 days / 1–2 releases (do **not** remove yet — launch day).
+
+### Stabilization register
+
+| ID | Severity | Issue | Evidence | Next action | Owner | Status |
+|----|----------|-------|----------|-------------|-------|--------|
+| STAB-001 | P2 | No `/r/registry.json` index (MCP list/search + Registry Directory) | Live 404; Agent Kit page Known limitations; shadcn docs require flat `registry.json` at registry root for directory namespaces | Explicit future distribution task — **do not implement in this pass** | code (future) | Open |
+| STAB-002 | P2 | CODE_OF_CONDUCT has no verified private conduct-reporting channel | `CODE_OF_CONDUCT.md` open item | Provide a verified private destination, then update CoC | **HUMAN DECISION** | Open |
+| STAB-003 | P2 | Figma Pro sharing must remain restricted/private | OS-1 follow-up; MCP can read file metadata for authenticated owner but cannot prove public share state | Confirm Pro file sharing UI is restricted | **HUMAN CONFIRMATION** | Open |
+| STAB-004 | P3 | Free Figma file licensing terms still an open legal item | `docs/licensing.md` | Record Free-file terms when decided | legal/human | Open |
+| STAB-005 | P3 | Too early for external community signal | 0 issues / 0 stars / 0 forks post-launch | Wait; re-audit when Issues/PRs appear | process | Observed |
+| STAB-006 | P3 | NEW nav badge still appropriate (launch day) | `lib/sidebar-nav.ts` governance 30–45 days | Remove later per policy | docs/nav | Deferred |
+
+**P0:** none. **P1:** none evidenced this pass.
+
+### Roadmap decision
+
+**B — Community/Beta Stabilization steady-state.** Public surfaces and
+contributor path are healthy; wait for real external feedback before
+scoping Guard or expanding distribution.
 
 ## 2026-09-13 — OS-1 Open Source Launch — COMPLETE (visibility change + launch)
 
