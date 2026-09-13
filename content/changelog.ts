@@ -35,6 +35,28 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-09-open-source-launch",
+    date: "2026-09-13",
+    displayDate: "September 2026",
+    title: "Skrewww is now open source",
+    summary:
+      "The Skrewww codebase is now open source under the MIT license, with a public contribution workflow. Agent Kit remains available in Beta. Skrewww Pro (the paid Figma library and Gumroad deliverables) and Skrewww Free (the Community Figma file) remain separate from this repository.",
+    items: [
+      {
+        type: "new",
+        text: "Repository source is public under the MIT license — components, tokens, docs platform, tests, registry infrastructure, and Agent Kit.",
+      },
+      {
+        type: "new",
+        text: "Public contribution workflow: issue templates for bugs, component issues, Agent Kit issues, documentation issues, and feature requests, plus a pull request template.",
+      },
+      {
+        type: "improved",
+        text: "Agent Kit's public Feedback section now points to the live issue tracker instead of an informal contact route.",
+      },
+    ],
+  },
+  {
     id: "2026-09-agent-kit-beta",
     date: "2026-09-13",
     displayDate: "September 2026",

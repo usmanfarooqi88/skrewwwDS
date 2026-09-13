@@ -89,21 +89,27 @@ describe("AK-6 — Skill public projection (/agent/skill/SKILL.md)", () => {
   });
 });
 
-describe("AK-6 — no private repository details leaked into any public surface", () => {
-  it("the docs page and llms surfaces never reference the private source repository", () => {
+describe("AK-6 — GitHub repository references, where present, point only to the real public repository", () => {
+  // The source repository went public as part of OS-1 (see
+  // docs/open-source-readiness.md). Referencing it is no longer a private-repo
+  // leak — it's the intended public feedback path. This guard now checks that
+  // any repository reference is the real public repo at its real public
+  // surfaces (Issues, security policy), not a wrong org/repo or a bare link.
+  const repoUrlPattern = /github\.com\/[\w-]+\/skrewwwDS(\/[\w./-]*)?/gi;
+
+  it("the docs page and llms surfaces only reference the real public repository, at its intended surfaces", () => {
     const pageSource = readFileSync(join(root, "app", "agent-kit", "page.tsx"), "utf8");
     const llmsFull = buildLlmsFullTxt();
     for (const text of [pageSource, llmsFull]) {
-      expect(text).not.toMatch(/github\.com\/[\w-]+\/skrewwwDS/i);
+      const matches = text.match(repoUrlPattern) ?? [];
+      for (const match of matches) {
+        expect(match).toMatch(/^github\.com\/usmanfarooqi88\/skrewwwDS\/(issues|security\/policy)$/i);
+      }
     }
   });
 
-  it("siteConfig.repositoryUrl remains unset rather than pointing at a private repo", () => {
-    // A genuine, reported Beta gap (see docs/architecture/agent-kit.md's
-    // AK-6 section) — the source repository is private, so it must not be
-    // presented as a public feedback channel. This test guards against
-    // that being silently "fixed" with a private URL later.
-    expect(siteConfig.repositoryUrl).toBeUndefined();
+  it("siteConfig.repositoryUrl points at the real public repository, not a placeholder or a different org", () => {
+    expect(siteConfig.repositoryUrl).toBe("https://github.com/usmanfarooqi88/skrewwwDS");
   });
 });
 

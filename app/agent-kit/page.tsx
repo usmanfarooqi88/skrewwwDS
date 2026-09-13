@@ -347,10 +347,24 @@ export default function AgentKitPage() {
 
       <Section id="feedback" title="Feedback">
         <p>
-          Agent Kit is Beta — component contracts, Recipes, or the Skill may have gaps. A public
-          issue tracker for this project is not yet published here; if you have access to the
-          Skrewww team through your existing relationship, report contract errors, Skill issues,
-          Recipe issues, or installation/distribution problems that way in the meantime.
+          Agent Kit is Beta — component contracts, Recipes, or the Skill may have gaps. Report
+          them on{" "}
+          <a
+            href="https://github.com/usmanfarooqi88/skrewwwDS/issues"
+            className="font-medium text-brand-600 underline underline-offset-2"
+          >
+            GitHub Issues
+          </a>{" "}
+          using the &ldquo;Agent Kit issue&rdquo; template for a wrong contract, Skill, Recipe, or
+          ProjectContext, or &ldquo;Bug report&rdquo; for an installation/distribution problem.
+          For a security vulnerability, see{" "}
+          <a
+            href="https://github.com/usmanfarooqi88/skrewwwDS/security/policy"
+            className="font-medium text-brand-600 underline underline-offset-2"
+          >
+            SECURITY.md
+          </a>{" "}
+          instead of opening a public issue.
         </p>
       </Section>
     </div>

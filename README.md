@@ -40,8 +40,19 @@ prints the local URL on startup.
 Code in this repository is [MIT](LICENSE). Third-party dependencies keep their
 own licenses, and the Skrewww name, logo, and brand identity are **not**
 granted by the code license — see [`TRADEMARKS.md`](TRADEMARKS.md) and
-[`docs/licensing.md`](docs/licensing.md). Skrewww Pro (paid Figma/Gumroad
-deliverables) is not included in this repository.
+[`docs/licensing.md`](docs/licensing.md). Skrewww Pro (the paid Figma library
+and Gumroad deliverables) and Skrewww Free (the Community Figma file) are
+separate from this repository and not included in it.
+
+## Contributing, feedback, and security
+
+Contribution rules: [`CONTRIBUTING.md`](CONTRIBUTING.md) /
+[`docs/contributing.md`](docs/contributing.md). Bugs, component issues,
+Agent Kit issues, documentation issues, and feature requests go through
+[GitHub Issues](https://github.com/usmanfarooqi88/skrewwwDS/issues). For a
+security vulnerability, do not open a public issue — see
+[`SECURITY.md`](SECURITY.md) first. Community expectations:
+[`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
 ## Current status
 
@@ -230,10 +241,6 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 
 For current parity status, verification dates, and Figma references, see
 [`docs/project-status.md`](docs/project-status.md).
-
-## License
-
-Private project — Skrewww design system documentation.
 
 ## Repository archive (excludes generated and local files)
 

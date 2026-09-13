@@ -35,7 +35,7 @@ export const siteConfig = {
   documentationPublished: "2026-06-01",
   /** Next.js serves /opengraph-image automatically — keep absolute URL helper aligned. */
   defaultSocialImagePath: "/opengraph-image",
-  repositoryUrl: undefined as string | undefined,
+  repositoryUrl: "https://github.com/usmanfarooqi88/skrewwwDS",
   figmaUrl: undefined as string | undefined,
   accessibilityBaseline: "WCAG 2.2 AA (target)",
 } as const;

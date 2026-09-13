@@ -647,21 +647,27 @@ in this doc: Guard is enforcement/CI/drift work, a distinct later
 roadmap item, and AK-6 implements none of it (no compliance blocker, no
 lint package, no merge gate).
 
-### Feedback path — genuine reported gap
+### Feedback path — resolved at OS-1 launch (previously a genuine reported gap)
 
-Audited: no public GitHub Issues link, contact form, or support email
-exists anywhere in this site's current code, content, or `siteConfig`
-(`repositoryUrl`/`figmaUrl` are both explicitly `undefined`). The
-project's actual git remote is a **private** repository — confirmed via
-`gh repo view` (`"visibility":"PRIVATE"`) — so it must not be published
-as a public feedback channel; doing so would both mislead external users
-(they'd hit a 404/access-denied) and disclose a private repository's
-existence. AK-6 does not invent a channel to paper over this. The public
-`/agent-kit` page states the gap honestly instead of linking anywhere.
-**This requires a human decision** (make the repo public with Issues
-enabled, or supply a real support email/form) before Beta has a working
-feedback loop — recorded here and in `docs/project-status.md` as explicit
-open follow-up, not resolved by this phase.
+Originally audited (during AK-6 Beta productization, repository still
+private): no public GitHub Issues link, contact form, or support email
+existed anywhere in this site's code, content, or `siteConfig`
+(`repositoryUrl`/`figmaUrl` were both explicitly `undefined`). The
+project's git remote was a **private** repository — confirmed via
+`gh repo view` (`"visibility":"PRIVATE"`) — so a GitHub Issues link would
+have both misled external users (404/access-denied) and disclosed a
+private repository's existence. AK-6 deliberately did not invent a channel
+to paper over this; the public `/agent-kit` page stated the gap honestly
+instead of linking anywhere. The doc recorded this as requiring a human
+decision (make the repo public with Issues enabled, or supply a real
+support email/form) before Beta had a working feedback loop.
+
+**Resolved as part of OS-1 Open Source Launch**: the repository is now
+public and GitHub Issues is the live feedback channel. `siteConfig.repositoryUrl`
+now points at `https://github.com/usmanfarooqi88/skrewwwDS`; the public
+`/agent-kit` Feedback section links to GitHub Issues (Agent Kit issue /
+Bug report templates) and to `SECURITY.md` for vulnerabilities. See
+`docs/open-source-readiness.md` for the full launch record.
 
 ### Evaluation evidence — public framing
 
