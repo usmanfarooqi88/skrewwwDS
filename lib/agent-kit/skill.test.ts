@@ -80,13 +80,11 @@ describe("Skrewww UI Skill — does not embed a manually maintained catalog", ()
 });
 
 describe("Skrewww UI Skill — does not implement out-of-scope phases", () => {
-  it("does not introduce an MCP server, recipe implementation, or Guard enforcement in the repo", () => {
+  it("does not introduce an MCP server or Guard enforcement in the repo", () => {
     const prohibitedPaths = [
       "agent/mcp",
-      "agent/recipes",
       "agent/guard",
       "lib/agent-kit/mcp-server.ts",
-      "lib/agent-kit/recipes.ts",
       "lib/agent-kit/guard.ts",
     ];
     for (const relativePath of prohibitedPaths) {
@@ -99,6 +97,30 @@ describe("Skrewww UI Skill — does not implement out-of-scope phases", () => {
     for (const forbiddenField of ["states:", "slots:", "composition:", "forbiddenPatterns:"]) {
       expect(schemaSource).not.toContain(forbiddenField);
     }
+  });
+});
+
+describe("Skrewww UI Skill — Recipes integration (AK-4)", () => {
+  it("documents Recipe discovery paths without embedding a Recipe catalog", () => {
+    const content = readCanonicalSkill();
+    expect(content).toContain("recipes/index.json");
+    expect(content).toContain("recipes/<recipe-id>.json");
+    expect(content).toMatch(/component contract.*Recipe|contracts always beat Recipes/i);
+    // Must not paste pilot Recipe ids as a maintained catalog.
+    const pilotIds = [
+      "validated-text-field",
+      "destructive-confirmation",
+      "loading-and-inline-feedback",
+      "search-no-results",
+      "forms-and-feedback",
+    ];
+    const mentioned = pilotIds.filter((id) => content.includes(id));
+    expect(mentioned.length).toBe(0);
+  });
+
+  it("states component-contract-over-Recipe precedence", () => {
+    const normalized = readCanonicalSkill().replace(/\s+/g, " ");
+    expect(normalized).toMatch(/component contracts always beat recipes/i);
   });
 });
 
@@ -140,6 +162,8 @@ describe("Consumption proof — Skill's documented lookup paths are real", () =>
     expect(content).toMatch(/\bindex\.json\b/);
     expect(content).toMatch(/\bsystem\.json\b/);
     expect(content).toContain("contracts/<slug>.json");
+    expect(content).toContain("recipes/index.json");
+    expect(content).toContain("feature-kits/index.json");
   });
 
   it("a slug from index.json resolves to a real compiled contract with matching identity", () => {

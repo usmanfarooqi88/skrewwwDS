@@ -1,6 +1,49 @@
 # Project status
 
-Last verified: **2026-09-13** (Skrewww Agent Kit AK-3 — Registry / Retrieval + Project Context complete)
+Last verified: **2026-09-13** (Skrewww Agent Kit AK-4 — Recipes / Feature Kits complete)
+
+## 2026-09-13 — Skrewww Agent Kit AK-4 (Recipes / Feature Kits)
+
+Adds composition guidance **above** component contracts without reopening
+the AK-1 component-contract schema (no slots/composition/forbiddenPatterns
+on contracts).
+
+**Architecture:** authored Recipes in `agent/recipes/*.ts`; schema
+`lib/agent-kit/recipe-schema.ts`; pure compiler
+`lib/agent-kit/recipe-compiler.ts`. Generated under
+`public/agent/recipes/` and `public/agent/feature-kits/` via the existing
+`generate:agent-context` script (same deterministic git provenance).
+
+**Authority:** component contract > Recipe > model memory. Recipes
+reference slugs only; explicit API refs validated against current
+contracts; maturity (`allStable`/`containsBeta`) and installability
+derived (AK-3 `isDistributedViaSkrewwwRegistry`) — never authored.
+
+**Pilot Recipes (4, status Beta):**
+
+| ID | Goal | Required | Maturity |
+|----|------|----------|----------|
+| `validated-text-field` | Labeled field + inline error | form-field, text-input, validation-message | allStable |
+| `destructive-confirmation` | Modal destructive confirm | dialog, button | allStable |
+| `loading-and-inline-feedback` | Skeleton / Spinner / Alert | skeleton, spinner, alert | allStable |
+| `search-no-results` | Search + empty outcome | search-field, empty-state | containsBeta |
+
+**Feature Kit (1):** `forms-and-feedback` → first three Recipe IDs only
+(thin index; no copied Recipe bodies).
+
+**Skill:** Recipe discovery workflow + contract-over-Recipe precedence;
+still ≤500 lines; no embedded Recipe catalog; adapter remains
+byte-identical via `install:agent-skill`.
+
+**Out of scope (confirmed):** AK-5 eval harness, Guard, custom MCP,
+`/r/registry.json`, shadcn catalog expansion, React/Figma/API changes.
+
+**Verified:** lint/typecheck clean; Vitest **954/954** (103 files); production
+`npm run build` regenerates contracts + Recipes + Feature Kits; Skill 324
+lines (≤500); adapter byte-identical. `/r/*` unchanged (9 manifests).
+
+**Skrewww Agent Kit AK-4 — COMPLETE.** AK-5 (Evaluations) is next but
+**NOT STARTED**.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-3 (Registry / Retrieval + Project Context)
 
@@ -89,8 +132,8 @@ remain gitignored; no `git status` drift from either.
 
 Full architecture record: [`docs/architecture/agent-kit.md`](architecture/agent-kit.md#ak-3--registry--retrieval--project-context).
 
-**Skrewww Agent Kit AK-3 — COMPLETE.** AK-4 (Recipes / Feature Kits) is
-next but **not started**.
+**Skrewww Agent Kit AK-3 — COMPLETE.** AK-4 (Recipes / Feature Kits)
+completed in a later same-day entry above.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-2 (Universal Skrewww Agent Skill)
 

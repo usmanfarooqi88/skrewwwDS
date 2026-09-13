@@ -429,14 +429,82 @@ no eval harness, no Guard code, no CLI, and touched no Figma or
 Presentation V2 surface. `isDistributedViaSkrewwwRegistry` and
 `detectProjectContext` are plain data-driven functions, not a
 composition/recipe engine — composing multiple components into a
-documented pattern is explicitly AK-4's job, not this one's.
+documented pattern is explicitly AK-4's job (see below).
+
+## AK-4 — Recipes / Feature Kits
+
+### Purpose
+
+A **Recipe** teaches an agent how to combine existing verified Skrewww
+components for a common product interaction. It is not a React component,
+not a `/r/*` package, not a page template, and not an evaluation.
+
+Trust order (locked):
+
+1. canonical repo source
+2. generated **component** contracts
+3. generated **Recipes / Feature Kits**
+4. public registry/distribution
+5. consumer project
+6. model memory
+
+**Component contracts always win over Recipes.** Recipes must reference
+component slugs and may only cite API facts that the current compiled
+component contract proves. AK-4 does **not** extend
+`lib/agent-kit/contract-schema.ts` with slots, composition, or
+forbiddenPatterns — those stay absent from component contracts.
+
+### Canonical authoring
+
+| Artifact | Path |
+|---|---|
+| Authored Recipes | `agent/recipes/*.ts` (+ `agent/recipes/index.ts`) |
+| Authored Feature Kits | same barrel (`authoredFeatureKits`) — thin Recipe-id lists only |
+| Schema | `lib/agent-kit/recipe-schema.ts` |
+| Compiler | `lib/agent-kit/recipe-compiler.ts` (pure; contracts passed in) |
+
+### Generated public paths
+
+```
+public/agent/recipes/index.json
+public/agent/recipes/<recipe-id>.json
+public/agent/feature-kits/index.json
+public/agent/feature-kits/<kit-id>.json
+```
+
+Produced by `npm run generate:agent-context` (same git provenance as
+component contracts; still gitignored under `public/agent/`). Discovery
+is under `/agent`, never via shadcn MCP/`/r/registry.json`.
+
+### Derived fields (never authored)
+
+- `componentMaturity`: `allStable` | `containsBeta` from referenced contracts
+- `installableViaSkrewwwRegistry` / `installCommand`: via
+  `isDistributedViaSkrewwwRegistry` (AK-3) — no invented install commands
+
+### Feature Kits
+
+A Feature Kit is a lightweight named list of Recipe IDs for a broader
+capability. It must not copy Recipe bodies. AK-4 ships one pilot kit.
+
+### ProjectContext
+
+Recipes may note confirmed-or-unknown Shape/Surface/install/registry
+considerations. AK-4 does not add a second detector.
+
+### AK-5 boundary
+
+AK-4 adds no OFF/ON eval harness, scoring rubric, LLM prompt suite, or
+Guard enforcement. Those remain AK-5 / Guard.
 
 ## See also
 
 - `docs/architecture/source-of-truth.md` — general conflict-resolution rules this document inherits.
 - `docs/architecture/shadcn-distribution.md` — the distribution surface AK-3 integrates with, not replaces.
-- `docs/project-status.md` — dated status entries for the R1 reconciliation, AK-1, AK-2, and AK-3 completion.
+- `docs/project-status.md` — dated status entries for the R1 reconciliation, AK-1, AK-2, AK-3, and AK-4 completion.
 - `lib/agent-kit/contract-compiler.test.ts` — the enforced AK-1 contract (join integrity, R1 guard, determinism, leak protection).
 - `lib/agent-kit/skill.test.ts` — the enforced AK-2 contract (Skill structure, catalog/count-free, adapter byte-identity, out-of-scope boundaries, consumption proof).
 - `lib/agent-kit/retrieval.test.ts`, `lib/agent-kit/registry-integration.test.ts`, `lib/agent-kit/project-context.test.ts` — the enforced AK-3 contract.
+- `lib/agent-kit/recipe-compiler.test.ts` — the enforced AK-4 contract.
 - `agent/skill/SKILL.md` — the canonical Skill itself.
+- `agent/recipes/` — authored Recipe / Feature Kit sources.
