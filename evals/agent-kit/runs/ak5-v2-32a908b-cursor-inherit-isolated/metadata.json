@@ -1,0 +1,267 @@
+{
+  "runId": "ak5-v2-32a908b-cursor-inherit-isolated",
+  "suiteVersion": "1.0.0",
+  "predecessorRunId": "ak5-v1-aa26a17-cursor-inherit",
+  "predecessorReportSha256": "7d8ec34cbf983efdf418eb070491e55e33cc28e65530910417a711ab0dd845c1",
+  "sourceGitSha": "32a908b17808559fee30ca2c0085765863ad601f",
+  "sourceGitCommitTimestamp": "2026-09-13T19:59:24+05:00",
+  "agentKitFreezeSha": "32a908b17808559fee30ca2c0085765863ad601f",
+  "modelIdentifier": "not exposed (Cursor Task subagent, model=inherit)",
+  "executionEnvironment": "Cursor IDE Task tool — one fresh subagent per case per condition (no batching)",
+  "isolationNotes": "Methodology remediation after v1 ON used 2×7 batched contexts. This v2 run requires 14/14 OFF and 14/14 ON as separate Task subagents. Each agent receives only its own generated prompt file path and must not read other cases. Scorer fix for rejected-API mentions is included in freeze SHA; Skill/contracts/Recipes unchanged since aa26a17 Agent Kit content.",
+  "weightsLockedIn": "lib/agent-kit/evaluation-schema.ts EVAL_SCORE_WEIGHTS",
+  "isolationManifest": [
+    {
+      "caseId": "single-button-api",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "30073f77-6bf5-4c47-ae75-cf0287df8ecf",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/30073f77-6bf5-4c47-ae75-cf0287df8ecf.jsonl"
+    },
+    {
+      "caseId": "single-button-api",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "5a4e8a3a-5c6e-41c5-afce-a75dd68028e8",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/5a4e8a3a-5c6e-41c5-afce-a75dd68028e8.jsonl"
+    },
+    {
+      "caseId": "invalid-prop-bait-tertiary",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "f97ded9d-e7d1-443f-8337-812a518e86f1",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/f97ded9d-e7d1-443f-8337-812a518e86f1.jsonl"
+    },
+    {
+      "caseId": "invalid-prop-bait-tertiary",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "41db3cef-5473-4632-b3d2-f9abe1342c56",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/41db3cef-5473-4632-b3d2-f9abe1342c56.jsonl"
+    },
+    {
+      "caseId": "identity-icon-button",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "c3310890-86b4-42b5-8441-c606effcad97",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/c3310890-86b4-42b5-8441-c606effcad97.jsonl"
+    },
+    {
+      "caseId": "identity-icon-button",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "564c7829-8f82-40f8-a58b-f0f77d378a49",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/564c7829-8f82-40f8-a58b-f0f77d378a49.jsonl"
+    },
+    {
+      "caseId": "maturity-empty-state-beta",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "99d0545b-49d9-4113-b3a1-0418b47d6013",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/99d0545b-49d9-4113-b3a1-0418b47d6013.jsonl"
+    },
+    {
+      "caseId": "maturity-empty-state-beta",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "5596bb85-4d50-4a07-8cce-6c9a97f3ea2d",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/5596bb85-4d50-4a07-8cce-6c9a97f3ea2d.jsonl"
+    },
+    {
+      "caseId": "install-distributed-spinner",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "f363d81d-a7f3-4cc4-8054-9064540dd75e",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/f363d81d-a7f3-4cc4-8054-9064540dd75e.jsonl"
+    },
+    {
+      "caseId": "install-distributed-spinner",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "59f4edc4-d721-4671-83cf-51404826cb7c",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/59f4edc4-d721-4671-83cf-51404826cb7c.jsonl"
+    },
+    {
+      "caseId": "install-undistributed-checkbox",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "f351365b-98d4-4af1-a91d-bb7be593cb71",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/f351365b-98d4-4af1-a91d-bb7be593cb71.jsonl"
+    },
+    {
+      "caseId": "install-undistributed-checkbox",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "82103ffe-44bd-4dbc-8f2f-a35d49e4ff49",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/82103ffe-44bd-4dbc-8f2f-a35d49e4ff49.jsonl"
+    },
+    {
+      "caseId": "project-context-preserve-shape",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "3369bd1b-f0c5-4d98-8e71-5fcc6e498464",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/3369bd1b-f0c5-4d98-8e71-5fcc6e498464.jsonl"
+    },
+    {
+      "caseId": "project-context-preserve-shape",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "2547fd3a-afe0-4232-88f1-23aac5d4a166",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/2547fd3a-afe0-4232-88f1-23aac5d4a166.jsonl"
+    },
+    {
+      "caseId": "project-context-unknown",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "cf123489-32b6-4fc9-8f07-8641c2788254",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/cf123489-32b6-4fc9-8f07-8641c2788254.jsonl"
+    },
+    {
+      "caseId": "project-context-unknown",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "c28e4803-dbe4-49bc-9dd6-aed0d47359a5",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/c28e4803-dbe4-49bc-9dd6-aed0d47359a5.jsonl"
+    },
+    {
+      "caseId": "a11y-form-field-label",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "c9c6f2e3-b2ac-4984-87ea-51641944e020",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/c9c6f2e3-b2ac-4984-87ea-51641944e020.jsonl"
+    },
+    {
+      "caseId": "a11y-form-field-label",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "26ae2d93-6823-4e2b-ade5-db77cee76b31",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/26ae2d93-6823-4e2b-ade5-db77cee76b31.jsonl"
+    },
+    {
+      "caseId": "recipe-validated-text-field",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "9306513c-eeaf-4479-afd5-0e9b878a6b62",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/9306513c-eeaf-4479-afd5-0e9b878a6b62.jsonl"
+    },
+    {
+      "caseId": "recipe-validated-text-field",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "2f7df2c9-b41f-431a-927b-95fb20e8fce8",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/2f7df2c9-b41f-431a-927b-95fb20e8fce8.jsonl"
+    },
+    {
+      "caseId": "recipe-destructive-confirmation",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "85c142ed-8da5-48df-a7b6-a2f99a96eb4c",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/85c142ed-8da5-48df-a7b6-a2f99a96eb4c.jsonl"
+    },
+    {
+      "caseId": "recipe-destructive-confirmation",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "585d1aa2-2604-46ab-a6ba-50ee535ae11a",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/585d1aa2-2604-46ab-a6ba-50ee535ae11a.jsonl"
+    },
+    {
+      "caseId": "recipe-conflict-dialog-title-prop",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "f1c774d1-1465-4e46-ba29-7cd079f02c2c",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/f1c774d1-1465-4e46-ba29-7cd079f02c2c.jsonl"
+    },
+    {
+      "caseId": "recipe-conflict-dialog-title-prop",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "2457afec-bc58-4bf5-9b74-8684b234d3c9",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/2457afec-bc58-4bf5-9b74-8684b234d3c9.jsonl"
+    },
+    {
+      "caseId": "recipe-search-no-results-beta",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "b5c89475-70fe-48ab-a9db-8fa1c4517a3e",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/b5c89475-70fe-48ab-a9db-8fa1c4517a3e.jsonl"
+    },
+    {
+      "caseId": "recipe-search-no-results-beta",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "061e7ab1-f245-480e-98cd-f89feb56d5f6",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/061e7ab1-f245-480e-98cd-f89feb56d5f6.jsonl"
+    },
+    {
+      "caseId": "hostile-readme-fake-api",
+      "condition": "OFF",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "b877bfff-41d7-4bc4-ae20-1e2b22ba0e27",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/b877bfff-41d7-4bc4-ae20-1e2b22ba0e27.jsonl"
+    },
+    {
+      "caseId": "hostile-readme-fake-api",
+      "condition": "ON",
+      "executionTool": "Cursor Task subagent",
+      "modelIdentifier": "not exposed (inherit)",
+      "sourceEvalSha": "32a908b17808559fee30ca2c0085765863ad601f",
+      "taskId": "8462097c-e11f-4737-8211-a8d24163645f",
+      "transcriptPath": "/Users/usmanfarooqi/.cursor/projects/Users-usmanfarooqi-Downloads-work-Personal-Development-skrewwwDS/agent-transcripts/1afde291-ed40-428a-a82d-c3bd464b627d/subagents/8462097c-e11f-4737-8211-a8d24163645f.jsonl"
+    }
+  ]
+}

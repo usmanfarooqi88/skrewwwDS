@@ -523,6 +523,17 @@ forbidden claims, malformed output. Aggregate score is convenience only —
 critical counts gate release. Optional human review stays separate and is
 not mixed into hard scores. No model-as-judge in AK-5.
 
+**Forbidden-claim scan:** substrings are checked only in usage/assertion
+fields (`componentSlugs`, `apiReferences`, `installCommands`,
+`maturityClaims`, `recipeIdsUsed`, `implementation`). Mentions inside
+`unresolvedGaps` / `assumptions` that reject an invalid API do **not**
+count as claiming it is valid.
+
+**Isolation (mandatory):** every OFF and every ON case must run in a
+**separate fresh execution context** — no multi-case batching within a
+condition. Batched ON execution is a methodology failure even if scores
+look strong.
+
 ### Baseline freeze
 
 Before the first real paired run, record the Agent Kit freeze SHA. Do not

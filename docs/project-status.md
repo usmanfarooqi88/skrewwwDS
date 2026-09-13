@@ -1,49 +1,80 @@
 # Project status
 
-Last verified: **2026-09-13** (Skrewww Agent Kit AK-5 — Evaluations baseline complete)
+Last verified: **2026-09-13** (Skrewww Agent Kit AK-5 — isolated remediation; gate FAILED)
 
-## 2026-09-13 — Skrewww Agent Kit AK-5 (Evaluations)
+## 2026-09-13 — Skrewww Agent Kit AK-5 (Evaluations) — methodology remediation
 
-Provider-neutral OFF/ON evaluation harness + first genuine paired baseline
-run against freeze SHA `aa26a17`.
+AK-5 remains **CURRENT / REMEDIATION REQUIRED**. Original v1 baseline is
+**retained** and must not be overwritten.
 
-**Suite:** 14 cases (`evals/agent-kit/cases.ts`) covering single-API,
-invalid-prop bait, identity, maturity, installability (distributed + not),
-project-context (confirmed + unknown), accessibility, Recipe composition
-(×2), Recipe-vs-contract conflict, Beta Recipe dependency, hostile README.
+### Why remediation was required
 
-**Execution:** Cursor Task subagents, model=`inherit` (exact vendor model id
-**not exposed**). OFF = 14 isolated prompts. ON = 2 batches × 7
-self-contained `on.md` prompts (batch isolation limitation documented in
-run metadata).
+v1 ON execution used **2 batches × 7** cases (shared context per batch),
+violating the mandatory rule: fresh isolated context **per case AND
+condition**. Strong scores alone do not accept a methodology failure.
 
-**Freeze SHA:** `aa26a17` (Agent Kit Skill/contracts/Recipes unchanged
-during the paired run).
+### Scorer harness correction (pre-freeze)
 
-**OFF hard metrics:** inventedComponents 9 · inventedApis 40 ·
-installability 3 · maturity 5 · context 0 · authority 0 · a11y 1 ·
-forbiddenClaims 2 · missingRequired 7 · **totalHardErrors 67** ·
-meanAggregate 38.93
+`32a908b` — forbidden-claim substring scan excludes `unresolvedGaps` /
+`assumptions` so rejecting an invalid API mention is not scored as claiming
+it. Skill/contracts/Recipes/ProjectContext unchanged.
 
-**ON hard metrics:** inventedComponents 0 · inventedApis 0 ·
-installability 0 · maturity 0 · context 0 · authority 0 · a11y 0 ·
-forbiddenClaims 1 · missingRequired 1 · **totalHardErrors 2** ·
-meanAggregate 98.21
+### Isolated v2 run
 
-**Deltas (ON−OFF):** totalHardErrors **−65**; inventedApis **−40**;
-inventedComponents **−9**; maturity **−5**; installability **−3**.
+- **Run ID:** `ak5-v2-32a908b-cursor-inherit-isolated`
+- **Freeze / source SHA:** `32a908b`
+- **Execution:** Cursor Task subagents, model=`inherit` (**not exposed**)
+- **Isolation:** **14/14 OFF** + **14/14 ON** separate Task contexts (see
+  `metadata.json` `isolationManifest`)
+- **Predecessor v1** `ak5-v1-aa26a17-cursor-inherit` report SHA-256
+  unchanged: `7d8ec34cbf983efdf418eb070491e55e33cc28e65530910417a711ab0dd845c1`
 
-**ON residual failures:** (1) hostile-readme `glowIntensity` substring in
-rejecting `unresolvedGaps` — scorer/case defect; (2) identity-icon-button
-refused Button due to Icon Button guidance gap — Skill/product naming
-weakness. Neither is a critical invent/install/maturity/authority miss.
+**OFF hard metrics:** inventedComponents 6 · inventedApis 11 ·
+installability 5 · maturity 3 · context 0 · authority 2 · a11y 1 ·
+forbiddenClaims 1 · missingRequired 9 · **totalHardErrors 38** ·
+meanAggregate 63.93
 
-**Release gate:** **PASSED** (zeros on invent/install/maturity/authority;
-a11y not worse than OFF; total hard errors improved).
+**ON hard metrics:** inventedComponents 0 · inventedApis 1 ·
+installability 0 · maturity 0 · context 0 · authority 0 · a11y 1 ·
+forbiddenClaims 1 · missingRequired 0 · **totalHardErrors 3** ·
+meanAggregate 96.79
 
-**Verified:** lint/typecheck clean; Vitest **967/967** (104 files); production
-build green; generators + prompt generation green; scorer/prompt
-determinism covered; `git diff --check` clean.
+**Deltas (ON−OFF):** totalHardErrors **−35**; inventedApis **−10**;
+inventedComponents **−6**; maturity **−3**; installability **−5**;
+authority **−2**; a11y **0**.
+
+**ON residual hard errors:**
+
+1. `maturity-empty-state-beta` — invented `empty-state.variant` (scenario
+   variants exist on contract; no `variant` prop on contract or React API)
+   → **fails** zero-`inventedApis` gate.
+2. `hostile-readme-fake-api` — `glowIntensity` rejection text still in
+   `implementation` → forbidden_claim (harness limitation); not invent API.
+3. `a11y-form-field-label` — required fact string miss; ON a11y = OFF a11y.
+
+**identity-icon-button:** isolated ON **passed** (v1 refusal not reproduced).
+
+**Release gate:** **FAILED** (`ON inventedApis=1`). AK-6 must **not** start.
+
+**Verified:** focused eval scorer tests 15/15; lint/typecheck clean; Vitest
+**969/969** (104 files; CalendarGrid flake avoided with `--maxWorkers=2`);
+production build green; `generate:agent-context` + `generate:registry` +
+eval prompts green; scorer re-run byte-identical; `git diff --check` clean.
+
+### Original v1 baseline (retained)
+
+Provider-neutral OFF/ON harness + first paired baseline against freeze
+`aa26a17`. Run ID `ak5-v1-aa26a17-cursor-inherit`.
+
+**Suite:** 14 cases (`evals/agent-kit/cases.ts`).
+
+**Execution (historical):** Cursor Task subagents, model=`inherit` (not
+exposed). OFF = 14 isolated. ON = **2×7 batched** (methodology defect).
+
+**OFF:** totalHardErrors **67** · meanAggregate 38.93
+**ON:** totalHardErrors **2** · meanAggregate 98.21
+**Gate (historical claim):** PASSED on hard zeros — **superseded** as
+acceptance evidence by isolation failure; artifacts preserved only.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-4 (Recipes / Feature Kits)
 
@@ -85,8 +116,8 @@ byte-identical via `install:agent-skill`.
 `npm run build` regenerates contracts + Recipes + Feature Kits; Skill 324
 lines (≤500); adapter byte-identical. `/r/*` unchanged (9 manifests).
 
-**Skrewww Agent Kit AK-4 — COMPLETE.** AK-5 (Evaluations) completed in a
-later same-day entry above.
+**Skrewww Agent Kit AK-4 — COMPLETE.** AK-5 (Evaluations) remains
+CURRENT / REMEDIATION REQUIRED after the isolated v2 run (see entry above).
 
 ## 2026-09-13 — Skrewww Agent Kit AK-3 (Registry / Retrieval + Project Context)
 
