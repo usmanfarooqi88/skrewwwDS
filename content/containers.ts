@@ -31,9 +31,9 @@ export const containersComponents: ComponentDoc[] = [
     commonMistakes:
       "Hiding essential SEO documentation inside client-rendered collapsed panels, or making the entire row a single interactive target instead of a real button trigger.",
     tokensUsed: [
-      "semantic/border/default",
+      "component/card/border",
       "semantic/text/primary",
-      "semantic/icon/muted",
+      "component/surface/content-muted",
       "component/radius/container",
     ],
     properties:
@@ -62,7 +62,7 @@ export const containersComponents: ComponentDoc[] = [
     whenNotToUse: "Non-critical supplementary information — use Popover.",
     accessibility: "Must trap focus while open, return focus to trigger on close, support Escape-to-close, role=\"dialog\" with aria-modal=\"true\".",
     commonMistakes: "Not trapping focus, allowing Tab to escape to obscured page content behind the scrim.",
-    tokensUsed: ["semantic/surface/default", "component/radius/container", "shadow-blur/5", "shadow-color/5"],
+    tokensUsed: ["component/card/surface", "component/radius/container"],
     properties:
       "Compound React API: DialogHeader/Title/Description/Close stay structured; DialogBody and DialogFooter accept arbitrary ReactNode. No canonical Figma Dialog COMPONENT_SET — React composition is the source of truth. Portal content unmounts when closed.",
   },
@@ -76,7 +76,7 @@ export const containersComponents: ComponentDoc[] = [
     whenNotToUse: "A decision needing the user's full, undivided attention — use Dialog.",
     accessibility: "Same focus-trapping and Escape-to-close requirements as Dialog.",
     commonMistakes: "Forgetting the same accessibility rigor as Dialog just because it feels visually less \"modal.\"",
-    tokensUsed: ["semantic/surface/default", "component/radius/container", "shadow-blur/5", "shadow-color/5"],
+    tokensUsed: ["component/card/surface", "component/radius/container"],
     properties:
       "Compound React API matching Dialog: DrawerHeader/Title/Description/Close stay structured; DrawerBody and DrawerFooter accept arbitrary ReactNode. No canonical Figma Drawer COMPONENT_SET — React composition is the source of truth. Left viewport edge flush; exposed right corners rounded (topRightRadius=0 on the viewport-attached corner).",
   },
@@ -90,7 +90,7 @@ export const containersComponents: ComponentDoc[] = [
     whenNotToUse: "A single short label/hint — use Tooltip. A decision requiring full attention — use Dialog.",
     accessibility: "Dismissible via Escape and outside click; does NOT need to trap focus, since it's non-blocking by design.",
     commonMistakes: "Confusing this with Tooltip and using it for a single short label.",
-    tokensUsed: ["semantic/surface/default", "semantic/border/default", "shadow-blur/4", "shadow-color/4"],
+    tokensUsed: ["component/card/surface", "semantic/border/default"],
     properties: "Title (text), Body (text). Single Bottom-pointing arrow variant.",
   },
 ];

@@ -41,6 +41,7 @@ export const navigationRegistryEntries: ComponentRegistryEntry[] = [
       "semantic/action/primary",
       "semantic/text/danger",
       "semantic/icon/danger",
+      "color/brand/700",
       "semantic/focus-ring",
     ],
     dependencies: [],

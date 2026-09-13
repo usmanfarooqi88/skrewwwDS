@@ -293,6 +293,7 @@ export function Example() {
       "component/radius/container",
       "semantic/text/primary",
       "semantic/text/secondary",
+      "semantic/border/default",
       "semantic/focus-ring",
     ],
     relatedComponents: [

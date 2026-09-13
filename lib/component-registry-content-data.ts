@@ -1132,6 +1132,7 @@ export function Example() {
       "component/surface/blur",
       "component/surface/content-muted",
       "semantic/text/primary",
+      "semantic/text/secondary",
     ],
     relatedComponents: [
       { label: "Alert — persistent inline feedback, not empty collections", href: "/components/alert" },

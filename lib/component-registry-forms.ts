@@ -910,6 +910,8 @@ export function Example() {
       "semantic/text/danger",
       "semantic/text/primary",
       "semantic/text/secondary",
+      "semantic/border/default",
+      "semantic/surface/elevated",
     ],
     relatedComponents: [
       { label: "Form Field — label and validation wrapper", href: "/components/form-field" },

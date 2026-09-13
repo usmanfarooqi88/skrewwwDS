@@ -16,7 +16,8 @@ export const feedbackComponents: ComponentDoc[] = [
       "semantic/text/primary",
       "--badge-info-text",
       "--badge-success-text",
-      "--badge-warning-text → color/warning/800",
+      "--badge-warning-text",
+      "color/warning/800",
       "--badge-error-text",
     ],
     properties: "Style × Size as variants. Label (text). Warning text matches Figma (#8A4F00 via warning/800); Neutral/Info/Success/Error foregrounds are accessibility-safe React divergences. Intentional React extensions: borders, lg, optional icons, count mode, error (vs Figma danger). No Primary in React (future enhancement).",
@@ -44,7 +45,7 @@ export const feedbackComponents: ComponentDoc[] = [
     whenNotToUse: "Persistent, content-related messages — use Alert. Anything requiring a user decision — use Dialog.",
     accessibility: "role=\"status\" and aria-live=\"polite\"; must not steal keyboard focus when it appears.",
     commonMistakes: "Making the auto-dismiss timer too short for the message length.",
-    tokensUsed: ["semantic/surface/default", "semantic/feedback/info", "semantic/feedback/success", "semantic/action/primary"],
+    tokensUsed: ["component/card/surface", "semantic/feedback/info", "semantic/feedback/success"],
     properties: "Type as variants. Message (text), Show action (boolean) + Action (text), Show close (boolean).",
   },
   {

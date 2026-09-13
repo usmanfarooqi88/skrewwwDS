@@ -11,7 +11,7 @@ export const contentDataComponents: ComponentDoc[] = [
     whenNotToUse: "Representing non-user entities better served by a different icon or logo mark.",
     accessibility: "If purely decorative alongside a visible name, mark aria-hidden; if it's the only identification, needs an accessible name.",
     commonMistakes: "Using ambiguous or non-unique initials with no fallback plan.",
-    tokensUsed: ["semantic/action/primary", "semantic/text/inverse", "radius/full"],
+    tokensUsed: ["component/button/primary/background", "radius/full"],
     properties: "Size as variants. Initials (text).",
   },
   {
@@ -50,7 +50,7 @@ export const contentDataComponents: ComponentDoc[] = [
     whenNotToUse: "Tabular data with multiple aligned columns — use Table (/components/table).",
     accessibility: "If the row is clickable, the whole row should be one real link/button, not just visually clickable.",
     commonMistakes: "Cramming too much information into the trailing metadata slot.",
-    tokensUsed: ["semantic/surface/elevated", "semantic/text/primary", "component/radius/control"],
+    tokensUsed: ["component/menu/item-hover", "semantic/text/primary", "component/radius/control"],
     properties: "State as variants. Title (text), Subtitle (text), Meta (text).",
     knownLimitation: "The nested Avatar instance's Initials property cannot be exposed as a parent-level property through Figma's API — requires selecting the nested instance directly.",
   },
@@ -123,7 +123,7 @@ export const contentDataComponents: ComponentDoc[] = [
     whenNotToUse: "Loading states — use Skeleton. Empty State means confirmed zero results, not still loading.",
     accessibility: "Should be announced via an aria-live region when it replaces a previously loading/populated view.",
     commonMistakes: "Showing Empty State prematurely, before confirming data has finished loading.",
-    tokensUsed: ["semantic/icon/muted", "semantic/text/primary", "semantic/text/secondary"],
+    tokensUsed: ["component/surface/content-muted", "semantic/text/primary", "semantic/text/secondary"],
     properties: "Title (text), Description (text). Includes a real Button instance for the call-to-action.",
   },
   {

@@ -24,7 +24,7 @@ export const navigationComponents: ComponentDoc[] = [
     whenNotToUse: "Infinite scroll or \"Load more\" patterns without discrete page URLs.",
     accessibility: "nav aria-label=\"Pagination\". Current page uses aria-current=\"page\". Previous/Next have explicit labels. Ellipsis is non-interactive.",
     commonMistakes: "Rendering anchors without href values. Using buttons when pages are URL-addressable.",
-    tokensUsed: ["semantic/text/secondary", "semantic/action/primary", "semantic/surface/elevated"],
+    tokensUsed: ["semantic/text/primary", "component/menu/item-hover"],
     properties: "Previous, numbered pages, ellipsis, and Next composed from Page Item patterns.",
   },
   {
