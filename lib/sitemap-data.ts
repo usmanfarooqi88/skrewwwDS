@@ -47,6 +47,12 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: absoluteUrl("/agent-kit"),
+      lastModified: siteConfig.lastUpdated,
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+    {
       url: absoluteUrl("/changelog"),
       lastModified: getSortedChangelogEntries()[0]?.date ?? siteConfig.documentationPublished,
       changeFrequency: "monthly",
@@ -54,6 +60,12 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
     },
     {
       url: absoluteUrl("/registry.json"),
+      lastModified: siteConfig.lastUpdated,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    {
+      url: absoluteUrl("/agent/index.json"),
       lastModified: siteConfig.lastUpdated,
       changeFrequency: "weekly",
       priority: 0.5,

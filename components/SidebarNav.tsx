@@ -31,6 +31,9 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
       <SidebarNavLink href="/foundations" match="foundations" onNavigate={onNavigate}>
         Foundations
       </SidebarNavLink>
+      <SidebarNavLink href="/agent-kit" onNavigate={onNavigate}>
+        Agent Kit
+      </SidebarNavLink>
       <SidebarNavLink href="/changelog" onNavigate={onNavigate}>
         Changelog
       </SidebarNavLink>

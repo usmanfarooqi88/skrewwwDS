@@ -43,6 +43,14 @@ Volatile counts and roadmap live in [`docs/project-status.md`](docs/project-stat
 - **Design system version:** `1.0.0` (platform/docs release)
 - **Node.js:** `>=22.13.0 <23 || >=24 <25` (see `engines`; `.nvmrc` for local Node 24)
 
+## Agent Kit (Beta)
+
+Helps AI coding agents understand and use Skrewww from current
+machine-readable contracts instead of relying on model memory. Public
+Beta — overview, getting started, and known limitations:
+[`/agent-kit`](https://skrewww.com/agent-kit) ·
+[`docs/architecture/agent-kit.md`](docs/architecture/agent-kit.md).
+
 ### Implemented React components
 
 | Category | Components |

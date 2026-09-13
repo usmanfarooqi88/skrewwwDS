@@ -2,6 +2,9 @@
  * Writes Agent Kit generated output to public/agent/:
  * - component contracts + index + system (AK-1)
  * - recipes + feature kits (AK-4)
+ * - a byte-identical copy of the canonical Skill (AK-6 public Beta
+ *   distribution — same file npm run install:agent-skill installs
+ *   locally; see docs/architecture/agent-kit.md's "AK-6" section)
  *
  * Compilation is pure (lib/agent-kit/*-compiler.ts). This script only
  * resolves deterministic git provenance and writes files.
@@ -18,6 +21,7 @@ import {
   compileAllRecipes,
 } from "../lib/agent-kit/recipe-compiler";
 import { systemAgentContract } from "../lib/agent-kit/system-contract";
+import { readCanonicalSkill } from "../lib/agent-kit/skill-adapter";
 
 function getSourceGitSha(): string {
   return execSync("git rev-parse HEAD").toString().trim();
@@ -38,10 +42,12 @@ const OUT_DIR = join(process.cwd(), "public", "agent");
 const CONTRACTS_DIR = join(OUT_DIR, "contracts");
 const RECIPES_DIR = join(OUT_DIR, "recipes");
 const FEATURE_KITS_DIR = join(OUT_DIR, "feature-kits");
+const SKILL_DIR = join(OUT_DIR, "skill");
 
 mkdirSync(CONTRACTS_DIR, { recursive: true });
 mkdirSync(RECIPES_DIR, { recursive: true });
 mkdirSync(FEATURE_KITS_DIR, { recursive: true });
+mkdirSync(SKILL_DIR, { recursive: true });
 
 const options = {
   sourceGitSha: getSourceGitSha(),
@@ -73,9 +79,15 @@ for (const kit of featureKits) {
   writeJson(join(FEATURE_KITS_DIR, `${kit.id}.json`), kit);
 }
 
+// Byte-identical to agent/skill/SKILL.md — same guarantee
+// scripts/install-agent-skill.ts already proves for the local Claude
+// adapter, now also reachable as a public static file.
+writeFileSync(join(SKILL_DIR, "SKILL.md"), readCanonicalSkill());
+
 console.log(`Generated Agent Kit context (source ${options.sourceGitSha.slice(0, 7)}):`);
 console.log(` - ${join(OUT_DIR, "index.json")}`);
 console.log(` - ${join(OUT_DIR, "system.json")}`);
 console.log(` - ${CONTRACTS_DIR}/*.json (${contracts.length} contracts)`);
 console.log(` - ${RECIPES_DIR}/*.json (${recipes.length} recipes + index)`);
 console.log(` - ${FEATURE_KITS_DIR}/*.json (${featureKits.length} feature kits + index)`);
+console.log(` - ${join(SKILL_DIR, "SKILL.md")} (byte-identical to agent/skill/SKILL.md)`);

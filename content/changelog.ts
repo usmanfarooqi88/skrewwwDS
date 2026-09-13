@@ -35,6 +35,40 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-09-agent-kit-beta",
+    date: "2026-09-13",
+    displayDate: "September 2026",
+    title: "Skrewww Agent Kit (Beta)",
+    summary:
+      "Public Beta: helps AI coding agents understand and use Skrewww from current machine-readable contracts instead of relying on model memory. Agent Kit's own release stage is Beta — independent of individual component maturity. Known limitations are listed on the Agent Kit page.",
+    items: [
+      {
+        type: "new",
+        text: "Machine-readable component contracts (API, tokens, usage guidance, accessibility) for every implemented component.",
+      },
+      {
+        type: "new",
+        text: "A canonical Agent Skill teaching coding agents to check a real contract before using a Skrewww component, instead of relying on memorized APIs.",
+      },
+      {
+        type: "new",
+        text: "Project context detection — a conservative, evidence-only read of what a consumer project actually has configured.",
+      },
+      {
+        type: "new",
+        text: "Recipes and one Feature Kit for common multi-component patterns.",
+      },
+      {
+        type: "new",
+        text: "Public retrieval for all of the above, plus a documented relationship to the existing @skrewww shadcn registry.",
+      },
+      {
+        type: "improved",
+        text: "In a 14-case internal Beta evaluation, Agent Kit reduced hard design-system errors from 35 to 1 under the tested setup.",
+      },
+    ],
+  },
+  {
     id: "2026-08-analytics-consent",
     date: "2026-08-29",
     displayDate: "August 2026",

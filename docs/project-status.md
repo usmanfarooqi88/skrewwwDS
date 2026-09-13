@@ -1,6 +1,125 @@
 # Project status
 
-Last verified: **2026-09-13** (Skrewww Agent Kit AK-5 — COMPLETE)
+Last verified: **2026-09-13** (Skrewww Agent Kit AK-6 — Public Beta COMPLETE)
+
+## 2026-09-13 — Skrewww Agent Kit AK-6 (Public Beta)
+
+Productization and release readiness only — the V3 freeze behavior
+(`08fc020fede99d6d97df49126f5f4efb081547d9`) is confirmed byte-for-byte
+unchanged (`git diff 08fc020 HEAD -- agent/skill/SKILL.md` empty both at
+session start and at close); `lib/agent-kit/contract-schema.ts` untouched.
+**Beta version: `0.1.0-beta.1`** (`lib/agent-kit/beta-version.ts` — new,
+standalone, not embedded in any generated contract JSON, so it carries no
+schema risk).
+
+### Readiness audit — what was actually missing
+
+- **Public docs page:** none existed. Added `/agent-kit` (`app/agent-kit/page.tsx`,
+  server component, real `Metadata`) covering all 14 required
+  onboarding questions on one focused page — matches the existing
+  `/foundations` one-page-many-sections pattern rather than a new
+  multi-page tree.
+- **Skill distribution for external consumers:** `npm run install:agent-skill`
+  only works from inside this source repository — audited and confirmed
+  not a public Beta install path. **Fixed the real gap**: `scripts/generate-agent-context.ts`
+  now also writes `public/agent/skill/SKILL.md`, byte-identical to
+  canonical, served exactly like every other `/agent/*` artifact (static
+  file, no route handler). An external consumer can now `GET` the real
+  Skill with no access to this repo.
+- **Discovery:** added to `components/SidebarNav.tsx` (between Foundations
+  and Changelog), `lib/sitemap-data.ts` (`/agent-kit`, `/agent/index.json`),
+  and a new `## Agent Kit (Beta)` section in `lib/llms-content.ts`'s
+  `buildLlmsTxt()` (six lines: overview URL, index/system/contract-pattern/
+  recipe-index/Skill URLs, one policy line) — verified it does **not**
+  enumerate all 47 contracts.
+- **Feedback path: genuine, unresolved gap — reported, not invented.**
+  No GitHub Issues link, contact form, or support email exists anywhere
+  in current site code/content; `siteConfig.repositoryUrl`/`figmaUrl` are
+  both explicitly `undefined`. The actual git remote
+  (`github.com/usmanfarooqi88/skrewwwDS`) is confirmed **private**
+  (`gh repo view` → `"visibility":"PRIVATE"`) — publishing it as a public
+  channel would both mislead users and disclose a private repo, so it was
+  **not** used. The `/agent-kit` page states this honestly instead of
+  linking anywhere. **Needs a human decision** (make the repo public with
+  Issues enabled, or supply a real support email/form) before Beta has a
+  working feedback loop.
+
+### Public Beta positioning (exact wording used)
+
+"Skrewww Agent Kit helps AI coding agents understand and use the Skrewww
+Design System from current machine-readable contracts instead of relying
+on model memory." Evaluation claim, stated with its caveats every time:
+14-case internal Beta evaluation, isolated per case, **35 → 1** hard
+errors (Agent Kit off → on), zero invented components/props/installability/
+maturity claims on; Cursor Task subagents, vendor model identifier not
+exposed; explicitly disclaimed as small/internal, not a universal
+benchmark. The `identity-icon-button` residual case is **not** named
+publicly (internal eval jargon) — covered by the general Known
+Limitations framing instead.
+
+### MCP / Guard — reconfirmed, no new decision
+
+No custom Skrewww MCP server (unchanged from AK-3). No Skrewww Guard —
+explicitly stated as "not included in Beta" on the public page and in
+`docs/architecture/agent-kit.md`.
+
+### Files added
+
+`app/agent-kit/page.tsx`, `lib/agent-kit/beta-version.ts`,
+`lib/agent-kit/beta-release.test.ts` (12 tests: discoverability,
+version-model separation, Skill public-projection byte-identity,
+private-repo-URL non-leak, release-checklist presence).
+
+### Files changed
+
+`scripts/generate-agent-context.ts` (+Skill public projection step),
+`components/SidebarNav.tsx`, `lib/sitemap-data.ts`, `lib/llms-content.ts`,
+`content/changelog.ts` (new Beta entry, existing `new`/`improved` item
+types only, no internal jargon/SHAs), `README.md`,
+`lib/agent-kit/retrieval.test.ts` (+1 assertion covering the new Skill
+projection, added to its existing single regeneration rather than a
+second concurrent one), `docs/architecture/agent-kit.md` (full AK-6
+section + a reusable release checklist), `docs/project-status.md` (this
+entry).
+
+**One real bug found and fixed during this pass, not a pre-existing
+one:** the first version of `lib/agent-kit/beta-release.test.ts` called
+its own `generate-agent-context.ts` regeneration, which raced under
+Vitest's parallel file execution against `retrieval.test.ts`'s own
+regeneration and intermittently corrupted a concurrent file read
+(reproduced twice, `SyntaxError: Unexpected token, not valid JSON` from a
+source-map parser choking on a torn read). Fixed by moving the Skill
+byte-identity assertion into `retrieval.test.ts`'s single existing
+regeneration and making `beta-release.test.ts`'s check a pure read of
+whatever's already on disk. Reproduced clean across 3 consecutive runs
+after the fix.
+
+### Verified
+
+Focused: `lib/agent-kit/beta-release.test.ts` 12/12; full
+`lib/agent-kit/` 126/126 (8 files), stable across 3 consecutive runs.
+Lint/typecheck clean. **Full Vitest: 987/987** (105 files — 974 baseline
++ 13 net-new). Full production build green, `/agent-kit` statically
+prerendered. Generators (`generate:agent-context`, `generate:registry`)
+both succeed from a fully deleted `public/agent/`+`public/r/` state — 57
+files under `public/agent/` (2 index + 47 contracts + 5 recipe + 2
+feature-kit + 1 Skill), 9 under `public/r/` (unchanged). External
+consumer smoke (`npm run smoke:consumer`) re-run clean. Public HTTP
+smoke against a real `next start` production server — every documented
+Beta interface: `/agent-kit`, `/agent/index.json`, `/agent/system.json`,
+`/agent/contracts/button.json`, `/agent/recipes/index.json` +
+`/agent/recipes/validated-text-field.json`, `/agent/feature-kits/index.json`
++ `/agent/feature-kits/forms-and-feedback.json`, `/agent/skill/SKILL.md`,
+`/r/button.json` → 200; an unknown contract, an unknown Recipe, and a
+path-traversal-shaped request → 404. `/agent-kit` page content verified
+live (Beta badge, version string, Getting Started, `@skrewww`, Feedback
+section all present; no `localhost` leak). `git diff --check` clean.
+
+Full architecture record: [`docs/architecture/agent-kit.md`](architecture/agent-kit.md#ak-6--public-beta).
+
+**Skrewww Agent Kit AK-6 — COMPLETE.** One open item requiring a human
+decision: the Beta feedback path (see above). **Skrewww Guard is NEXT,
+NOT STARTED.**
 
 ## 2026-09-13 — Skrewww Agent Kit AK-5 (Evaluations) — COMPLETE
 

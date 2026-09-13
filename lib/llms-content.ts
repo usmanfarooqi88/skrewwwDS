@@ -99,6 +99,15 @@ export function buildLlmsTxt(): string {
     `- Component registry JSON: ${absoluteUrl("/registry.json")}`,
     `- Expanded machine index: ${absoluteUrl("/llms-full.txt")}`,
     "",
+    "## Agent Kit (Beta) — for AI coding agents",
+    `- Overview and Getting Started: ${absoluteUrl("/agent-kit")}`,
+    `- Component contract index (allow-list): ${absoluteUrl("/agent/index.json")}`,
+    `- Compiled system policy: ${absoluteUrl("/agent/system.json")}`,
+    `- One contract per component: ${absoluteUrl("/agent/contracts/<slug>.json")}`,
+    `- Recipe index: ${absoluteUrl("/agent/recipes/index.json")}`,
+    `- Canonical Agent Skill (plain Markdown): ${absoluteUrl("/agent/skill/SKILL.md")}`,
+    "- Read the relevant contract before using a Skrewww component in generated code — do not rely on memorized APIs. No custom Skrewww MCP server exists; shadcn's own MCP tooling works against the @skrewww registry.",
+    "",
     "## Component categories",
     ...(Object.keys(categoryPageContent) as CategoryName[]).map(
       (category) =>

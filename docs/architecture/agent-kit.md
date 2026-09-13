@@ -561,6 +561,140 @@ Canonical cases: `evals/agent-kit/cases.ts`. Generated prompts (gitignored):
 AK-6 Public Beta starts only if the AK-5 release gate passes (documented in
 `docs/project-status.md`). Failures require an AK-5 remediation sub-pass.
 
+## AK-6 — Public Beta
+
+### What this is
+
+Productization and release readiness only — no material behavioral
+change to the Skill, contract semantics, Recipe semantics, or
+ProjectContext. AK-6 ships the exact system AK-5 evaluated: documentation,
+discovery, packaging metadata, and release surfaces around it.
+
+### Behavior integrity (verify before trusting any AK-6 change)
+
+`agent/skill/SKILL.md`'s workflow/rules content is byte-for-byte unchanged
+from the V3 freeze (`08fc020fede99d6d97df49126f5f4efb081547d9`) — AK-6
+only added it as a second, publicly-served static file
+(`public/agent/skill/SKILL.md`), never edited its content.
+`lib/agent-kit/contract-schema.ts` (the file
+governing contract/Recipe/ProjectContext *shape*) was not touched.
+`lib/agent-kit/beta-version.ts` is a new, standalone constant module used
+only by documentation surfaces (the `/agent-kit` page, changelog) — it is
+deliberately not wired into any compiled JSON contract, so adding it
+carries zero schema risk.
+
+### Beta version model
+
+Four independent version concepts, never collapsed:
+
+| Concept | Lives in | Example |
+|---|---|---|
+| A component's own version | `lib/component-registry*.ts` | Button `0.1.0-beta` |
+| Contract schema version | `contract-schema.ts` (`CANONICAL_AGENT_CONTRACT_SCHEMA_VERSION`) | `1.0.0` |
+| Generator version | `contract-schema.ts` (`AGENT_CONTRACT_GENERATOR_VERSION`) | `1.0.0` |
+| **Agent Kit product version** | `lib/agent-kit/beta-version.ts` (**new**) | `0.1.0-beta.1` |
+
+The product version is documentation-surface metadata (the `/agent-kit`
+page, the changelog entry) — it is not embedded in any generated
+`public/agent/*.json` file, to avoid touching `contract-schema.ts` for a
+release-readiness concern.
+
+### Skill distribution model
+
+Still exactly one canonical source: `agent/skill/SKILL.md`. Two
+mechanical projections, both generated, both byte-identical, neither a
+second hand-maintained rulebook:
+
+1. **Local Claude adapter** (AK-2, unchanged): `npm run install:agent-skill` → `.claude/skills/skrewww-ui/SKILL.md`, not committed.
+2. **Public static file** (**new**, AK-6): `scripts/generate-agent-context.ts` also writes it to `public/agent/skill/SKILL.md`, served exactly like every other `/agent/*` artifact — static file, no route handler, wired into `npm run build`.
+
+An external consumer with no access to this repository can now fetch the
+real Skill directly: `GET /agent/skill/SKILL.md`.
+
+### Public interfaces — Beta support boundary
+
+**Supported:** `/agent/index.json`, `/agent/system.json`,
+`/agent/contracts/<slug>.json`, `/agent/recipes/index.json` +
+`/agent/recipes/<id>.json`, `/agent/feature-kits/index.json` +
+`/agent/feature-kits/<id>.json`, `/agent/skill/SKILL.md`,
+`/r/<name>.json` (where a manifest exists). **Not yet:** a custom MCP
+server, `/r/registry.json` (shadcn list/search index — see the AK-3
+section above), a Skrewww CLI, Skrewww Guard.
+
+### Consumer installation reality (audited, not assumed)
+
+`npm run install:agent-skill` only works from inside this source
+repository — it is not a public Beta installation mechanism for an
+external project. The truthful public path documented on `/agent-kit` is:
+fetch `/agent/skill/SKILL.md` directly (plain Markdown + YAML
+frontmatter, no build step, no package) and save it wherever the
+consumer's agent tool loads project Skills from. No package was
+published and no CLI was built merely to make this feel more polished —
+a raw file fetch is the smallest thing that is actually true.
+
+### MCP — reconfirmed, no new decision
+
+Unchanged from AK-3: no custom Skrewww MCP server. Public docs point
+consumers at the shadcn CLI's own `npx shadcn mcp init`, with the same
+`registry.json`-index limitation already documented and still not fixed
+(publishing that index remains distribution-surface work, out of Agent
+Kit's scope).
+
+### Guard boundary
+
+Not included in Beta. Documented explicitly as such on `/agent-kit` and
+in this doc: Guard is enforcement/CI/drift work, a distinct later
+roadmap item, and AK-6 implements none of it (no compliance blocker, no
+lint package, no merge gate).
+
+### Feedback path — genuine reported gap
+
+Audited: no public GitHub Issues link, contact form, or support email
+exists anywhere in this site's current code, content, or `siteConfig`
+(`repositoryUrl`/`figmaUrl` are both explicitly `undefined`). The
+project's actual git remote is a **private** repository — confirmed via
+`gh repo view` (`"visibility":"PRIVATE"`) — so it must not be published
+as a public feedback channel; doing so would both mislead external users
+(they'd hit a 404/access-denied) and disclose a private repository's
+existence. AK-6 does not invent a channel to paper over this. The public
+`/agent-kit` page states the gap honestly instead of linking anywhere.
+**This requires a human decision** (make the repo public with Issues
+enabled, or supply a real support email/form) before Beta has a working
+feedback loop — recorded here and in `docs/project-status.md` as explicit
+open follow-up, not resolved by this phase.
+
+### Evaluation evidence — public framing
+
+Public wording (`/agent-kit`, changelog) is intentionally more
+conservative than the internal `docs/project-status.md` AK-5 record:
+states the 14-case suite, the 35→1 hard-error result, that it was run
+with Cursor Task subagents with the vendor model identifier not exposed,
+and explicitly disclaims universal/statistical significance. Does not
+publish the `identity-icon-button` residual by name (internal eval
+jargon) — it's covered by the general "Recipes/Skill gaps may exist,
+please report them" framing instead, since surfacing one specific
+internal case ID would be exposing test mechanics, not user-facing
+information.
+
+### AK-6 release checklist (reusable for future Agent Kit Beta releases)
+
+- [ ] `git status` clean, `main == origin/main`
+- [ ] AK-5 release gate still PASSED (no unapproved behavioral change since freeze)
+- [ ] `agent/skill/SKILL.md` content unchanged from the frozen behavioral baseline (diff against the freeze SHA if any edit touched it)
+- [ ] `lib/agent-kit/contract-schema.ts` untouched, or any change explicitly reviewed and approved
+- [ ] Focused Agent Kit tests green (`lib/agent-kit/*.test.ts`)
+- [ ] `npm run lint`, `npm run typecheck`, full `npm test`, `npm run build` all green
+- [ ] `npm run generate:agent-context` (and `generate:registry`) succeed from a deleted `public/agent/`/`public/r/` state
+- [ ] Determinism: two generations at one source SHA byte-identical
+- [ ] Public HTTP smoke: `/agent-kit`, `/agent/index.json`, `/agent/system.json`, a known contract, the Recipe index, a known Recipe, the Feature Kit index, `/agent/skill/SKILL.md` all 200; an unknown slug and a traversal-shaped path 404
+- [ ] External-consumer smoke (`npm run smoke:consumer`) still green
+- [ ] Beta version bumped consistently across `/agent-kit` and the changelog entry
+- [ ] Changelog entry added, using only the existing `new`/`improved`/`fixed` item types, no internal phase jargon or commit SHAs
+- [ ] Known limitations section current and honest
+- [ ] Feedback path either resolved or explicitly re-flagged as open
+- [ ] Sitemap includes the new/updated public docs route
+- [ ] `git diff --check` clean
+
 ## See also
 
 - `docs/architecture/source-of-truth.md` — general conflict-resolution rules this document inherits.
