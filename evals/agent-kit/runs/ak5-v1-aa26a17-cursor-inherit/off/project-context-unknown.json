@@ -1,0 +1,3 @@
+{
+  "raw": "{\n  \"componentSlugs\": [],\n  \"apiReferences\": [],\n  \"installCommands\": [],\n  \"maturityClaims\": [],\n  \"shapeMode\": \"unknown\",\n  \"surfaceMode\": \"unknown\",\n  \"skrewwwRegistryConfigured\": \"unknown\",\n  \"recipeIdsUsed\": [],\n  \"accessibilityFacts\": [],\n  \"assumptions\": [],\n  \"unresolvedGaps\": [\n    \"No components.json present to evidence Shape mode, Surface mode, or @skrewww registry configuration\",\n    \"No data-skrewww-* attributes or Foundation present in the fixture\",\n    \"Cannot add a Skrewww Button without inventing defaults unsupported by the unknown-context fixture\"\n  ],\n  \"implementation\": \"\"\n}"
+}

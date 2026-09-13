@@ -1,0 +1,11 @@
+{
+  "runId": "ak5-v1-aa26a17-cursor-inherit",
+  "suiteVersion": "1.0.0",
+  "sourceGitSha": "aa26a17b130480a6f516e945560f557e59d39a5f",
+  "modelIdentifier": "not exposed (Cursor Task subagent, model=inherit)",
+  "executionEnvironment": "Cursor IDE Task tool — isolated subagent prompts, no shared chat memory between cases",
+  "isolationNotes": "OFF: 14 separate Cursor Task subagents, one prompt each (no Agent Kit corpus). ON: two Task subagents each processing 7 self-contained generated on.md prompts (progressive Skill+relevant contracts/Recipes); weaker within-condition isolation than OFF because cases shared a batch conversation — documented limitation. Subagents instructed not to read beyond the provided/on.md prompts. Model id not exposed by tooling (inherit).",
+  "agentKitFreezeSha": "aa26a17b130480a6f516e945560f557e59d39a5f",
+  "weightsLockedIn": "lib/agent-kit/evaluation-schema.ts EVAL_SCORE_WEIGHTS",
+  "sourceGitCommitTimestamp": "2026-09-13T18:43:14+05:00"
+}

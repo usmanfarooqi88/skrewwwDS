@@ -1,0 +1,3 @@
+{
+  "raw": "{\n  \"componentSlugs\": [\n    \"spinner\"\n  ],\n  \"apiReferences\": [],\n  \"installCommands\": [\n    \"npx shadcn add @skrewww/spinner\"\n  ],\n  \"maturityClaims\": [\n    {\n      \"component\": \"spinner\",\n      \"status\": \"stable\"\n    }\n  ],\n  \"shapeMode\": \"rounded\",\n  \"surfaceMode\": \"glass\",\n  \"skrewwwRegistryConfigured\": true,\n  \"recipeIdsUsed\": [],\n  \"accessibilityFacts\": [\n    \"Standalone Spinner should expose an accessible label (e.g. aria-label/label like \\\"Loading\\\")\",\n    \"Decorative spinners are aria-hidden\"\n  ],\n  \"assumptions\": [],\n  \"unresolvedGaps\": [],\n  \"implementation\": \"Spinner has a distribution block and @skrewww is configured. Run: npx shadcn add @skrewww/spinner.\"\n}"
+}
