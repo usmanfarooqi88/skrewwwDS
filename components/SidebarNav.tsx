@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SidebarNavLink } from "@/components/SidebarNavLink";
 import { allComponents } from "@/lib/data";
 import { REDIRECTED_COMPONENT_SLUGS } from "@/lib/routes";
+import { primaryNavLinks } from "@/lib/sidebar-nav";
 import { categories } from "@/lib/types";
 import { industries } from "@/lib/industry-content";
 import { useAnalyticsConsent } from "@/components/analytics/AnalyticsConsentProvider";
@@ -28,15 +29,17 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
 
   return (
     <nav className="px-3 py-4" aria-label="Documentation">
-      <SidebarNavLink href="/foundations" match="foundations" onNavigate={onNavigate}>
-        Foundations
-      </SidebarNavLink>
-      <SidebarNavLink href="/agent-kit" onNavigate={onNavigate}>
-        Agent Kit
-      </SidebarNavLink>
-      <SidebarNavLink href="/changelog" onNavigate={onNavigate}>
-        Changelog
-      </SidebarNavLink>
+      {primaryNavLinks.map((link) => (
+        <SidebarNavLink
+          key={link.href}
+          href={link.href}
+          match={link.match}
+          badge={link.badge}
+          onNavigate={onNavigate}
+        >
+          {link.label}
+        </SidebarNavLink>
+      ))}
 
       <div className="mt-4 space-y-4">
         {categories.map((category) => {

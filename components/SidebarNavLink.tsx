@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { NavBadge } from "@/components/NavBadge";
 import { cn } from "@/lib/cn";
-import { isSidebarNavLinkActive } from "@/lib/sidebar-nav";
+import { isSidebarNavLinkActive, type NavBadgeStatus } from "@/lib/sidebar-nav";
 import styles from "@/components/sidebar-nav-link.module.css";
 
 type SidebarNavLinkProps = {
@@ -12,6 +13,7 @@ type SidebarNavLinkProps = {
   children: ReactNode;
   match?: "exact" | "foundations" | "component";
   slug?: string;
+  badge?: NavBadgeStatus;
   onNavigate?: () => void;
 };
 
@@ -20,6 +22,7 @@ export function SidebarNavLink({
   children,
   match = "exact",
   slug,
+  badge,
   onNavigate,
 }: SidebarNavLinkProps) {
   const pathname = usePathname();
@@ -38,7 +41,10 @@ export function SidebarNavLink({
           : cn(styles.inactive, "border-transparent text-ink-600 hover:text-ink-900"),
       )}
     >
-      {children}
+      <span className="inline-flex items-center gap-1.5">
+        {children}
+        {badge ? <NavBadge status={badge} /> : null}
+      </span>
     </Link>
   );
 }

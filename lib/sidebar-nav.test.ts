@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getActiveComponentSlug, isSidebarNavLinkActive } from "@/lib/sidebar-nav";
+import { getActiveComponentSlug, isSidebarNavLinkActive, primaryNavLinks } from "@/lib/sidebar-nav";
 
 describe("getActiveComponentSlug", () => {
   it("returns the slug for component detail pages", () => {
@@ -54,5 +54,12 @@ describe("isSidebarNavLinkActive", () => {
         slug: "button-group",
       }),
     ).toBe(false);
+  });
+});
+
+describe("primaryNavLinks release-status badges", () => {
+  it("only badges Agent Kit as 'new'", () => {
+    const badged = primaryNavLinks.filter((link) => link.badge);
+    expect(badged).toEqual([{ label: "Agent Kit", href: "/agent-kit", badge: "new" }]);
   });
 });
