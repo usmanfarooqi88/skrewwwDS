@@ -18,6 +18,7 @@
     "typecheck": "tsc --noEmit",
     "generate:registry": "tsx scripts/generate-shadcn-registry.ts",
     "generate:agent-context": "tsx scripts/generate-agent-context.ts",
+    "install:agent-skill": "tsx scripts/install-agent-skill.ts",
     "smoke:consumer": "tsx scripts/smoke-test-consumer.ts",
     "verify:package": "node scripts/verify-package-metadata.mjs",
     "verify:node": "node scripts/verify-node-runtime.mjs",

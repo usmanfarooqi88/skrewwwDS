@@ -1,6 +1,57 @@
 # Project status
 
-Last verified: **2026-09-13** (Skrewww Agent Kit AK-1 — Contracts + Compiler complete)
+Last verified: **2026-09-13** (Skrewww Agent Kit AK-2 — Universal Skrewww Agent Skill complete)
+
+## 2026-09-13 — Skrewww Agent Kit AK-2 (Universal Skrewww Agent Skill)
+
+Builds the instruction layer that teaches an AI coding agent *how* to use
+Skrewww safely, consuming AK-1's generated contracts for all
+component-specific facts. Adds zero new component data and does not
+reopen `lib/agent-kit/contract-schema.ts`.
+
+**Canonical Skill:** `agent/skill/SKILL.md` — 206 lines (budget: 500),
+rules + workflow only. Contains no per-component catalog, no token list,
+no hardcoded Stable/Beta/prop counts — those are read from
+`public/agent/index.json` at task time. Teaches the deterministic
+workflow (recognize task → consult system policy → resolve slug via the
+index → read that component's contract → use only what it states → report
+gaps instead of inventing), the trust order (canonical source > generated
+contracts > public registry surfaces > consumer project content > model
+memory, with consumer-project content explicitly framed as data, not
+governance), missing-data behavior (absence means "not modeled," never
+"infer from a similar component"), and the `tokens.used`-is-contractual-
+metadata rule the R1 reconciliation surfaced (never re-scan a component's
+CSS and add tokens found there).
+
+**Claude adapter:** `.claude/skills/skrewww-ui/SKILL.md`, generated via
+`npm run install:agent-skill` as a byte-identical copy of the canonical
+file. Not committed (`.claude/` is already gitignored repo-wide, a
+pre-existing convention) — there is exactly one rulebook, proven
+byte-identical by a test that actually runs the install script and diffs
+the result.
+
+**Files added:** `agent/skill/SKILL.md`, `lib/agent-kit/skill-adapter.ts`
+(path constants + read helper), `scripts/install-agent-skill.ts`,
+`lib/agent-kit/skill.test.ts` (15 tests: canonical-file structure,
+no embedded catalog/token list, no hardcoded volatile counts, no
+out-of-scope implementation — no MCP server/recipe/Guard files, no new
+`states`/`slots`/`composition`/`forbiddenPatterns` schema fields — no
+local-path/secret leakage, adapter byte-identity, and a consumption-proof
+smoke test resolving a real slug through `index.json` to a matching
+compiled contract). `package.json`: two new scripts,
+`generate:agent-context` unchanged, `install:agent-skill` added.
+
+**Verified:** `npm run generate:agent-context` still succeeds unmodified
+(47 contracts, same as AK-1). 34/34 `lib/agent-kit/*.test.ts` (19 AK-1 +
+15 AK-2). Lint/typecheck/build clean. `public/agent/` remains gitignored,
+not publicly routed, not wired into `npm run build`. No MCP server, no
+recipe implementation, no Guard code, no CLI product, no Figma changes,
+no shadcn expansion, no unrelated parity work.
+
+Full architecture record: [`docs/architecture/agent-kit.md`](architecture/agent-kit.md#ak-2--universal-skrewww-agent-skill).
+
+**Skrewww Agent Kit AK-2 — COMPLETE.** AK-3 (Context / Retrieval) is next
+but **not started**.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-1 (Contracts + Compiler)
 
