@@ -1,6 +1,6 @@
-# Skrewww component inventory (CE-0 → CE-1A)
+# Skrewww component inventory (CE-0 → CE-1C)
 
-> **Last updated:** 2026-09-13 · **CE-0 freeze SHA:** `7593ea4` · **CE-1A Slider + CE-1B Button Group:** COMPLETE
+> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1A–CE-1C:** COMPLETE through Split Button
 > Planning source for remaining CE-1 work. Do **not** start CE-2 / CE-3 / PH-0 / Guard here.
 
 This document is the durable planning source for CE-1. Prefer the tables over
@@ -21,39 +21,39 @@ prose. Re-derive volatile counts from `lib/component-registry*.ts` and
 **Do not equate** `content/` count with “missing React components.” Many content
 entries are Figma item primitives that React correctly models via composition.
 
-## Exact totals (verified 2026-09-13, post CE-1A)
+## Exact totals (verified 2026-09-14, post CE-1C)
 
 ### React (canonical registry)
 
 | Metric | Count |
 |--------|------:|
-| Implemented public React components | **49** |
+| Implemented public React components | **50** |
 | Stable | **27** |
-| Beta | **22** |
-| Public docs pages (implemented) | **49** |
-| Agent Kit contracts | **49** |
+| Beta | **23** |
+| Public docs pages (implemented) | **50** |
+| Agent Kit contracts | **50** |
 | `/r` component manifests | **8** (+ `foundation` shared cut = 9 files) |
 
 `/r` components: button, card, divider, form-field, link, spinner, text-input, validation-message.
-Slider `/r` deferred to **CE-3**.
+Slider / Button Group / Split Button `/r` deferred to **CE-3**.
 
 ### Figma / documentation inventory
 
 | Metric | Count |
 |--------|------:|
 | `content/` documented entries | **63** |
-| With React counterpart (registry) | **49** |
-| Docs-only (no React registry entry) | **14** |
+| With React counterpart (registry) | **50** |
+| Docs-only (no React registry entry) | **13** |
 | Of those: internal / building-block (Class C) | **10** |
-| Of those: genuine public Figma→React gap candidates (Class B) | **3** |
+| Of those: genuine public Figma→React gap candidates (Class B) | **2** |
 | Of those: modeling difference (Class E) | **1** (Icon Button) |
 
 ### Classification totals
 
 | Class | Meaning | Count |
 |-------|---------|------:|
-| **A** | Public parity (both sides) | **46** |
-| **B** | Genuine Figma→React gap | **3** |
+| **A** | Public parity (both sides) | **47** |
+| **B** | Genuine Figma→React gap | **2** |
 | **C** | Figma internal / building block | **10** |
 | **D** | React→Figma gap (confirmed no Figma master) | **3** |
 | **E** | Naming / modeling difference | **1** |
@@ -63,7 +63,7 @@ Slider `/r` deferred to **CE-3**.
 
 | Parity status | Count | Notes |
 |---------------|------:|-------|
-| VERIFIED (`figmaAvailability: available`) | **43** | Includes Slider + Button Group |
+| VERIFIED (`figmaAvailability: available`) | **44** | Includes Slider + Button Group + Split Button |
 | PARTIAL | **3** | radio-group, data-table, calendar-grid |
 | UNKNOWN (no Figma / Class D) | **3** | Banking pilot trio |
 
@@ -81,14 +81,14 @@ Numerical Figma−React equality is **not** a product goal.
 
 | Category | React | Content docs | Docs-only | Class B gaps | Class C blocks |
 |----------|------:|-------------:|----------:|-------------:|---------------:|
-| Actions | 3 | 5 | 2 | 1 (split-button) | 0 (+ Icon Button = E) |
+| Actions | 4 | 5 | 1 | 0 | 0 (+ Icon Button = E) |
 | Containers & Overlays | 5 | 6 | 1 | 0 | 1 (accordion-item) |
 | Forms | 14 | 16 | 2 | 2 (credit-card-field, phone-number-field) | 0 |
 | Feedback | 7 | 7 | 0 | 0 | 0 |
 | Navigation | 4 | 11 | 7 | 0 | 7 |
 | Content & Data | 16 | 18 | 2 | 0 | 2 (tree-item, timeline-item) |
 
-Largest remaining **product** gap pressure: Actions composition (Split Button). Navigation’s high docs-only count is mostly **items**, not missing appshells.
+Largest remaining **product** gap pressure: specialist form fields (Credit Card, Phone Number). Navigation’s high docs-only count is mostly **items**, not missing appshells.
 
 ## CE-1 status
 
@@ -96,17 +96,17 @@ Largest remaining **product** gap pressure: Actions composition (Split Button). 
 |------|--------|
 | **CE-1A Slider** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
 | **CE-1B Button Group** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
-| **CE-1C Split Button** | ← NEXT — NOT STARTED |
-| **CE-1D Credit Card Field** | later |
+| **CE-1C Split Button** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
+| **CE-1D Credit Card Field** | ← NEXT — NOT STARTED |
 | **CE-1E Phone Number Field** | later |
+| **CE-1 overall** | **IN PROGRESS** |
 
 Remaining genuine **Class B** gaps:
 
-| Priority | Component | Rationale |
-|----------|-----------|-----------|
-| **P2** | Split Button | Common primary+menu action pattern |
-| **P3** | Credit Card Field | Specialist / industry-adjacent |
-| **P3** | Phone Number Field | Specialist |
+| Priority | Component | Why |
+|----------|-----------|-----|
+| **P3** | Credit Card Field | Specialist payment input |
+| **P3** | Phone Number Field | Specialist contact input |
 
 **Also track (not auto-implement):**
 
@@ -189,6 +189,7 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 | Select | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Skeleton | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Spinner | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
+| Split Button | yes (Actions/Split Button `2022:1086`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Actions; CE-1C; primary Button + Menu; joined chrome |
 | Switch | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Slider | yes (Forms/Slider `2024:2373`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1A; State Default/Hover/Focused/Disabled; single-thumb |
 | Table | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
@@ -215,7 +216,6 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 | Page Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
 | Phone Number Field | yes (content/) | no | B | public | — | docs-only | no | no | — | P3 | CE-1 candidate | Forms; content inventory; no registry entry |
 | Sidebar Nav Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
-| Split Button | yes (content/) | no | B | public | — | docs-only | no | no | — | P2 | CE-1 candidate | Actions; content inventory; no registry entry |
 | Step Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
 | Timeline Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Content & Data; building-block / item |
 | Top Nav Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
@@ -227,12 +227,13 @@ CE-0 does not close STAB-001…STAB-006. Those remain Community/Beta
 steady-state items (`/r/registry.json`, CoC private contact, Figma Pro
 sharing confirmation, Free Figma terms, early external signal, NEW badge).
 
-## Roadmap after CE-1A
+## Roadmap after CE-1C
 
 - Community/Beta Stabilization = steady-state monitoring
 - **CE-0 = COMPLETE**
 - **CE-1A Slider = COMPLETE**
 - **CE-1B Button Group = COMPLETE**
-- **CE-1C Split Button = NEXT**
+- **CE-1C Split Button = COMPLETE**
+- **CE-1D Credit Card Field = NEXT**
 - **CE-1 overall = IN PROGRESS**
 - CE-2 / CE-3 / Reference App / PH-0 / Guard = later / NOT STARTED

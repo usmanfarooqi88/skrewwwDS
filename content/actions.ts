@@ -71,12 +71,25 @@ export const actionsComponents: ComponentDoc[] = [
     name: "Split Button",
     category: "Actions",
     variants: "Style × Size — 9 variants",
-    purpose: "Split Button is a button pattern that combines one primary default action with an adjacent dropdown for closely related alternative actions (e.g. \"Save\" + a chevron revealing \"Save as draft\" / \"Save and publish\").",
-    whenToUse: "When there's one clear default action but a few related variants a user occasionally wants instead.",
-    whenNotToUse: "When all options are equally likely to be chosen — use a plain Dropdown Menu or Select instead. Split Button implies a clear default.",
-    accessibility: "The main action and the chevron trigger are two independently focusable, independently labeled controls in code (two real <button> elements) — never one button with an ambiguous combined action.",
-    commonMistakes: "Treating this as a single button. It is two separate interactive targets sharing one visual container, and must be built and labeled as such.",
-    tokensUsed: ["component/radius/control", "semantic/action/primary", "semantic/border/default"],
-    properties: "Style × Size as variants. Label (text) for the main action only.",
+    purpose:
+      "Split Button joins one primary default action with an adjacent menu trigger for closely related alternatives (e.g. \"Save\" + a chevron revealing \"Save as draft\" / \"Save and publish\").",
+    whenToUse:
+      "When there's one clear default action but a few related variants a user occasionally wants instead.",
+    whenNotToUse:
+      "When all options are equally likely — use Menu or Select. When actions are peer siblings without a default — use Button Group. Do not use for exclusive selection (Tabs / future Toggle Group).",
+    accessibility:
+      "Two independently focusable, independently labeled controls (two real buttons) inside role=\"group\". Primary Button has no menu ARIA. MenuTrigger Button owns aria-haspopup / aria-expanded. Natural Tab order; Escape closes via Menu.",
+    commonMistakes:
+      "Treating this as one button. Putting Button or Menu props on SplitButton. Opening the menu from the primary action. Replacing Menu with a custom dropdown. Confusing with Button Group.",
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "color/brand/700",
+      "color/danger/700",
+    ],
+    properties:
+      "Figma: Style × Size + Label (main action only). React: children (primary Button + Menu composition) + divider (neutral|primary|danger). Menu items are Menu’s API, not SplitButton props.",
+    knownLimitation:
+      "Figma set has no State / Shape / Surface / menu-open axes — those stay on Button and Menu. Chevron segment padding follows Button (may be slightly wider than Figma’s tighter trigger). /r deferred to CE-3.",
   },
 ];

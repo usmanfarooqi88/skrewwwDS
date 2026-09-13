@@ -156,6 +156,10 @@ import {
   BUTTON_GROUP_FIGMA_COMPONENT_SET_NODE_ID,
   BUTTON_GROUP_FIGMA_FILE_URL,
 } from "@/lib/button-group-figma-metadata";
+import {
+  SPLIT_BUTTON_FIGMA_COMPONENT_SET_NODE_ID,
+  SPLIT_BUTTON_FIGMA_FILE_URL,
+} from "@/lib/split-button-figma-metadata";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -440,7 +444,7 @@ export function Example() {
     comparisons: [
       {
         title: "How is Button Group different from Split Button?",
-        body: "Button Group arranges multiple independent actions with joined chrome. Split Button pairs one primary default action with a related secondary/menu control — CE-1C, not Button Group.",
+        body: "Button Group arranges multiple independent actions with joined chrome. Split Button pairs one primary default action with a related secondary/menu control — not Button Group.",
       },
       {
         title: "Is Button Group a segmented control?",
@@ -480,6 +484,123 @@ export function Example() {
       <Button variant="primary">List</Button>
       <Button variant="primary">Grid</Button>
     </ButtonGroup>
+  );
+}`,
+  },
+  {
+    slug: "split-button",
+    name: "Split Button",
+    category: "Actions",
+    summary:
+      "Split Button joins one primary Button action with a related Menu trigger using shared outer chrome — composition only; Button and Menu keep their own APIs.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/actions.ts",
+    documentationLastUpdated: "2026-09-14",
+    reactLastUpdated: "2026-09-14",
+    figmaReference: "Actions / Split Button — Style × Size (9 variants)",
+    figmaSourceUrl: SPLIT_BUTTON_FIGMA_FILE_URL,
+    figmaNodeId: SPLIT_BUTTON_FIGMA_COMPONENT_SET_NODE_ID,
+    documentationUrl: getComponentDocumentationUrl("split-button"),
+    supportedVariants: ["neutral", "primary", "danger"],
+    supportedSizes: [],
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "color/brand/700",
+      "color/danger/700",
+    ],
+    relatedComponents: [
+      { label: "Button — primary action and menu trigger chrome", href: "/components/button" },
+      { label: "Menu — secondary popup and items", href: "/components/menu" },
+      { label: "Button Group — peer joined actions without a menu", href: "/components/button-group" },
+    ],
+    relatedTokens: [
+      { label: "component/radius/control", href: "/foundations" },
+      { label: "semantic/border/default", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "Figma set has no State / Shape / Surface / menu-open variants — those remain Button + Menu responsibilities.",
+      "Chevron trigger padding follows Button control padding (Figma chevron segment is slightly tighter horizontally).",
+      "Disabled/loading combinations are independent per segment; no group-level loading API.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "SplitButton = role=group wrapper (shared border + divider gap + outer radius) + primary Button + Menu (MenuTrigger Button + MenuContent). Divider tone is chrome only.",
+    keyboardBehavior:
+      "Tab between primary Button and MenuTrigger Button. Enter/Space activate the focused control. Menu owns ArrowDown/ArrowUp open, item navigation, and Escape close.",
+    focusBehavior:
+      "Two independent focusable buttons. Focus-visible rings are not clipped (no overflow:hidden). Opening the menu restores focus per Menu/Popover.",
+    comparisons: [
+      {
+        title: "How is Split Button different from Button Group?",
+        body: "Button Group joins peer independent actions. Split Button pairs one primary default action with a related secondary menu trigger — not interchangeable APIs.",
+      },
+      {
+        title: "Does Split Button own menu items?",
+        body: "No. Compose Menu, MenuTrigger, MenuContent, and MenuItem. Split Button only provides joined chrome between the primary Button and the trigger Button.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "children",
+        type: "ReactNode",
+        description:
+          "Primary Skrewww Button plus a Menu whose MenuTrigger wraps a secondary Button (typically CaretDown with aria-label). Do not put Button/Menu props on SplitButton.",
+      },
+      {
+        name: "divider",
+        type: '"neutral" | "primary" | "danger"',
+        default: '"neutral"',
+        description:
+          "Chrome color in the 2px gap — matches Figma Style gap fill (neutral=Secondary, primary, danger). Not a Button variant.",
+      },
+      {
+        name: "aria-label",
+        type: "string",
+        description: "Accessible name for the primary+menu pair when no visible group label exists.",
+      },
+      {
+        name: "aria-labelledby",
+        type: "string",
+        description: "ID of a visible label element for the pair.",
+      },
+    ],
+    reactExample: `import { CaretDown } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/Button";
+import {
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+} from "@/components/ui/Menu";
+import { SplitButton } from "@/components/ui/SplitButton";
+
+export function Example() {
+  return (
+    <SplitButton aria-label="Save options" divider="primary">
+      <Button type="button" variant="primary" onClick={() => {}}>
+        Save
+      </Button>
+      <Menu>
+        <MenuTrigger>
+          <Button type="button" variant="primary" aria-label="More save options">
+            <CaretDown size={16} weight="bold" />
+          </Button>
+        </MenuTrigger>
+        <MenuContent aria-label="More save options">
+          <MenuItem onSelect={() => {}}>Save as draft</MenuItem>
+          <MenuItem onSelect={() => {}}>Save and publish</MenuItem>
+        </MenuContent>
+      </Menu>
+    </SplitButton>
   );
 }`,
   },

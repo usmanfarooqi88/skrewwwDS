@@ -74,6 +74,8 @@ export type {
 } from "@/components/ui/Button";
 export { ButtonGroup } from "@/components/ui/ButtonGroup";
 export type { ButtonGroupDivider, ButtonGroupProps } from "@/components/ui/ButtonGroup";
+export { SplitButton } from "@/components/ui/SplitButton";
+export type { SplitButtonDivider, SplitButtonProps } from "@/components/ui/SplitButton";
 export { Card } from "@/components/ui/Card";
 export type { CardElement, CardElevation, CardProps } from "@/components/ui/Card";
 export {

@@ -227,7 +227,7 @@ describe("FileUpload native FileList helpers", () => {
 describe("FileUpload registry", () => {
   it("registers File Upload as the canonical implemented component", () => {
     expect(getRegistryEntry("file-upload")?.hasImplementation).toBe(true);
-    expect(getImplementedComponentCount()).toBe(49);
+    expect(getImplementedComponentCount()).toBe(50);
     expect(getRegistryEntry("dropzone")).toBeUndefined();
   });
 });
