@@ -305,11 +305,11 @@ describe("project configuration", () => {
 
   it("tracks mixed Stable and Beta component maturity at platform 1.0", () => {
     const implemented = getImplementedRegistryEntries();
-    expect(implemented).toHaveLength(48);
+    expect(implemented).toHaveLength(49);
     const stable = implemented.filter((entry) => entry.status === "stable");
     const beta = implemented.filter((entry) => entry.status === "beta");
     expect(stable.length).toBe(27);
-    expect(beta.length).toBe(21);
+    expect(beta.length).toBe(22);
     expect(stable.every((entry) => entry.version === "1.0.0")).toBe(true);
     expect(beta.every((entry) => entry.version.includes("beta"))).toBe(true);
     expect(beta.every((entry) => entry.version !== "1.0.0")).toBe(true);

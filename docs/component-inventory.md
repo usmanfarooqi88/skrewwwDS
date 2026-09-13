@@ -1,6 +1,6 @@
 # Skrewww component inventory (CE-0 → CE-1A)
 
-> **Last updated:** 2026-09-13 · **CE-0 freeze SHA:** `7593ea4` · **CE-1A Slider:** COMPLETE
+> **Last updated:** 2026-09-13 · **CE-0 freeze SHA:** `7593ea4` · **CE-1A Slider + CE-1B Button Group:** COMPLETE
 > Planning source for remaining CE-1 work. Do **not** start CE-2 / CE-3 / PH-0 / Guard here.
 
 This document is the durable planning source for CE-1. Prefer the tables over
@@ -27,11 +27,11 @@ entries are Figma item primitives that React correctly models via composition.
 
 | Metric | Count |
 |--------|------:|
-| Implemented public React components | **48** |
+| Implemented public React components | **49** |
 | Stable | **27** |
-| Beta | **21** |
-| Public docs pages (implemented) | **48** |
-| Agent Kit contracts | **48** |
+| Beta | **22** |
+| Public docs pages (implemented) | **49** |
+| Agent Kit contracts | **49** |
 | `/r` component manifests | **8** (+ `foundation` shared cut = 9 files) |
 
 `/r` components: button, card, divider, form-field, link, spinner, text-input, validation-message.
@@ -42,18 +42,18 @@ Slider `/r` deferred to **CE-3**.
 | Metric | Count |
 |--------|------:|
 | `content/` documented entries | **63** |
-| With React counterpart (registry) | **48** |
-| Docs-only (no React registry entry) | **15** |
+| With React counterpart (registry) | **49** |
+| Docs-only (no React registry entry) | **14** |
 | Of those: internal / building-block (Class C) | **10** |
-| Of those: genuine public Figma→React gap candidates (Class B) | **4** |
+| Of those: genuine public Figma→React gap candidates (Class B) | **3** |
 | Of those: modeling difference (Class E) | **1** (Icon Button) |
 
 ### Classification totals
 
 | Class | Meaning | Count |
 |-------|---------|------:|
-| **A** | Public parity (both sides) | **45** |
-| **B** | Genuine Figma→React gap | **4** |
+| **A** | Public parity (both sides) | **46** |
+| **B** | Genuine Figma→React gap | **3** |
 | **C** | Figma internal / building block | **10** |
 | **D** | React→Figma gap (confirmed no Figma master) | **3** |
 | **E** | Naming / modeling difference | **1** |
@@ -63,7 +63,7 @@ Slider `/r` deferred to **CE-3**.
 
 | Parity status | Count | Notes |
 |---------------|------:|-------|
-| VERIFIED (`figmaAvailability: available`) | **42** | Includes Slider (CE-1A) |
+| VERIFIED (`figmaAvailability: available`) | **43** | Includes Slider + Button Group |
 | PARTIAL | **3** | radio-group, data-table, calendar-grid |
 | UNKNOWN (no Figma / Class D) | **3** | Banking pilot trio |
 
@@ -81,22 +81,22 @@ Numerical Figma−React equality is **not** a product goal.
 
 | Category | React | Content docs | Docs-only | Class B gaps | Class C blocks |
 |----------|------:|-------------:|----------:|-------------:|---------------:|
-| Actions | 2 | 5 | 3 | 2 (button-group, split-button) | 0 (+ Icon Button = E) |
+| Actions | 3 | 5 | 2 | 1 (split-button) | 0 (+ Icon Button = E) |
 | Containers & Overlays | 5 | 6 | 1 | 0 | 1 (accordion-item) |
 | Forms | 14 | 16 | 2 | 2 (credit-card-field, phone-number-field) | 0 |
 | Feedback | 7 | 7 | 0 | 0 | 0 |
 | Navigation | 4 | 11 | 7 | 0 | 7 |
 | Content & Data | 16 | 18 | 2 | 0 | 2 (tree-item, timeline-item) |
 
-Largest remaining **product** gap pressure: Actions composition (Button Group / Split Button). Navigation’s high docs-only count is mostly **items**, not missing appshells.
+Largest remaining **product** gap pressure: Actions composition (Split Button). Navigation’s high docs-only count is mostly **items**, not missing appshells.
 
 ## CE-1 status
 
 | Item | Status |
 |------|--------|
 | **CE-1A Slider** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
-| **CE-1B Button Group** | ← NEXT — NOT STARTED |
-| **CE-1C Split Button** | later |
+| **CE-1B Button Group** | ✅ COMPLETE — Class B → A; Beta `0.1.0-beta`; `/r` deferred to CE-3 |
+| **CE-1C Split Button** | ← NEXT — NOT STARTED |
 | **CE-1D Credit Card Field** | later |
 | **CE-1E Phone Number Field** | later |
 
@@ -104,7 +104,6 @@ Remaining genuine **Class B** gaps:
 
 | Priority | Component | Rationale |
 |----------|-----------|-----------|
-| **P2** | Button Group | Common action clustering pattern |
 | **P2** | Split Button | Common primary+menu action pattern |
 | **P3** | Credit Card Field | Specialist / industry-adjacent |
 | **P3** | Phone Number Field | Specialist |
@@ -143,9 +142,9 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 
 | Layer | Count | Note |
 |-------|------:|------|
-| Implemented | 48 | |
-| Docs | 48 implemented + 15 docs-only | |
-| Agent contracts | 48 | |
+| Implemented | 49 | |
+| Docs | 49 implemented + 14 docs-only | |
+| Agent contracts | 49 | |
 | `/r` distributed components | 8 | + foundation |
 | `/r/registry.json` | 0 | STAB-001 / CE-3 — not this pass |
 
@@ -163,6 +162,7 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 | Bar Chart | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Breadcrumb | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
 | Button | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Actions; figmaAvailability=available |
+| Button Group | yes (Actions/Button Group `2022:1013`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Actions; CE-1B; joined independent Buttons; not radiogroup |
 | Calendar Day | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Calendar Grid | yes | yes | A | public | Beta | yes | yes | no | PARTIAL | P2 | Dedicated parity task if product needs | Content & Data; figmaAvailability=partial |
 | Card | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Containers & Overlays; figmaAvailability=available |
@@ -208,7 +208,6 @@ Absent from both registry and content inventory (except as noted). Candidates fo
 |-----------|-------|-------|-------|-----------------|-------------|------|-------|----|--------|----------|------|-------|
 | Accordion Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Containers & Overlays; building-block / item |
 | Breadcrumb Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
-| Button Group | yes (content/) | no | B | public | — | docs-only | no | no | — | P2 | CE-1 candidate | Actions; content inventory; no registry entry |
 | Credit Card Field | yes (content/) | no | B | public | — | docs-only | no | no | — | P3 | CE-1 candidate | Forms; content inventory; no registry entry |
 | Dropdown Trigger | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
 | Icon Button | yes (content/) | no | E | public (Figma) | — | docs-only | no | no | — | P2 | Product decision vs Button+aria-label | Actions; content explicitly maps React to Button |
@@ -233,6 +232,7 @@ sharing confirmation, Free Figma terms, early external signal, NEW badge).
 - Community/Beta Stabilization = steady-state monitoring
 - **CE-0 = COMPLETE**
 - **CE-1A Slider = COMPLETE**
-- **CE-1B Button Group = NEXT**
+- **CE-1B Button Group = COMPLETE**
+- **CE-1C Split Button = NEXT**
 - **CE-1 overall = IN PROGRESS**
 - CE-2 / CE-3 / Reference App / PH-0 / Guard = later / NOT STARTED

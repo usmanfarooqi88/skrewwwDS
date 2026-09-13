@@ -152,6 +152,10 @@ import { contentDataRegistryEntries } from "@/lib/component-registry-content-dat
 import { feedbackRegistryEntries } from "@/lib/component-registry-feedback";
 import { formsRegistryEntries } from "@/lib/component-registry-forms";
 import { navigationRegistryEntries } from "@/lib/component-registry-navigation";
+import {
+  BUTTON_GROUP_FIGMA_COMPONENT_SET_NODE_ID,
+  BUTTON_GROUP_FIGMA_FILE_URL,
+} from "@/lib/button-group-figma-metadata";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -287,6 +291,7 @@ export const componentRegistry: ComponentRegistryEntry[] = [
     ],
     relatedComponents: [
       { label: "Icon Button — compact icon-only actions", href: "/components/icon-button" },
+      { label: "Button Group — joined related actions", href: "/components/button-group" },
       { label: "Link — inline navigational text", href: "/components/link" },
       { label: "Split Button — default action plus menu", href: "/components/split-button" },
     ],
@@ -378,6 +383,103 @@ export function Example() {
     <Button variant="primary" leadingIcon={<Plus size={16} />} type="button">
       Create project
     </Button>
+  );
+}`,
+  },
+  {
+    slug: "button-group",
+    name: "Button Group",
+    category: "Actions",
+    summary:
+      "Button Group joins related independent Buttons with shared outer chrome and a 2px divider gap — layout only; each Button keeps its own behavior.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/actions.ts",
+    documentationLastUpdated: "2026-09-13",
+    reactLastUpdated: "2026-09-13",
+    figmaReference: "Actions / Button Group — Style × Count (9 variants)",
+    figmaSourceUrl: BUTTON_GROUP_FIGMA_FILE_URL,
+    figmaNodeId: BUTTON_GROUP_FIGMA_COMPONENT_SET_NODE_ID,
+    documentationUrl: getComponentDocumentationUrl("button-group"),
+    supportedVariants: ["neutral", "primary", "danger"],
+    supportedSizes: [],
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "color/brand/700",
+      "color/danger/700",
+    ],
+    relatedComponents: [
+      { label: "Button — each action in the group", href: "/components/button" },
+      { label: "Split Button — primary action plus related menu", href: "/components/split-button" },
+      { label: "Tabs — mutually exclusive view panels", href: "/components/tabs" },
+    ],
+    relatedTokens: [
+      { label: "component/radius/control", href: "/foundations" },
+      { label: "semantic/border/default", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "Figma description recommends role=radiogroup for mutually exclusive selection; Beta React ships independent Buttons with role=group (CE-1B product decision). A future Toggle Group / Segmented Control may cover selection.",
+      "Vertical orientation, equal-width, and wrapping are not in the verified Figma set.",
+      "Squircle Shape on joined children disables per-button squircle clip so shared outer chrome stays coherent.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "ButtonGroup = role=group wrapper (shared border + divider gap + outer radius) + Button children. Divider tone is group chrome only.",
+    keyboardBehavior:
+      "Standard Tab order across child Buttons. Enter/Space activate the focused Button. No arrow-key roving focus — this is not a toolbar or radiogroup.",
+    focusBehavior:
+      "Child focus-visible rings are not clipped (group does not use overflow:hidden). Focused child stacks above neighbors (z-index).",
+    comparisons: [
+      {
+        title: "How is Button Group different from Split Button?",
+        body: "Button Group arranges multiple independent actions with joined chrome. Split Button pairs one primary default action with a related secondary/menu control — CE-1C, not Button Group.",
+      },
+      {
+        title: "Is Button Group a segmented control?",
+        body: "No. Figma labels can look like List/Grid or Day/Week/Month, but Beta React does not implement selection state. Use Tabs or a future Toggle Group for exclusive selection.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "children",
+        type: "ReactNode",
+        description: "Independent Skrewww Button (or Button-as-link) children.",
+      },
+      {
+        name: "divider",
+        type: '"neutral" | "primary" | "danger"',
+        default: '"neutral"',
+        description:
+          "Chrome color in the 2px gap — matches Figma Style gap fill (neutral=Secondary, primary, danger). Not a Button variant.",
+      },
+      {
+        name: "aria-label",
+        type: "string",
+        description: "Accessible name for the group when no visible group label exists.",
+      },
+      {
+        name: "aria-labelledby",
+        type: "string",
+        description: "ID of a visible label element for the group.",
+      },
+    ],
+    reactExample: `import { Button } from "@/components/ui/Button";
+import { ButtonGroup } from "@/components/ui/ButtonGroup";
+
+export function Example() {
+  return (
+    <ButtonGroup aria-label="View mode" divider="primary">
+      <Button variant="primary">List</Button>
+      <Button variant="primary">Grid</Button>
+    </ButtonGroup>
   );
 }`,
   },

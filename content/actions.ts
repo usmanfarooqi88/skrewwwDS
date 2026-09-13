@@ -44,14 +44,27 @@ export const actionsComponents: ComponentDoc[] = [
     slug: "button-group",
     name: "Button Group",
     category: "Actions",
-    variants: "Style × Count (2/3/4) — 9 variants",
-    purpose: "Button Group is a set of related, mutually exclusive actions (often a segmented toggle, like a view switcher) visually connected as one unit.",
-    whenToUse: "When 2–4 options represent a single choice or view state (e.g. List/Grid view, Day/Week/Month range).",
-    whenNotToUse: "For more than ~4 options — use Select or Tabs instead. For unrelated actions that don't belong together visually.",
-    accessibility: "In code, implement as role=\"radiogroup\" with each segment as role=\"radio\" when it represents a single selectable state, not a row of independent buttons.",
-    commonMistakes: "Giving each segment its own individual border — creates an ugly double-border seam where segments touch. This component deliberately uses one shared outer border + a colored divider gap instead.",
-    tokensUsed: ["component/radius/control", "semantic/border/default", "semantic/surface/default", "semantic/action/primary", "semantic/action/danger"],
-    properties: "Style × Count as variants. Segment labels are set via direct instance override, not a formal per-segment property.",
+    variants: "Style × Count (2/3/4) — 9 Figma variants; React uses children + divider chrome",
+    purpose:
+      "Button Group joins related independent Buttons with shared outer border and a 2px divider gap — visual grouping only.",
+    whenToUse:
+      "When 2–4 related actions should read as one joined unit (for example List/Grid view triggers or compact action clusters).",
+    whenNotToUse:
+      "For mutually exclusive selection/state — use Tabs or wait for a dedicated Toggle Group. For one primary action plus a related menu — use Split Button (CE-1C). For unrelated actions, keep separate Buttons.",
+    accessibility:
+      "Renders as role=\"group\" with optional aria-label. Each child remains an independent Button (Tab / Enter / Space). Not role=radiogroup — Beta does not implement selection.",
+    commonMistakes:
+      "Giving each segment its own outer border (double seams). Putting Button variant/size/loading on the group. Treating the group as a segmented control with selection state.",
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "color/brand/700",
+      "color/danger/700",
+    ],
+    properties:
+      "Figma: Style × Count. React: children (Buttons) + divider (neutral|primary|danger) for gap chrome. Count is not a React prop.",
+    knownLimitation:
+      "Figma prose describes mutually exclusive segments; React Beta ships independent actions (CE-1B). Vertical orientation, equal-width, and wrapping are not verified in Figma.",
   },
   {
     slug: "split-button",

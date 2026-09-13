@@ -1,0 +1,41 @@
+.group {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: stretch;
+  /* Figma spacing/2 — divider gap between segments */
+  gap: 0.125rem;
+  max-width: 100%;
+  border: 1px solid var(--semantic-border-default);
+  border-radius: var(--component-button-radius-control, var(--shape-radius-control));
+  background: var(--button-group-divider);
+  /* Do NOT overflow:hidden — would clip Button focus-visible rings */
+}
+
+.group > *:first-child {
+  border-start-start-radius: var(--component-button-radius-control, var(--shape-radius-control));
+  border-end-start-radius: var(--component-button-radius-control, var(--shape-radius-control));
+}
+
+.group > *:last-child {
+  border-start-end-radius: var(--component-button-radius-control, var(--shape-radius-control));
+  border-end-end-radius: var(--component-button-radius-control, var(--shape-radius-control));
+}
+
+.group > *:only-child {
+  border-radius: var(--component-button-radius-control, var(--shape-radius-control));
+}
+
+.dividerNeutral {
+  --button-group-divider: var(--semantic-border-default);
+}
+
+.dividerPrimary {
+  /* Figma Primary Style fill behind the 2px gap = color/brand/700 */
+  --button-group-divider: var(--primitive-color-brand-700);
+}
+
+.dividerDanger {
+  /* Figma Danger Style fill behind the 2px gap = color/danger/700 */
+  --button-group-divider: var(--primitive-color-danger-700);
+}

@@ -56,8 +56,24 @@
   outline: 2px solid var(--semantic-focus-ring);
   /* CSS outline is painted outside the border edge and does not affect box
      geometry. Zero offset is intentional: the canonical Figma contract has
-     no gap between Button and its 2px semantic focus ring. */
+     no gap between Button and its focus ring. */
   outline-offset: 0;
+}
+
+/* Joined item inside ButtonGroup — adjacency chrome lives on the group. */
+.inGroup {
+  position: relative;
+  border-radius: 0;
+  border-color: transparent;
+}
+
+.inGroup:focus-visible {
+  z-index: 1;
+}
+
+.inGroup .visualSurface {
+  /* Squircle clip fights shared outer chrome; flatten to inherited radius. */
+  clip-path: none;
 }
 
 .button:disabled,

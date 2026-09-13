@@ -1,6 +1,44 @@
 # Project status
 
-Last verified: **2026-09-13** (CE-1A Slider — COMPLETE)
+Last verified: **2026-09-13** (CE-1B Button Group — COMPLETE)
+
+## 2026-09-13 — CE-1B Button Group — COMPLETE
+
+Implemented the verified P2 Class B gap **Button Group** as a Beta public
+React composition wrapper. Figma contract read-only verified on Pro
+Actions/Button Group (`2022:1013`) — Style × Count (9), joined horizontal
+layout, shared outer border, 2px divider gap (`spacing/2`),
+`component/radius/control` outer corners.
+
+**Product decision:** Figma prose describes mutually exclusive segments /
+`role=radiogroup`. CE-1B ships **independent Buttons** with `role="group"`
+(no selection). Documented in content + registry openQuestions. Toggle /
+Segmented Control remains a CE-2 candidate if approved.
+
+Button remains the authority for each child. Group owns adjacency chrome
+only (`divider` for gap fill). `/r` deferred to CE-3.
+
+Inventory: [`docs/component-inventory.md`](component-inventory.md).
+
+### Inventory delta (source-verified)
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| React implemented | 48 | **49** |
+| Stable / Beta | 27 / 21 | **27 / 22** |
+| Docs (implemented) | 48 | **49** |
+| Agent contracts | 48 | **49** |
+| `/r` components | 8 + foundation | **unchanged** |
+| Class A | 45 | **46** |
+| Class B | 4 | **3** |
+
+### Remaining Class B gaps
+
+Split Button (P2) · Credit Card Field (P3) · Phone Number Field (P3).
+
+**Next:** CE-1C Split Button — **NOT STARTED**. CE-1 overall = **IN PROGRESS**.
+
+Stabilization register STAB-001…006 unchanged.
 
 ## 2026-09-13 — CE-1A Slider — COMPLETE
 
@@ -2181,8 +2219,8 @@ here instead.
 | Community / Beta Stabilization | ✅ Initial audit complete — **steady-state monitoring** |
 | **CE-0 Figma ↔ React Inventory & Parity Audit** | ✅ **COMPLETE** — [`docs/component-inventory.md`](component-inventory.md) |
 | **CE-1A Slider** | ✅ **COMPLETE** |
-| **CE-1B Button Group** | **← NEXT — NOT STARTED** |
-| CE-1C Split Button | Later — not started |
+| **CE-1B Button Group** | ✅ **COMPLETE** |
+| **CE-1C Split Button** | **← NEXT — NOT STARTED** |
 | CE-1D Credit Card Field | Later — not started |
 | CE-1E Phone Number Field | Later — not started |
 | CE-2 Net-New Component Expansion | Later — not started |
@@ -2191,7 +2229,7 @@ here instead.
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-1B Button Group is next. CE-1 overall is **IN PROGRESS**.
+**Current focus:** CE-1C Split Button is next. CE-1 overall is **IN PROGRESS**.
 Community/Beta Stabilization remains steady-state (STAB-001…006 open, no P0/P1).
 Do not start CE-2, CE-3, Reference App, PH-0, or Guard from this status line alone.
 

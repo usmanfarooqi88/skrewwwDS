@@ -12,6 +12,7 @@ import { TagPreview } from "@/components/previews/TagPreview";
 import { AlertPreview } from "@/components/previews/AlertPreview";
 import { BadgePreview } from "@/components/previews/BadgePreview";
 import { ButtonPreview } from "@/components/previews/ButtonPreview";
+import { ButtonGroupPreview } from "@/components/previews/ButtonGroupPreview";
 import { CardPreview } from "@/components/previews/CardPreview";
 import { DialogPreview } from "@/components/previews/DialogPreview";
 import { DrawerPreview } from "@/components/previews/DrawerPreview";
@@ -67,6 +68,7 @@ const previewMap: Record<string, ComponentType> = {
   divider: DividerPreview,
   tag: TagPreview,
   button: ButtonPreview,
+  "button-group": ButtonGroupPreview,
   card: CardPreview,
   dialog: DialogPreview,
   drawer: DrawerPreview,

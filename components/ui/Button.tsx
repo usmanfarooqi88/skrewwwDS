@@ -9,6 +9,7 @@ import {
 } from "react";
 import { cn } from "@/lib/cn";
 import { LoadingSpinner } from "@/components/ui/icons";
+import { useButtonGroupItem } from "@/components/ui/button-group-context";
 import styles from "@/components/ui/button.module.css";
 
 export type ButtonVariant = "primary" | "secondary" | "danger";
@@ -109,6 +110,7 @@ function useButtonClasses(
   variant: ButtonVariant,
   size: ButtonSize,
   fullWidth: boolean,
+  inGroup: boolean,
   className?: string,
 ) {
   return cn(
@@ -116,6 +118,7 @@ function useButtonClasses(
     variantClass[variant],
     sizeClass[size],
     fullWidth && styles.fullWidth,
+    inGroup && styles.inGroup,
     className,
   );
 }
@@ -166,7 +169,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonComponentProps>(functi
     children,
   } = props;
 
-  const classes = useButtonClasses(variant, size, fullWidth, className);
+  const inGroup = useButtonGroupItem();
+  const classes = useButtonClasses(variant, size, fullWidth, inGroup, className);
   const isDisabled = Boolean(props.disabled || loading);
 
   if ("href" in props && props.href) {
