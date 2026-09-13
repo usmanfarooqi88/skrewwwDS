@@ -1,6 +1,29 @@
 # Project status
 
-Last verified: **2026-09-13** (Figma Presentation V2 — FROZEN)
+Last verified: **2026-09-13** (Form Field icon color parity verified)
+
+## 2026-09-13 — Form Field icon color parity verified (no runtime change)
+
+Targeted audit of the verified Figma contract `component/form-field/icon` →
+`semantic/icon/muted` → `color/neutral/400` → `#A0A3AC` against current React.
+
+**Result: already matched — no runtime CSS change required.** Live-rendered
+leading/trailing icons on `TextInputControl` resolve `#A0A3AC` (SVG computed
+`color` and painted-child `stroke`), verified across Flat/Gradient/Glass.
+`--semantic-icon-muted` is declared once and never re-declared per Surface
+mode, correctly matching the non-surface-contextual Figma role. New browser
+regression coverage locks this: `e2e/form-field-icon.spec.ts`.
+
+**Separate parity debt found (not a color defect):** Form Field's icon
+renders 16×16 in the current docs/example path, while the verified Figma
+contract is 20×20 (`semantic/icon-size/md`). Deferred — React has no
+canonical semantic icon-size CSS layer yet, and the shared `icons.tsx`
+path (transported by `/r/button.json`) has distribution blast radius, so a
+trivial isolated fix was not safe. `SearchField.tsx`'s `{ sm: 16, md: 20,
+lg: 20 }` explicit-size pattern is the template for a future fix.
+
+The historical commit reference `f3c1a02` was checked and does not exist in
+this repository — it must not be reused as canonical evidence.
 
 ## 2026-09-13 — Figma Presentation V2 campaign closeout (FROZEN)
 
