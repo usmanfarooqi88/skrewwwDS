@@ -1,6 +1,96 @@
 # Project status
 
-Last verified: **2026-09-13** (Skrewww Agent Kit AK-2 — Universal Skrewww Agent Skill complete)
+Last verified: **2026-09-13** (Skrewww Agent Kit AK-3 — Registry / Retrieval + Project Context complete)
+
+## 2026-09-13 — Skrewww Agent Kit AK-3 (Registry / Retrieval + Project Context)
+
+Connects Agent Kit's existing knowledge (AK-1/AK-2) to a real consumer
+project: public static retrieval, a proven relationship to the existing
+shadcn distribution registry, and pure project-context detection. No
+second registry, no second component catalog, no custom Skrewww MCP
+server.
+
+**Retrieval:** `generate:agent-context` is now wired into `npm run build`
+(`generate:registry && generate:agent-context && next build`), and
+`public/agent/` is served exactly like `public/r/` already is — static
+files under `public/`, zero route handlers, zero dynamic lookup code.
+Verified live against a real production build + `next start`:
+`/agent/index.json`, `/agent/system.json`, `/agent/contracts/button.json`
+→ 200; `/agent/contracts/not-a-real-slug.json` and a path-traversal-shaped
+request → 404, by construction (no file exists), not by application
+logic. `lib/agent-kit/retrieval.test.ts` (11 tests) automates this:
+artifact-tree completeness, the absence of any `app/agent/*` route,
+leak-guard on the real bytes on disk, and byte-for-byte determinism after
+a full delete-and-regenerate.
+
+**`/agent` vs `/r`:** kept as genuinely separate schemas — a real contract
+has no `$schema`/transport fields, a real shadcn manifest has no
+`guidance`/`tokens` fields (`lib/agent-kit/registry-integration.test.ts`).
+9 shadcn manifests (unchanged — AK-3 did not expand distribution
+coverage, asserted by test).
+
+**MCP: no custom server, existing shadcn tooling confirmed working.**
+`npx shadcn mcp init --client <tool>` configures the client to run
+shadcn's own `npx shadcn@latest mcp` server — live-verified via a real
+JSON-RPC stdio handshake (`initialize` → `serverInfo.name: "shadcn"`;
+`tools/list` → `get_project_registries`, `list_items_in_registries`,
+`view_items_in_registries`, `get_add_command_for_items`, etc., all
+resolved against whatever `components.json` declares, `@skrewww`
+included). One genuine gap found and documented, not fixed:
+`list_items_in_registries`/`search_items_in_registries` need a
+`<base>/r/registry.json` index Skrewww doesn't currently publish
+(live error: `Request to https://skrewww.com/r/registry.json...failed`);
+item-level `view`/`add`-equivalent tools need no index and already work,
+matching the pre-existing `npx shadcn view/add @skrewww/<name>` path.
+Publishing an index is distribution-surface work, deliberately deferred,
+not built here.
+
+**Project context:** `lib/agent-kit/project-context.ts`'s pure
+`detectProjectContext(files)` — every field `{status:"confirmed",
+value, source}` or `{status:"unknown"}`, no guessed state. Evidence-only:
+framework/package manager from real `package.json`/lockfile; `@skrewww`
+registry config read verbatim from `components.json`; installed
+components detected by matching a registry entry's own `files` list
+(reuses canonical data, no parallel list); Foundation install/import from
+real file presence/reference; Shape/Surface mode only from a literal
+`data-skrewww-shape`/`data-skrewww-surface` string; project instruction
+files (`AGENTS.md`/`CLAUDE.md`) reported by presence only, ranked below
+Skrewww system rules in trust order. No new persisted config format, no
+CLI. `lib/agent-kit/project-context.test.ts` (20 tests) covers all four
+required fixture classes: configured consumer, partial consumer (unknowns
+stay unknown), non-Skrewww project (no fabricated Skrewww state), and
+hostile/untrusted project text (a README with prompt-injection-shaped
+text and fabricated API claims influences zero fields — one documented
+limitation: a literal `data-skrewww-*` string matches even inside a
+comment, which is exactly why project context is never itself a security
+boundary).
+
+**Skill:** `agent/skill/SKILL.md` grew from 206 to 279 lines (budget 500)
+— added a "Project context" section (the evidence table above) and an
+"Installation vs. implementation" section (never state or imply an
+install command for a non-distributed component; the shadcn MCP note).
+Reinstalled to `.claude/skills/skrewww-ui/SKILL.md`, byte-identity
+re-verified.
+
+**Files added:** `lib/agent-kit/project-context-schema.ts`,
+`lib/agent-kit/project-context.ts`, `lib/agent-kit/project-context.test.ts`,
+`lib/agent-kit/retrieval.test.ts`, `lib/agent-kit/registry-integration.test.ts`.
+**Files changed:** `agent/skill/SKILL.md`, `package.json` (`build` script
+only), `lib/project-configuration.test.ts` (updated a pre-existing
+build-script string pin to match the legitimate new pre-step).
+
+**Verified:** 933/933 Vitest (102 files, +5 new — 72 of which are
+`lib/agent-kit/*`). Lint/typecheck clean. Two full production builds
+(before and after the Skill edits) both pass, both correctly regenerate
+`public/agent/` from a deleted state. External-consumer smoke
+(`npm run smoke:consumer`) re-run clean, 82.2s, all 13 steps pass —
+distribution behavior fully unaffected. `public/agent/` and `public/r/`
+remain gitignored; no `git status` drift from either.
+
+Full architecture record: [`docs/architecture/agent-kit.md`](architecture/agent-kit.md#ak-3--registry--retrieval--project-context).
+
+**Skrewww Agent Kit AK-3 — COMPLETE.** AK-4 (Recipes / Feature Kits) is
+next but **not started**.
 
 ## 2026-09-13 — Skrewww Agent Kit AK-2 (Universal Skrewww Agent Skill)
 

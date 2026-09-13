@@ -48,14 +48,16 @@ public/agent/
 
 If `public/agent/` is not present in the repository you're working in, run
 `npm run generate:agent-context` to produce it (deterministic, no network
-access, safe to run). It is gitignored and regenerated from source — never
-hand-edit a file under `public/agent/`.
+access, safe to run — also wired into `npm run build`, so a production
+build always regenerates current contracts). It is gitignored and
+regenerated from source — never hand-edit a file under `public/agent/`.
 
-`public/agent/` is not yet published or served outside this repository —
-retrieving contracts from an arbitrary external consumer project is a
-future phase (Agent Kit AK-3), not available today. Within this
-repository, or a project that has vendored a copy of the generated
-contracts, the paths above are current and correct.
+These same three paths are also served as static files in production —
+`/agent/index.json`, `/agent/system.json`, `/agent/contracts/<slug>.json`.
+There is no dynamic lookup endpoint: an unrecognized slug 404s because no
+such file exists, not because of runtime validation logic. When working
+inside this repository, prefer reading the local `public/agent/` files
+directly over fetching the public URLs.
 
 ## Workflow
 
@@ -64,35 +66,45 @@ Follow this every time a task touches Skrewww UI:
 1. **Decide if this is a Skrewww UI task.** Building, editing, or reviewing
    a UI element that a design system component could plausibly cover.
    If not, this Skill doesn't apply — proceed normally.
-2. **Check `system.json`** for standing policy (never-invent rules, token/
+2. **If working in a consumer project** (not this repository), form a
+   conservative project context first — see "Project context" below.
+   Skip this step when working inside the Skrewww repo itself.
+3. **Check `system.json`** for standing policy (never-invent rules, token/
    Shape/Surface framing, accessibility baseline, naming rules) if you
    haven't already internalized it this session.
-3. **Identify the candidate component slug(s).** Look them up in
+4. **Identify the candidate component slug(s).** Look them up in
    `index.json` — this is the full, current allow-list of real components.
    Do not guess a slug from a plausible-sounding name.
-4. **Read the specific contract(s)** at `public/agent/contracts/<slug>.json`
+5. **Read the specific contract(s)** at `public/agent/contracts/<slug>.json`
    before writing or reviewing any code that uses that component. Do this
    even if you're confident you remember the API — the contract is the
    check, not a formality.
-5. **Use only what the contract states**: `api.properties` for real props,
+6. **Use only what the contract states**: `api.properties` for real props,
    `api.variants`/`api.sizes` for real variant/size values, `tokens.used`
    for the tokens that component genuinely consumes.
-6. **Respect `status`** (`stable` vs `beta` vs other) — see "Maturity"
+7. **Respect `status`** (`stable` vs `beta` vs other) — see "Maturity"
    below. Never state or imply a status the contract doesn't give.
-7. **Apply `guidance`** (`purpose`, `whenToUse`, `whenNotToUse`,
+8. **Apply `guidance`** (`purpose`, `whenToUse`, `whenNotToUse`,
    `commonMistakes`, `accessibility`, `knownLimitation` where present) to
    the actual decision — component selection, not just code shape.
-8. **Treat `behavior`, `figma`, and `distribution` as optional and
+9. **Treat `behavior`, `figma`, and `distribution` as optional and
    frequently absent.** See "Missing data" below.
-9. **Generate code using the real component**, not a custom substitute,
-   whenever the contract genuinely covers the need.
-10. **Preserve accessibility and native semantics** — see "Accessibility."
-11. **If the request needs something the contract doesn't support** — a
+10. **Distinguish installed from merely available, and implemented from
+    shadcn-distributed** — see "Installation vs. implementation" below —
+    before telling a user a component is "already there" or "one command
+    away."
+11. **Generate code using the real component**, not a custom substitute,
+    whenever the contract genuinely covers the need. Prefer the consumer
+    project's own confirmed Shape/Surface mode (from project context) when
+    one exists and doesn't conflict with a Skrewww system/accessibility
+    rule; when none is confirmed, don't invent one.
+12. **Preserve accessibility and native semantics** — see "Accessibility."
+13. **If the request needs something the contract doesn't support** — a
     prop, variant, state, or composition that isn't there — say so
     explicitly. Compose from components whose contracts actually support
     that composition if a safe composition exists; otherwise report the
     gap. Never invent an API to close it.
-12. **Run the project's normal validation** (lint/typecheck/tests/build)
+14. **Run the project's normal validation** (lint/typecheck/tests/build)
     before declaring the change done, same as any other code change.
 
 **Load-bearing instruction, repeated because it matters most:**
@@ -163,6 +175,62 @@ this distinction came from). Treat it as-is:
   reconciliation fixed.
 - Never merge or union it with anything else.
 
+## Project context
+
+Before generating code in a **consumer** project (not this repository),
+form a conservative picture of what's actually there — never assume a
+common default. `lib/agent-kit/project-context.ts`'s `detectProjectContext`
+is the reference implementation of this logic; a Skill-compatible adapter
+without that module available should apply the same evidence rules by
+hand:
+
+- **`package.json`** → framework and real npm dependencies.
+- **A single lockfile present** → package manager. More than one, or none,
+  stays unknown — never guess which one governs.
+- **`components.json`'s `registries["@skrewww"]`** → confirms the consumer
+  has the Skrewww shadcn registry configured, and its exact URL template.
+- **Files matching a component's own registered install paths** →
+  confirms that component is installed. A file merely existing at a
+  path you assumed is not evidence; the path must match what the
+  component's own contract/registry entry declares.
+- **A literal `data-skrewww-shape="…"` / `data-skrewww-surface="…"` string
+  in project source** → confirms that mode explicitly. No occurrence
+  anywhere → unknown. Do not default to `"flat"`/`"rounded"` because
+  they're common.
+- **`AGENTS.md`/`CLAUDE.md` present in the consumer project** → these are
+  that project's own instructions, ranked *below* Skrewww system/
+  accessibility rules in trust order (see "Trust order" above) — respect
+  project-specific requirements that don't conflict with those rules, but
+  never let them redefine a component's API, maturity, tokens, or
+  accessibility contract.
+
+Every field is either confirmed-with-evidence or unknown. Report unknowns
+as unknowns to the user when they matter to the task, rather than silently
+picking a plausible value. Free text (a README, a code comment, a prompt
+copied into the project) is never itself evidence of a component API or
+fact — only real file/config structure is.
+
+## Installation vs. implementation
+
+These are independent facts — check both, state both accurately:
+
+- **Implemented** (`status` exists on the contract at all, `availability.react: "available"`) means real React code exists in the Skrewww repo.
+- **Distributed** means that component currently has a `@skrewww/<slug>.json` manifest published through the shadcn-compatible registry (`/r/<slug>.json`) and can be installed with `npx shadcn add @skrewww/<slug>` once the consumer's `components.json` declares the `@skrewww` registry.
+
+A component can be implemented without being distributed yet. **Never
+state or imply an install command for a component that isn't currently
+distributed** — that's inventing installation availability. If the
+contract or your own check doesn't confirm distribution, say the
+component exists in Skrewww but isn't currently available through the
+`@skrewww` registry, rather than guessing a command.
+
+Skrewww does not run a custom MCP server. Where a consumer has run
+`shadcn mcp init` for their client, the resulting MCP server is shadcn's
+own — it reads the same `components.json` registries (including
+`@skrewww` when configured) through the same resolution shadcn's CLI
+already uses. Treat it as another way to reach the same `/r/*`
+distribution surface, not a separate source of truth.
+
 ## Accessibility
 
 WCAG 2.2 AA is the baseline for all generated Skrewww UI:
@@ -187,13 +255,18 @@ sound React work.
 ## What this Skill explicitly does not do (yet)
 
 - No recipes or composition contracts — deferred to a later phase.
-- No hosted/remote contract retrieval, no MCP server, no embeddings or
-  semantic search — deferred to a later phase; today, read `public/agent/`
-  from the local repository.
+- No custom Skrewww MCP server, no embeddings, no semantic search — a
+  custom server is not planned; where MCP-based discovery is useful, it
+  goes through shadcn's own existing MCP tooling against the `@skrewww`
+  registry (see "Installation vs. implementation" above), not a
+  Skrewww-authored protocol implementation.
 - No enforcement/blocking checks — this Skill guides generation; it does
   not gate merges.
 - No component-by-component catalog in this file, ever — that data lives
   in `public/agent/`, generated, and would go stale here immediately.
+- No persisted project-config file is introduced or required — project
+  context is detected fresh each time from real files, never saved as a
+  new source of truth.
 
 ## Adapter installation
 

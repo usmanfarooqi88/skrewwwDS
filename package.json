@@ -10,7 +10,7 @@
     "clean": "rm -rf .next",
     "clean:e2e": "rm -rf .next-playwright",
     "dev:clean": "npm run clean && next dev",
-    "build": "npm run generate:registry && next build",
+    "build": "npm run generate:registry && npm run generate:agent-context && next build",
     "build:e2e": "npm run clean:e2e && NEXT_DIST_DIR=.next-playwright next build",
     "start": "next start",
     "start:e2e": "NEXT_DIST_DIR=.next-playwright next start",

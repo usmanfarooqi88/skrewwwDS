@@ -263,10 +263,180 @@ documented output paths and npm script names are checked against the
 actual `package.json` and generator output — infrastructure verification,
 no LLM involved.
 
+## AK-3 — Registry / Retrieval + Project Context
+
+### What this is
+
+Connects the three layers that already existed independently — Agent Kit
+contracts (AK-1/AK-2), the shadcn-compatible distribution registry, and a
+real consumer project — without creating a second registry, a second
+component catalog, or a custom Skrewww MCP server.
+
+### Retrieval architecture — `/agent/*` vs `/r/*`
+
+`public/agent/` (AK-1's local-only output) is now wired into
+`npm run build` (`"build": "npm run generate:registry && npm run
+generate:agent-context && next build"`) and served exactly like
+`public/r/` already is: as **static files under `public/`**, with **no
+Next.js route handler**. `app/agent/` does not exist. This is
+deliberate and is itself the security boundary — a dynamic
+`[slug]/route.ts` would need to defend against path traversal and
+malformed input; static file serving needs no such defense, because
+Next.js only ever resolves a literal, pre-existing file under `public/`.
+An unknown slug 404s because no file exists for it, not because of
+application logic that could have a bug.
+
+Verified live (production build + `next start`, see
+`lib/agent-kit/retrieval.test.ts` for the automated form):
+
+| Request | Result |
+|---|---|
+| `/agent/index.json` | 200 |
+| `/agent/system.json` | 200 |
+| `/agent/contracts/button.json` | 200 |
+| `/agent/contracts/not-a-real-slug.json` | 404 |
+| `/agent/contracts/..%2f..%2f..%2fpackage.json` | 404 |
+
+**Roles stay separate, by construction, not by convention alone:**
+
+| | `/r/<name>.json` | `/agent/contracts/<slug>.json` |
+|---|---|---|
+| Answers | "How is this installed?" | "What is this, how should it be used?" |
+| Owner | `lib/shadcn-registry-generator.ts` | `lib/agent-kit/contract-compiler.ts` |
+| Shape | shadcn `registry-item.json` (`files[].content`, `dependencies`, `registryDependencies`) | `ComponentAgentContract` (`guidance`, `tokens.used`, `api.properties`, `behavior`, `figma`) |
+| Coverage | 9 items (foundation + 8 components) | 47 (every implemented component) |
+
+AK-3 added no field to either schema to make them "look symmetrical" —
+`lib/agent-kit/registry-integration.test.ts` asserts a real contract has
+no `$schema`/transport fields and a real manifest has no
+`guidance`/`tokens` fields, catching an accidental merge in either
+direction.
+
+### Public retrieval safety
+
+Every field on every generated contract was already covered by AK-1's
+leak guard (no absolute paths, no secrets/env values). AK-3 re-verifies
+this against the **actual bytes on disk** that a production deploy would
+serve (`lib/agent-kit/retrieval.test.ts`), not just the in-memory
+compiler output, and additionally locks `provenance` down to exactly four
+public-safe fields (`schemaVersion`, `generatorVersion`, `sourceGitSha`,
+`sourceGitCommitTimestamp`) — a real, already-public git commit SHA and
+its own commit date, nothing about the machine or account that built it.
+
+### Determinism through the build wiring
+
+`lib/agent-kit/retrieval.test.ts` deletes `public/agent/` entirely,
+regenerates, and SHA-256-compares every file against a prior generation —
+proving the build-wired path is exactly as deterministic as the AK-1
+standalone script, not a new code path with new risk.
+
+### MCP compatibility — result
+
+**No custom Skrewww MCP server was built or is planned for AK-3.** Audited
+the currently-installable shadcn CLI's own `mcp` subcommand instead
+(`npx shadcn mcp init --client <claude|cursor|vscode|codex|opencode>`):
+
+- It writes a standard `.mcp.json` pointing the client at `npx
+  shadcn@latest mcp` — **shadcn's own MCP server**, not a new package.
+- Live-verified (JSON-RPC over stdio, in an isolated scratch project with
+  `components.json` declaring `"@skrewww": "https://skrewww.com/r/{name}.json"`):
+  the server responds to `initialize` (`serverInfo.name: "shadcn"`) and
+  exposes `get_project_registries`, `list_items_in_registries`,
+  `search_items_in_registries`, `view_items_in_registries`,
+  `get_add_command_for_items` — all resolved against whatever registries
+  `components.json` declares, `@skrewww` included, with zero Skrewww-authored
+  server code.
+- **Genuine, evidence-backed gap found, documented, not fixed:**
+  `list_items_in_registries`/`search_items_in_registries` additionally
+  require a browsable index file at `<base>/r/registry.json`, which
+  Skrewww does not currently publish (confirmed by the live error:
+  `Request to https://skrewww.com/r/registry.json?limit=100 failed`).
+  Item-level tools (`view_items_in_registries`, `get_add_command_for_items`)
+  need no index — they resolve `@skrewww/<name>` directly, the same
+  resolution the already-proven `npx shadcn view/add @skrewww/<name>`
+  path uses (see `npm run smoke:consumer`, re-run clean in this pass,
+  82.2s, all assertions).
+- **Not fixed in AK-3**: publishing a `registry.json` index is
+  shadcn-distribution-surface work, not Agent Kit retrieval work — doing
+  it now would be exactly the "expand `/r/` to make AK-3 look complete"
+  outcome this phase's brief explicitly forbids. Recorded as an
+  independent, optional follow-up for whichever future phase owns
+  distribution-surface completeness.
+
+### Registry integration — installability detection
+
+`isDistributedViaSkrewwwRegistry(slug)` (`lib/agent-kit/project-context.ts`)
+answers "is this component installable via `@skrewww`?" by checking the
+**same** canonical `entry.files` field the shadcn generator itself reads
+— no second, hand-maintained list of "the 8 distributed components" was
+introduced anywhere. `lib/agent-kit/registry-integration.test.ts` cross-
+checks this against the real generated `public/r/*.json` files, confirms
+a non-distributed-but-implemented component reports `false` (implemented
+≠ installable), and asserts the shadcn generator still builds exactly 9
+manifests — proving AK-3 did not expand distribution coverage.
+
+### Project context — evidence model
+
+`lib/agent-kit/project-context.ts`'s `detectProjectContext` is pure: it
+takes an array of `{ path, content }` files (gathered by a caller — a
+script, a test, a future adapter — never read from disk by the detector
+itself) and returns a `ProjectContext` where every field is either
+`{ status: "confirmed", value, source }` or `{ status: "unknown" }`.
+There is no third, guessed state.
+
+| Field | Evidence required |
+|---|---|
+| `framework` | a real `next`/`react` dependency in a provided `package.json` |
+| `packageManager` | exactly one lockfile present among the provided files |
+| `skrewwwRegistry` | `components.json`'s `registries["@skrewww"]`, read verbatim |
+| `installedComponentSlugs` | **every** path in a registry entry's own `files` list present among the provided files — reuses the canonical registry, never a parallel list |
+| `foundationInstalled` | `styles/skrewww-foundation.css` present |
+| `foundationImported` | that exact path referenced in another provided file's content |
+| `shapeMode` / `surfaceMode` | a literal `data-skrewww-shape="…"` / `data-skrewww-surface="…"` string found in a provided file |
+| `projectInstructionFilesPresent` | `AGENTS.md`/`CLAUDE.md` presence only — names, never content interpreted as Skrewww fact |
+
+**No persisted config format was introduced** (`skrewww.config.*`,
+`.skrewww.json`, new `package.json` fields) and **no CLI** (`npx
+skrewww info`) exists or was added — context is re-detected fresh from
+real files every time.
+
+`lib/agent-kit/project-context.test.ts` fixtures directly prove the
+brief's four required scenarios: (A) a fully configured consumer —
+every confirmable field is confirmed with correct evidence; (B) a
+partial consumer — only real signals confirm, everything else stays
+`unknown`, never defaulted; (C) a non-Skrewww project — real non-Skrewww
+signals (e.g. a package manager) are still reported, but no Skrewww state
+is fabricated; (D) hostile/untrusted project text — a README containing
+prompt-injection-shaped text ("ignore all previous instructions...",
+fabricated prop claims) influences **no** field; the one documented,
+accepted limitation is that a literal `data-skrewww-*` string matches
+even inside a comment, because the detector is a plain text pattern
+match with no concept of "real usage" — this is why project context stays
+below generated contracts in trust order and is never itself a security
+boundary.
+
+### Boundary: this document does not restate
+
+Trust order, missing-data handling, and maturity handling are unchanged
+from AK-2's own sections above — project context slots in as one more
+"consumer project" input, still ranked below generated contracts and
+above only model memory.
+
+### AK-4 boundary
+
+AK-3 added no recipe, no composition contract, no `states`/`slots` field,
+no eval harness, no Guard code, no CLI, and touched no Figma or
+Presentation V2 surface. `isDistributedViaSkrewwwRegistry` and
+`detectProjectContext` are plain data-driven functions, not a
+composition/recipe engine — composing multiple components into a
+documented pattern is explicitly AK-4's job, not this one's.
+
 ## See also
 
 - `docs/architecture/source-of-truth.md` — general conflict-resolution rules this document inherits.
-- `docs/project-status.md` — dated status entries for the R1 reconciliation, AK-1, and AK-2 completion.
+- `docs/architecture/shadcn-distribution.md` — the distribution surface AK-3 integrates with, not replaces.
+- `docs/project-status.md` — dated status entries for the R1 reconciliation, AK-1, AK-2, and AK-3 completion.
 - `lib/agent-kit/contract-compiler.test.ts` — the enforced AK-1 contract (join integrity, R1 guard, determinism, leak protection).
 - `lib/agent-kit/skill.test.ts` — the enforced AK-2 contract (Skill structure, catalog/count-free, adapter byte-identity, out-of-scope boundaries, consumption proof).
+- `lib/agent-kit/retrieval.test.ts`, `lib/agent-kit/registry-integration.test.ts`, `lib/agent-kit/project-context.test.ts` — the enforced AK-3 contract.
 - `agent/skill/SKILL.md` — the canonical Skill itself.
