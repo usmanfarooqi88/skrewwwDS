@@ -1,6 +1,32 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-2K Stepper implementation — SHIPPED; CE-2 — Net-New Component Expansion is now COMPLETE; next phase CE-3, not started)
+Last verified: **2026-09-15** (CE-3A Distribution Audit — COMPLETE; CE-3 IN PROGRESS; next CE-3B Tier-1 Stable batch)
+
+## 2026-09-15 — CE-3A Distribution Audit (COMPLETE)
+
+**Verdict: docs-only audit + batch plan shipped.** Full record:
+[`docs/distribution-expansion.md`](distribution-expansion.md).
+
+### Findings (source-verified, not prose)
+
+| Metric | Value |
+|--------|------:|
+| React implemented | **55** (27 Stable / 28 Beta) |
+| Current `/r` | foundation + **8** (`button`, `card`, `text-input`, `form-field`, `validation-message`, `spinner`, `divider`, `link`) |
+| Entries missing distribution `files` metadata | **47** |
+| CE-3B planned (T1 Stable) | `checkbox`, `progress-bar`, `skeleton` → **11** component manifests |
+| CE-3C planned (T2 Stable) | `radio`, `switch` (+ `lib/use-controllable.ts` mapping) → **13** |
+| Policy | **C — Stable + selected proven Beta**; overnight batches Stable-only |
+| `/r/registry.json` | audited; **deferred** (derive from eligibility later; no overnight implement) |
+
+Architecture unchanged: canonical registry → generator → gitignored `public/r/`.
+No FILE_DESTINATIONS or manifests changed in CE-3A.
+
+### Next
+
+**CE-3B** only after this commit’s remote CI is green.
+
+---
 
 ## 2026-09-15 — CE-2K Stepper implementation (SHIPPED, Beta 0.1.0-beta)
 
@@ -89,7 +115,7 @@ index.ts`, `ComponentLiveSection.tsx`, five components' count assertions,
 `README.md`'s implemented-components table).
 
 **CE-2 — Net-New Component Expansion = ✅ COMPLETE.** Next phase:
-**CE-3 — Distribution Expansion — NOT STARTED** in this task.
+**CE-3 — Distribution Expansion — IN PROGRESS** (CE-3A complete; see top entry).
 
 ## 2026-09-14 — CE-2J Stepper Figma/MCP verification (decision B — ready with narrower contract)
 
