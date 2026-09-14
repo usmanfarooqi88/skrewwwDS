@@ -5,7 +5,8 @@
 > **CE-2C** Toggle Group ✅ — Segmented Control **RESOLVED BY TOGGLE GROUP**
 > **CE-2D** Multi Select audit ✅ — **DEFERRED (decision D)**, not implemented
 > **CE-2E** Advanced Filters audit ✅ — **decision B, composition pattern (future Recipe, Reference-App-evidenced)**, not implemented
-> **CE-2F** Stepper audit ✅ — **decision B, compound Stepper + Step justified**, proposed contract only, not implemented
+> **CE-2F** Stepper audit ✅ — **decision B, compound Stepper + Step justified**, proposed contract only, not implemented (**still pending Figma/MCP verification — not rejected or deferred**)
+> **CE-2G** Notification Center audit ✅ — **decision C, composition pattern (future Recipe, Reference-App-evidenced)**, not implemented
 > Planning for CE-2 net-new work. Does **not** reopen CE-1 / Figma Class B parity.
 
 ## Purpose
@@ -55,8 +56,8 @@ fit, and Reference App readiness — not against another design system’s catal
 | Multi Select | A | Medium — no clean a11y pattern yet for the differentiating (searchable + chips) case | Combobox pattern knowledge, Tag (`removable`/`onRemove` already exists), Popover | High | High | **26** | — | **DEFERRED (CE-2D decision D)** | See CE-2D audit below. Not rejected — needs product evidence + accessibility research/Figma before reconsidering |
 | Advanced Filters | B | Medium for SaaS dashboards — **removed from the direct component-implementation queue** | SearchField, Select, Combobox, Checkbox, Radio Group, Toggle Group, Slider, Number Input, CalendarGrid (`mode="range"`), Popover, Drawer, Button, Tag | N/A — not a component | N/A — not a component | **24** | — | **NOT A STANDALONE COMPONENT (CE-2E decision B)** | See CE-2E audit below. Composition pattern using existing primitives; future Recipe pending Reference App evidence, not implemented |
 | **Stepper** | B | Medium for checkout/onboarding/setup-wizard flows — already anticipated by 3 shipped components' own docs (Breadcrumb, Timeline) and a Navigation-category status note | Existing `step-item` content (states/a11y already specified), Timeline's position-derived-state precedent, ToggleGroup/ToggleGroupItem's compound-children precedent | Medium | Low–Medium (state model + `aria-current="step"` already specified in content) | **23** | — | **PROPOSED CONTRACT ONLY — NOT IMPLEMENTED (CE-2F decision B)** | See CE-2F audit below. Compound Stepper + Step justified; recommend an MCP Figma verification pass on existing `step-item` content before implementation |
-| Notification Center | D | Medium for SaaS | Toast, Badge, Popover/Drawer | High | Medium | **21** | **P4 / NEXT** | CANDIDATE / NOT STARTED | System surface |
-| Command Palette | D | Medium for power-user apps | Menu, Combobox, Dialog | High | High | **20** | P5 | CANDIDATE / NOT STARTED | App command surface |
+| Notification Center | C | Medium for SaaS — **removed from the direct component-implementation queue** | List Item (already documented for "activity feeds"), Popover/Drawer, Button/Icon Button, Badge (already documented for "count indicators"), EmptyState | N/A — not a component | N/A — not a component | **21** | — | **NOT A STANDALONE COMPONENT (CE-2G decision C)** | See CE-2G audit below. Composition pattern using existing primitives; future Recipe pending Reference App evidence, not implemented |
+| **Command Palette** | D | Medium for power-user apps | Menu, Combobox, Dialog | High | High | **20** | **P4 / NEXT** | CANDIDATE / NOT STARTED | App command surface |
 | App Shell / richer nav | D | Medium | Sidebar/Top Nav items (Class C), Menu | Very high | Medium | **16** | P6 | CANDIDATE / NOT STARTED | Layout system |
 
 ## CE-2C — Toggle Group vs Segmented Control (decision A)
@@ -384,12 +385,144 @@ Per this task's own stated preference criteria (keep routing external, preserve 
 
 **Yes, as a refinement source, not a precondition.** Unlike CE-2D (where Reference App evidence was needed to determine *whether* a hard accessibility problem was worth solving at all) or CE-2E (where it would validate an entire pattern shape from scratch), here the core contract is already reasonably well-specified from existing content. A real onboarding/settings wizard in the future Reference App would still be valuable for: confirming real step counts (testing the responsive-overflow open question), confirming whether back-navigation to Completed steps is actually wanted in practice, and validating the `currentStep` indexing convention against a real consumer. **Recorded as a Reference App validation target**, not started here.
 
+## CE-2G — Notification Center product + architecture audit (decision C — composition, not a component)
+
+**Audit only. Notification Center was not implemented in CE-2G.**
+
+### Existing capability audit
+
+Every atomic piece a notification UI needs already exists — an even richer overlap than CE-2E's Advanced Filters audit found:
+
+- **List Item** (`components/ui/ListItem.tsx`) — `title`, `description`, `metadata`, `leading`, `trailing`, `href`/`onClick`, `disabled`. Its own content entry's purpose text: *"A single row in a list showing an avatar, title/subtitle, and trailing metadata — **the standard pattern for activity feeds and contact lists**."* A notification row is an activity-feed row; this is a near-exact structural match already, not an approximation: `leading` → avatar/icon, `title` → notification text, `description`/`metadata` → detail/timestamp, `trailing` → unread marker or action.
+- **Badge** — own docs: *"count indicators"* explicitly listed as a use case, directly covering an unread-count badge on a bell trigger.
+- **EmptyState** — *"Any list/table/collection view when it has zero items"* — directly covers a "no notifications" state, already generic and reusable.
+- **Popover** — *"a small set of related options not needing Dialog's attention-commanding weight"* — fits a compact notification dropdown from a bell trigger.
+- **Drawer** — own docs already say `whenToUse: "Settings panels, filters, secondary forms"` (same citation CE-2E used) — a reasonable, if not perfectly-worded, fit for a heavier/mobile notification panel.
+- **Toast** — explicitly *transient* (own docs: "typically auto-dismissing after a few seconds") — the opposite of a persistent notification list; correctly a different, already-solved concern, not something Notification Center should re-implement or subsume.
+- **Alert** — persistent but *contextual/inline* (tied to the page content it annotates), not a collected list of discrete notification events — a different concern again.
+- **Menu** — action/command semantics (`role="menu"`/`role="menuitem"`), not the right container for a list of readable, individually-focusable notification rows.
+- **Button/Icon Button** — bell trigger, mark-all-read action.
+- **No dedicated content entry exists for "Notification Center" or "Notification Item"** anywhere in `content/*.ts` — unlike CE-2F's Stepper audit, which found a real, detailed `step-item` content entry with states/a11y already specified. The only prior evidence is a generic mention ("notification center") in `docs/component-inventory.md`'s Reference-app-readiness table for the SaaS dashboard archetype, at the same evidence level CE-2E's Advanced Filters had — not the richer, pre-specified level CE-2F found.
+
+### Notification product-shape taxonomy (not one component)
+
+1. **Transient toast** — already solved, out of scope (`Toast`).
+2. **Inline alert** — already solved, out of scope (`Alert`).
+3. **Notification bell trigger** — composition: `Button`/`Icon Button` + `Badge`.
+4. **Unread-count badge** — composition: `Badge`, already documented for "count indicators."
+5. **Notification popover** — composition: `Popover` wrapping a list of `ListItem` rows.
+6. **Full notification page** — composition: a plain page composing `ListItem` rows, no special container needed at all.
+7. **Grouped notifications** (e.g. "Today" / "Earlier") — composition: a heading + `ListItem` rows per group; no new primitive.
+8. **Read/unread states** — a `ListItem` usage convention (see below), not a new component.
+9. **Mark-as-read** — a `ListItem` `trailing`-slot `onClick`, or the row's own `onClick`.
+10. **Clear/delete** — a `ListItem` `trailing`-slot `Button`/`Icon Button`.
+11. **Notification preferences** — **application feature**, a settings form built from existing form components (Switch/Checkbox/FormField) — has nothing distinctly "notification" about it as a UI concern.
+12. **Real-time delivery** — **application/backend concern entirely**, explicitly out of any design-system scope (see State ownership below).
+
+Shapes 1–2 are already solved by existing components and are not part of this scope. Shapes 3–10 are composition using existing primitives, with no missing piece. Shapes 11–12 are application logic the design system should not own.
+
+### Semantic boundary
+
+- **Toast** = transient, auto-dismissing, not part of a persistent list.
+- **Alert** = persistent but page-contextual, tied to specific page content it annotates.
+- **Menu** = actions/commands, not a readable list of past events.
+- **Popover/Drawer** = presentation containers, not notification-specific — reused as-is, not duplicated.
+- **Badge** = a status/count indicator, already covers the unread-count need directly.
+- **Notification Center** would need to own a real, distinct semantic structure beyond simple composition to justify a new component. It does not: the item shape is already `ListItem`'s documented "activity feed" pattern, the container is already `Popover`/`Drawer`, the count is already `Badge`, the empty state is already `EmptyState`. Unlike CE-2F's Stepper (where `Step Item`'s Completed/Current/Upcoming state machine and `aria-current="step"` genuinely did not exist anywhere else), nothing here requires new semantics — only a specific, nameable **arrangement** of existing ones.
+
+### Product need
+
+Real for SaaS dashboards, banking/admin apps, project management, and team-collaboration tools — collecting system/activity events for a user to review is a genuinely cross-product pattern, not manufactured. But — same caveat as CE-2E's Advanced Filters — the recurring need is for **arrangement**, not for a missing atomic control, and (like Advanced Filters) it is named only generically in this project's own readiness tracking ("notification center" as a SaaS-dashboard gap), not backed by a dedicated content entry the way Stepper was.
+
+### State ownership boundary
+
+Skrewww should **not** own: realtime sockets, push delivery, a notification backend, persistence, a read-state database, user-preferences storage, polling, API fetching, authorization, or analytics — all of that is squarely consumer-application concern, and notably more numerous/heavier concerns than Advanced Filters' equivalent list. Its responsibility, if a Recipe is eventually written, stops at: notification-item structure (already `ListItem`), read/unread visual treatment (a `ListItem` usage convention), timestamp placement (`ListItem`'s `metadata` slot), avatar/icon slot (`ListItem`'s `leading` slot), action affordances (`trailing` slot `Button`s), list grouping (a heading + `ListItem` rows), empty state (`EmptyState`), and container composition (`Popover`/`Drawer`). Local UI state — e.g. whether the popover is currently open — is a reasonable pattern-level concern; persisted/fetched/realtime state is not.
+
+### Notification Item question (Part 6) — answered directly
+
+**The real missing primitive is not Notification Center, and it is not even a new "Notification Item."** `ListItem`'s existing shape (`leading`/`title`/`description`/`metadata`/`trailing`/`href`/`onClick`) already represents a notification row cleanly, and its own content entry already names "activity feeds" as the intended use case. No new item component is justified — this is squarely a `ListItem` **usage convention** (which slot carries which notification field, how unread is visually marked), not a new export.
+
+### Read/unread semantics
+
+- **Unread visual marker**: a small dot/indicator (e.g. in `ListItem`'s `leading` or as a prefix) **paired with** a font-weight or text-color change on the title — per this codebase's own established "no reliance on color alone" convention (mirrored elsewhere: Toggle Group's `aria-checked` + surface change, Step Item's checkmark swap, not just a color).
+- **Accessible description**: since `ListItem`'s own accessibility guidance already requires a clickable row to be one real link/button, an unread row's accessible name should include a non-visual "(unread)" cue (e.g. visually-hidden text appended to the row's accessible name) rather than relying on the visual dot alone.
+- **Mark-as-read**: a plain `Button`/`Icon Button` in the `trailing` slot, or the row's own `onClick` — app-defined behavior, not a Notification-Center-owned state machine.
+- **Unread count / all-read state**: `Badge` already covers the count; "all read" is simply the count reaching zero or the badge being hidden — application state, not a new design-system concept.
+- Visual read/unread treatment does **not** imply persistence — it reflects whatever state the application currently passes in; the design system holds no opinion on how "read" is determined or stored.
+
+### Accessibility findings
+
+- List semantics: an ordered or unordered list (`role="list"`) of `ListItem` rows, matching this codebase's established list-primitive convention (Timeline, Tree View).
+- Group headings (e.g. "Today"/"Earlier"): plain headings, no new pattern needed.
+- Unread-state announcement: the "(unread)" accessible-name cue above; no aggressive `aria-live` announcement of new arrivals is recommended — that depends entirely on the app's actual delivery mechanism (websocket vs. polling vs. none), which this audit has no evidence for. **Explicitly recommend against adding `aria-live="polite"`/`"assertive"` behavior without real evidence of how notifications actually arrive in a consuming app** — exactly the caution this task's own instructions call for.
+- Mark-all-read: a plain, labeled `Button`.
+- Popover/Drawer focus management: already solved by those components' own existing, documented contracts (focus trap for Drawer, dismiss-on-Escape/outside-click for Popover) — nothing new to invent.
+- Empty-state announcement: `EmptyState`'s existing pattern applies as-is.
+- No custom ARIA roles needed anywhere in this composition.
+
+### Container model
+
+**Notification Center should not own its own container.** Desktop: `Popover` for a compact bell dropdown, or a plain page (no special container) for a full notification page. Mobile: `Drawer`, or the same plain full page. This strongly avoids duplicating `Popover`/`Drawer` — the composition guidance is simply "use the existing container that fits the surface," not a new responsive-container primitive.
+
+### Data model (component props vs. application domain model)
+
+A `ListItem` usage for a notification needs only its existing props (`title`, `description`/`metadata`, `leading`, `trailing`, `href`/`onClick`) — **not** a new domain-shaped schema (`id`, `userId`, `read_at`, `notification_type`, `payload`, `created_at`, etc.). Mapping an application's real notification data model onto `ListItem`'s existing generic props is entirely the consuming app's responsibility; the design system does not become a domain DTO library.
+
+### Architecture comparison
+
+| | A — standalone `<NotificationCenter notifications={...}/>` | B — compound `NotificationCenter` + `NotificationItem` | **C — composition (Popover/Drawer + ListItem + Badge + Button + EmptyState)** | D — Reference App / application pattern only |
+|---|---|---|---|---|
+| Reuse | Low — re-wraps an already-solved item shape (`ListItem`) | Medium — still re-specifies an item shape `ListItem` already covers | High — zero new exports | N/A |
+| API complexity | High — would need a domain-shaped `notifications` array prop, the exact anti-pattern Part 10 warns against | Medium — a new `NotificationItem` API duplicating `ListItem`'s existing slots | None — no new API surface | N/A |
+| Data coupling | High — a config-array API tends to accept application-shaped data directly | Medium | Low — stays a documentation/Recipe concern | N/A |
+| Accessibility | Re-solves focus/list/empty-state semantics already solved elsewhere | Same, partially | Inherits already-solved contracts from `ListItem`/`Popover`/`Drawer`/`EmptyState` | N/A |
+| Agent Kit clarity | Another surface to keep consistent with `ListItem` guidance | Same risk, smaller | Guidance ("compose ListItem inside Popover/Drawer, Badge for count, EmptyState for zero") is simpler to apply correctly | N/A |
+| Figma implications | Needs a monolithic component set for an inherently compositional feature | Needs two new component sets duplicating `List Item`'s real anatomy | None beyond existing primitives | N/A |
+| Maintenance | High — speculative schema-driven API | Medium — new item component with no genuinely new semantics to justify it (unlike `Step Item`'s real state machine) | Low | N/A |
+| Testing | High | Medium | Scoped to whatever a validated future Recipe specifies | N/A |
+| **Verdict** | **Not justified** | **Not justified — `ListItem` already owns the item shape cleanly; no genuinely new semantics like `Step Item`'s state machine exist here** | **Selected direction** | **Valid for the *formalization* step, not the architecture-class decision — same relationship as CE-2E** |
+
+### Final decision: **C — composition/pattern using existing primitives, not a standalone or compound component**
+
+- **Product rationale:** the need is real (SaaS/admin/collaboration activity review) but is for *arrangement*, not a missing atomic control — matching CE-2E's Advanced Filters conclusion, not CE-2F's Stepper conclusion.
+- **Semantic rationale:** no distinct semantic structure is missing — `ListItem` already owns "activity feed row" by its own documented purpose, `Badge` already owns "count indicator," `EmptyState` already owns "zero items." Unlike Stepper's `Step Item` (a real Completed/Current/Upcoming state machine that existed nowhere else), nothing here is semantically new.
+- **State-ownership rationale:** the list of things Skrewww should not own here (realtime sockets, push delivery, backend, persistence, read-state database, preferences storage, polling, auth, analytics) is long and squarely application-side — a standalone component would be under constant pressure to grow data-fetching/realtime concerns it should never own.
+- **Accessibility rationale:** fully addressable today via each composed primitive's already-solved contracts (`Popover`/`Drawer` focus, `ListItem`'s real-link/button rule, `EmptyState`'s pattern); the one genuinely open question (live-arrival announcements) is correctly left unresolved pending real delivery-mechanism evidence, not invented.
+- **Architecture rationale:** both standalone (A) and compound (B) would re-specify an item shape `ListItem` already covers cleanly — a premature abstraction, not a missing-primitive problem.
+- **Figma rationale:** no monolithic or compound component set is warranted for something inherently compositional with no new item-level anatomy to design.
+- **Agent Kit rationale:** composition guidance ("bell = Button + Badge; panel = Popover/Drawer; rows = ListItem with leading=avatar, metadata=timestamp, trailing=unread/action; empty = EmptyState") is more accurate and easier for a coding agent to apply correctly than a new, data-coupled component API would be.
+
+### Proposed composition outline — PROPOSED PATTERN, NOT IMPLEMENTED
+
+No exports created. Conceptual composition roles only, for a **future** Recipe/docs guidance once validated:
+
+- **NotificationBell** — `Button`/`Icon Button` trigger + `Badge` (unread count), opening a `Popover` (compact) or `Drawer` (fuller/mobile).
+- **NotificationList** — an ordered `role="list"` of `ListItem` rows, optionally grouped under plain headings ("Today"/"Earlier").
+- **NotificationItem** — not a new export, a `ListItem` **usage convention**: `leading` = avatar/icon, `title` = notification text, `description`/`metadata` = detail/timestamp, `trailing` = unread marker and/or mark-read/clear action.
+- **UnreadBadge** — `Badge`, already documented for "count indicators."
+- **EmptyNotifications** — `EmptyState`, already documented for "zero items."
+- **MarkAllRead** — a plain `Button`.
+
+None of these should become React exports unless a Recipe is written and Reference App usage validates the shape.
+
+### Recommended future representation (Agent Kit)
+
+**Docs composition guidance now (if anything) → future Recipe once validated by Reference App usage** — the same conclusion CE-2E reached for Advanced Filters, for the same reason: Recipes are for *validated* composition in this project's own convention, and nothing here needs a new component contract. **No Agent Kit artifact was added in this audit.**
+
+### Figma recommendation
+
+**Pattern/example, not a component or component set, and not now.** Notification Center is inherently compositional with no new item-level anatomy to specify (`ListItem`'s anatomy already covers it). If/when formalized, an example/reference frame showing the composition — matching how this project already treats compound patterns — fits better than any new component set. Avoids a monolithic Figma set for what is an application-level feature built from existing pieces.
+
+### Reference App relevance
+
+**Yes — likely a better evidence source than documenting a pattern speculatively now.** A real dashboard/settings/activity screen in the future Reference App would surface actual notification density, whether a bell-popover or a full page is the right primary surface, real mobile layout needs, real empty-state copy, and real mark-all-read expectations — all open questions this audit cannot responsibly resolve from first principles alone. **Recorded as a Reference App validation target**, not started in this task.
+
 ## Next CE-2 candidate
 
-Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). Stepper has a **justified proposed contract, not yet implemented** (CE-2F) — pending an MCP Figma verification pass and ideally Reference App evidence, per the recommendations above.
+Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). **Stepper's CE-2F status is unchanged and preserved**: compound Stepper + Step remains **justified, proposed contract only, NOT IMPLEMENTED, pending an MCP Figma verification pass** — not re-ranked as rejected or deferred by this task. Notification Center is **not a standalone or compound component** (CE-2G) — removed from the direct component-implementation queue while its product need is preserved as a future composition/Recipe target.
 
-**Notification Center** (score 21) is the next actual component candidate — **report only, NOT STARTED**.
+**Command Palette** (score 20) is the next actual component candidate — **report only, NOT STARTED**.
 
 ## Out of scope
 
-CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, implementing Stepper, modifying Number Input, adding Recipes, adding Feature Kits, implementing Notification Center / Command Palette / App Shell.
+CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, implementing Stepper, modifying Number Input, implementing Notification Center, implementing Notification Item, adding Recipes, adding Feature Kits, implementing Command Palette / App Shell.

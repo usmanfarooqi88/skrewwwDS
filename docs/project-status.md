@@ -1,6 +1,82 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-2F Stepper audit — COMPLETE, compound Stepper + Step justified, proposed contract only; CE-2 IN PROGRESS)
+Last verified: **2026-09-14** (CE-2G Notification Center audit — COMPLETE, composition not a component; CE-2 IN PROGRESS)
+
+## 2026-09-14 — CE-2G Notification Center product + architecture audit (decision C — composition, not a component)
+
+**Audit only — Notification Center was NOT implemented.** Full reasoning:
+[`docs/component-expansion.md`](component-expansion.md#ce-2g--notification-center-product--architecture-audit-decision-c--composition-not-a-component).
+**CE-2F's Stepper status is unchanged and preserved by this task**: compound
+Stepper + Step remains justified, proposed contract only, NOT IMPLEMENTED,
+pending Figma/MCP verification — not re-ranked as rejected or deferred.
+
+### Existing capability — richer overlap than CE-2E's Advanced Filters audit found
+
+Every atomic piece already exists: `List Item` (own docs: *"the standard
+pattern for **activity feeds** and contact lists"* — a near-exact match for
+a notification row via its existing `leading`/`title`/`description`/
+`metadata`/`trailing` slots), `Badge` (own docs: *"count indicators"* —
+covers unread count directly), `EmptyState` (*"any list/table/collection
+view when it has zero items"* — covers "no notifications" directly),
+`Popover`/`Drawer` (existing containers, not duplicated), `Toast`
+(explicitly transient, a different concern), `Alert` (persistent but
+page-contextual, a different concern). **Unlike CE-2F's Stepper audit, no
+dedicated `content/*.ts` entry exists for "Notification Center" or
+"Notification Item"** — the only prior evidence is a generic
+Reference-app-readiness mention, the same evidence level CE-2E's Advanced
+Filters had, not the richer pre-specified level CE-2F found.
+
+### Notification Item question — answered directly
+
+**The real missing primitive is not Notification Center, and not even a
+new "Notification Item."** `ListItem`'s existing shape already represents
+a notification row cleanly, and its own content entry already names
+"activity feeds" as the intended use case. No new item component is
+justified — this is a `ListItem` **usage convention**, not a new export.
+This is the key distinction from CE-2F's Stepper, where `Step Item`'s
+Completed/Current/Upcoming state machine genuinely existed nowhere else.
+
+### Decision: **C — composition/pattern, not a standalone or compound component**
+
+- **Product:** real (SaaS/admin/collaboration activity review) but for
+  *arrangement*, not a missing atomic control.
+- **Semantic:** no distinct new structure is missing — `ListItem` already
+  owns "activity feed row," `Badge` already owns "count indicator,"
+  `EmptyState` already owns "zero items."
+- **State ownership:** an even longer "must not own" list than Advanced
+  Filters (realtime sockets, push delivery, backend, persistence,
+  read-state database, preferences storage, polling, auth, analytics) — a
+  standalone component would face constant pressure to grow concerns it
+  should never own.
+- **Accessibility:** fully addressable today via each primitive's
+  already-solved contracts; the one open question (live-arrival
+  announcements) is correctly left unresolved pending real delivery-
+  mechanism evidence — explicitly recommends **against** adding
+  `aria-live` behavior without evidence.
+- **Architecture:** both standalone and compound options would re-specify
+  an item shape `ListItem` already covers — premature abstraction, not a
+  missing-primitive problem.
+- **Figma:** no component or component set warranted; an example/reference
+  frame, if any, fits better.
+- **Agent Kit:** composition guidance ("bell = Button + Badge; panel =
+  Popover/Drawer; rows = ListItem with leading=avatar,
+  metadata=timestamp, trailing=unread/action; empty = EmptyState") is more
+  accurate than a new, data-coupled component API.
+
+**Proposed composition outline (PROPOSED PATTERN, NOT IMPLEMENTED, no
+exports created):** NotificationBell (Button/Icon Button + Badge, opens
+Popover/Drawer), NotificationList (ordered list of ListItem rows, optional
+group headings), NotificationItem (a ListItem usage convention, not a new
+export), UnreadBadge (Badge), EmptyNotifications (EmptyState), MarkAllRead
+(plain Button).
+
+**Reference App relevance:** yes — likely a better evidence source than
+documenting a pattern speculatively now (real notification density,
+bell-popover vs. full page, mobile layout, empty-state copy, mark-all-read
+expectations). Recorded as a validation target, not started here.
+
+**Inventory: unchanged** (audit only). Next actual component candidate:
+**Command Palette — report only, NOT STARTED.**
 
 ## 2026-09-14 — CE-2F Stepper product + architecture audit (decision B — compound Stepper + Step justified, proposed contract only)
 
@@ -2616,20 +2692,23 @@ here instead.
 | **CE-2C Toggle Group** | ✅ **COMPLETE** — Segmented Control resolved by Toggle Group |
 | **CE-2D Multi Select audit** | ✅ **COMPLETE** — **decision D, deferred** (not implemented, not rejected) |
 | **CE-2E Advanced Filters audit** | ✅ **COMPLETE** — **decision B, composition not a component** (not implemented, Data Table untouched) |
-| **CE-2F Stepper audit** | ✅ **COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented) |
+| **CE-2F Stepper audit** | ✅ **COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented, **still pending Figma/MCP verification — unchanged by CE-2G**) |
+| **CE-2G Notification Center audit** | ✅ **COMPLETE** — **decision C, composition not a component** (not implemented) |
 | **CE-2 — Net-New Component Expansion** | **IN PROGRESS** |
-| CE-2 next (Notification Center) | **Report only, NOT STARTED** |
+| CE-2 next (Command Palette) | **Report only, NOT STARTED** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-2F Stepper audit complete — **compound Stepper + Step
-justified (decision B)**, proposed contract only, not implemented. CE-2
-remains **IN PROGRESS**. Next candidate: **Notification Center — report
-only, NOT STARTED**. Community/Beta Stabilization remains steady-state
-(STAB-001…006 open, no P0/P1). Do not start CE-3, Reference App, PH-0,
-Guard, or Notification Center from this status line alone.
+**Current focus:** CE-2G Notification Center audit complete — **composition,
+not a component (decision C)**, not implemented. CE-2F's Stepper status is
+unchanged: compound Stepper + Step remains justified, proposed contract
+only, not implemented, pending Figma/MCP verification. CE-2 remains **IN
+PROGRESS**. Next candidate: **Command Palette — report only, NOT STARTED**.
+Community/Beta Stabilization remains steady-state (STAB-001…006 open, no
+P0/P1). Do not start CE-3, Reference App, PH-0, Guard, or Command Palette
+from this status line alone.
 
 ### Component/distribution work (parallel track)
 
