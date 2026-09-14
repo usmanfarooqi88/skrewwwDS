@@ -1,6 +1,24 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3C Tier-2 Stable `/r` expansion — SHIPPED pending CI; CE-3 IN PROGRESS)
+Last verified: **2026-09-15** (CE-3D/E/F batches DEFINED in planning — NOT STARTED; CE-3 IN PROGRESS)
+
+## 2026-09-15 — CE-3D/E/F batch definition (PLANNING ONLY)
+
+**Verdict: attended planning complete; no manifests implemented.**
+Canonical plan: [`docs/distribution-expansion.md`](distribution-expansion.md).
+
+| Phase | Slugs | Status |
+|-------|-------|--------|
+| CE-3D | `textarea`, `pagination` | **DEFINED — NOT STARTED** |
+| CE-3E | `avatar`, `breadcrumb`, `radio-group` | **DEFINED — NOT STARTED** |
+| CE-3F | `slider`, `stepper`, `table` | **DEFINED — NOT STARTED** |
+
+Unattended order: CE-3D → CI → CE-3E → CI → CE-3F → **STOP**.
+No `/r/registry.json`, overlays, charts, or banking in those batches.
+
+Current `/r` still: foundation + **13** (unchanged this commit).
+
+---
 
 ## 2026-09-15 — CE-3C Tier-2 Stable distribution batch (SHIPPED)
 

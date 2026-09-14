@@ -1,8 +1,10 @@
 # CE-3 distribution expansion plan
 
-> **CE-3A** · Verified 2026-09-15 · Baseline `2b01ca5` · React **55** (27 Stable / 28 Beta)  
+> **CE-3A** · Verified 2026-09-15 · Baseline `2b01ca5` · React **55** (27 Stable / 28 Beta)
+> **CE-3D/E/F planning** · Verified 2026-09-15 · Baseline `a867076` · `/r` = foundation + **13**
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture.
+> shadcn transport architecture. Implementation batches CE-3D/E/F are
+> **DEFINED — NOT STARTED** below.
 
 ## Purpose
 
@@ -228,13 +230,17 @@ canonical registry
 | Risks | Low-medium — new shared lib mapping must stay deterministic |
 | Exit | same gates as CE-3B + smoke switch |
 
-### Explicitly NOT overnight
+### Explicitly NOT overnight (historical CE-3B/C bound)
 
 - radio-group, overlays, date/calendar, phone-number-field
 - charts / banking
 - `/r/registry.json`
 - Registry Directory submission
 - CE-4 / Reference App / PH-0 / Guard
+
+> **Update 2026-09-15 (attended planning):** `radio-group` is now named in
+> **CE-3E** below (radio is already distributed). Overlays / charts / banking /
+> `/r/registry.json` remain excluded from unattended execution.
 
 ## Target coverage after CE-3B + CE-3C
 
@@ -245,11 +251,316 @@ canonical registry
 | Remaining eligible (T1–T2 rough) | ~20 | ~17 | ~15 |
 | Deferred (T3–T5) | ~27 | ~27 | ~27 |
 
+---
+
+## Remaining undistributed set (rechecked 2026-09-15 @ `a867076`)
+
+**Distributed (13):** button, card, checkbox, divider, form-field, link,
+progress-bar, radio, skeleton, spinner, switch, text-input, validation-message.
+
+**Remaining implemented (42)** — eligibility from CE-3A + source recheck
+(import graphs). Classifications unchanged unless noted.
+
+### Safe for named CE-3D/E/F (this document)
+
+See batch sections below.
+
+### Deliberately excluded from unattended CE-3D/E/F
+
+| Slug(s) | Why |
+|---------|-----|
+| alert, toast | FeedbackSurface / feedback-icons / feedback-types multi-file graph |
+| tabs | New `internal/tab-keyboard.ts` + controllable — Stable, but defer past F |
+| search-field / number-input | FormField + TextInputControl + phosphor + helpers |
+| select / combobox / menu / dialog / drawer / popover / tooltip | Overlay / focus / portal graphs — attended |
+| date-picker / calendar-* / phone-number-field / file-upload / tree-view | Multi-file + overlay or date helpers |
+| empty-state / split-button / credit-card-field | Multi Skrewww composition graphs |
+| button-group / toggle-group / accordion / timeline / list-item / tag / badge | Beta or helper graphs — after F / attended |
+| data-table | Composition over Table — after table is distributed + attended |
+| bar-chart / line-chart | `recharts` — INTENTIONALLY_DEFER |
+| banking-* | Domain — INTENTIONALLY_DEFER |
+| `/r/registry.json` | Separate later CE-3 phase |
+
+---
+
+## CE-3D — Stable chain + link-utils reuse
+
+**Status:** DEFINED — NOT STARTED
+**Tier:** Stable T2
+**Slugs (exact):** `textarea`, `pagination`
+**Why grouped:** Both Stable; both reuse **already-mapped** helpers
+(`text-input.module.css` path already in FILE_DESTINATIONS; `link-utils`
+already mapped for Link). Proves (1) multi-hop `registryDependencies` like
+text-input→form-field, and (2) navigation using shared link-utils without
+new helper discovery. High consumer usefulness.
+
+### Per-slug transport
+
+#### `textarea` (Stable · Forms)
+
+| Field | Value |
+|-------|--------|
+| Owned `files` | `components/ui/Textarea.tsx`, `components/ui/textarea.module.css` |
+| `internalDependencies` | `lib/cn.ts`, `components/ui/text-input.module.css` (size classes shared with Text Input — transport CSS only, **not** `@skrewww/text-input`), `public/right-bottom-icon.svg` (decorative resize glyph referenced as `/right-bottom-icon.svg`) |
+| `registryDependencies` | `@skrewww/form-field`, `@skrewww/foundation` |
+| npm `dependencies` | `[]` (Phosphor arrives transitively via validation-message in the form-field chain) |
+| `hostRequirements` | `react`, `react-dom` |
+| Do **not** bundle | FormField.tsx / ValidationMessage.tsx (registryDeps only) |
+
+#### `pagination` (Stable · Navigation)
+
+| Field | Value |
+|-------|--------|
+| Owned `files` | `components/ui/Pagination.tsx`, `components/ui/pagination.module.css` |
+| `internalDependencies` | `lib/cn.ts`, `components/ui/internal/link-utils.ts` |
+| `registryDependencies` | `@skrewww/foundation` |
+| npm `dependencies` | `[]` |
+| `hostRequirements` | `react`, `react-dom`, `next` (uses `next/link`, same host model as Link) |
+
+### FILE_DESTINATIONS additions (implement later — not this planning commit)
+
+| Source | Target | Notes |
+|--------|--------|-------|
+| `components/ui/Textarea.tsx` | `~/components/ui/Textarea.tsx` | new |
+| `components/ui/textarea.module.css` | `~/components/ui/textarea.module.css` | new |
+| `public/right-bottom-icon.svg` | `~/public/right-bottom-icon.svg` | **new pattern:** static public asset via `registry:file` (schema already used by foundation) |
+| `components/ui/Pagination.tsx` | `~/components/ui/Pagination.tsx` | new |
+| `components/ui/pagination.module.css` | `~/components/ui/pagination.module.css` | new |
+
+Already mapped (reuse): `text-input.module.css`, `lib/cn.ts`, `internal/link-utils.ts`.
+
+### Compound check
+
+Neither slug is a multi-export compound registry item beyond Textarea’s
+`Textarea` + `TextareaControl` in **one** file → **one** registry item.
+
+### Smoke plan
+
+| Pattern | Descriptor |
+|---------|------------|
+| registryDependency chain + shared CSS + public SVG | **`textarea`** (primary) |
+| link-utils + `next` host (already proven by Link; optional assert) | pagination via `shadcn view` only if textarea smoke covers the batch |
+
+DNS: if `shadcn add` hits `ENOTFOUND ui.shadcn.com`, record **NETWORK-BLOCKED**,
+not MANIFEST-FAILED. Still require: generate, parse, `shadcn view`,
+deterministic regen, no `hostRequirements` in JSON.
+
+### Manifest count delta
+
+13 → **15** component manifests (+ foundation = 16 files).
+
+### Exit gate
+
+lint · typecheck · Vitest · build · `generate:registry` · deterministic regen ·
+manifest inspection · representative smoke (`textarea`) · `git diff --check` ·
+clean tree · push · **exact-SHA remote CI success**.
+**Do not start CE-3E until this gate is green.**
+
+---
+
+## CE-3E — Stable phosphor leaf + Skrewww registry graph
+
+**Status:** DEFINED — NOT STARTED
+**Tier:** Stable T2–T3 (still architecture-preserving)
+**Slugs (exact):** `avatar`, `breadcrumb`, `radio-group`
+**Why grouped:** All Stable. Introduces (1) Stable leaf with npm
+`@phosphor-icons/react` (same schema as validation-message), (2) first
+`registryDependencies` on `@skrewww/link`, (3) first
+`registryDependencies` on `@skrewww/radio` after CE-3C. No overlays.
+
+### Per-slug transport
+
+#### `avatar` (Stable · Content & Data)
+
+| Field | Value |
+|-------|--------|
+| Owned `files` | `components/ui/Avatar.tsx`, `components/ui/avatar.module.css` |
+| `internalDependencies` | `lib/cn.ts` |
+| `registryDependencies` | `@skrewww/foundation` |
+| npm `dependencies` | `["@phosphor-icons/react"]` |
+| `hostRequirements` | `react`, `react-dom` |
+
+#### `breadcrumb` (Stable · Navigation)
+
+| Field | Value |
+|-------|--------|
+| Owned `files` | `components/ui/Breadcrumb.tsx`, `components/ui/breadcrumb.module.css` |
+| `internalDependencies` | `lib/cn.ts` |
+| `registryDependencies` | `@skrewww/link`, `@skrewww/foundation` |
+| npm `dependencies` | `["@phosphor-icons/react"]` (`House` from `@phosphor-icons/react/dist/ssr`) |
+| `hostRequirements` | `react`, `react-dom` (Link install documents `next`) |
+| Do **not** bundle | Link.tsx / link-utils (via `@skrewww/link`) |
+
+#### `radio-group` (Stable · Forms)
+
+| Field | Value |
+|-------|--------|
+| Owned `files` | `components/ui/RadioGroup.tsx` |
+| `internalDependencies` | `lib/cn.ts`, `lib/use-controllable.ts` |
+| `registryDependencies` | `@skrewww/radio`, `@skrewww/validation-message`, `@skrewww/foundation` |
+| npm `dependencies` | `[]` (Phosphor via validation-message) |
+| `hostRequirements` | `react`, `react-dom` |
+| CSS | Uses `radio.module.css` already shipped by `@skrewww/radio` — **do not** duplicate in radio-group `files` |
+| Compound | Single public `RadioGroup` item; options rendered via `Radio` registryDep — **one** manifest |
+
+### FILE_DESTINATIONS additions
+
+| Source | Target |
+|--------|--------|
+| `components/ui/Avatar.tsx` | `~/components/ui/Avatar.tsx` |
+| `components/ui/avatar.module.css` | `~/components/ui/avatar.module.css` |
+| `components/ui/Breadcrumb.tsx` | `~/components/ui/Breadcrumb.tsx` |
+| `components/ui/breadcrumb.module.css` | `~/components/ui/breadcrumb.module.css` |
+| `components/ui/RadioGroup.tsx` | `~/components/ui/RadioGroup.tsx` |
+
+Already mapped: `lib/cn.ts`, `lib/use-controllable.ts`, Link/Radio/ValidationMessage trees.
+
+### Smoke plan
+
+| Pattern | Descriptor |
+|---------|------------|
+| npm Phosphor on Stable leaf | **`avatar`** (primary) |
+| registryDep `@skrewww/link` | `shadcn view` breadcrumb (+ optional composed assert) |
+| registryDep `@skrewww/radio` + validation-message | `shadcn view` radio-group |
+
+Same DNS rule as CE-3D.
+
+### Manifest count delta
+
+15 → **18** component manifests (+ foundation = 19 files).
+
+### Exit gate
+
+Same as CE-3D. **Do not start CE-3F until CE-3E remote CI is green.**
+
+---
+
+## CE-3F — Selected proven Beta (simple transport)
+
+**Status:** DEFINED — NOT STARTED
+**Tier:** Beta T1–T2 (policy C — Stable + selected proven Beta)
+**Slugs (exact):** `slider`, `stepper`, `table`
+**Why grouped:** Source graphs are fully understood; helpers already mapped
+(`use-controllable` for slider); no overlay/focus architecture; no chart
+package; no banking. Maturity stays Beta — distribution ≠ promotion to Stable.
+
+### Per-slug transport
+
+#### `slider` (Beta · Forms)
+
+| Field | Value |
+|-------|--------|
+| Owned `files` | `components/ui/Slider.tsx`, `components/ui/slider.module.css` |
+| `internalDependencies` | `lib/cn.ts`, `lib/use-controllable.ts` |
+| `registryDependencies` | `@skrewww/foundation` |
+| npm `dependencies` | `[]` |
+| `hostRequirements` | `react`, `react-dom` |
+
+#### `stepper` (Beta · Navigation)
+
+| Field | Value |
+|-------|--------|
+| Owned `files` | `components/ui/Stepper.tsx`, `components/ui/stepper.module.css` |
+| `internalDependencies` | `lib/cn.ts` |
+| `registryDependencies` | `@skrewww/foundation` |
+| npm `dependencies` | `["@phosphor-icons/react"]` (`Check` from `@phosphor-icons/react/dist/ssr`) |
+| `hostRequirements` | `react`, `react-dom` |
+| Compound | `Stepper` + `Step` in **one** file → **one** registry item |
+
+#### `table` (Beta · Content & Data)
+
+| Field | Value |
+|-------|--------|
+| Owned `files` | `components/ui/Table.tsx`, `components/ui/table.module.css` |
+| `internalDependencies` | `lib/cn.ts` |
+| `registryDependencies` | `@skrewww/foundation` |
+| npm `dependencies` | `[]` |
+| `hostRequirements` | `react`, `react-dom` |
+| Compound | Table subcomponents (`Table`, `TableHeader`, …) in **one** file → **one** registry item |
+
+### FILE_DESTINATIONS additions
+
+| Source | Target |
+|--------|--------|
+| `components/ui/Slider.tsx` | `~/components/ui/Slider.tsx` |
+| `components/ui/slider.module.css` | `~/components/ui/slider.module.css` |
+| `components/ui/Stepper.tsx` | `~/components/ui/Stepper.tsx` |
+| `components/ui/stepper.module.css` | `~/components/ui/stepper.module.css` |
+| `components/ui/Table.tsx` | `~/components/ui/Table.tsx` |
+| `components/ui/table.module.css` | `~/components/ui/table.module.css` |
+
+Already mapped: `lib/cn.ts`, `lib/use-controllable.ts`.
+
+### Smoke plan
+
+| Pattern | Descriptor |
+|---------|------------|
+| Beta + use-controllable (already proven by switch) | **`slider`** (primary) |
+| Beta + Phosphor | `shadcn view` stepper |
+| Compound multi-export single file | `shadcn view` table |
+
+### Manifest count delta
+
+18 → **21** component manifests (+ foundation = 22 files).
+
+### Exit gate
+
+Same as CE-3D/E. After green CI: **STOP** (do not invent CE-3G overnight).
+
+---
+
+## Unattended execution order
+
+Exact sequence for the next overnight agent — **no component-selection freedom**:
+
+1. **CE-3D** — implement `textarea`, `pagination` only
+2. Remote CI gate on CE-3D SHA — require `completed` / `success`
+3. **CE-3E** — implement `avatar`, `breadcrumb`, `radio-group` only
+4. Remote CI gate on CE-3E SHA — require `completed` / `success`
+5. **CE-3F** — implement `slider`, `stepper`, `table` only — **only if** CE-3D and CE-3E gates are green and the SAFE-BATCH RULE still holds
+6. **STOP**
+
+Do not implement `/r/registry.json`, overlays, charts, banking, tabs, or any
+slug not listed above.
+
+---
+
+## Overnight stop boundary (after CE-3F)
+
+The next overnight agent must **NOT** cross into:
+
+- `tabs` / `toggle-group` / `button-group` / `accordion` / `timeline` (new or heavier helpers)
+- overlay/focus components (dialog, popover, menu, drawer, tooltip, select, …)
+- chart (`recharts`) or banking distribution
+- `/r/registry.json` / Registry Directory
+- Reference App / PH-0 / Guard
+- any slug not named in CE-3D/E/F
+
+Canonical next attended tasks after CE-3F (pick one later):
+
+- Stable `tabs` (+ `tab-keyboard` mapping), or
+- T3/T4 overlay distribution research, or
+- `/r/registry.json` derivation design
+
+---
+
+## Target coverage after CE-3D → CE-3F (planned)
+
+| Metric | After CE-3C | After CE-3D | After CE-3E | After CE-3F |
+|--------|------------:|------------:|------------:|------------:|
+| Component manifests | 13 | **15** | **18** | **21** |
+| + foundation files | 14 | 16 | 19 | 22 |
+
+---
+
 ## Status
 
 | Phase | Status |
 |-------|--------|
 | CE-3A Distribution Audit | ✅ COMPLETE (`702787d`) |
 | CE-3B Tier-1 Stable batch | ✅ COMPLETE (`5952a0e`) |
-| CE-3C Tier-2 Stable batch | ✅ SHIPPED — `radio`, `switch` (+ `use-controllable`) |
-| CE-3 overall | **IN PROGRESS** (remaining tiers + `/r/registry.json` later) |
+| CE-3C Tier-2 Stable batch | ✅ COMPLETE (`a867076`) |
+| CE-3D Stable chain + link-utils | **DEFINED — NOT STARTED** (`textarea`, `pagination`) |
+| CE-3E Stable phosphor + Skrewww graph | **DEFINED — NOT STARTED** (`avatar`, `breadcrumb`, `radio-group`) |
+| CE-3F Selected proven Beta | **DEFINED — NOT STARTED** (`slider`, `stepper`, `table`) |
+| CE-3 overall | **IN PROGRESS** (`/r/registry.json` later) |
