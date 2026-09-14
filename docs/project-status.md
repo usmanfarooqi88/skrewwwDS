@@ -1,6 +1,95 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-2D Multi Select audit — COMPLETE, deferred; CE-2 IN PROGRESS)
+Last verified: **2026-09-14** (CE-2E Advanced Filters audit — COMPLETE, composition not a component; CE-2 IN PROGRESS)
+
+## 2026-09-14 — CE-2E Advanced Filters product + architecture audit (decision B — composition, not a component)
+
+**Audit only — Advanced Filters was not implemented. Data Table was not touched.** Full reasoning:
+[`docs/component-expansion.md`](component-expansion.md#ce-2e--advanced-filters-product--architecture-audit-decision-b--composition-not-a-component).
+
+### What "Advanced Filters" means — ten shapes, not one component
+
+Identified and classified individually: inline filter bar, Popover filter
+panel, Drawer-based mobile filters, data-table column filters, faceted
+filters, search + multiple criteria, date/range filters, saved filters,
+active-filter chips, filter builder/rule builder. Six are pure composition
+or already-covered primitives; four (data-table filters, facet counts,
+saved filters, rule builder) are application logic the design system
+should not own.
+
+### Existing capability audit
+
+Every atomic control already exists: `SearchField` (its own docs already
+say "Any search/filter input, whether inline in a toolbar or as a
+page-level search bar"), `Select`/`Combobox`, `Checkbox`, `Radio Group`,
+`Toggle Group`, `Slider`/`Number Input`, `CalendarGrid` (`mode="range"` —
+already a real date-range primitive), `Popover`, `Drawer` (own docs:
+`whenToUse: "Settings panels, filters, secondary forms"`, but only
+`DrawerPlacement = "left"` — no bottom-sheet), `Button`, and `Tag`
+(`removable`/`onRemove` — own docs: "a removable, user-generated or
+user-applied label — distinct from Badge, which is a non-removable system
+status indicator" — an exact match for active-filter chips, no new "Filter
+Chip" component needed). `Data Table` has zero filter capability today
+(sorting-only MVP; no `filter` reference anywhere in `Table.tsx`/
+`DataTableSortHeader.tsx`) and was not touched. No missing primitive
+blocks composing a filter UI today.
+
+### State ownership boundary
+
+Skrewww should **not** own URL query serialization, backend query syntax,
+API requests/data fetching, analytics, saved-filter persistence,
+authorization, or business validation. Its responsibility, if a Recipe is
+eventually written, stops at visual grouping, the controls themselves
+(already built), active-filter display (`Tag`), clear/reset affordance
+(`Button`), and accessible panel structure (`Popover`/`Drawer`).
+
+### Accessibility
+
+Unlike CE-2D's Multi Select conclusion, accessibility is **not** the
+blocker here — Popover/Drawer already solve focus-trap/dismiss/Escape,
+`Tag` already solves removable-chip semantics, and filter-group labeling
+follows the same `aria-label`/`fieldset` convention already used
+elsewhere. The one genuinely open question (live result-count
+announcement vs. explicit-Apply) is correctly left as product-specific
+guidance, not hard-coded component behavior.
+
+### Decision: **B — composition pattern, not a standalone component**
+
+- **Product:** the need is for *arrangement* of existing controls, not a
+  missing atomic control.
+- **Semantic:** ten shapes identified; six are composition/already-covered,
+  four are application logic — no single component could coherently cover
+  all ten without either a rigid schema or scope creep into app logic.
+- **Architecture:** a standalone `<AdvancedFilters />` would mostly re-wrap
+  already-working primitives behind a speculative, schema-driven API —
+  premature-abstraction risk, not primitive-gap risk.
+- **Accessibility:** already addressable via each composed primitive's
+  existing, documented contracts — no new ARIA pattern needs inventing.
+- **Figma:** no monolithic component set warranted for something inherently
+  compositional; an example/reference frame, if any, fits better than a
+  component set.
+- **Agent Kit:** composition guidance ("compose SearchField/Select/
+  Checkbox/CalendarGrid inside Popover or Drawer, represent selections as
+  removable Tags, keep query state in the app") is more accurate and
+  easier for agents to apply correctly than a bespoke schema-driven API.
+
+**Proposed composition outline (PROPOSED PATTERN, NOT IMPLEMENTED, no
+exports created):** FilterBar (SearchField + filter controls + trigger
+Button), FilterPopover / FilterDrawer (same controls inside Popover
+desktop / Drawer mobile), ActiveFilters (row of removable `Tag`s),
+ClearFilters (plain `Button`). None become exports unless a future Recipe
+is written and validated by Reference App usage.
+
+**Reference App relevance:** yes — likely a better evidence source than
+building or documenting a pattern speculatively now (real filter-field
+mix, Apply timing, whether left-only Drawer suffices on mobile). Recorded
+as a Reference App validation target, not started here.
+
+**Data Table relationship:** stays independent — zero filter capability
+today, not coupled, PARTIAL parity debt not touched.
+
+**Inventory: unchanged** (audit only). Next actual component candidate:
+**Stepper — report only, NOT STARTED.**
 
 ## 2026-09-14 — CE-2D Multi Select product + architecture audit (decision D — defer)
 
@@ -2457,19 +2546,20 @@ here instead.
 | **CE-2B Number Input** | ✅ **COMPLETE** |
 | **CE-2C Toggle Group** | ✅ **COMPLETE** — Segmented Control resolved by Toggle Group |
 | **CE-2D Multi Select audit** | ✅ **COMPLETE** — **decision D, deferred** (not implemented, not rejected) |
+| **CE-2E Advanced Filters audit** | ✅ **COMPLETE** — **decision B, composition not a component** (not implemented, Data Table untouched) |
 | **CE-2 — Net-New Component Expansion** | **IN PROGRESS** |
-| CE-2 next (Advanced Filters) | **Report only, NOT STARTED** |
+| CE-2 next (Stepper) | **Report only, NOT STARTED** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-2D Multi Select audit complete — **deferred (decision
-D)**, no implementation, Combobox untouched. CE-2 remains **IN PROGRESS**.
-Next candidate: **Advanced Filters — report only, NOT STARTED**.
-Community/Beta Stabilization remains steady-state (STAB-001…006 open, no P0/P1).
-Do not start CE-3, Reference App, PH-0, Guard, or Advanced Filters from this
-status line alone.
+**Current focus:** CE-2E Advanced Filters audit complete — **composition,
+not a component (decision B)**, no implementation, Data Table untouched.
+CE-2 remains **IN PROGRESS**. Next candidate: **Stepper — report only, NOT
+STARTED**. Community/Beta Stabilization remains steady-state (STAB-001…006
+open, no P0/P1). Do not start CE-3, Reference App, PH-0, Guard, or Stepper
+from this status line alone.
 
 ### Component/distribution work (parallel track)
 
