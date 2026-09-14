@@ -1,6 +1,88 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-2G Notification Center audit — COMPLETE, composition not a component; CE-2 IN PROGRESS)
+Last verified: **2026-09-14** (CE-2H Command Palette audit — COMPLETE, composition not a component, a11y role model genuinely unresolved; CE-2 IN PROGRESS)
+
+## 2026-09-14 — CE-2H Command Palette product + architecture audit (decision C — composition, accessibility role model genuinely unresolved)
+
+**Audit only — Command Palette was NOT implemented.** Menu, Combobox, and
+Dialog were not modified. Full reasoning:
+[`docs/component-expansion.md`](component-expansion.md#ce-2h--command-palette-product--architecture-audit-decision-c--composition-accessibility-role-model-genuinely-unresolved).
+**All four prior CE-2 decisions are unchanged and preserved by this task**:
+Multi Select DEFERRED; Advanced Filters COMPOSITION PATTERN; Stepper
+COMPOUND STEPPER + STEP JUSTIFIED, NOT IMPLEMENTED, pending Figma/MCP
+verification; Notification Center COMPOSITION PATTERN.
+
+### Existing capability — Menu is already a rich compound system
+
+`Menu`/`MenuTrigger`/`MenuContent`/`MenuItem`/`MenuGroup`/`MenuLabel`/
+`MenuSeparator` already exist, with `MenuItem` already supporting icon,
+**keyboard-shortcut display** (a dedicated `MenuShortcut` export exists),
+destructive styling, disabled state, and `onSelect`. `MenuGroup`/
+`MenuLabel` already solve grouping. The registry already records a known
+gap: *"Submenus and Context Menu are separate future components."* No
+dedicated `content/*.ts` entry exists for "Command Palette" anywhere — same
+generic evidence tier as CE-2E/CE-2G, not CE-2F's richer tier.
+
+### The real blocker: accessibility, not composition
+
+Unlike CE-2E/CE-2G, where every accessibility question was already solved
+by composed primitives, Command Palette's searchable/filtered shapes carry
+a genuine, unresolved question: **no single clean semantic model exists**
+for combining a live-filtering search input with a list of executable
+items. Two real candidates exist — reusing `combobox`/`listbox`/`option`
+(matching this codebase's own Combobox/Select structure, but requiring
+"selecting = activating, not persisting a value" as a documented
+deviation) or reusing `menu`/`menuitem` (correct execution semantics, but
+no established live-filter relationship in the ARIA APG). Per this task's
+own explicit instruction — "Do NOT combine menu, listbox, and combobox
+semantics casually... If no clean semantic model emerges: recommend
+composition/defer rather than inventing ARIA" — **this ambiguity is
+recorded, not resolved speculatively.** This is the one point in this
+audit closer to CE-2D's Multi Select conclusion than to CE-2E/CE-2G's.
+
+A non-searchable shape (Cmd/Ctrl+K opens a short, static list of top
+actions) has **zero open questions** — it's just `Menu`, fully buildable
+today.
+
+### Decision: **C — composition, not a standalone or compound component**
+
+- **Product:** real for developer/power-user/admin tools, but for
+  *arrangement*, not a missing atomic control.
+- **Semantic:** `MenuItem`/`MenuGroup`/`MenuLabel` already own the item/
+  grouping/shortcut structure; `Dialog`/`Popover` already own containers.
+- **Accessibility:** the genuinely hard part — no clean model for the
+  searchable shapes without a deliberate, validated judgment call.
+- **Keyboard:** global open-shortcut and app-wide command registry are
+  explicitly application-owned; no global `document` listener proposed.
+- **Command vs. selection:** confirmed Combobox's value-selection model
+  would be semantically wrong for command execution — Combobox not
+  modified, per instruction and per this semantic finding independently.
+- **Architecture:** both standalone and compound options would either
+  commit prematurely to an unresolved a11y model or duplicate `MenuItem`'s
+  already-solved shape.
+- **Figma:** no component/component set warranted; over-modeling this
+  without real evidence risks designing around an interaction model that
+  later needs to change once the ARIA question is settled.
+- **Agent Kit:** composition guidance distinguishing the fully-solved
+  non-searchable shape from the genuinely open searchable-shape question is
+  more honest than a component contract that quietly commits to one of two
+  contested models.
+
+**Proposed composition outline (PROPOSED PATTERN, NOT IMPLEMENTED, no
+exports created):** CommandLauncher (Dialog/Popover), CommandSearch
+(SearchField, ARIA relationship open), CommandGroups (MenuGroup/MenuLabel,
+solved), CommandItem (not new — a MenuItem usage convention), CommandEmpty
+(EmptyState, solved), ShortcutHint (not new — Menu's existing shortcut
+support).
+
+**Reference App relevance:** yes, and closer to a precondition than a
+refinement source here — real usage would inform whether
+"activate-not-persist" listbox semantics or menu semantics is actually
+correct, in addition to real command categories, nav-vs-action mix, and
+mobile behavior. Recorded as a validation target, not started here.
+
+**Inventory: unchanged** (audit only). Next actual component candidate:
+**App Shell / richer navigation — report only, NOT STARTED.**
 
 ## 2026-09-14 — CE-2G Notification Center product + architecture audit (decision C — composition, not a component)
 
@@ -2692,23 +2774,27 @@ here instead.
 | **CE-2C Toggle Group** | ✅ **COMPLETE** — Segmented Control resolved by Toggle Group |
 | **CE-2D Multi Select audit** | ✅ **COMPLETE** — **decision D, deferred** (not implemented, not rejected) |
 | **CE-2E Advanced Filters audit** | ✅ **COMPLETE** — **decision B, composition not a component** (not implemented, Data Table untouched) |
-| **CE-2F Stepper audit** | ✅ **COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented, **still pending Figma/MCP verification — unchanged by CE-2G**) |
+| **CE-2F Stepper audit** | ✅ **COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented, **still pending Figma/MCP verification — unchanged by CE-2G/CE-2H**) |
 | **CE-2G Notification Center audit** | ✅ **COMPLETE** — **decision C, composition not a component** (not implemented) |
+| **CE-2H Command Palette audit** | ✅ **COMPLETE** — **decision C, composition not a component**, accessibility role model genuinely unresolved (not implemented, Menu/Combobox/Dialog untouched) |
 | **CE-2 — Net-New Component Expansion** | **IN PROGRESS** |
-| CE-2 next (Command Palette) | **Report only, NOT STARTED** |
+| CE-2 next (App Shell / richer navigation) | **Report only, NOT STARTED** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-2G Notification Center audit complete — **composition,
-not a component (decision C)**, not implemented. CE-2F's Stepper status is
-unchanged: compound Stepper + Step remains justified, proposed contract
-only, not implemented, pending Figma/MCP verification. CE-2 remains **IN
-PROGRESS**. Next candidate: **Command Palette — report only, NOT STARTED**.
-Community/Beta Stabilization remains steady-state (STAB-001…006 open, no
-P0/P1). Do not start CE-3, Reference App, PH-0, Guard, or Command Palette
-from this status line alone.
+**Current focus:** CE-2H Command Palette audit complete — **composition
+(decision C)**, not implemented, accessibility role model recorded as
+genuinely unresolved rather than a simple documentation gap. All prior
+CE-2 decisions unchanged: Multi Select DEFERRED; Advanced Filters
+COMPOSITION PATTERN; Stepper COMPOUND STEPPER + STEP JUSTIFIED, NOT
+IMPLEMENTED, pending Figma/MCP verification; Notification Center
+COMPOSITION PATTERN. CE-2 remains **IN PROGRESS**. Next candidate: **App
+Shell / richer navigation — report only, NOT STARTED**. Community/Beta
+Stabilization remains steady-state (STAB-001…006 open, no P0/P1). Do not
+start CE-3, Reference App, PH-0, Guard, or App Shell from this status line
+alone.
 
 ### Component/distribution work (parallel track)
 

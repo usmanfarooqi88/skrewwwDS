@@ -7,6 +7,7 @@
 > **CE-2E** Advanced Filters audit ✅ — **decision B, composition pattern (future Recipe, Reference-App-evidenced)**, not implemented
 > **CE-2F** Stepper audit ✅ — **decision B, compound Stepper + Step justified**, proposed contract only, not implemented (**still pending Figma/MCP verification — not rejected or deferred**)
 > **CE-2G** Notification Center audit ✅ — **decision C, composition pattern (future Recipe, Reference-App-evidenced)**, not implemented
+> **CE-2H** Command Palette audit ✅ — **decision C, composition pattern**, accessibility role model flagged as genuinely unresolved (not just deferred to a Recipe), not implemented
 > Planning for CE-2 net-new work. Does **not** reopen CE-1 / Figma Class B parity.
 
 ## Purpose
@@ -57,8 +58,8 @@ fit, and Reference App readiness — not against another design system’s catal
 | Advanced Filters | B | Medium for SaaS dashboards — **removed from the direct component-implementation queue** | SearchField, Select, Combobox, Checkbox, Radio Group, Toggle Group, Slider, Number Input, CalendarGrid (`mode="range"`), Popover, Drawer, Button, Tag | N/A — not a component | N/A — not a component | **24** | — | **NOT A STANDALONE COMPONENT (CE-2E decision B)** | See CE-2E audit below. Composition pattern using existing primitives; future Recipe pending Reference App evidence, not implemented |
 | **Stepper** | B | Medium for checkout/onboarding/setup-wizard flows — already anticipated by 3 shipped components' own docs (Breadcrumb, Timeline) and a Navigation-category status note | Existing `step-item` content (states/a11y already specified), Timeline's position-derived-state precedent, ToggleGroup/ToggleGroupItem's compound-children precedent | Medium | Low–Medium (state model + `aria-current="step"` already specified in content) | **23** | — | **PROPOSED CONTRACT ONLY — NOT IMPLEMENTED (CE-2F decision B)** | See CE-2F audit below. Compound Stepper + Step justified; recommend an MCP Figma verification pass on existing `step-item` content before implementation |
 | Notification Center | C | Medium for SaaS — **removed from the direct component-implementation queue** | List Item (already documented for "activity feeds"), Popover/Drawer, Button/Icon Button, Badge (already documented for "count indicators"), EmptyState | N/A — not a component | N/A — not a component | **21** | — | **NOT A STANDALONE COMPONENT (CE-2G decision C)** | See CE-2G audit below. Composition pattern using existing primitives; future Recipe pending Reference App evidence, not implemented |
-| **Command Palette** | D | Medium for power-user apps | Menu, Combobox, Dialog | High | High | **20** | **P4 / NEXT** | CANDIDATE / NOT STARTED | App command surface |
-| App Shell / richer nav | D | Medium | Sidebar/Top Nav items (Class C), Menu | Very high | Medium | **16** | P6 | CANDIDATE / NOT STARTED | Layout system |
+| Command Palette | C | Medium for power-user/developer apps — **removed from the direct component-implementation queue** | Menu (`MenuItem`/`MenuGroup`/`MenuLabel`/`MenuSeparator` already cover icon/shortcut/group/disabled), Dialog, Popover, SearchField, EmptyState | N/A — not a component | Unresolved for the searchable/filtered shape — no casual combination of `menu`/`listbox`/`combobox` roles | **20** | — | **NOT A STANDALONE COMPONENT (CE-2H decision C)** | See CE-2H audit below. A non-searchable "quick actions" shape is already fully buildable from Menu today; the searchable/filtered shape has a genuinely unresolved accessibility role question, not just a documentation gap |
+| **App Shell / richer nav** | D | Medium | Sidebar/Top Nav items (Class C), Menu | Very high | Medium | **16** | **P5 / NEXT** | CANDIDATE / NOT STARTED | Layout system |
 
 ## CE-2C — Toggle Group vs Segmented Control (decision A)
 
@@ -517,12 +518,152 @@ None of these should become React exports unless a Recipe is written and Referen
 
 **Yes — likely a better evidence source than documenting a pattern speculatively now.** A real dashboard/settings/activity screen in the future Reference App would surface actual notification density, whether a bell-popover or a full page is the right primary surface, real mobile layout needs, real empty-state copy, and real mark-all-read expectations — all open questions this audit cannot responsibly resolve from first principles alone. **Recorded as a Reference App validation target**, not started in this task.
 
+## CE-2H — Command Palette product + architecture audit (decision C — composition, accessibility role model genuinely unresolved)
+
+**Audit only. Command Palette was not implemented in CE-2H.** Combobox and Menu were not modified.
+
+### Existing capability audit
+
+- **Menu** — already a rich compound system: `Menu`, `MenuTrigger`, `MenuContent`, `MenuItem`, `MenuGroup`, `MenuLabel`, `MenuSeparator`, and a dedicated `MenuShortcut` export. `MenuItem` already supports icon, **keyboard-shortcut display** (`shortcut?: string`, rendered via `.itemShortcut`), destructive styling, disabled state, and `onSelect`. `MenuGroup`/`MenuLabel` already provide grouping and group headings. Roles: `role="menu"` + `role="menuitem"`. **No submenu/nested-command support exists yet** — the registry itself already records this as a known gap: *"Submenus and Context Menu are separate future components."*
+- **Combobox** / **Select** — `role="combobox"` + `role="listbox"` + `role="option"`, a **value-selection** model (choosing commits a value). Not touched or modified in this audit, per explicit instruction.
+- **Dialog** — `role="dialog"` + `aria-modal="true"`, focus-trapping modal container — a strong fit for the "takes over the screen" global-palette shape.
+- **Popover** — non-modal floating panel, dismiss-on-Escape/outside-click — a reasonable fit for a smaller, trigger-anchored "quick actions" shape.
+- **SearchField** — text input specialized for search/filter, own docs already say *"Any search/filter input, whether inline in a toolbar or as a page-level search bar"* (the same citation CE-2E's Advanced Filters audit used).
+- **EmptyState** — already covers "no results" for any list/collection.
+- **No dedicated `content/*.ts` entry, and no other shipped component's docs forward-reference, "Command Palette" anywhere** — the only prior mentions are generic CE-2 planning-doc entries, the same evidence tier as CE-2E/CE-2G, not CE-2F's richer tier.
+
+### Command Palette product-shape taxonomy (not one component contract)
+
+1. **Global app command palette** (search + mixed navigation/action results) — the VS Code/Linear-style shape; carries the real accessibility tension (see below).
+2. **Navigation launcher** (search results are routes) — closer in spirit to Combobox/Select's actual "choose a destination" model, though still not literal value-persistence.
+3. **Searchable action list** — same tension as shape 1.
+4. **Recent commands** — a data/state concern (what was recently used), not a UI shape of its own; composes into whichever container is chosen.
+5. **Grouped commands** — **already solved** by `MenuGroup`/`MenuLabel`.
+6. **Keyboard-shortcut launcher** (e.g. Cmd/Ctrl+K opens a short, static list of top actions, no live filtering) — **zero new ARIA needed at all**: this is just `Menu`, fully buildable today.
+7. **Nested commands/subcommands** — a real, compounding gap: even `Menu` itself doesn't support submenus yet, so this shape isn't achievable through composition today either, independent of the search-semantics question.
+8. **Entity search** (e.g. search users/files, then act on the result) — sits closer to Combobox/Select's real selection model, since picking a result is closer to "choosing a value" than shapes 1/3 are.
+9. **Contextual editor commands** — application/product-specific, not a general design-system concern.
+10. **AI/agent command launcher** — squarely application/business-logic-specific; "AI invocation" is explicitly named in this audit's own state-ownership boundary as something Skrewww should not own.
+
+Shape 6 is fully solved today with zero new work. Shapes 1, 3, and 8 carry the real accessibility question, in decreasing degree (1/3 hardest, 8 closer to an existing pattern). Shape 5 is solved. Shape 7 is blocked independent of the ARIA question by Menu's own already-acknowledged submenu gap. Shapes 4, 9, 10 are data/application concerns, not UI shapes.
+
+### Semantic boundary
+
+- **Combobox** = searchable **value selection** — choosing sets a field's value. Wrong model for shapes 1/3/6 (executing an action or navigating is not "setting a value"), a closer-but-imperfect fit for shape 8.
+- **Search Field** = a plain text query input, no attached list/popup of its own.
+- **Menu** = an **action-execution** list, already rich (icons/shortcuts/groups/disabled), but with no built-in live-filter/search mechanism and no submenu support.
+- **Dialog/Popover** = containers, correctly reused as-is, not duplicated.
+- **List/List Item** = readable rows; not the right fit here since `MenuItem` already owns the "executable row with icon/shortcut" structure more precisely than `ListItem` does.
+- Command Palette would only need to become a component if it owned a **distinct, reusable interaction contract** beyond composing these — and per the accessibility analysis below, no single clean contract exists for the shapes that actually motivate wanting one (1/3), while the shape that's trivially achievable (6) needs no new contract at all.
+
+### Product need
+
+Real for developer tools, admin tools, and keyboard-heavy productivity apps — genuinely cross-product for that segment, not manufactured, and not justified merely because well-known products (VS Code, Linear, Notion) have one (per explicit instruction, that comparison was not used as the rationale here). But evidence inside this project is at the generic-mention tier (CE-2 planning docs only), same as Advanced Filters/Notification Center, not the richer tier Stepper had.
+
+### State ownership boundary
+
+The heaviest "must not own" list of any CE-2 audit so far: application routing, search backend, command-execution business logic, recent-history persistence, permissions, analytics, **AI invocation**, network requests, and command registration across app modules. This is a strong, compounding signal against a standalone/compound component — a command palette's entire purpose is to reflect app-wide, cross-module state, which is inherently the application's responsibility, not the design system's. Skrewww's responsibility, if a Recipe is eventually written, stops at: the searchable-list interaction shell, group/label rendering (already solved by `MenuGroup`/`MenuLabel`), the highlighted-active-item visual, keyboard navigation within the open list, shortcut-label display (already solved by `MenuItem`'s `shortcut` prop), empty state (`EmptyState`), and Dialog/Popover composition. The app command registry, global open-shortcut registration, and command execution stay entirely external.
+
+### Keyboard model
+
+- **Global open shortcut (Cmd/Ctrl+K)**: **application-owned**, not component-owned — the design system must not register a global `document`-level keydown listener; per explicit instruction, no such listener is proposed here.
+- **Arrow Up/Down**: list-navigation concern, owned by whichever list container is used (matches `Menu`'s existing roving-focus/typeahead precedent).
+- **Enter**: activates the highlighted item — an execution/navigation effect, app-defined.
+- **Escape**: closes the container — already solved by `Dialog`/`Popover`'s existing dismiss behavior.
+- **Home/End**: reasonable list-navigation extras, not new semantics.
+- **Type-to-search**: belongs to the search input, not the item list — a real, live filter (distinct from `Menu`'s existing typeahead-jump-to-match, which is not a filter).
+- **Disabled items**: already solved by `MenuItem`'s existing `disabled` prop.
+- **Nested commands**: not resolved — blocked by `Menu`'s own already-acknowledged submenu gap, independent of everything else.
+- **Focus return after close**: already solved by `Dialog`'s existing focus-restoration contract.
+- **Tab behavior**: within a modal `Dialog`, Tab should stay trapped (already solved); the search-input-to-list relationship (does Tab move focus into the list, or does the list navigate purely via arrow keys with focus staying in the input?) is exactly the kind of decision that depends on which role model is chosen (see below) — not resolved here.
+
+### Accessibility findings — the real blocker, per this task's own explicit caution
+
+**No single clean semantic model emerges for the searchable/filtered shapes (1, 3), and this task's own instructions are explicit: "Do NOT combine `menu`, `listbox`, and `combobox` semantics casually... If no clean semantic model emerges: recommend composition/defer rather than inventing ARIA."** Two real candidate models exist, and neither is a settled, uncontroversial convention:
+
+1. **Reuse `role="combobox"` (search input) + `role="listbox"` + `role="option"`** — matches this codebase's own established Combobox/Select role structure exactly, but "selecting" an option in that pattern conventionally means *persisting a value*, not *executing an action or navigating*. Per this task's own **Command vs. Selection** distinction (Part 8), silently inheriting Combobox's value-selection semantics for something that actually executes a command would be semantically wrong. Using the same role structure while documenting "selecting = activating, not persisting" as an intentional deviation is a defensible, real-world-precedented choice (this is broadly how mature command-palette implementations elsewhere approach it) — but it is a **documented judgment call**, not a clean inherited pattern, and this project has not made that call before.
+2. **Reuse `role="menu"` + `role="menuitem"`** — matches the action-execution semantics correctly, and reuses `Menu`'s already-rich `MenuItem`/`MenuGroup`/`MenuLabel`/`shortcut` support directly. But `role="menu"` is conventionally opened by a trigger and does not have an established live-filter/search-box relationship in the WAI-ARIA APG the way `combobox`+`listbox` does — combining a real-time-filtering search input with `menu`/`menuitem` semantics underneath is itself not a standard, pre-solved pattern either.
+
+Neither option is simply "already solved by composing existing primitives" the way Advanced Filters' and Notification Center's accessibility questions were — **this is the one open point in this audit that is closer to CE-2D's Multi Select conclusion than to CE-2E/CE-2G's.** The difference from CE-2D: shape 6 (a non-searchable quick-actions launcher, just `Menu`) is fully clean and buildable today, and shapes 1/3's ambiguity is resolvable with a deliberate, documented role decision rather than being a dead end — but that decision should not be made speculatively in a docs-only audit.
+
+Other findings, all already addressable: screen-reader announcement of result count (a `role="status"` region, matching Combobox's own existing "no-results announcement" convention); group labels (`MenuLabel`, solved); disabled items (`MenuItem.disabled`, solved); empty results (`EmptyState`, solved); focus restoration (`Dialog`, solved); no duplicate/conflicting roles as long as one of the two models above is chosen deliberately, not blended.
+
+### Command vs. selection vs. navigation
+
+Explicitly distinct, per this task's own framing: **Selection** = choosing a value (Combobox/Select's real job). **Command** = executing an action (`Menu`'s real job). **Navigation** = moving to a route/view (arguably a special case of "command"). A Command Palette may contain both commands and navigation items, but **must not silently inherit Combobox's value-selection model** — confirmed above as the crux of the unresolved accessibility question. **Extending Combobox would be semantically wrong** for the command/navigation-execution use case, independent of the fact that this audit was also explicitly forbidden from touching it.
+
+### Container model
+
+**Should not own its own container.** Desktop: `Dialog` (modal, centered/near-top) for the global-palette shape; `Popover` (anchored, non-modal) for a smaller quick-actions shape. Mobile: `Dialog` presented full-screen is the natural existing fit — no new responsive surface is proposed or needed. This strongly avoids duplicating `Dialog`/`Popover`.
+
+### Item model
+
+**The real missing primitive is not a new `CommandItem`.** `MenuItem` already covers label, icon, shortcut, disabled, and an `onSelect` action callback — almost exactly the shape Part 10 describes wanting to check for duplication against, and it already passes that check. The only thing `MenuItem` doesn't own is which items are currently *visible* after a live filter — a compositional/rendering concern (the app or a future Recipe decides which `MenuItem`s to render based on the search input's value), not a missing prop on the item itself. No new item export is justified.
+
+### Grouping / empty / recents
+
+Already solved: grouping and group headings (`MenuGroup`/`MenuLabel`), empty state (`EmptyState`), separators (`MenuSeparator`). "Recent commands" is a data/state concern (which items to show first), not a rendering primitive — once the app supplies "recent" items in whatever order it wants, they render as ordinary `MenuItem`s, no new export needed.
+
+### Architecture comparison
+
+| | A — standalone `<CommandPalette commands={...}/>` | B — compound `CommandPalette`+`CommandGroup`+`CommandItem` | **C — composition (Dialog/Popover + SearchField + Menu primitives)** | D — application feature only | E — Reference App first |
+|---|---|---|---|---|---|
+| Semantic clarity | Would have to pick one of the two contested role models and bake it in without real validation | Same problem, plus duplicates `MenuItem`'s already-solved shape in a new `CommandItem` | Defers the role-model decision to whoever writes a future, validated Recipe — doesn't force a premature answer | Same as C but with even less design-system-level guidance | Same deferral, framed as evidence-gathering first |
+| Accessibility | High risk — commits to an unresolved model now | High risk — same, plus a duplicated item API to keep consistent | Lower risk — reuses already-solved container/item contracts (`Dialog`/`Popover`/`MenuItem`) for everything except the one open question, which stays open | Lowest risk to the design system, but offers no guidance at all | Same as C, with real usage informing the eventual choice |
+| API complexity | High — domain-shaped `commands` prop, the same anti-pattern flagged in CE-2E/CE-2G | Medium — new `CommandItem` API re-specifying what `MenuItem` already has | None — no new API surface | None | None |
+| App coupling | High | Medium | Low | Low | Low |
+| Keyboard ownership | Risk of the component reaching for a global shortcut listener (explicitly disallowed) | Same risk | Composition guidance explicitly states the global shortcut is app-owned | Same | Same |
+| Reuse | Low — re-wraps `Menu`'s already-rich item model | Medium | High — zero new exports; shape 6 is already 100% buildable today | High | High |
+| Agent Kit clarity | Another surface, plus an unresolved a11y model to keep consistent | Same | Guidance ("Dialog/Popover + SearchField + Menu items; shortcut display already exists; global open-shortcut and command registry stay in the app") is accurate today without overclaiming a settled model | Weaker — no positive guidance offered | Same as C |
+| Figma implications | Monolithic set for an inherently compositional, partly-unresolved feature | Two new sets, one (`CommandItem`) duplicating `Menu Item`'s real anatomy | None beyond existing primitives | None | None |
+| Maintenance | High — would likely need a breaking rework once the a11y question is actually resolved with real usage | Same | Low | Low | Low |
+| **Verdict** | **Not justified — commits to an unresolved model** | **Not justified — `MenuItem` already owns the item shape; the new item duplicates it while adding nothing** | **Selected direction** | **Undersells the real, nameable composition (shape 6 especially) — C is the more accurate label** | **Consistent with C, not a separate track — see Reference App relevance below** |
+
+### Final decision: **C — composition/pattern, not a standalone or compound component**
+
+- **Product rationale:** real for developer/power-user/admin tools, but for *arrangement* of already-rich existing primitives (`Menu` especially), not a missing atomic control — and the evidence inside this project sits at the generic-mention tier, same as CE-2E/CE-2G.
+- **Semantic rationale:** `MenuItem`/`MenuGroup`/`MenuLabel`/`MenuSeparator` already own the item/grouping/shortcut/disabled structure; `Dialog`/`Popover` already own the containers; nothing new is missing for the item/container layer.
+- **Accessibility rationale — the genuinely hard part of this audit:** for the searchable/filtered shapes (1/3), no single clean, already-established semantic model exists without a deliberate judgment call between reusing `combobox`/`listbox`/`option` (with documented "activate not persist" semantics) or `menu`/`menuitem` (with an undocumented live-filter relationship). Per this task's own explicit instruction, that ambiguity is **recorded, not resolved speculatively** — composition defers the decision to a future, real, validated Recipe rather than baking an unvalidated choice into a public component API now. This is the one point in this audit closer to CE-2D's Multi Select conclusion than to CE-2E/CE-2G's clean accessibility stories.
+- **Keyboard rationale:** the global open-shortcut and app-wide command registry are explicitly application-owned; the design system's only legitimate keyboard responsibility (arrow-nav/Enter/Escape within an open list) is already solved by the composed primitives.
+- **Architecture rationale:** both standalone and compound options would either commit prematurely to an unresolved accessibility model or duplicate `MenuItem`'s already-solved item shape — both are premature-abstraction risks, not missing-primitive problems.
+- **Figma rationale:** no monolithic or compound component set is warranted; an example/reference frame, if any, fits better, and only for the parts that are actually settled (the non-searchable shape-6 launcher).
+- **Agent Kit rationale:** composition guidance ("non-searchable quick-actions = Menu directly, today; searchable/filtered command palette = Dialog/Popover + SearchField + Menu-derived items, with the ARIA role model an open, real design decision — not yet resolved") is more honest and more useful to a coding agent than a component contract that quietly commits to one of two contested accessibility models.
+
+### Proposed composition outline — PROPOSED PATTERN, NOT IMPLEMENTED
+
+No exports created. Conceptual composition roles only, for **future** docs/Recipe guidance once the accessibility role question is deliberately resolved (ideally with real Reference App usage informing it):
+
+- **CommandLauncher** — the trigger + container: `Dialog` (global, modal, centered/near-top) or `Popover` (smaller, anchored quick-actions). The global open-shortcut (Cmd/Ctrl+K) is application-owned, composed into the app's own event handling, not the design system's.
+- **CommandSearch** — `SearchField`, driving a live filter of visible items. The exact ARIA relationship between this input and the results below is the open question flagged above — not resolved here.
+- **CommandGroups** — `MenuGroup`/`MenuLabel`, already fully solved.
+- **CommandItem** — **not a new export** — a `MenuItem` usage convention (label, icon, `shortcut`, `disabled`, `onSelect` already all exist).
+- **CommandEmpty** — `EmptyState`, already fully solved.
+- **ShortcutHint** — **not new** — `Menu`'s existing `MenuShortcut`/`shortcut` prop already covers this.
+
+For the **non-searchable shape (6)** specifically — a short, static Cmd/Ctrl+K launcher of top actions — no open question remains at all; it is fully buildable today by composing `Menu` as-is.
+
+### Recommended future representation (Agent Kit)
+
+**Docs composition guidance now (clearly distinguishing the fully-solved non-searchable shape from the open searchable-shape question) → a future Recipe only once the accessibility role model is deliberately decided and validated**, ideally informed by Reference App usage. Not a component contract (the accessibility question is unresolved, unlike Stepper where a real contract was justified), not a Recipe yet (this project's own convention reserves Recipes for validated composition). **No Agent Kit artifact was added in this audit.**
+
+### Figma recommendation
+
+**Example/pattern, not a component or component set — and only for the settled parts.** A monolithic "Command Palette" Figma component set would be premature given the unresolved accessibility role question for the shapes that actually motivate wanting one; over-modeling this in Figma without real product evidence risks designing around an interaction model that later needs to change once the ARIA question is actually settled.
+
+### Mobile/responsive implications
+
+Desktop: centered/near-top `Dialog`, or an anchored `Popover` for the smaller quick-actions shape. Mobile: `Dialog` presented full-screen is the natural existing fit — no new responsive surface proposed. Existing containers are sufficient; nothing new is needed here regardless of how the accessibility question above is eventually resolved.
+
+### Reference App relevance
+
+**Yes — and here it's closer to a precondition than a refinement source**, unlike CE-2E/CE-2G where composition was already fully clean. Real command categories, the actual navigation-vs-action mix, whether shortcuts are genuinely needed, whether nesting is truly required (blocked today regardless by `Menu`'s own submenu gap), real mobile behavior, and — most importantly — real usage patterns that would inform whether "activate not persist" listbox semantics or menu semantics reads more correctly to actual users, are all open questions this audit could not and should not resolve from first principles alone. **Recorded as a Reference App validation target**, not started here.
+
 ## Next CE-2 candidate
 
-Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). **Stepper's CE-2F status is unchanged and preserved**: compound Stepper + Step remains **justified, proposed contract only, NOT IMPLEMENTED, pending an MCP Figma verification pass** — not re-ranked as rejected or deferred by this task. Notification Center is **not a standalone or compound component** (CE-2G) — removed from the direct component-implementation queue while its product need is preserved as a future composition/Recipe target.
+Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). **Stepper's CE-2F status is unchanged and preserved**: compound Stepper + Step remains **justified, proposed contract only, NOT IMPLEMENTED, pending an MCP Figma verification pass** — not re-ranked as rejected or deferred by this task. Notification Center is **not a standalone or compound component** (CE-2G). Command Palette is **not a standalone or compound component** (CE-2H) — removed from the direct component-implementation queue while its product need is preserved; its accessibility role question is recorded as genuinely open, not merely deferred to documentation.
 
-**Command Palette** (score 20) is the next actual component candidate — **report only, NOT STARTED**.
+**App Shell / richer navigation** (score 16) is the next actual component candidate — **report only, NOT STARTED**.
 
 ## Out of scope
 
-CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, implementing Stepper, modifying Number Input, implementing Notification Center, implementing Notification Item, adding Recipes, adding Feature Kits, implementing Command Palette / App Shell.
+CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, implementing Stepper, modifying Number Input, implementing Notification Center, implementing Notification Item, implementing Command Palette, implementing Command Item, modifying Menu, modifying Dialog, adding Recipes, adding Feature Kits, implementing App Shell.

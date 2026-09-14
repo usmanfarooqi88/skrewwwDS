@@ -1,7 +1,7 @@
-# Skrewww component inventory (CE-0 → CE-2G)
+# Skrewww component inventory (CE-0 → CE-2H)
 
-> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A–C:** Toggle Group shipped; **CE-2D:** Multi Select audited and deferred; **CE-2E:** Advanced Filters audited — composition, not a component; **CE-2F:** Stepper audited — compound Stepper+Step justified, proposed contract only, **still pending Figma/MCP verification (unchanged by CE-2G)**; **CE-2G:** Notification Center audited — composition, not a component (CE-2 IN PROGRESS)
-> Class B = **0**. Inventory counts unchanged by CE-2D/CE-2E/CE-2F/CE-2G (audits only, no implementation). See [`docs/component-expansion.md`](component-expansion.md).
+> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A–C:** Toggle Group shipped; **CE-2D:** Multi Select audited and deferred; **CE-2E:** Advanced Filters audited — composition, not a component; **CE-2F:** Stepper audited — compound Stepper+Step justified, proposed contract only, **still pending Figma/MCP verification (unchanged by CE-2G/CE-2H)**; **CE-2G:** Notification Center audited — composition, not a component; **CE-2H:** Command Palette audited — composition, a11y role model genuinely unresolved (CE-2 IN PROGRESS)
+> Class B = **0**. Inventory counts unchanged by CE-2D/CE-2E/CE-2F/CE-2G/CE-2H (audits only, no implementation). See [`docs/component-expansion.md`](component-expansion.md).
 
 This document is the durable planning source for CE-1. Prefer the tables over
 prose. Re-derive volatile counts from `lib/component-registry*.ts` and
@@ -88,7 +88,7 @@ Numerical Figma−React equality is **not** a product goal.
 | Navigation | 4 | 11 | 7 | 0 | 7 |
 | Content & Data | 16 | 18 | 2 | 0 | 2 (tree-item, timeline-item) |
 
-Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-first). Segmented Control resolved by Toggle Group. Multi Select audited and **deferred** (CE-2D decision D — no clean a11y pattern yet for the searchable+chips case; not a current inventory change). Advanced Filters audited and found to be **composition, not a component** (CE-2E decision B — every needed control already exists; removed from the direct component queue, product need preserved as a future Recipe target). Stepper audited and found to be a **justified compound Stepper + Step component** (CE-2F decision B — existing `step-item` content already specifies states/a11y; proposed contract only, not implemented, pending Figma MCP verification — **unchanged, still pending, as of CE-2G**). Notification Center audited and found to be **composition, not a component** (CE-2G decision C — List Item already covers the notification-row shape, Badge already covers unread count, EmptyState already covers zero-items; removed from the direct component queue, product need preserved as a future Recipe target). Next actual component candidate: Command Palette — report only, NOT STARTED.
+Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-first). Segmented Control resolved by Toggle Group. Multi Select audited and **deferred** (CE-2D decision D — no clean a11y pattern yet for the searchable+chips case; not a current inventory change). Advanced Filters audited and found to be **composition, not a component** (CE-2E decision B — every needed control already exists; removed from the direct component queue, product need preserved as a future Recipe target). Stepper audited and found to be a **justified compound Stepper + Step component** (CE-2F decision B — existing `step-item` content already specifies states/a11y; proposed contract only, not implemented, pending Figma MCP verification — **unchanged, still pending, as of CE-2H**). Notification Center audited and found to be **composition, not a component** (CE-2G decision C — List Item already covers the notification-row shape, Badge already covers unread count, EmptyState already covers zero-items; removed from the direct component queue, product need preserved as a future Recipe target). Command Palette audited and found to be **composition, not a component, with a genuinely unresolved accessibility role question** (CE-2H decision C — Menu already covers a non-searchable "quick actions" shape fully; the searchable/filtered shape needs a deliberate, validated ARIA-role decision before any future component work, per this audit's own explicit caution against combining menu/listbox/combobox semantics casually). Next actual component candidate: App Shell / richer navigation — report only, NOT STARTED.
 
 ## CE-1 status
 
@@ -107,10 +107,11 @@ Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-firs
 | **CE-2C Toggle Group** | ✅ COMPLETE — Beta `0.1.0-beta`; Segmented Control = presentation (decision A); `/r` deferred to CE-3 |
 | **CE-2D Multi Select audit** | ✅ COMPLETE — **decision D (defer)**; see [`docs/component-expansion.md`](component-expansion.md#ce-2d--multi-select-product--architecture-audit-decision-d--defer) |
 | **CE-2E Advanced Filters audit** | ✅ COMPLETE — **decision B (composition, not a component)**; see [`docs/component-expansion.md`](component-expansion.md#ce-2e--advanced-filters-product--architecture-audit-decision-b--composition-not-a-component) |
-| **CE-2F Stepper audit** | ✅ COMPLETE — **decision B (compound Stepper + Step justified)**, proposed contract only, **still pending Figma/MCP verification (unchanged by CE-2G)**; see [`docs/component-expansion.md`](component-expansion.md#ce-2f--stepper-product--architecture-audit-decision-b--compound-stepper--step-justified-proposed-contract-only) |
+| **CE-2F Stepper audit** | ✅ COMPLETE — **decision B (compound Stepper + Step justified)**, proposed contract only, **still pending Figma/MCP verification (unchanged by CE-2G/CE-2H)**; see [`docs/component-expansion.md`](component-expansion.md#ce-2f--stepper-product--architecture-audit-decision-b--compound-stepper--step-justified-proposed-contract-only) |
 | **CE-2G Notification Center audit** | ✅ COMPLETE — **decision C (composition, not a component)**; see [`docs/component-expansion.md`](component-expansion.md#ce-2g--notification-center-product--architecture-audit-decision-c--composition-not-a-component) |
+| **CE-2H Command Palette audit** | ✅ COMPLETE — **decision C (composition, not a component)**, accessibility role model genuinely unresolved; see [`docs/component-expansion.md`](component-expansion.md#ce-2h--command-palette-product--architecture-audit-decision-c--composition-accessibility-role-model-genuinely-unresolved) |
 | **CE-2 overall** | **IN PROGRESS** |
-| **Next candidate** | Command Palette (P4) — **report only, NOT STARTED** |
+| **Next candidate** | App Shell / richer navigation (P5) — **report only, NOT STARTED** |
 
 See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 
@@ -220,7 +221,7 @@ CE-0 does not close STAB-001…STAB-006. Those remain Community/Beta
 steady-state items (`/r/registry.json`, CoC private contact, Figma Pro
 sharing confirmation, Free Figma terms, early external signal, NEW badge).
 
-## Roadmap after CE-2G
+## Roadmap after CE-2H
 
 - Community/Beta Stabilization = steady-state monitoring
 - **CE-0 = COMPLETE**
@@ -230,8 +231,9 @@ sharing confirmation, Free Figma terms, early external signal, NEW badge).
 - **CE-2C Toggle Group = COMPLETE** (Segmented Control resolved by Toggle Group)
 - **CE-2D Multi Select audit = COMPLETE** — **decision D, deferred** (not implemented; not a rejection)
 - **CE-2E Advanced Filters audit = COMPLETE** — **decision B, composition not a component** (not implemented; product need preserved as a future Recipe target, pending Reference App evidence)
-- **CE-2F Stepper audit = COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented, pending Figma MCP verification + ideally Reference App evidence — **unchanged by CE-2G, not rejected or deferred**)
+- **CE-2F Stepper audit = COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented, pending Figma MCP verification + ideally Reference App evidence — **unchanged by CE-2G/CE-2H, not rejected or deferred**)
 - **CE-2G Notification Center audit = COMPLETE** — **decision C, composition not a component** (not implemented; product need preserved as a future Recipe target, pending Reference App evidence)
+- **CE-2H Command Palette audit = COMPLETE** — **decision C, composition not a component, accessibility role model genuinely unresolved** (not implemented; Menu/Combobox/Dialog untouched)
 - **CE-2 overall = IN PROGRESS**
-- **Next CE-2 candidate = Command Palette — report only, NOT STARTED**
+- **Next CE-2 candidate = App Shell / richer navigation — report only, NOT STARTED**
 - CE-3 / Reference App / PH-0 / Guard = later / NOT STARTED
