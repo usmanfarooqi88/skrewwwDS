@@ -9,7 +9,8 @@
 > **CE-2G** Notification Center audit ✅ — **decision C, composition pattern (future Recipe, Reference-App-evidenced)**, not implemented
 > **CE-2H** Command Palette audit ✅ — **decision C, composition pattern**, accessibility role model flagged as genuinely unresolved (not just deferred to a Recipe), not implemented
 > **CE-2I** App Shell / richer navigation audit ✅ — **decision D, Reference-App template first** (a narrower "responsive primary navigation" composition is separately already proven in-house and C-ready), not implemented; **CE-2 planning pass recommended to pause here**
-> **CE-2J** Stepper Figma/MCP verification ✅ — **decision B, READY WITH NARROWER CONTRACT** (`orientation` and `Step.description` dropped, zero Figma evidence; everything else verified live against `Navigation/Step Item` node `2024:2944`). Still not implemented — verified contract ready for CE-2K.
+> **CE-2J** Stepper Figma/MCP verification ✅ — **decision B, READY WITH NARROWER CONTRACT** (`orientation` and `Step.description` dropped, zero Figma evidence; everything else verified live against `Navigation/Step Item` node `2024:2944`).
+> **CE-2K** Stepper implementation ✅ — **SHIPPED**, Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A. **CE-2 — Net-New Component Expansion is now COMPLETE.**
 > Planning for CE-2 net-new work. Does **not** reopen CE-1 / Figma Class B parity.
 
 ## Purpose
@@ -921,28 +922,68 @@ CE-2J verified (narrower):
 - Whether `onStepClick` should be provided at all by default in a given consuming app, versus a purely read-only Stepper — Figma gives normative guidance (never let Upcoming skip ahead) but not a definitive yes/no on whether Completed/Current should be clickable; this remains an app-level decision.
 - Exact `currentStep` indexing convention (0- vs. 1-based) — not addressed by Figma, left to implementation.
 
+## CE-2K — Stepper implementation (SHIPPED, Beta `0.1.0-beta`)
+
+**Verdict: implemented, exactly matching the CE-2J verified narrow contract — no new API surface, no state, orientation, or content beyond what was verified.**
+
+**Files**: `components/ui/Stepper.tsx` (compound `Stepper` + `Step`, `Children.toArray`/`cloneElement` positional-index derivation — no fragile registration effect, no DOM querying), `components/ui/stepper.module.css` (exact verified token bindings), `lib/stepper-figma-metadata.ts` (verified node IDs, following the `lib/*-figma-metadata.ts` convention already established by Timeline/Phone Number Field), `components/previews/StepperPreview.tsx`, `components/ui/Stepper.test.tsx` (17 focused tests), `e2e/stepper.spec.ts` (10 focused browser tests).
+
+**Contract implemented exactly as CE-2J narrowed it**: `currentStep: number` (zero-based, required, Stepper never mutates it), `onStepClick?: (index: number) => void` (restricted to Completed/Current; Upcoming renders a plain non-focusable `<span>`, never a `<button>`, so it structurally cannot be activated — no `disabled` attribute/concept used anywhere), `aria-label`/`aria-labelledby` on the `<ol>` root, compound `<Step>{children}</Step>` with no `state`/`description`/`orientation` prop. State is derived purely from array position vs. `currentStep` (`index < currentStep` → Completed, `===` → Current, `>` → Upcoming) — matching Timeline's own established "position-derived, never a manually-assigned state prop" precedent.
+
+**Verified Figma parity, checked directly against implementation**: 24×24px indicator (`1.5rem`), `radius/full` corner radius, 8px gap (circle↔label, step↔connector — one consistent value throughout, matching the verified single `itemSpacing: 8`), 32×1.5px connector (`2rem` × `1.5px`) filled `semantic/border/default`, Completed = filled `semantic/action/primary` circle + `Check` icon (Phosphor `@phosphor-icons/react/dist/ssr`, matching this codebase's existing convention — no custom SVG drawn), Current = outlined circle (`semantic/action/primary` stroke) + bold (700) label, Upcoming = outlined circle (`semantic/border/default` stroke) + muted (`component/surface/content-muted`) regular-weight label, content-sized steps (no `flex-grow`/equal-width), no Shape or Surface CSS hook anywhere. Verified live in the browser: visual output matches the Figma anatomy exactly; clicking a Completed step correctly updates `currentStep` and moves focus/state as expected; focus-visible ring renders un-clipped.
+
+**Shape/Surface**: deliberately not wired to either axis, per the CE-2J-verified finding that the indicator's radius binds to the primitive `radius/full` token, not a Shape-driven component token, and no Surface token is bound anywhere on `Step Item`.
+
+**Responsive/long-sequence limitation**: recorded honestly in docs, registry `openQuestions`, and the generated Agent contract — not invented. No mobile-condensed mode, no carousel, no equal-width fallback was added.
+
+**Maturity**: Beta, `0.1.0-beta`, matching the net-new CE-2 convention (Number Input, Toggle Group).
+
+**Docs**: added a `stepper` entry to `content/navigation.ts` distinguishing Stepper from Progress Bar/Tabs/Breadcrumb/Pagination/Timeline; updated `step-item`'s own entry with a `knownLimitation` note pointing to `/components/stepper` as the canonical implemented pattern (matching Timeline Item's precedent exactly); updated `lib/category-content.ts`'s Navigation category status note, which previously listed "Stepper" among components "remain[ing] documentation-only" — now corrected.
+
+**Registry + Agent contract**: added a full `ComponentRegistryEntry` to `lib/component-registry-navigation.ts` (`figmaAvailability: "available"`, `figmaNodeId` populated from the verified metadata — matching Phone Number Field's convention for a Figma-verified Beta component). The generated `public/agent/contracts/stepper.json` was inspected, not hand-edited: only real public props appear in `api.properties` (`currentStep`, `onStepClick`, `aria-label`, `aria-labelledby`, `children`, `Step.children`) — no `orientation`/`description`/`state`/`shape`/`surface`. Generator output confirmed deterministic across re-runs (identical file hashes).
+
+**`/r` distribution**: deferred to CE-3, per existing precedent for every other CE-1/CE-2 net-new component (Number Input, Toggle Group, Slider, Split Button, Credit Card Field, Phone Number Field, Button Group all show `no (CE-3)` in the inventory's `/r` column) — no `public/r/stepper.json` created, `/r/registry.json` not touched.
+
+### Inventory classification (re-evaluated, not blindly applied)
+
+CE-2K's own task brief raised whether Step Item should move from Class C to
+Class E ("modeling difference") because Figma's public model is
+`Navigation/Step Item` (a component set) + a composed `Stepper Trail
+(example)` frame, with no standalone Figma "Stepper" component, while
+React's public model is one top-level `Stepper` export. Re-evaluated against
+CE-0's classification rules using the **directly analogous existing
+precedent already in this codebase**: **Timeline** (Class A) has the exact
+same shape — no standalone Figma "Timeline" component exists either, only
+`Content/Timeline Item` (Class C) — and Timeline Item was never
+reclassified to E for exactly this reason. Class E is reserved for a
+genuine, unresolved *product* ambiguity (Icon Button — an open question
+whether Button+`aria-label` truly satisfies the same need). Stepper carries
+no such ambiguity: it unambiguously implements the verified Step Item +
+composed-example capability, with a deliberate, already-verified
+architectural decision. **Decision: Stepper → Class A (public parity, both
+sides — matching Timeline's precedent). Step Item stays Class C,
+unchanged.** Full counts in `docs/component-inventory.md`.
+
 ## Next CE-2 candidate
 
-Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). **Stepper is now VERIFIED and READY**: CE-2J's live Figma verification confirmed the compound Stepper + Step contract, narrowed to drop `orientation` and `Step.description` (zero Figma evidence for either) — a full verified contract is recorded in the CE-2J section, marked **READY FOR CE-2K IMPLEMENTATION**, but **not implemented in this task**. Notification Center is **not a standalone or compound component** (CE-2G). Command Palette is **not a standalone or compound component** (CE-2H). App Shell / richer navigation is **Reference-App template first, not a component** (CE-2I) — removed from the direct component-implementation queue; the proven responsive-nav slice is separately ready for composition guidance independent of Reference App timing.
+Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). **Stepper is SHIPPED** (CE-2K) — Beta `0.1.0-beta`, Class A. Notification Center is **not a standalone or compound component** (CE-2G). Command Palette is **not a standalone or compound component** (CE-2H). App Shell / richer navigation is **Reference-App template first, not a component** (CE-2I) — the proven responsive-nav slice is separately ready for composition guidance independent of Reference App timing.
 
-**Recommended next task: CE-2K — implement the verified Stepper + Step contract.** This is a recommendation only; CE-2K was not started in this task.
+**No further CE-2A-scored implementation candidates remain. CE-2 — Net-New Component Expansion = ✅ COMPLETE.**
 
 ## Out of scope
 
-CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, implementing Stepper, creating `Stepper.tsx`/`Step.tsx`, modifying Number Input, implementing Notification Center, implementing Notification Item, implementing Command Palette, implementing Command Item, modifying Menu, modifying Dialog, implementing App Shell, implementing Sidebar, refactoring Skrewww's own site navigation, modifying Figma, adding an Agent contract for Stepper, adding an `/r` manifest for Stepper, adding Recipes, adding Feature Kits, broad refactors.
+CE-3, `/r/registry.json`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, modifying Number Input, implementing Notification Center, implementing Notification Item, implementing Command Palette, implementing Command Item, modifying Menu, modifying Dialog, implementing App Shell, implementing Sidebar, refactoring Skrewww's own site navigation, adding Recipes, adding Feature Kits, broad refactors — none of these were touched in CE-2K.
 
-## CE-2 phase-completion recommendation (Part 19 — not executed)
+## CE-2 phase-completion (Part 19/23 — executed)
 
-**Recommend B: pause CE-2 candidate discovery after this audit; perform the Stepper Figma/MCP verification next.**
+**CE-2 — Net-New Component Expansion is now COMPLETE**, per this document's own CE-2 phase-completion recommendation from CE-2I (Option B: pause discovery, verify Stepper next) and CE-2J's Part 18 recommendation (implement the verified contract). Both steps were carried out in sequence — CE-2J verified the contract; CE-2K implemented it exactly as narrowed, with no scope drift.
 
-Status summary:
+Final CE-2 outcomes:
 
-- **Implemented**: Number Input, Toggle Group.
-- **Justified, pending verification**: Stepper (compound Stepper + Step) — the one CE-2 candidate with a real, actionable next step already defined (an MCP verification pass against existing `step-item` content).
-- **Deferred / composition, not components**: Multi Select, Advanced Filters, Notification Center, Command Palette, App Shell / richer navigation.
+- **Implemented**: Number Input (CE-2B), Toggle Group (CE-2C), **Stepper (CE-2K)**.
+- **Resolved**: Segmented Control → Toggle Group (CE-2C decision A).
+- **Deferred**: Multi Select (CE-2D) — not rejected, needs product evidence + accessibility research/Figma before reconsidering.
+- **Composition / not a component**: Advanced Filters (CE-2E), Notification Center (CE-2G), Command Palette (CE-2H, searchable role model unresolved).
+- **Reference-App template first**: App Shell / richer navigation (CE-2I) — the proven responsive-nav slice is separately documented as composition-ready.
 
-Five of the seven audited-beyond-Number-Input candidates landed on "not a standalone component" (composition, deferred, or Reference-App-first) rather than "build this." That pattern itself is a signal: the CE-2A scoring table's remaining candidates were increasingly either (a) already covered by existing primitives once actually audited, or (b) irreducibly tied to application/product specifics (routing, permissions, workspace state, AI invocation) that a design-system audit cannot responsibly resolve by further speculative discovery. Continuing to discover new candidates (Option A) risks diminishing returns — repeating this same "mostly composition" pattern without new information. Closing CE-2 outright and moving to CE-3 (Option C) would skip Stepper's own concrete, already-identified next step. Moving Reference App earlier (Option D) is close, but Stepper's proposed contract already has a well-defined, narrower next action (Figma/MCP verification) that doesn't require a Reference App and is worth doing first, since it's the one candidate actually close to shippable. **Recommend B**: verify Stepper next, then let the accumulated Reference-App validation targets from CE-2E through CE-2I (Advanced Filters, Notification Center, Command Palette's role model, and now App Shell's larger shapes) inform whether and when Reference App work begins.
-
-### CE-2J update (retry — completed)
-
-The "verify Stepper next" step above was first attempted and found BLOCKED (Figma access unavailable), then **retried successfully once Figma access was restored** — see the CE-2J section above, now updated in place with the completed live verification. Result: **decision B, READY WITH NARROWER CONTRACT** (`orientation` and `Step.description` dropped; everything else verified). Per CE-2J's own Part 18 (A/B → "CE-2K — Implement verified Stepper + Step"), the recommendation is now **CE-2K: implement the verified contract** — not executed in this task.
+No further CE-2A-scored implementation candidate remains. **Next phase: CE-3 — Distribution Expansion.** CE-3 was **not started** in this task, per explicit instruction.
