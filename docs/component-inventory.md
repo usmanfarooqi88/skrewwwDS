@@ -1,7 +1,7 @@
-# Skrewww component inventory (CE-0 → CE-2C)
+# Skrewww component inventory (CE-0 → CE-2D)
 
-> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A–C:** Toggle Group shipped (CE-2 IN PROGRESS)
-> Class B = **0**. CE-2 net-new expansion. See [`docs/component-expansion.md`](component-expansion.md).
+> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A–C:** Toggle Group shipped; **CE-2D:** Multi Select audited and deferred (CE-2 IN PROGRESS)
+> Class B = **0**. Inventory counts unchanged by CE-2D (audit only, no implementation). See [`docs/component-expansion.md`](component-expansion.md).
 
 This document is the durable planning source for CE-1. Prefer the tables over
 prose. Re-derive volatile counts from `lib/component-registry*.ts` and
@@ -88,7 +88,7 @@ Numerical Figma−React equality is **not** a product goal.
 | Navigation | 4 | 11 | 7 | 0 | 7 |
 | Content & Data | 16 | 18 | 2 | 0 | 2 (tree-item, timeline-item) |
 
-Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-first). Segmented Control resolved by Toggle Group. Next: Multi Select — NOT STARTED.
+Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-first). Segmented Control resolved by Toggle Group. Multi Select audited and **deferred** (CE-2D decision D — no clean a11y pattern yet for the searchable+chips case; not a current inventory change). Next: Advanced Filters — report only, NOT STARTED.
 
 ## CE-1 status
 
@@ -105,8 +105,9 @@ Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-firs
 | **CE-2A Expansion Prioritization** | ✅ COMPLETE — [`docs/component-expansion.md`](component-expansion.md) |
 | **CE-2B Number Input** | ✅ COMPLETE — Beta `0.1.0-beta`; React-first / Figma pending; `/r` deferred to CE-3 |
 | **CE-2C Toggle Group** | ✅ COMPLETE — Beta `0.1.0-beta`; Segmented Control = presentation (decision A); `/r` deferred to CE-3 |
+| **CE-2D Multi Select audit** | ✅ COMPLETE — **decision D (defer)**; see [`docs/component-expansion.md`](component-expansion.md#ce-2d--multi-select-product--architecture-audit-decision-d--defer) |
 | **CE-2 overall** | **IN PROGRESS** |
-| **Next candidate** | Multi Select (P3) — **NOT STARTED** |
+| **Next candidate** | Advanced Filters (P3) — **report only, NOT STARTED** |
 
 See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 
@@ -216,7 +217,7 @@ CE-0 does not close STAB-001…STAB-006. Those remain Community/Beta
 steady-state items (`/r/registry.json`, CoC private contact, Figma Pro
 sharing confirmation, Free Figma terms, early external signal, NEW badge).
 
-## Roadmap after CE-2C
+## Roadmap after CE-2D
 
 - Community/Beta Stabilization = steady-state monitoring
 - **CE-0 = COMPLETE**
@@ -224,6 +225,7 @@ sharing confirmation, Free Figma terms, early external signal, NEW badge).
 - **CE-2A Expansion Prioritization = COMPLETE**
 - **CE-2B Number Input = COMPLETE**
 - **CE-2C Toggle Group = COMPLETE** (Segmented Control resolved by Toggle Group)
+- **CE-2D Multi Select audit = COMPLETE** — **decision D, deferred** (not implemented; not a rejection)
 - **CE-2 overall = IN PROGRESS**
-- **Next CE-2 candidate = Multi Select — NOT STARTED**
+- **Next CE-2 candidate = Advanced Filters — report only, NOT STARTED**
 - CE-3 / Reference App / PH-0 / Guard = later / NOT STARTED

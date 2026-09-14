@@ -1,6 +1,62 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-2C Toggle Group — COMPLETE; CE-2 IN PROGRESS)
+Last verified: **2026-09-14** (CE-2D Multi Select audit — COMPLETE, deferred; CE-2 IN PROGRESS)
+
+## 2026-09-14 — CE-2D Multi Select product + architecture audit (decision D — defer)
+
+**Audit only — Multi Select was not implemented.** Full reasoning:
+[`docs/component-expansion.md`](component-expansion.md#ce-2d--multi-select-product--architecture-audit-decision-d--defer).
+
+### Why multi-select was previously absent (verified via `docs/architecture/combobox-parity.md`)
+
+Figma's Combobox component set had a `Multi-select` boolean property with a
+"Chips frame" showing hardcoded example chips — a placeholder, never a real
+interaction spec. It was deleted from Figma 2026-07-15; the parity doc is
+explicit that no corresponding code capability ever existed in
+`Combobox.tsx`, and that a future build "will need a fresh Figma spec — the
+removed variant is not a reference to revive." Classified as reasons **3
+(Figma never actually defined it)** and **6 (legacy/vestigial cleanup)** —
+**not** a deliberate accessibility or product rejection.
+
+### Decision: D — defer
+
+- **Semantic:** the boundary against Select (single value)/Combobox (single,
+  searchable)/Checkbox (visible multi, no formal group primitive yet)/Tags
+  (representation only) is real and not fuzzy — a distinct component would
+  be conceptually justified eventually.
+- **Product:** plausible (team-member/tag/filter assignment are common SaaS
+  patterns) but not named as a material gap in this doc's own
+  Reference-app-readiness table today.
+- **Accessibility (the blocker):** the differentiating shape — a searchable
+  combobox with a removable-chip summary — has no single canonical,
+  cross-screen-reader-consistent ARIA pattern to build against without
+  inventing one. A plain multi-select listbox (`aria-multiselectable`) *is*
+  well-established, but mostly overlaps with composing `Checkbox`es and
+  doesn't justify a new component on its own.
+- **Architecture:** Option A (standalone) inherits the unresolved a11y
+  question; Option B (extend Combobox) is out of scope for this task and
+  would reopen a deliberately, recently closed parity decision without new
+  Figma evidence; Option C (composition) only solves the less-interesting
+  simple case.
+- **Figma:** the old property was never a real spec — nothing to revive.
+  Recommend **design-first** (or Reference-App-evidence-first), not
+  React-first, for any future attempt — the interaction complexity exceeds
+  what Number Input/Toggle Group needed.
+- **Agent Kit:** no contract published — avoids an under-specified Beta
+  contract that would need a breaking rework later.
+
+**Reference App relevance:** likely the right way to surface real,
+evidenced use cases (and disambiguate simple-listbox vs. searchable+chips)
+rather than building speculatively now — not started in this task.
+
+**Inventory: unchanged** (audit only — React/Docs/Contracts stay 54, Stable/Beta
+27/27, Class D stays 5, `/r` unchanged). Combobox's public API, keyboard
+behavior, and Figma parity were **not** touched.
+
+**CE-2 overall = IN PROGRESS.** Next candidate: **Advanced Filters — report
+only, NOT STARTED.** Multi Select stays in the candidate matrix as
+**deferred, not rejected** — revisit with new product evidence or a fresh
+accessibility/Figma spec.
 
 ## 2026-09-14 — CE-2C Toggle Group + Segmented Control boundary
 
@@ -2400,17 +2456,20 @@ here instead.
 | **CE-2A Expansion Prioritization** | ✅ **COMPLETE** — [`docs/component-expansion.md`](component-expansion.md) |
 | **CE-2B Number Input** | ✅ **COMPLETE** |
 | **CE-2C Toggle Group** | ✅ **COMPLETE** — Segmented Control resolved by Toggle Group |
+| **CE-2D Multi Select audit** | ✅ **COMPLETE** — **decision D, deferred** (not implemented, not rejected) |
 | **CE-2 — Net-New Component Expansion** | **IN PROGRESS** |
-| CE-2 next (Multi Select) | **NOT STARTED** |
+| CE-2 next (Advanced Filters) | **Report only, NOT STARTED** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-2C Toggle Group shipped. CE-2 remains **IN PROGRESS**.
-Next candidate from CE-2A ranking: **Multi Select — NOT STARTED**.
+**Current focus:** CE-2D Multi Select audit complete — **deferred (decision
+D)**, no implementation, Combobox untouched. CE-2 remains **IN PROGRESS**.
+Next candidate: **Advanced Filters — report only, NOT STARTED**.
 Community/Beta Stabilization remains steady-state (STAB-001…006 open, no P0/P1).
-Do not start CE-3, Reference App, PH-0, or Guard from this status line alone.
+Do not start CE-3, Reference App, PH-0, Guard, or Advanced Filters from this
+status line alone.
 
 ### Component/distribution work (parallel track)
 
