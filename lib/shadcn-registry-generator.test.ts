@@ -12,8 +12,10 @@ import {
   buildFoundationManifest,
   buildLinkManifest,
   buildProgressBarManifest,
+  buildRadioManifest,
   buildSkeletonManifest,
   buildSpinnerManifest,
+  buildSwitchManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
   classifyFile,
@@ -221,6 +223,8 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildCheckboxManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildProgressBarManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildSkeletonManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildRadioManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildSwitchManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -370,6 +374,34 @@ describe("shadcn registry generator", () => {
     ]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual([]);
+  });
+
+  it("transports Radio with foundation-only registry dependency (Tier-2 Stable)", () => {
+    const manifest = buildRadioManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Radio.tsx",
+      "components/ui/radio.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+  });
+
+  it("transports Switch with use-controllable helper (Tier-2 Stable)", () => {
+    const manifest = buildSwitchManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Switch.tsx",
+      "components/ui/switch.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(classifyFile("lib/use-controllable.ts")).toEqual({
+      type: "registry:lib",
+      target: "~/lib/use-controllable.ts",
+    });
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

@@ -250,6 +250,6 @@ canonical registry
 | Phase | Status |
 |-------|--------|
 | CE-3A Distribution Audit | ✅ COMPLETE (`702787d`) |
-| CE-3B Tier-1 Stable batch | ✅ SHIPPED (local gates green; smoke blocked by host DNS to ui.shadcn.com) |
-| CE-3C Tier-2 Stable batch | NEXT after CE-3B CI green — `radio`, `switch` |
-| CE-3 overall | **IN PROGRESS** |
+| CE-3B Tier-1 Stable batch | ✅ COMPLETE (`5952a0e`) |
+| CE-3C Tier-2 Stable batch | ✅ SHIPPED — `radio`, `switch` (+ `use-controllable`) |
+| CE-3 overall | **IN PROGRESS** (remaining tiers + `/r/registry.json` later) |

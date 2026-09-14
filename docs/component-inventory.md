@@ -32,10 +32,10 @@ entries are Figma item primitives that React correctly models via composition.
 | Beta | **28** |
 | Public docs pages (implemented) | **55** |
 | Agent Kit contracts | **55** |
-| `/r` component manifests | **11** (+ `foundation` shared cut = 12 files) |
+| `/r` component manifests | **13** (+ `foundation` shared cut = 14 files) |
 
-`/r` components: button, card, checkbox, divider, form-field, link, progress-bar, skeleton, spinner, text-input, validation-message.
-CE-3 IN PROGRESS — CE-3B Tier-1 Stable shipped; CE-3C (`radio`, `switch`) next. Remaining deferred specialists stay out of overnight batches.
+`/r` components: button, card, checkbox, divider, form-field, link, progress-bar, radio, skeleton, spinner, switch, text-input, validation-message.
+CE-3 IN PROGRESS — CE-3A/B/C overnight batches complete; `/r/registry.json` and remaining tiers later.
 
 ### Figma / documentation inventory
 
@@ -166,7 +166,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Implemented | 55 | |
 | Docs | 55 implemented + 11 docs-only | |
 | Agent contracts | 55 | |
-| `/r` distributed components | 11 | + foundation; CE-3B Tier-1 Stable |
+| `/r` distributed components | 13 | + foundation; CE-3B + CE-3C Stable batches |
 | `/r/registry.json` | 0 | STAB-001 / later CE-3 — not this pass |
 
 ## Master inventory table
@@ -207,7 +207,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Phone Number Field | yes (Forms/Phone Number Field `2024:2776`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1E; country Select + type=tel; flag placeholder decorative; not SMS/carrier verification |
 | Popover | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Containers & Overlays; figmaAvailability=available |
 | Progress Bar | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available; CE-3B `/r` |
-| Radio | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
+| Radio | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available; CE-3C `/r` |
 | Radio Group | yes | yes | A | public | Stable | yes | yes | no | PARTIAL | P2 | Dedicated parity task if product needs | Forms; figmaAvailability=partial |
 | Search Field | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Select | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
@@ -215,7 +215,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Spinner | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Split Button | yes (Actions/Split Button `2022:1086`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Actions; CE-1C; primary Button + Menu; joined chrome |
 | Stepper | yes (Navigation/Step Item `2024:2944`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Navigation; CE-2K; compound Stepper + Step; state derived from currentStep, not a component variant; Class A per Timeline/Timeline-Item precedent (see classification note above) |
-| Switch | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
+| Switch | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available; CE-3C `/r` |
 | Slider | yes (Forms/Slider `2024:2373`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1A; State Default/Hover/Focused/Disabled; single-thumb |
 | Table | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Tabs | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |

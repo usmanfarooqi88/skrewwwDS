@@ -15,8 +15,10 @@ import {
   buildFoundationManifest,
   buildLinkManifest,
   buildProgressBarManifest,
+  buildRadioManifest,
   buildSkeletonManifest,
   buildSpinnerManifest,
+  buildSwitchManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
 } from "../lib/shadcn-registry-generator";
@@ -38,6 +40,8 @@ const manifests = [
   ["checkbox.json", buildCheckboxManifest()],
   ["progress-bar.json", buildProgressBarManifest()],
   ["skeleton.json", buildSkeletonManifest()],
+  ["radio.json", buildRadioManifest()],
+  ["switch.json", buildSwitchManifest()],
 ] as const;
 
 console.log("Generated shadcn registry manifests:");

@@ -1,6 +1,33 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3B Tier-1 Stable `/r` expansion — SHIPPED pending CI; CE-3 IN PROGRESS)
+Last verified: **2026-09-15** (CE-3C Tier-2 Stable `/r` expansion — SHIPPED pending CI; CE-3 IN PROGRESS)
+
+## 2026-09-15 — CE-3C Tier-2 Stable distribution batch (SHIPPED)
+
+**Verdict: second low-risk CE-3 batch as planned in CE-3A.**
+
+### Distributed (new)
+
+`radio`, `switch`
+
+| Metric | Before (post CE-3B) | After |
+|--------|--------------------:|------:|
+| `/r` component manifests | 11 | **13** |
+| + foundation | 12 files | **14** files |
+
+### What changed
+
+- Canonical distribution metadata for radio + switch
+- First `lib/use-controllable.ts` FILE_DESTINATIONS mapping (switch)
+- Generator wrappers + CLI + tests + switch smoke descriptor
+- No runtime API / visual / Figma changes
+
+### Next
+
+Stop overnight after CE-3C CI green. Remaining CE-3: later T2/T3 batches,
+`/r/registry.json`. Reference App / PH-0 / Guard not started.
+
+---
 
 ## 2026-09-15 — CE-3B Tier-1 Stable distribution batch (SHIPPED)
 

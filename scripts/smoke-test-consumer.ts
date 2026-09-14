@@ -48,8 +48,10 @@ import {
   buildFoundationManifest,
   buildLinkManifest,
   buildProgressBarManifest,
+  buildRadioManifest,
   buildSkeletonManifest,
   buildSpinnerManifest,
+  buildSwitchManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
   type ShadcnRegistryItem,
@@ -74,6 +76,8 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   checkbox: buildCheckboxManifest,
   "progress-bar": buildProgressBarManifest,
   skeleton: buildSkeletonManifest,
+  radio: buildRadioManifest,
+  switch: buildSwitchManifest,
 };
 
 /**
@@ -304,6 +308,32 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     assertHarness: (pageSource) =>
       /from "@\/components\/ui\/Checkbox"/.test(pageSource) && /Smoke accept terms/.test(pageSource),
     harnessAssertionLabel: "consumer page imports Checkbox and renders labeled instances",
+  },
+  switch: {
+    criticalPaths: [
+      "components/ui/Switch.tsx",
+      "components/ui/switch.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Switch } from "@/components/ui/Switch";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", gap: 12, flexDirection: "column" }}>',
+        '      <Switch label="Smoke notifications" defaultChecked />',
+        '      <Switch label="Smoke dark mode" />',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Switch"/.test(pageSource) && /Smoke notifications/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Switch and renders labeled instances",
   },
   "spinner-divider-link": {
     criticalPaths: [

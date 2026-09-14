@@ -131,10 +131,11 @@ change is made in this pass.
 
 Served as static files under `public/r/`, at `/r/{name}.json`:
 production shape `https://skrewww.com/r/{name}.json` (per
-`source-of-truth.md`'s domain table). Current CE-3B cut (twelve items):
+`source-of-truth.md`'s domain table). Current CE-3C cut (fourteen items):
 `foundation`, `button`, `card`, `text-input`, `form-field`,
 `validation-message`, `spinner`, `divider`, `link`, `checkbox`,
-`progress-bar`, `skeleton`. See [`docs/distribution-expansion.md`](../distribution-expansion.md).
+`progress-bar`, `skeleton`, `radio`, `switch`. See
+[`docs/distribution-expansion.md`](../distribution-expansion.md).
 This coexists with `/registry.json`
 at the root — a different path, a different purpose (shadcn CLI
 consumption vs. the existing public registry feed) — with zero changes to
