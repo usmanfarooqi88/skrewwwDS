@@ -1,74 +1,83 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-2J Stepper Figma/MCP verification — BLOCKED, Figma verification unavailable; Stepper still not implemented, still justified; CE-2 IN PROGRESS)
+Last verified: **2026-09-14** (CE-2J Stepper Figma/MCP verification — COMPLETE, decision B, READY WITH NARROWER CONTRACT; Stepper still not implemented, ready for CE-2K; CE-2 IN PROGRESS)
 
-## 2026-09-14 — CE-2J Stepper Figma/MCP verification (BLOCKED — Figma verification unavailable)
+## 2026-09-14 — CE-2J Stepper Figma/MCP verification (decision B — ready with narrower contract)
 
-**Verdict: BLOCKED.** Stepper was NOT implemented. Its Figma anatomy/
-states/tokens were NOT verified — because Figma access itself was
-unavailable in this session, not because of anything found in the design
-or the docs-only content. Full record:
-[`docs/component-expansion.md`](component-expansion.md#ce-2j--stepper-figmamcp-verification-blocked--figma-verification-unavailable).
+**Verdict: B — READY WITH NARROWER CONTRACT.** A first attempt at this
+task was BLOCKED (Figma access unavailable). On retry, Figma access was
+confirmed restored — `figma_get_status` reported a live WebSocket Desktop
+Bridge connection to the actual "Skrewww - Design System" file
+(`U6KUuNf7DF4CP9QBOkLSUx`) — and the full verification was completed
+against real, live Figma data. **Stepper was still NOT implemented** in
+this task (verification only); Figma was not modified. Full record:
+[`docs/component-expansion.md`](component-expansion.md#ce-2j--stepper-figmamcp-verification-decision-b--ready-with-narrower-contract).
 **All five prior CE-2 decisions preserved unchanged**: Multi Select
 DEFERRED; Advanced Filters COMPOSITION PATTERN; Notification Center
 COMPOSITION PATTERN; Command Palette COMPOSITION PATTERN, searchable role
 model unresolved; App Shell REFERENCE-APP TEMPLATE FIRST.
 
-### Authoritative repo sources re-read, unchanged since CE-2F
+### Figma source located and live-verified
 
-`content/navigation.ts`'s `step-item` entry, Breadcrumb's/Timeline's own
-forward-references to "Stepper"/"Step Item," and the Breadcrumb-vs-Stepper
-registry FAQ are all confirmed unchanged. No new repo-side information
-changes CE-2F's conclusions.
+**`Navigation/Step Item`** — `COMPONENT_SET`, node `2024:2944`, category
+Navigation, exactly 3 variants (`State = Completed | Current | Upcoming`).
+No separate `Stepper` component exists, but a real composed reference
+does: a `Navigation/Stepper` `SECTION` (node `2024:2973`) containing a
+**`Stepper Trail (example)`** `FRAME` (node `2024:2949`) with an author
+annotation — *"One complete step sequence using attached instances;
+connectors remain plain rectangles."* Retrieved via the Desktop Bridge
+plugin (marked reliable/current, not the REST API).
 
-### Figma access attempt — both paths tried, both unavailable
+### Key verified findings
 
-1. **WebSocket Desktop Bridge**: `figma_get_status` → `transport.active:
-   "none"`, no plugin connected. Requires a human to open Figma Desktop
-   and (re-)import the Desktop Bridge plugin.
-2. **REST API (`FIGMA_ACCESS_TOKEN`)**: `figma_get_file_data` against the
-   known Skrewww Design System file returned **`403: "Token expired"`**.
-   Two earlier `figma_search_components` calls (queries `"step"` and
-   `"stepper"`) had returned `success: true` with zero results — in light
-   of the confirmed token expiry, those are treated as the **same
-   underlying auth failure**, not as evidence no Figma Stepper exists. A
-   `403` is not a "no component found," and this distinction is preserved
-   deliberately rather than glossed over.
+- **States**: exactly Completed/Current/Upcoming — no Error/Disabled/
+  Optional/Skipped/Hover/Focus/Pressed variant exists anywhere.
+- **Anatomy**: 24×24px circle (`radius/full`) + label, 8px gap. Completed
+  contains a real `Icon/Check` instance; Current/Upcoming contain a
+  `Number` text node instead (no separate Completed "Number" property).
+- **No `description` property or layer exists anywhere** — CE-2F's
+  proposed `Step.description?` prop has zero Figma evidence.
+- **No orientation axis exists at all** — not unspecified, structurally
+  absent. Confirms CE-2F's horizontal-only caution.
+- **Zero prototype reactions** anywhere — interaction intent is
+  communicated only via text ("never let Upcoming skip ahead"), not a
+  positive confirmation that Completed/Current must be clickable.
+- **Composed example verified**: `HORIZONTAL` layout, `itemSpacing: 8`
+  throughout, connector = plain `RECTANGLE` 32×1.5px fill
+  `semantic/border/default`; steps are **content-sized, not equal-width**
+  (`layoutGrow: 0` on every instance).
+- **Exact token bindings resolved** for every state (circle fill/stroke,
+  label fill, font-family/size/weight) — full table in
+  `docs/component-expansion.md`.
+- **New finding, not in the docs-only content**: Current's label is
+  font-weight 700 (bold); Completed/Upcoming are 400 (regular) — an
+  additional non-color state signal.
+- **Shape/Surface**: confirmed absent, not assumed — the circle's corner
+  radius is bound to the **primitive** token `radius/full`, not a
+  Shape-driven component token; no Surface-related tokens bound anywhere;
+  no Shape or Surface property exists in `componentSetProps`.
 
-Per this task's own explicit instruction — "If Figma MCP is unavailable:
-STOP and report... Do not invent a Figma result from repo docs alone" —
-the full verification (anatomy, states, orientation, interaction, content
-model, spacing, token mapping, Shape/Surface participation, and the
-Figma-vs-docs-only comparison matrix) **could not be responsibly
-completed** and was not fabricated from the docs-only content as a
-substitute. Every comparison row is **NOT VERIFIABLE**, for this one
-reason — not because any individual row was inspected and found
-ambiguous.
+### Contract narrowed
 
-### Implementation-readiness decision: **E — BLOCKED**
+`orientation` and `Step.description?` are **dropped** from CE-2F's
+proposed API (zero Figma evidence for either). Everything else —
+`currentStep`, `onStepClick?` restricted to Completed/Current, compound
+`<Step>{children}</Step>`, structural state derivation, no Shape/Surface
+participation — is verified and carried forward, now with exact token
+names, connector treatment, and content-sized layout newly specified. An
+`aria-label`/`aria-labelledby` requirement on `Stepper` is added, matching
+Figma's own explicit accessibility guidance.
 
-Not A/B/C/D, since those all presuppose some real Figma evidence was
-obtained. None was. This is a tooling-access blocker, not a design-content
-finding. The docs-only `step-item` content's Figma-verification status
-remains exactly "docs-only" — neither upgraded nor downgraded by this
-task.
+**Open questions genuinely unresolved by Figma, not invented**:
+narrow-viewport/many-step responsive overflow; whether `onStepClick`
+should be provided by default; exact `currentStep` indexing convention.
 
-### Required human action before retry
+**CE-2 recommendation: CE-2K — implement the verified Stepper + Step
+contract.** Not executed in this task.
 
-A human needs to either (a) open Figma Desktop, load the Skrewww Design
-System file, and (re-)import/run the Desktop Bridge plugin, or (b)
-refresh/regenerate the `FIGMA_ACCESS_TOKEN` used by this MCP server's REST
-API path. Once access is restored, CE-2J's own methodology (Parts 1–16)
-should be re-attempted — this record does not need to be re-derived, only
-the live Figma inspection does.
-
-**CE-2 phase recommendation (Part 18): retry the Stepper Figma/MCP
-verification once Figma access is restored** — narrows, but does not
-replace, CE-2I's "verify Stepper next" recommendation; CE-2 candidate
-discovery remains paused. Not executed in this task.
-
-**Inventory: unchanged** (audit only). Stepper remains **NOT
-IMPLEMENTED**.
+**Inventory: unchanged** (audit only, no implementation occurred). Stepper
+remains **NOT IMPLEMENTED**, now with a verified, narrower, implementation-
+ready contract.
 
 ## 2026-09-14 — CE-2I App Shell / richer navigation product + architecture audit (decision D — Reference-App template first)
 
@@ -2941,28 +2950,29 @@ here instead.
 | **CE-2G Notification Center audit** | ✅ **COMPLETE** — **decision C, composition not a component** (not implemented) |
 | **CE-2H Command Palette audit** | ✅ **COMPLETE** — **decision C, composition not a component**, accessibility role model genuinely unresolved (not implemented, Menu/Combobox/Dialog untouched) |
 | **CE-2I App Shell audit** | ✅ **COMPLETE** — **decision D, Reference-App template first** (responsive-nav slice separately C-ready; not implemented; site navigation inspected, not refactored) |
-| **CE-2J Stepper Figma/MCP verification** | ⛔ **BLOCKED** — Figma verification unavailable (WebSocket Desktop Bridge not connected; REST API token expired, 403); Stepper still not implemented, still justified |
-| **CE-2 — Net-New Component Expansion** | **IN PROGRESS — no further CE-2A-scored candidates remain; Stepper's next step blocked on Figma tooling access** |
-| CE-2 recommendation | **Retry Stepper Figma/MCP verification once access is restored — recorded, NOT executed** |
+| **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`); still not implemented, ready for CE-2K |
+| **CE-2 — Net-New Component Expansion** | **IN PROGRESS — no further CE-2A-scored candidates remain; Stepper verified and ready for CE-2K** |
+| CE-2 recommendation | **CE-2K — implement the verified Stepper + Step contract — recorded, NOT executed** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-2J Stepper Figma/MCP verification attempted and
-found **BLOCKED** — Figma access itself unavailable (WebSocket Desktop
-Bridge not connected; REST API `FIGMA_ACCESS_TOKEN` expired), not a
-design-content finding. No live Figma data was obtained; nothing was
-fabricated from the docs-only `step-item` content as a substitute. All
-prior CE-2 decisions unchanged: Multi Select DEFERRED; Advanced Filters
-COMPOSITION PATTERN; Stepper COMPOUND STEPPER + STEP JUSTIFIED, NOT
-IMPLEMENTED (status unchanged — verification attempted, not resolved);
+**Current focus:** CE-2J Stepper Figma/MCP verification **COMPLETE** —
+Figma access was restored on retry and the live `Navigation/Step Item`
+component set (node `2024:2944`) plus a composed `Stepper Trail (example)`
+reference frame (node `2024:2949`) were verified directly via the Desktop
+Bridge plugin. **Decision B — READY WITH NARROWER CONTRACT**: `orientation`
+and `Step.description` dropped from CE-2F's proposal (zero Figma evidence
+for either); state model, tokens, connector treatment, content-sized
+layout, and a new font-weight state signal (Current = bold) all verified.
+Stepper was **not implemented** in this task. All prior CE-2 decisions
+unchanged: Multi Select DEFERRED; Advanced Filters COMPOSITION PATTERN;
 Notification Center COMPOSITION PATTERN; Command Palette COMPOSITION
 PATTERN, searchable role model unresolved; App Shell REFERENCE-APP
-TEMPLATE FIRST. **No further CE-2A-scored candidates remain, and
-Stepper's own next step is itself blocked on Figma tooling access.**
-Recommendation (retry once access is restored) is **recorded, not
-executed**. CE-2 remains **IN PROGRESS**. Community/Beta Stabilization
+TEMPLATE FIRST. **No further CE-2A-scored candidates remain.**
+Recommendation (CE-2K — implement the verified contract) is **recorded,
+not executed**. CE-2 remains **IN PROGRESS**. Community/Beta Stabilization
 remains steady-state (STAB-001…006 open, no P0/P1). Do not start CE-3,
 Reference App, PH-0, Guard, Stepper implementation, or any further CE-2
 work from this status line alone.
