@@ -1,6 +1,75 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-2E Advanced Filters audit — COMPLETE, composition not a component; CE-2 IN PROGRESS)
+Last verified: **2026-09-14** (CE-2F Stepper audit — COMPLETE, compound Stepper + Step justified, proposed contract only; CE-2 IN PROGRESS)
+
+## 2026-09-14 — CE-2F Stepper product + architecture audit (decision B — compound Stepper + Step justified, proposed contract only)
+
+**Audit only — Stepper was NOT implemented.** This is a process step
+indicator, explicitly not Number Input's increment/decrement steppers.
+Full reasoning: [`docs/component-expansion.md`](component-expansion.md#ce-2f--stepper-product--architecture-audit-decision-b--compound-stepper--step-justified-proposed-contract-only).
+
+### Existing capability — unusually well-evidenced for a CE-2 audit
+
+`content/navigation.ts` already has a real `step-item` content entry:
+states Completed/Current/Upcoming, `aria-current="step"` guidance, "only
+Completed shows a checkmark," and explicit interaction guidance ("don't let
+users click ahead to Upcoming steps"). Marked Class C, Figma-verification
+status **"docs-only"** — authored content, never MCP-confirmed against the
+live file. Already publicly anticipated by three shipped surfaces:
+Breadcrumb's own docs ("use Stepper" for linear step progress), Timeline's
+own docs ("a fixed, known-length linear process... use Step Item"), and a
+registry FAQ already comparing Breadcrumb vs. Stepper. The Navigation
+category page's own status note already tells visitors "Stepper... remains
+documentation-only" — a real, pre-existing, public gap statement.
+
+### Semantic boundary
+
+Distinct from Progress (quantitative, no per-item identity), Tabs (peer
+views, no ordering), Breadcrumb (hierarchy, not a fixed sequence),
+Pagination (page navigation, no "completed" notion), and Timeline
+(open-ended chronological history, not a fixed known-length process) — the
+boundary was already partly drawn by three shipped components' own docs,
+not invented here.
+
+### Decision: **B — compound `Stepper` + `Step` justified**
+
+- **Product:** real and unusually well-evidenced (three shipped components
+  + a public status note already anticipate it), though not tied to a
+  currently-shipped Skrewww industry vertical.
+- **Semantic/interaction:** owns a distinct role; read-only by default,
+  optional `onStepClick` callback restricted to Completed/Current only —
+  Stepper never owns routing/href navigation itself.
+- **State model:** Completed/Current/Upcoming only, computed structurally
+  from `currentStep` position (matching Timeline's position-derived-state
+  precedent) — no Error/optional/skipped states without further evidence.
+- **Accessibility:** **not the blocker** here (unlike CE-2D's Multi
+  Select) — `aria-current="step"`, ordered-list semantics, and non-color
+  state are already specified in real content.
+- **Architecture:** compound children (matching `ToggleGroup`/
+  `ToggleGroupItem`, CE-2C) over a config-array API — keeps routing
+  external, avoids the config-object anti-pattern, and is the most
+  Agent-Kit-familiar shape already present in this codebase.
+- **Figma:** recommend an **MCP verification pass** on the existing
+  `step-item` content before implementation — a middle path between pure
+  React-first (no prior Figma anticipation) and Figma-first-required (no
+  real spec at all); here real content exists but is unverified.
+- **Agent Kit:** a real component contract would be appropriate once
+  built — not added in this audit.
+
+**Proposed contract (PROPOSED, NOT IMPLEMENTED):** `<Stepper
+currentStep={number} orientation="horizontal" onStepClick?={(index) =>
+void}>` + `<Step>{children}</Step>`. Horizontal only in v1 (no evidence for
+vertical). Beta `0.1.0-beta`. Responsive behavior for 5–8+ steps is an
+honest, unresolved open question, not invented here.
+
+**Reference App relevance:** yes, as a refinement source (real step
+counts, overflow behavior, back-navigation expectations) — not a
+precondition the way it was for CE-2D/CE-2E, since the core contract is
+already reasonably well-specified. Recorded as a validation target, not
+started here.
+
+**Inventory: unchanged** (audit only). Next actual component candidate:
+**Notification Center — report only, NOT STARTED.**
 
 ## 2026-09-14 — CE-2E Advanced Filters product + architecture audit (decision B — composition, not a component)
 
@@ -2547,19 +2616,20 @@ here instead.
 | **CE-2C Toggle Group** | ✅ **COMPLETE** — Segmented Control resolved by Toggle Group |
 | **CE-2D Multi Select audit** | ✅ **COMPLETE** — **decision D, deferred** (not implemented, not rejected) |
 | **CE-2E Advanced Filters audit** | ✅ **COMPLETE** — **decision B, composition not a component** (not implemented, Data Table untouched) |
+| **CE-2F Stepper audit** | ✅ **COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented) |
 | **CE-2 — Net-New Component Expansion** | **IN PROGRESS** |
-| CE-2 next (Stepper) | **Report only, NOT STARTED** |
+| CE-2 next (Notification Center) | **Report only, NOT STARTED** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-2E Advanced Filters audit complete — **composition,
-not a component (decision B)**, no implementation, Data Table untouched.
-CE-2 remains **IN PROGRESS**. Next candidate: **Stepper — report only, NOT
-STARTED**. Community/Beta Stabilization remains steady-state (STAB-001…006
-open, no P0/P1). Do not start CE-3, Reference App, PH-0, Guard, or Stepper
-from this status line alone.
+**Current focus:** CE-2F Stepper audit complete — **compound Stepper + Step
+justified (decision B)**, proposed contract only, not implemented. CE-2
+remains **IN PROGRESS**. Next candidate: **Notification Center — report
+only, NOT STARTED**. Community/Beta Stabilization remains steady-state
+(STAB-001…006 open, no P0/P1). Do not start CE-3, Reference App, PH-0,
+Guard, or Notification Center from this status line alone.
 
 ### Component/distribution work (parallel track)
 

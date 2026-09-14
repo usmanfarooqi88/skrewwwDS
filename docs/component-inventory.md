@@ -1,7 +1,7 @@
-# Skrewww component inventory (CE-0 → CE-2E)
+# Skrewww component inventory (CE-0 → CE-2F)
 
-> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A–C:** Toggle Group shipped; **CE-2D:** Multi Select audited and deferred; **CE-2E:** Advanced Filters audited — composition, not a component (CE-2 IN PROGRESS)
-> Class B = **0**. Inventory counts unchanged by CE-2D/CE-2E (audits only, no implementation). See [`docs/component-expansion.md`](component-expansion.md).
+> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A–C:** Toggle Group shipped; **CE-2D:** Multi Select audited and deferred; **CE-2E:** Advanced Filters audited — composition, not a component; **CE-2F:** Stepper audited — compound Stepper+Step justified, proposed contract only (CE-2 IN PROGRESS)
+> Class B = **0**. Inventory counts unchanged by CE-2D/CE-2E/CE-2F (audits only, no implementation). See [`docs/component-expansion.md`](component-expansion.md).
 
 This document is the durable planning source for CE-1. Prefer the tables over
 prose. Re-derive volatile counts from `lib/component-registry*.ts` and
@@ -88,7 +88,7 @@ Numerical Figma−React equality is **not** a product goal.
 | Navigation | 4 | 11 | 7 | 0 | 7 |
 | Content & Data | 16 | 18 | 2 | 0 | 2 (tree-item, timeline-item) |
 
-Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-first). Segmented Control resolved by Toggle Group. Multi Select audited and **deferred** (CE-2D decision D — no clean a11y pattern yet for the searchable+chips case; not a current inventory change). Advanced Filters audited and found to be **composition, not a component** (CE-2E decision B — every needed control already exists; removed from the direct component queue, product need preserved as a future Recipe target). Next actual component candidate: Stepper — report only, NOT STARTED.
+Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-first). Segmented Control resolved by Toggle Group. Multi Select audited and **deferred** (CE-2D decision D — no clean a11y pattern yet for the searchable+chips case; not a current inventory change). Advanced Filters audited and found to be **composition, not a component** (CE-2E decision B — every needed control already exists; removed from the direct component queue, product need preserved as a future Recipe target). Stepper audited and found to be a **justified compound Stepper + Step component** (CE-2F decision B — existing `step-item` content already specifies states/a11y; proposed contract only, not implemented, pending Figma MCP verification). Next actual component candidate: Notification Center — report only, NOT STARTED.
 
 ## CE-1 status
 
@@ -107,8 +107,9 @@ Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-firs
 | **CE-2C Toggle Group** | ✅ COMPLETE — Beta `0.1.0-beta`; Segmented Control = presentation (decision A); `/r` deferred to CE-3 |
 | **CE-2D Multi Select audit** | ✅ COMPLETE — **decision D (defer)**; see [`docs/component-expansion.md`](component-expansion.md#ce-2d--multi-select-product--architecture-audit-decision-d--defer) |
 | **CE-2E Advanced Filters audit** | ✅ COMPLETE — **decision B (composition, not a component)**; see [`docs/component-expansion.md`](component-expansion.md#ce-2e--advanced-filters-product--architecture-audit-decision-b--composition-not-a-component) |
+| **CE-2F Stepper audit** | ✅ COMPLETE — **decision B (compound Stepper + Step justified)**, proposed contract only; see [`docs/component-expansion.md`](component-expansion.md#ce-2f--stepper-product--architecture-audit-decision-b--compound-stepper--step-justified-proposed-contract-only) |
 | **CE-2 overall** | **IN PROGRESS** |
-| **Next candidate** | Stepper (P3) — **report only, NOT STARTED** |
+| **Next candidate** | Notification Center (P4) — **report only, NOT STARTED** |
 
 See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 
@@ -207,7 +208,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Menu Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
 | Page Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
 | Sidebar Nav Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
-| Step Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
+| Step Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | CE-2F (2026-09-14): audited — compound Stepper + Step is a **justified proposed contract** (not the old "keep as composition, no standalone API" guidance); recommend an MCP Figma verification pass on this content before implementation. Still not implemented. | Navigation; building-block / item |
 | Timeline Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Content & Data; building-block / item |
 | Top Nav Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Navigation; building-block / item |
 | Tree Item | yes (content/) | no | C | internal | — | docs-only | no | no | — | — | Keep as composition — do not add standalone React API | Content & Data; building-block / item |
@@ -218,7 +219,7 @@ CE-0 does not close STAB-001…STAB-006. Those remain Community/Beta
 steady-state items (`/r/registry.json`, CoC private contact, Figma Pro
 sharing confirmation, Free Figma terms, early external signal, NEW badge).
 
-## Roadmap after CE-2E
+## Roadmap after CE-2F
 
 - Community/Beta Stabilization = steady-state monitoring
 - **CE-0 = COMPLETE**
@@ -228,6 +229,7 @@ sharing confirmation, Free Figma terms, early external signal, NEW badge).
 - **CE-2C Toggle Group = COMPLETE** (Segmented Control resolved by Toggle Group)
 - **CE-2D Multi Select audit = COMPLETE** — **decision D, deferred** (not implemented; not a rejection)
 - **CE-2E Advanced Filters audit = COMPLETE** — **decision B, composition not a component** (not implemented; product need preserved as a future Recipe target, pending Reference App evidence)
+- **CE-2F Stepper audit = COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented, pending Figma MCP verification + ideally Reference App evidence)
 - **CE-2 overall = IN PROGRESS**
-- **Next CE-2 candidate = Stepper — report only, NOT STARTED**
+- **Next CE-2 candidate = Notification Center — report only, NOT STARTED**
 - CE-3 / Reference App / PH-0 / Guard = later / NOT STARTED

@@ -5,6 +5,7 @@
 > **CE-2C** Toggle Group ✅ — Segmented Control **RESOLVED BY TOGGLE GROUP**
 > **CE-2D** Multi Select audit ✅ — **DEFERRED (decision D)**, not implemented
 > **CE-2E** Advanced Filters audit ✅ — **decision B, composition pattern (future Recipe, Reference-App-evidenced)**, not implemented
+> **CE-2F** Stepper audit ✅ — **decision B, compound Stepper + Step justified**, proposed contract only, not implemented
 > Planning for CE-2 net-new work. Does **not** reopen CE-1 / Figma Class B parity.
 
 ## Purpose
@@ -53,8 +54,8 @@ fit, and Reference App readiness — not against another design system’s catal
 | Segmented Control | B/C | — | — | — | — | **27** | — | **RESOLVED BY TOGGLE GROUP / NOT A SEPARATE COMPONENT** | CE-2C decision **A** |
 | Multi Select | A | Medium — no clean a11y pattern yet for the differentiating (searchable + chips) case | Combobox pattern knowledge, Tag (`removable`/`onRemove` already exists), Popover | High | High | **26** | — | **DEFERRED (CE-2D decision D)** | See CE-2D audit below. Not rejected — needs product evidence + accessibility research/Figma before reconsidering |
 | Advanced Filters | B | Medium for SaaS dashboards — **removed from the direct component-implementation queue** | SearchField, Select, Combobox, Checkbox, Radio Group, Toggle Group, Slider, Number Input, CalendarGrid (`mode="range"`), Popover, Drawer, Button, Tag | N/A — not a component | N/A — not a component | **24** | — | **NOT A STANDALONE COMPONENT (CE-2E decision B)** | See CE-2E audit below. Composition pattern using existing primitives; future Recipe pending Reference App evidence, not implemented |
-| **Stepper** | A/B | Medium for multi-step flows | Pagination, Tabs, Progress Bar | Medium–High | Medium | **23** | **P3 / NEXT** | CANDIDATE / NOT STARTED | Distinct from Pagination |
-| Notification Center | D | Medium for SaaS | Toast, Badge, Popover/Drawer | High | Medium | **21** | P5 | CANDIDATE / NOT STARTED | System surface |
+| **Stepper** | B | Medium for checkout/onboarding/setup-wizard flows — already anticipated by 3 shipped components' own docs (Breadcrumb, Timeline) and a Navigation-category status note | Existing `step-item` content (states/a11y already specified), Timeline's position-derived-state precedent, ToggleGroup/ToggleGroupItem's compound-children precedent | Medium | Low–Medium (state model + `aria-current="step"` already specified in content) | **23** | — | **PROPOSED CONTRACT ONLY — NOT IMPLEMENTED (CE-2F decision B)** | See CE-2F audit below. Compound Stepper + Step justified; recommend an MCP Figma verification pass on existing `step-item` content before implementation |
+| Notification Center | D | Medium for SaaS | Toast, Badge, Popover/Drawer | High | Medium | **21** | **P4 / NEXT** | CANDIDATE / NOT STARTED | System surface |
 | Command Palette | D | Medium for power-user apps | Menu, Combobox, Dialog | High | High | **20** | P5 | CANDIDATE / NOT STARTED | App command surface |
 | App Shell / richer nav | D | Medium | Sidebar/Top Nav items (Class C), Menu | Very high | Medium | **16** | P6 | CANDIDATE / NOT STARTED | Layout system |
 
@@ -273,12 +274,122 @@ None of these should become React exports unless a Recipe is written and Referen
 
 **Yes — likely a better evidence source than building or documenting a pattern speculatively now.** A real dashboard/admin screen in the upcoming Reference App would surface the actual filter-field mix, whether Apply is immediate or explicit, and whether the left-only Drawer placement is sufficient for a real mobile filter panel — all open questions this audit could not resolve from first principles alone. **Recorded as a Reference App validation target.** Not started in this task.
 
+## CE-2F — Stepper product + architecture audit (decision B — compound Stepper + Step justified, proposed contract only)
+
+**Audit only. Stepper was not implemented in CE-2F.** This is a **product/process step indicator** — explicitly not Number Input's increment/decrement steppers, which are an unrelated, already-shipped concept sharing only the word "stepper."
+
+### Existing capability audit
+
+- **`step-item`** (`content/navigation.ts`) — a real, already-authored content entry: *"Step Item is a single step within a multi-step Stepper, showing progress through a linear process (checkout, onboarding, setup wizard)."* Specifies `variants: State (Completed/Current/Upcoming) — 3 variants`, `accessibility: aria-current="step" on the active step, ideally an aria-label summarizing "Step 3 of 5,"` `commonMistakes: Allowing users to click ahead to Upcoming steps that require earlier steps first`, and `properties: State as variants — structurally verified so only Completed shows a checkmark. Label (text), per-state Number (text).` Marked Class **C** (internal building block) in `docs/component-inventory.md`, Figma-verification status **"docs-only"** — i.e. authored content, never independently confirmed against a live Figma node via MCP (unlike, e.g., Combobox's confirmed-then-removed Multi-select property).
+- **Already publicly anticipated by three other shipped surfaces**: Breadcrumb's own docs (`whenNotToUse: "...linear step progress (use Stepper)"`, `commonMistakes: "Using Breadcrumb as a progress Stepper"`), Timeline's own docs (`whenNotToUse: "A fixed, known-length linear process with progress state — use Step Item"`), and a registry-level FAQ already comparing Breadcrumb vs. Stepper (`lib/component-registry-navigation.ts`). The Navigation category page's own status note already tells visitors *"Sidebar, Stepper, and Top Navigation items remain documentation-only"* — a real, existing, publicly-visible gap statement, not one invented for this audit.
+- **Progress Bar** — quantitative (`role="progressbar"`, percentage), explicitly lists "multi-step completion" as a use case but only as a raw percentage, not a labeled sequence of named steps.
+- **Tabs** — peer content views (`tablist`/`tab`/`tabpanel`), switches what's shown, not a progress/sequence indicator.
+- **Breadcrumb** — hierarchy/location, not a linear sequence with completion state.
+- **Pagination** — page navigation within a result set, not a fixed named sequence.
+- **Timeline** — chronological event history (open-ended, timestamped), explicitly distinguished from a *"fixed, known-length linear process with progress state"* by its own docs.
+- No existing component owns "a fixed, known-length, linear sequence of named steps with completed/current/upcoming state." This gap is real, not manufactured, and — unusually for this project's CE-2 audits — already substantially specified rather than blank.
+
+### Stepper use-case taxonomy (not bundled into one API)
+
+1. **Linear progress stepper** (fixed named steps, no per-step content shown) — the shape `step-item`'s content actually specifies.
+2. **Multi-step form/wizard** — same visual shape, paired with app-owned form/routing logic outside Stepper.
+3. **Checkout flow** / 4. **Onboarding flow** / 7. **Approval process** — same shape, different app context; not separate APIs.
+5. **Status/process tracking without user navigation** (read-only) — same shape, `onStepClick` simply omitted.
+6. **Clickable navigation between completed/current steps** — same shape, `onStepClick` provided, scoped only to Completed/Current per `step-item`'s own "don't let users click ahead" guidance.
+8. **Vertical process/timeline-like stepper** — **no evidence** of this need anywhere in current docs/content; not part of the proposed v1 contract (see Orientation below). This is deliberately **not** the same thing as Timeline, which already owns open-ended chronological history.
+
+Shapes 1–7 are one visual/interaction contract used in different app contexts — not unrelated visualizations bundled together. Shape 8 is excluded from v1 pending evidence.
+
+### Semantic boundary
+
+- **Progress** = quantitative (a percentage/fraction), no per-item identity.
+- **Tabs** = peer views, switches what's displayed, no ordering/completion semantics.
+- **Breadcrumb** = hierarchy/location within nested structure, not a fixed linear sequence.
+- **Pagination** = navigating a result set's pages, no notion of "completed."
+- **Timeline** = open-ended chronological *history* of events, not a fixed known-length forward process.
+- **Stepper** = a fixed, known-length, ordered sequence of named steps with Completed/Current/Upcoming state. Distinct from all five on at least one axis (fixed-length vs. open-ended, qualitative-named-steps vs. quantitative percentage, forward-progress vs. peer-switching, sequence vs. hierarchy). The boundary is not fuzzy, and three already-shipped components' own docs already draw it.
+
+### Product need
+
+Real, and better evidenced than either CE-2D (Multi Select) or CE-2E (Advanced Filters) had at this point: checkout/onboarding/setup-wizard/multi-page-form/booking/approval-process flows are common, recurring SaaS patterns, and — unlike a generic "other systems have one" justification — this project's **own** docs across three shipped components already reference Stepper as the intended answer, and the Navigation category page already tells visitors it's a known, documentation-only gap. Not tied to a currently-shipped Skrewww industry vertical (no direct KYC/banking-application-flow content found), so the need is general-SaaS rather than Skrewww-specific-industry evidence — still real, not manufactured.
+
+### Interaction model
+
+Read-only by default. Optional navigation should be a plain callback (`onStepClick?: (index: number) => void`), restricted to Completed (and reasonably Current) steps — never Upcoming, per `step-item`'s own explicit guidance. **Stepper does not own routing** — the app decides what `onStepClick` does (navigate, change local wizard state, etc.); Stepper never renders an `href` or performs navigation itself. This mirrors Breadcrumb's `items` carrying `href`s for actual page navigation vs. a callback-only model here, because Stepper steps are typically *not* independently addressable pages the way breadcrumb ancestors are — an open question worth confirming during implementation, not resolved by assumption here.
+
+### State model — smallest useful set
+
+**Completed / Current / Upcoming — exactly the three states `step-item`'s own content already specifies**, computed **structurally from position** (`index < currentStep` → Completed, `index === currentStep` → Current, `index > currentStep` → Upcoming) rather than manually assigned per step — matching this codebase's own established precedent (Timeline's docs explicitly warn against coupling visual state to a manually-set flag instead of real list position). **Error, optional, skipped, and disabled-individual-step states are deliberately excluded from v1** — no product evidence in this codebase supports them; they would be a documented future extension only if a real use case surfaces (e.g. via Reference App), not spectulated now.
+
+### Accessibility findings
+
+- Ordered list semantics (`role="list"`/`<ol>`), matching Timeline's real-list convention.
+- `aria-current="step"` on the Current step only — already specified in `step-item`'s content, a real (if unverified-in-Figma) ARIA pattern, not invented here (WAI-ARIA `aria-current` explicitly includes a `"step"` token for exactly this use case).
+- Each step needs an accessible summary along the lines of "Step 3 of 5: Shipping," per `step-item`'s own guidance.
+- Completed steps, only if `onStepClick` is provided, should render as real interactive elements (native `<button>`, matching this codebase's established preference for real interactive elements over `div`+`onClick` everywhere else); Upcoming steps must never be focusable/interactive.
+- State must not be conveyed by color alone — `step-item`'s own spec already builds this in structurally (Completed swaps to a checkmark instead of a number; Current/Upcoming keep numbers), not merely a color change.
+- `focus-visible` on interactive Completed/Current steps, matching the established token convention used by Toggle Group/Tabs/etc.
+- No custom ARIA roles needed — `aria-current="step"` plus a real ordered list plus (optionally) real buttons covers this cleanly with standard semantics.
+
+### Orientation and responsive implications
+
+**Horizontal only for a first contract.** No evidence anywhere in current docs/content supports a vertical variant being a real product requirement today — `step-item`'s own `variants` field lists only the three states, no orientation axis. Vertical is a plausible **later** extension, not assumed automatically (per explicit instruction). **Responsive behavior for long flows (5, 8+ steps) is a genuine, honest gap**: nothing in current content addresses label truncation, a condensed "Step 3 of 5" fallback, or horizontal overflow on narrow viewports. This is recorded as an open question for a future implementation to resolve with real evidence (ideally from Reference App usage) — not invented here, and explicitly not a "mobile carousel" or new responsive-container primitive.
+
+### Architecture comparison
+
+Per this task's own stated preference criteria (keep routing external, preserve flexible content, avoid huge config objects, clear Agent Kit usage, clean accessibility):
+
+| | Option A — config-array (`steps={[...]}`) | **Option B — compound `<Stepper><Step/></Stepper>`** | Option C — composition from existing primitives |
+|---|---|---|---|
+| Application routing | Must be threaded through config objects (e.g. `steps[i].href` or `.onClick`) | Stays external — `onStepClick(index)` callback only, app decides what happens | N/A — no dedicated abstraction at all |
+| Flexible per-step content | Constrained to whatever shape the config object allows | Full `ReactNode` per `<Step>` child — icons, rich labels, descriptions | N/A |
+| Config-object size | Grows with every new per-step need (label, description, icon, href, disabled...) — the exact anti-pattern this task warns against choosing "merely because it is concise" | None — each `<Step>` is its own element | N/A |
+| Agent Kit clarity | An agent must learn one array-item schema | An agent already knows this shape from `ToggleGroup`/`ToggleGroupItem` (CE-2C) — direct precedent in this same codebase | Requires bespoke per-use guidance each time |
+| Accessibility | Still achievable, but state/ARIA logic lives awkwardly split between the array and the renderer | State computed once in `Stepper` from `currentStep` + child position, matching Timeline's position-derived-state precedent | Would have to be re-solved per composition instance |
+| **Fit** | Weaker — Breadcrumb already uses this shape for genuinely different data (real addressable `href`s per ancestor) | **Best fit** — matches this project's own most recent precedent (Toggle Group) and keeps routing external cleanly | Not viable — no missing primitive combination cleanly represents "structurally-derived Completed/Current/Upcoming state," this is exactly what a small compound component is for |
+
+### Final decision: **B — compound `Stepper` + `Step` is justified**
+
+- **Product rationale:** real, recurring need (checkout/onboarding/wizard/approval flows), and unusually well-evidenced for a CE-2 audit — three shipped components' own docs and a public category status note already anticipate it.
+- **Semantic rationale:** owns a distinct role (fixed-length, named, ordered, completion-stateful) that Progress/Tabs/Breadcrumb/Pagination/Timeline each fail to cover on a different axis; the boundary was already partly drawn by this codebase's own existing docs, not invented here.
+- **Interaction rationale:** a narrow, callback-only navigation model (`onStepClick`, Completed/Current only) keeps routing/business-flow ownership with the consuming app, per explicit instruction.
+- **Accessibility rationale:** unlike CE-2D's Multi Select, the accessibility model is **not the blocker** — `aria-current="step"`, ordered-list semantics, and non-color state are already specified in real content and require no invented ARIA.
+- **Architecture rationale:** compound children (Option B) directly matches this codebase's own most recent precedent (`ToggleGroup`/`ToggleGroupItem`, CE-2C) and avoids the config-object anti-pattern this task explicitly warns against.
+- **Figma rationale:** existing `step-item` content is real and detailed but explicitly **unverified against the live Figma file** ("docs-only" status) — safer to reconcile it via an MCP verification pass before implementation than to either blindly trust unverified content or discard it and start over.
+- **Agent Kit rationale:** a genuine component contract would be appropriate once built (this is a true primitive, not a wizard-specific pattern) — but not created in this audit.
+
+### Proposed contract — PROPOSED, NOT YET IMPLEMENTED
+
+- **Responsibility:** visual, accessible display of progress through a fixed, known-length, linear sequence of named steps. Does **not** own routing, form state, or business-flow logic.
+- **Tentative API:** `<Stepper currentStep={number} orientation="horizontal" aria-label="..." onStepClick?={(index) => void}>` composed with `<Step>{children}</Step>` (optional `description` prop). Exact `currentStep` indexing convention (0- vs. 1-based) left as an open implementation question, not decided speculatively here.
+- **Selected/state model:** Completed / Current / Upcoming, computed structurally from `index` vs. `currentStep` — no manually-assigned per-step state prop, no Error/optional/skipped states in v1.
+- **Current/completed/upcoming behavior:** Completed → checkmark + (if `onStepClick` provided) real interactive `<button>`; Current → number + `aria-current="step"` + visual emphasis; Upcoming → number, muted, never interactive.
+- **Interactive vs. read-only:** read-only unless `onStepClick` is provided; even then, restricted to Completed (and reasonably Current) — Upcoming is never clickable.
+- **Orientation:** horizontal only in v1; vertical is a later, non-blocking extension pending evidence.
+- **Accessibility:** ordered list (`role="list"`/`<ol>`), `aria-current="step"` on Current, per-step accessible summary ("Step 3 of 5: Shipping"), real `<button>` for interactive steps, no color-only state, `focus-visible` on interactive steps.
+- **Shape/Surface:** reuse existing semantic/component connector-line and step-chrome tokens (following Timeline's connector-line and Toggle Group's joined-chrome precedent) — no new hardcoded colors.
+- **Responsive behavior:** **open question, not resolved here** — needs real evidence (ideally Reference App) for how 5–8+ steps should degrade on narrow viewports before implementation locks in an approach.
+- **Maturity:** Beta, `0.1.0-beta`, matching this project's established convention for net-new CE-2 components.
+- **Testing plan (for a future implementation, not run now):** render/labeling; state derivation from `currentStep` (Completed/Current/Upcoming) across boundary positions; `aria-current="step"` placement; checkmark-only-on-Completed; `onStepClick` fires only for Completed/Current, never Upcoming; Upcoming steps have no `tabindex`/are not `<button>`; keyboard Tab order visits only interactive steps; `focus-visible` on interactive steps; no color-only state change (verify icon/text differs); horizontal-only in v1; a narrow-viewport browser test documenting actual overflow behavior rather than assuming a fix.
+
+### Figma recommendation
+
+**Reconcile via an MCP verification pass on the existing `step-item` content before implementation** — a middle path between CE-2B/CE-2C's pure React-first (which had zero prior Figma anticipation) and CE-2D's Multi Select conclusion (design-first required, because no real spec existed at all). Here, real content already exists and is unusually well-specified for a not-yet-implemented item, but its Figma-verification status is "docs-only" — never confirmed against the live file the way Combobox's now-removed Multi-select property was. Confirming (or correcting) this content against the real Figma file first avoids either blindly trusting unverified content or wastefully discarding genuinely useful existing work.
+
+### Agent Kit recommendation
+
+**A component contract, once built** — Stepper is a true reusable primitive (not a wizard-specific composition the way Advanced Filters was), so it warrants the same contract treatment as any other component (comparisons distinguishing it from Progress Bar/Tabs/Breadcrumb/Pagination/Timeline, real `apiProps` only). **No Agent Kit artifact was added in this audit**, per explicit instruction.
+
+### Reference App relevance
+
+**Yes, as a refinement source, not a precondition.** Unlike CE-2D (where Reference App evidence was needed to determine *whether* a hard accessibility problem was worth solving at all) or CE-2E (where it would validate an entire pattern shape from scratch), here the core contract is already reasonably well-specified from existing content. A real onboarding/settings wizard in the future Reference App would still be valuable for: confirming real step counts (testing the responsive-overflow open question), confirming whether back-navigation to Completed steps is actually wanted in practice, and validating the `currentStep` indexing convention against a real consumer. **Recorded as a Reference App validation target**, not started here.
+
 ## Next CE-2 candidate
 
-Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E) — removed from the direct component-implementation queue while its product need is preserved as a future composition/Recipe target.
+Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). Stepper has a **justified proposed contract, not yet implemented** (CE-2F) — pending an MCP Figma verification pass and ideally Reference App evidence, per the recommendations above.
 
-**Stepper** (score 23) is the next actual component candidate — **report only, NOT STARTED**.
+**Notification Center** (score 21) is the next actual component candidate — **report only, NOT STARTED**.
 
 ## Out of scope
 
-CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, adding Recipes, adding Feature Kits, implementing Stepper / Notification Center / Command Palette / App Shell.
+CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, implementing Stepper, modifying Number Input, adding Recipes, adding Feature Kits, implementing Notification Center / Command Palette / App Shell.
