@@ -1,6 +1,101 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-2H Command Palette audit — COMPLETE, composition not a component, a11y role model genuinely unresolved; CE-2 IN PROGRESS)
+Last verified: **2026-09-14** (CE-2I App Shell / richer navigation audit — COMPLETE, Reference-App template first; CE-2 phase-completion recommendation issued, not executed; CE-2 IN PROGRESS)
+
+## 2026-09-14 — CE-2I App Shell / richer navigation product + architecture audit (decision D — Reference-App template first)
+
+**Audit only — App Shell was NOT implemented.** No navigation components
+were implemented or modified; Skrewww's own site navigation was inspected
+but not refactored. Full reasoning:
+[`docs/component-expansion.md`](component-expansion.md#ce-2i--app-shell--richer-navigation-product--architecture-audit-decision-d--reference-app-template-first).
+**All five prior CE-2 decisions are unchanged and preserved by this task**:
+Multi Select DEFERRED; Advanced Filters COMPOSITION PATTERN; Stepper
+COMPOUND STEPPER + STEP JUSTIFIED, NOT IMPLEMENTED, pending Figma/MCP
+verification; Notification Center COMPOSITION PATTERN; Command Palette
+COMPOSITION PATTERN, searchable role model unresolved.
+
+### Current-site evidence — the richest "in-house" audit of the CE-2 series
+
+Skrewww's own site navigation (`Sidebar.tsx`, `SidebarNav.tsx`,
+`SidebarNavLink.tsx`, `MobileDocsNav.tsx`) lives entirely outside
+`components/ui/` — never published. Key findings: the mobile nav is
+**already solved** — `MobileDocsNav` composes `Drawer` around the exact
+same `SidebarNav` content used on desktop, proving no desktop/mobile
+duplication. `Sidebar.tsx` is docs-specific (fixed `w-64`, hardcoded
+branding, no collapse, no footer/user area). The desktop-sidebar-width and
+main-content-offset (`md:ml-64` in `app/layout.tsx`) are two independently
+hardcoded values with no shared source. **No skip-to-content link exists
+anywhere in the current site** — an honest, observed gap, not fixed here
+(refactoring the site is out of scope). No `AppHeader`/`ContentHeader`
+abstraction exists even at the site level.
+
+**Concrete evidence for the responsibility boundary**: `SidebarNavLink.tsx`
+(site-specific, not public) calls `usePathname()` from `next/navigation`
+directly to derive active-route state. By contrast, the **public**
+`components/ui/` library (`Link`, `Button`, `Pagination`, `ListItem`)
+already has an accepted convention of rendering `next/link`'s `<Link>`,
+but **none of them derive active-route state from the router** — that
+pattern is confined entirely to app-specific code today. This is exactly
+the "active route derivation" boundary the task describes, already
+enforced in practice by this codebase, not just in theory.
+
+### Decision: **D — Reference-App template first**, with a narrower slice already C-ready
+
+Unlike CE-2E/CE-2G/CE-2H, this audit does not land on one uniform letter —
+evidence genuinely splits by shape:
+
+- **The responsive sidebar/drawer pairing** (persistent sidebar desktop,
+  `Drawer` mobile, one shared nav-content source, active state supplied by
+  the app) is **already proven, working, in-house** — ready for
+  composition/docs guidance now, independent of Reference App timing.
+- **The broader shell/template shapes** (admin dashboard shell, SaaS app
+  shell, collapsible sidebar, utility header, workspace switcher, nested
+  navigation) have **no in-house evidence** and are irreducibly tied to
+  routing/permissions/workspace state — genuinely needing a real
+  application to validate rather than speculative specification.
+
+**Sidebar decision (Part 9): B, not A** — a generic public Sidebar
+primitive is not justified yet; more than half of what it would need
+(collapse, icon-only rail, footer/user area) is unevidenced, and active
+state depends on app-specific router coupling. Document the proven
+`<aside>` + nav-content + `Drawer` pairing as composition guidance instead.
+
+**Navigation data model (Part 11): no public schema proposed.** The site's
+own `primaryNavLinks` array (`lib/sidebar-nav.ts`) is exactly the kind of
+data shape that should stay app-owned, matching CE-2E/CE-2G's own "avoid
+becoming a domain DTO library" conclusion.
+
+**Rationale summary:** widest "must not own" list of any CE-2 audit yet
+(routing, permissions, active-route derivation, auth, workspace state,
+backend nav config, analytics, feature flags); both a standalone `AppShell`
+and a small layout-primitive family risk committing to unevidenced
+responsibilities (collapse behavior, workspace state) and the slot-
+explosion/routing-coupling failure modes the task explicitly warned
+against; a Reference App screen is the right artifact for the unevidenced
+shapes, while docs guidance is the right artifact for the proven slice now.
+
+**Reference App relevance: yes, explicitly the largest validation target
+identified across the whole CE-2 series** — responsive collapse, header
+density, nesting, real router-based active-state, workspace/account
+actions, and the content-header/breadcrumb relationship all need real
+validation this audit could not responsibly invent.
+
+### CE-2 phase-completion recommendation (Part 19 — not executed)
+
+**Recommend B: pause CE-2 candidate discovery after this audit; perform the
+Stepper Figma/MCP verification next.** Five of the seven audited-beyond-
+Number-Input CE-2 candidates (Multi Select, Advanced Filters, Notification
+Center, Command Palette, App Shell) landed on "not a standalone component"
+rather than "build this" — a pattern signaling diminishing returns from
+further speculative discovery (Option A). Closing CE-2 outright (Option C)
+would skip Stepper's own concrete, already-identified next step. Moving
+Reference App earlier (Option D) is close, but Stepper's proposed contract
+has a narrower, well-defined next action (Figma/MCP verification) worth
+doing first, since it's the one candidate actually close to shippable. This
+recommendation is **recorded, not executed**, in this task.
+
+**Inventory: unchanged** (audit only). No further CE-2A-scored candidates
+remain in the original scoring table.
 
 ## 2026-09-14 — CE-2H Command Palette product + architecture audit (decision C — composition, accessibility role model genuinely unresolved)
 
@@ -2774,27 +2869,31 @@ here instead.
 | **CE-2C Toggle Group** | ✅ **COMPLETE** — Segmented Control resolved by Toggle Group |
 | **CE-2D Multi Select audit** | ✅ **COMPLETE** — **decision D, deferred** (not implemented, not rejected) |
 | **CE-2E Advanced Filters audit** | ✅ **COMPLETE** — **decision B, composition not a component** (not implemented, Data Table untouched) |
-| **CE-2F Stepper audit** | ✅ **COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented, **still pending Figma/MCP verification — unchanged by CE-2G/CE-2H**) |
+| **CE-2F Stepper audit** | ✅ **COMPLETE** — **decision B, compound Stepper + Step justified** (proposed contract only, not implemented, **still pending Figma/MCP verification — unchanged by CE-2G/CE-2H/CE-2I**) |
 | **CE-2G Notification Center audit** | ✅ **COMPLETE** — **decision C, composition not a component** (not implemented) |
 | **CE-2H Command Palette audit** | ✅ **COMPLETE** — **decision C, composition not a component**, accessibility role model genuinely unresolved (not implemented, Menu/Combobox/Dialog untouched) |
-| **CE-2 — Net-New Component Expansion** | **IN PROGRESS** |
-| CE-2 next (App Shell / richer navigation) | **Report only, NOT STARTED** |
+| **CE-2I App Shell audit** | ✅ **COMPLETE** — **decision D, Reference-App template first** (responsive-nav slice separately C-ready; not implemented; site navigation inspected, not refactored) |
+| **CE-2 — Net-New Component Expansion** | **IN PROGRESS — no further CE-2A-scored candidates remain** |
+| CE-2 phase recommendation | **Pause candidate discovery, verify Stepper next — recorded, NOT executed** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-2H Command Palette audit complete — **composition
-(decision C)**, not implemented, accessibility role model recorded as
-genuinely unresolved rather than a simple documentation gap. All prior
-CE-2 decisions unchanged: Multi Select DEFERRED; Advanced Filters
-COMPOSITION PATTERN; Stepper COMPOUND STEPPER + STEP JUSTIFIED, NOT
-IMPLEMENTED, pending Figma/MCP verification; Notification Center
-COMPOSITION PATTERN. CE-2 remains **IN PROGRESS**. Next candidate: **App
-Shell / richer navigation — report only, NOT STARTED**. Community/Beta
+**Current focus:** CE-2I App Shell / richer navigation audit complete —
+**Reference-App template first (decision D)**, not implemented, the
+responsive sidebar/drawer pairing already proven in Skrewww's own site
+separately flagged as ready for composition guidance now. All prior CE-2
+decisions unchanged: Multi Select DEFERRED; Advanced Filters COMPOSITION
+PATTERN; Stepper COMPOUND STEPPER + STEP JUSTIFIED, NOT IMPLEMENTED,
+pending Figma/MCP verification; Notification Center COMPOSITION PATTERN;
+Command Palette COMPOSITION PATTERN, searchable role model unresolved.
+**No further CE-2A-scored candidates remain.** CE-2 phase-completion
+recommendation issued (pause discovery, verify Stepper next) but **not
+executed** in this task. CE-2 remains **IN PROGRESS**. Community/Beta
 Stabilization remains steady-state (STAB-001…006 open, no P0/P1). Do not
-start CE-3, Reference App, PH-0, Guard, or App Shell from this status line
-alone.
+start CE-3, Reference App, PH-0, Guard, Stepper verification, or any
+further CE-2 work from this status line alone.
 
 ### Component/distribution work (parallel track)
 

@@ -8,6 +8,7 @@
 > **CE-2F** Stepper audit ✅ — **decision B, compound Stepper + Step justified**, proposed contract only, not implemented (**still pending Figma/MCP verification — not rejected or deferred**)
 > **CE-2G** Notification Center audit ✅ — **decision C, composition pattern (future Recipe, Reference-App-evidenced)**, not implemented
 > **CE-2H** Command Palette audit ✅ — **decision C, composition pattern**, accessibility role model flagged as genuinely unresolved (not just deferred to a Recipe), not implemented
+> **CE-2I** App Shell / richer navigation audit ✅ — **decision D, Reference-App template first** (a narrower "responsive primary navigation" composition is separately already proven in-house and C-ready), not implemented; **CE-2 planning pass recommended to pause here**
 > Planning for CE-2 net-new work. Does **not** reopen CE-1 / Figma Class B parity.
 
 ## Purpose
@@ -59,7 +60,7 @@ fit, and Reference App readiness — not against another design system’s catal
 | **Stepper** | B | Medium for checkout/onboarding/setup-wizard flows — already anticipated by 3 shipped components' own docs (Breadcrumb, Timeline) and a Navigation-category status note | Existing `step-item` content (states/a11y already specified), Timeline's position-derived-state precedent, ToggleGroup/ToggleGroupItem's compound-children precedent | Medium | Low–Medium (state model + `aria-current="step"` already specified in content) | **23** | — | **PROPOSED CONTRACT ONLY — NOT IMPLEMENTED (CE-2F decision B)** | See CE-2F audit below. Compound Stepper + Step justified; recommend an MCP Figma verification pass on existing `step-item` content before implementation |
 | Notification Center | C | Medium for SaaS — **removed from the direct component-implementation queue** | List Item (already documented for "activity feeds"), Popover/Drawer, Button/Icon Button, Badge (already documented for "count indicators"), EmptyState | N/A — not a component | N/A — not a component | **21** | — | **NOT A STANDALONE COMPONENT (CE-2G decision C)** | See CE-2G audit below. Composition pattern using existing primitives; future Recipe pending Reference App evidence, not implemented |
 | Command Palette | C | Medium for power-user/developer apps — **removed from the direct component-implementation queue** | Menu (`MenuItem`/`MenuGroup`/`MenuLabel`/`MenuSeparator` already cover icon/shortcut/group/disabled), Dialog, Popover, SearchField, EmptyState | N/A — not a component | Unresolved for the searchable/filtered shape — no casual combination of `menu`/`listbox`/`combobox` roles | **20** | — | **NOT A STANDALONE COMPONENT (CE-2H decision C)** | See CE-2H audit below. A non-searchable "quick actions" shape is already fully buildable from Menu today; the searchable/filtered shape has a genuinely unresolved accessibility role question, not just a documentation gap |
-| **App Shell / richer nav** | D | Medium | Sidebar/Top Nav items (Class C), Menu | Very high | Medium | **16** | **P5 / NEXT** | CANDIDATE / NOT STARTED | Layout system |
+| App Shell / richer nav | D | Medium, but irreducibly app-specific for the "big shell" shapes (routing/permissions/workspace state) — **removed from the direct component-implementation queue** | Breadcrumb, Tabs, Menu, Avatar, Badge, Drawer (already proven for mobile nav in Skrewww's own site), Button/Icon Button, SearchField | Very high for a full shell; low for the already-proven responsive-nav slice | Medium | **16** | — | **REFERENCE-APP TEMPLATE FIRST (CE-2I decision D)** | See CE-2I audit below. The mobile-drawer + sidebar-nav pairing already works in Skrewww's own site and is separately C-ready as composition guidance; the broader shell/template shapes need real routing/permissions evidence from a Reference App |
 
 ## CE-2C — Toggle Group vs Segmented Control (decision A)
 
@@ -658,12 +659,155 @@ Desktop: centered/near-top `Dialog`, or an anchored `Popover` for the smaller qu
 
 **Yes — and here it's closer to a precondition than a refinement source**, unlike CE-2E/CE-2G where composition was already fully clean. Real command categories, the actual navigation-vs-action mix, whether shortcuts are genuinely needed, whether nesting is truly required (blocked today regardless by `Menu`'s own submenu gap), real mobile behavior, and — most importantly — real usage patterns that would inform whether "activate not persist" listbox semantics or menu semantics reads more correctly to actual users, are all open questions this audit could not and should not resolve from first principles alone. **Recorded as a Reference App validation target**, not started here.
 
+## CE-2I — App Shell / richer navigation product + architecture audit (decision D — Reference-App template first)
+
+**Audit only. App Shell was not implemented in CE-2I.** No navigation components were implemented or modified; Skrewww's own site navigation was inspected but not refactored, per explicit instruction.
+
+### Existing capability audit
+
+**Public, reusable primitives already usable for shell-building**: `Breadcrumb` (location/hierarchy), `Tabs` (peer views — secondary nav), `Menu` (actions, with `MenuGroup`/`MenuLabel` grouping), `Avatar` (account representation), `Badge` (status/count), `Button`/`Icon Button`, `SearchField`, `Drawer`, `Popover`, `Dialog`.
+
+**What currently lives only inside the Skrewww site itself, not the public library** (`components/ui/`): `Sidebar.tsx`, `SidebarNav.tsx`, `SidebarNavLink.tsx`, `MobileDocsNav.tsx`, `NavBadge.tsx` — all outside `components/ui/`, none published/distributed.
+
+### Product-shape taxonomy (12 shapes, wildly different maturity)
+
+1. **Admin dashboard shell** — no in-house evidence, irreducibly bound to routing/permissions/workspace state.
+2. **SaaS app shell** — same as 1, generic-only reasoning.
+3. **Docs shell** — **exactly what Skrewww's own site already is** — real, concrete, working evidence.
+4. **Top-nav website shell** (horizontal bar instead of sidebar) — a different structural shape entirely; zero Skrewww evidence.
+5. **Left-sidebar app navigation** — the structural piece `Sidebar.tsx` already is, minus its docs-specific hardcoding.
+6. **Collapsible sidebar** — Skrewww's current `Sidebar` has **no collapse behavior** at all (fixed `w-64`, or hidden entirely below `md`) — a real, unevidenced gap, not a proven need.
+7. **Mobile drawer navigation** — **already solved**, proven, composed from `Drawer` + the same `SidebarNav` content used on desktop.
+8. **Utility/header actions** (search, account menu, etc. in a top bar) — zero evidence; Skrewww's docs site has no such utility header.
+9. **Secondary navigation** — `Tabs` already exists generically and is reused elsewhere.
+10. **Workspace/account switcher** — zero evidence anywhere in this project; heavily app-specific, matching Command Palette's "AI invocation"-class of concerns that must stay external.
+11. **Nested navigation** — `SidebarNav` has flat two-level grouping (category + Industries sub-groups) today; deeper collapsible nesting is unevidenced.
+12. **Breadcrumb/content-header region** — `Breadcrumb` exists as a primitive; the "breadcrumb + heading" region is composed **ad hoc per page** today (e.g. a docs-specific `ComponentBreadcrumbs` wrapper + a directly-styled `<h1>`), not abstracted into a shared component even at the site level.
+
+Shapes 3/5/7 have real, working, in-house evidence. Shapes 1/2/4/6/8/10/11 have little-to-no evidence within this project. Shapes 9/12 partially exist as primitives/conventions already, without a shared abstraction.
+
+### Component / layout / template classification
+
+- **PRIMITIVE** (already public, reused as-is): `Breadcrumb`, `Tabs`, `Menu`, `Avatar`, `Badge`, `Button`/`Icon Button`, `SearchField`.
+- **LAYOUT PRIMITIVE** (candidate, not yet built, not evidenced enough to build now): a generic `<aside>`-based sidebar rail with collapse/icon-only-rail/footer-area support.
+- **COMPOSITION** (already proven, no new export needed): the mobile drawer-nav pairing — `Drawer` wrapping the same nav-content component used for the desktop sidebar.
+- **FEATURE PATTERN** (candidate for future docs/Recipe guidance, independent of Reference App timing): the "responsive primary navigation" pairing itself — persistent sidebar on desktop, `Drawer` on mobile, sharing one nav-content source. This is not speculative; it's the pattern already running in production in this exact repo.
+- **APPLICATION TEMPLATE** (Reference-App territory, not a design-system component): "admin dashboard shell," "SaaS app shell" — these bundle workspace-switching, permissions, and routing decisions that are irreducibly app-specific.
+
+### Product need
+
+Real for SaaS/admin/enterprise/internal tools in the abstract, but **not justified by aesthetic consistency alone**, per explicit instruction — the concrete, evidenced need inside this project is narrower than "App Shell" as a whole: it's specifically the responsive-navigation pairing (shapes 5/7), which is proven, not the full dashboard-shell template (shapes 1/2), which has no in-house evidence at all.
+
+### Responsibility boundary
+
+Skrewww should **not** own: routing, permissions, active-route derivation, auth, account/workspace state, data fetching, nav configuration from a backend, analytics, feature flags — the widest "must not own" list of any CE-2 audit yet, wider even than Command Palette's. Potential design-system responsibility, if ever built: layout slots, responsive structure, navigation container chrome, collapsible behavior, mobile `Drawer` composition, landmark semantics, focus handling.
+
+**Concrete evidence this boundary is real, not abstract**: `SidebarNavLink.tsx` (site-specific, not public) directly calls `usePathname()` from `next/navigation` to derive active-route state — a hard, framework-specific coupling. By contrast, the **public** `components/ui/` library (`Link`, `Button`, `Pagination`, `ListItem`) already has an established, accepted convention of rendering `next/link`'s `<Link>` for `href`-based navigation, but **none of them derive active-route state from the router** — that pattern is confined entirely to app-specific code today. This is exactly the dividing line Part 5 draws, already enforced in practice by this codebase, not just in theory: rendering a link is a design-system concern; knowing which link is "active" from the router is an application concern.
+
+### Current-site evidence (Part 6) — audited, not refactored
+
+- `Sidebar.tsx`: a plain `<aside>`, `hidden md:block`, fixed `w-64`, hardcoded logo/branding, no collapse, no icon-only mode, no footer/user area — genuinely docs-site-specific, not a generic primitive today.
+- `MobileDocsNav.tsx`: a `<header>` + hamburger trigger opening a `Drawer` containing the **same** `SidebarNav` component used on desktop — confirming **no duplication between desktop/mobile nav**; the content is shared, only the container differs.
+- The desktop/mobile layout coupling (`Sidebar`'s `w-64` and `app/layout.tsx`'s `md:ml-64` main-content offset) is two independently hardcoded values that must be kept in sync manually — a real, minor fragility in the current site, noted as an observed fact, not something fixed here.
+- No dedicated `AppHeader`/`ContentHeader` abstraction exists anywhere, even at the site level — each surface (`Sidebar`'s internal header row, `MobileDocsNav`'s header, each page's breadcrumb+`<h1>`) is separately hand-composed.
+- **No skip-to-content link exists anywhere in the current site** — an honest, observed accessibility gap in the current shell, explicitly not fixed in this audit (refactoring the site is out of scope).
+- Could any proven piece become a design-system primitive later? Yes — specifically the responsive sidebar/drawer **pairing pattern**, once genericized away from its docs-specific hardcoding (width, branding, `usePathname` coupling). Not yet, and not the rest of the site's shell code, most of which is genuinely docs-site-specific.
+
+### Accessibility findings
+
+- Landmark semantics: `<aside>` (complementary/navigation-adjacent), `<nav>` (already used inside `SidebarNav`), `<main>` (already present in `app/layout.tsx`) — standard semantics, nothing new to invent.
+- Skip-to-content: **currently absent** in the real site — a genuine gap, noted not fixed.
+- Active-page indication: already solved in the site-specific code (`aria-current="page"` pattern via `SidebarNavLink`), but that solution is coupled to `usePathname()` — a public primitive would need the app to supply "is this the active item" some other way (e.g. a boolean prop or an `href`-vs-current-URL comparison the app performs), not assume a specific router.
+- Icon-only nav labels: not currently evidenced anywhere in this project (no collapsed/rail mode exists) — an open question, not resolved here.
+- Mobile Drawer focus trap / focus restoration: **already solved** by `Drawer`'s own existing, documented contract — nothing new needed for the mobile-nav composition.
+- Collapsed-sidebar discoverability, nested-navigation semantics, reduced-motion for collapse animations: all **unevidenced open questions**, since no collapse behavior exists anywhere in this project today — not invented here.
+- No custom ARIA roles are proposed anywhere in this audit.
+
+### Responsive model
+
+Desktop: persistent sidebar — proven. Collapsible sidebar and top-nav variants: **unevidenced**, not assumed. Mobile: `Drawer` — proven, already solved. No universal responsive algorithm is proposed; the existing `Drawer` + shared nav-content pairing already covers the one responsive transition this project has real evidence for (persistent sidebar ↔ drawer).
+
+### Sidebar decision (Part 9) — **B, not A**
+
+**A generic public Sidebar primitive is not justified yet.** More than half of what a genuinely reusable Sidebar would need to solve is either unevidenced in this project (collapse behavior, icon-only rail mode, footer/user area) or app-specific styling (fixed width, fixed branding) rather than a universal design-system concern. What already works well (active state, badges, section headings, mobile reuse) is either already solved by existing pieces (`NavBadge`, category-group headings, the `Drawer` pairing) or coupled to app-specific router state (active-page derivation). **Recommend B — document the proven `<aside>` + nav-content + responsive-`Drawer`-pairing composition using semantic HTML and existing tokens, not a new generic Sidebar export**, deferring a true collapsible/rail Sidebar primitive until real evidence (ideally Reference App) shows it's needed.
+
+### Navigation data model (Part 11)
+
+**No public navigation schema (`{label, href, icon, children, badge}`) is proposed.** This project's own site already models its nav data as a simple, app-specific array (`primaryNavLinks` in `lib/sidebar-nav.ts`, built in a prior session task) — exactly the kind of data structure that should stay with the consuming app, not become a design-system-owned DTO shape, matching the same "avoid becoming a domain DTO library" conclusion CE-2E/CE-2G reached for filters/notifications. Presentation primitives (`SidebarNavLink`-equivalent rendering, once genericized away from `usePathname`) are the right level of ownership; the data shape that drives them is not.
+
+### Architecture comparison
+
+| | A — standalone `<AppShell/>` | B — small layout primitive family (`AppShell`/`AppHeader`/`AppSidebar`/`AppMain`) | C — composition/pattern/docs/Recipe | **D — Reference-App template first** | E — application-owned only |
+|---|---|---|---|---|---|
+| Reuse | Low — would re-wrap primitives that already work | Medium — some genuine layout value, but for unevidenced sub-behaviors (collapse, rail mode) | High for the proven responsive-nav slice; unclear for the rest | N/A — evidence-gathering, not a build | N/A |
+| API complexity | Very high — slot-prop explosion (`sidebar`/`header`/`navigation`/`mobileNavigation`) is exactly the anti-pattern this task's own Part 10 warns about | Medium-high — four new exports, several with unevidenced responsibilities | Low — guidance only for the proven slice | None yet | None |
+| Routing coupling | High risk — active-state logic would either lock the library to a router or need real abstraction work never yet attempted | Same risk, spread across fewer but still-real touchpoints | Low — the app supplies active-state; guidance documents the pattern, not a component that reaches for the router | N/A | N/A |
+| Accessibility | Would need to (re)solve landmark/skip-link/focus-trap semantics that are today either solved (`Drawer`) or genuinely absent (skip-link) from real evidence | Same, distributed | Inherits `Drawer`'s already-solved contract for the mobile piece; the rest stays open | N/A | N/A |
+| Product flexibility | Low — a full shell API tends to fight products whose layout genuinely differs (top-nav vs. sidebar, single-tenant vs. workspace-switching) | Medium | High — composition stays flexible by construction | Highest | Highest |
+| Agent Kit clarity | Another large surface, much of it built on unevidenced assumptions | Same, smaller | Guidance for the proven slice is accurate and useful now | Nothing yet, but avoids overclaiming | Nothing |
+| Figma implications | A huge, mostly-speculative component set | Four sets, several unevidenced | None beyond existing primitives, for the proven slice | None | None |
+| Maintenance/testing | High — likely needs a breaking rework once real routing/permissions requirements surface | Same, smaller scope | Low | Low (nothing built yet) | Low |
+| **Verdict** | **Not justified — premature, highest risk** | **Not justified yet — several responsibilities remain genuinely unevidenced** | **Justified narrowly, for the already-proven responsive-nav slice only — not the full "App Shell" concept** | **Selected as the dominant/primary direction for the harder, higher-value "shell" shapes** | **Correct for the truly app-specific pieces (workspace switcher, permissions, routing) regardless of which other option wins** |
+
+### Final decision: **D — Reference-App template first**, with a narrower composition slice already at C-readiness
+
+This audit does not pick a single letter uniformly, because the evidence genuinely splits — matching CE-2H's own precedent of carving out a fully-solved sub-shape within an overall harder conclusion:
+
+- **The responsive primary-navigation pairing (shapes 5 + 7)** — persistent sidebar on desktop, `Drawer` on mobile, one shared nav-content source, active state supplied by the app rather than derived by a public component — is **already proven, working, in-house**, and is ready for **composition/docs guidance now (C-readiness)**, independent of Reference App timing. This is not speculative the way "App Shell" as a whole is.
+- **The broader shell/template shapes (admin dashboard shell, SaaS app shell, top-nav shell, collapsible sidebar, utility header, workspace switcher, nested navigation)** genuinely need a real application to validate — their defining, high-value behaviors (collapse, workspace state, routing-aware active state, permission-gated nav items) don't exist anywhere in this project yet, and specifying them generically now would mean inventing requirements rather than discovering them.
+
+**Rationale, per each required axis:**
+- **Product:** real in the abstract, concretely evidenced only for the narrower responsive-nav slice.
+- **Semantic:** the "big shell" shapes bundle multiple genuinely distinct concerns (layout, routing-awareness, workspace state, permissions) that don't share one clean component boundary — exactly the kind of premature-abstraction risk this whole CE-2 series has repeatedly found reason to avoid (Advanced Filters, Notification Center, Command Palette).
+- **Responsibility boundary:** the widest "must not own" list yet (routing, permissions, active-route derivation, auth, workspace state, backend nav config, analytics, feature flags) — reinforced by concrete, in-repo evidence (`usePathname()` confined to app-specific code, never the public library).
+- **Accessibility:** what's provably solved (mobile Drawer focus trap, landmark semantics) is solved via existing primitives; what's genuinely open (collapse discoverability, icon-only labeling, reduced-motion for collapse — none of which currently exist anywhere in this project) has no evidence to design against yet.
+- **Responsive:** the one transition this project has real evidence for (sidebar ↔ drawer) is already solved; collapsible/top-nav variants are unevidenced.
+- **Architecture:** both A and B commit to unevidenced responsibilities and risk the slot-explosion/routing-coupling failure modes this task explicitly warned against; D avoids inventing requirements speculatively.
+- **Figma:** a full App Shell component family would be premature and likely wrong once real requirements surface; a Reference App screen is the right artifact for the shapes that need real validation.
+- **Agent Kit:** guidance for the proven responsive-nav slice, without pretending the rest of "App Shell" already has a settled shape, is more honest and useful than either silence or a speculative contract.
+
+### Proposed composition roles (for the proven slice only) — PROPOSED PATTERN, NOT IMPLEMENTED
+
+No exports created. Conceptual roles only:
+
+- **AppHeader** — the logo/branding row, currently fused into `Sidebar`'s internal header div and `MobileDocsNav`'s own header separately; a future genericized version would need to stop hardcoding branding.
+- **PrimaryNavigation** — the shared nav-content component (today: `SidebarNav`), rendered inside a persistent `<aside>` on desktop and inside a `Drawer` on mobile — the one already-proven pairing.
+- **MobileNavigation** — not a new primitive; `Drawer` composing `PrimaryNavigation`, exactly as `MobileDocsNav` already does.
+- **ContentHeader** — the breadcrumb + heading region, currently composed ad hoc per page (`ComponentBreadcrumbs` + a styled `<h1>`); a candidate for future docs guidance, not evidenced enough yet for a component.
+- **UtilityActions** — zero evidence in this project; not proposed.
+
+Recommended home once written: **docs guidance first**, potentially a future Recipe once the responsive-nav slice specifically (not the full shell) is validated against a second real usage beyond Skrewww's own site — Reference App is the natural candidate for that second usage.
+
+### Agent Kit recommendation
+
+Layout-primitive contracts or a full `AppShell` contract are **not** recommended yet — too much of the concept is unevidenced. Docs composition guidance for the proven responsive-nav slice is the right near-term artifact; a Reference App example is the right artifact for the broader shell shapes once built. **No Agent Kit artifact was added in this audit.**
+
+### Figma recommendation
+
+**Reference App screen, not a component or component family, for the shell shapes as a whole.** A page layout example (not a component set) would fit the proven responsive-nav slice if it's ever formalized, since it's a compositional arrangement, not new item-level anatomy. A large, speculative "App Shell" Figma component family would risk designing around requirements that don't exist yet in this project.
+
+### Reference App relevance — a major validation target
+
+**Yes, explicitly and more heavily than any prior CE-2 audit.** The future Reference App is the natural place to validate: responsive sidebar collapse behavior, header density, navigation nesting depth, real active-state derivation against a real router (validating whether the public library should ever cross the `usePathname()` boundary, and how), account/workspace actions, mobile Drawer behavior at real content scale, and the content-header/breadcrumb relationship across multiple page types. **Recorded as a major Reference App validation target** — likely the single largest one identified across the whole CE-2 series so far.
+
 ## Next CE-2 candidate
 
-Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). **Stepper's CE-2F status is unchanged and preserved**: compound Stepper + Step remains **justified, proposed contract only, NOT IMPLEMENTED, pending an MCP Figma verification pass** — not re-ranked as rejected or deferred by this task. Notification Center is **not a standalone or compound component** (CE-2G). Command Palette is **not a standalone or compound component** (CE-2H) — removed from the direct component-implementation queue while its product need is preserved; its accessibility role question is recorded as genuinely open, not merely deferred to documentation.
+Multi Select is **deferred, not rejected** (CE-2D). Advanced Filters is **not a standalone component** (CE-2E). **Stepper's CE-2F status is unchanged and preserved**: compound Stepper + Step remains **justified, proposed contract only, NOT IMPLEMENTED, pending an MCP Figma verification pass** — not re-ranked as rejected or deferred by this task. Notification Center is **not a standalone or compound component** (CE-2G). Command Palette is **not a standalone or compound component** (CE-2H). App Shell / richer navigation is **Reference-App template first, not a component** (CE-2I) — removed from the direct component-implementation queue; the proven responsive-nav slice is separately ready for composition guidance independent of Reference App timing.
 
-**App Shell / richer navigation** (score 16) is the next actual component candidate — **report only, NOT STARTED**.
+**No further CE-2 component candidates remain in the original CE-2A scoring table.** See the CE-2 phase recommendation below for whether to continue discovering new candidates, pause, or close this planning pass.
 
 ## Out of scope
 
-CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, implementing Stepper, modifying Number Input, implementing Notification Center, implementing Notification Item, implementing Command Palette, implementing Command Item, modifying Menu, modifying Dialog, adding Recipes, adding Feature Kits, implementing App Shell.
+CE-3 `/r`, Reference App, PH-0, Guard, Figma writes, banking Class D work, PARTIAL parity fixes, implementing Multi Select, modifying Combobox, implementing Advanced Filters, modifying Data Table, implementing Stepper, modifying Number Input, implementing Notification Center, implementing Notification Item, implementing Command Palette, implementing Command Item, modifying Menu, modifying Dialog, implementing App Shell, implementing Sidebar, refactoring Skrewww's own site navigation, adding Recipes, adding Feature Kits.
+
+## CE-2 phase-completion recommendation (Part 19 — not executed)
+
+**Recommend B: pause CE-2 candidate discovery after this audit; perform the Stepper Figma/MCP verification next.**
+
+Status summary:
+
+- **Implemented**: Number Input, Toggle Group.
+- **Justified, pending verification**: Stepper (compound Stepper + Step) — the one CE-2 candidate with a real, actionable next step already defined (an MCP verification pass against existing `step-item` content).
+- **Deferred / composition, not components**: Multi Select, Advanced Filters, Notification Center, Command Palette, App Shell / richer navigation.
+
+Five of the seven audited-beyond-Number-Input candidates landed on "not a standalone component" (composition, deferred, or Reference-App-first) rather than "build this." That pattern itself is a signal: the CE-2A scoring table's remaining candidates were increasingly either (a) already covered by existing primitives once actually audited, or (b) irreducibly tied to application/product specifics (routing, permissions, workspace state, AI invocation) that a design-system audit cannot responsibly resolve by further speculative discovery. Continuing to discover new candidates (Option A) risks diminishing returns — repeating this same "mostly composition" pattern without new information. Closing CE-2 outright and moving to CE-3 (Option C) would skip Stepper's own concrete, already-identified next step. Moving Reference App earlier (Option D) is close, but Stepper's proposed contract already has a well-defined, narrower next action (Figma/MCP verification) that doesn't require a Reference App and is worth doing first, since it's the one candidate actually close to shippable. **Recommend B**: verify Stepper next, then let the accumulated Reference-App validation targets from CE-2E through CE-2I (Advanced Filters, Notification Center, Command Palette's role model, and now App Shell's larger shapes) inform whether and when Reference App work begins.
