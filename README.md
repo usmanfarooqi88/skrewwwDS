@@ -77,7 +77,7 @@ Beta — overview, getting started, and known limitations:
 
 | Category | Components |
 |----------|------------|
-| Actions | Button, Button Group, Link, Split Button |
+| Actions | Button, Button Group, Link, Split Button, Toggle Group |
 | Containers & Overlays | Accordion, Card, Dialog, Drawer, Popover |
 | Content & Data | Avatar, Banking Account Card, Banking Balance Summary, Banking Transaction Row, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
 | Forms | Checkbox, Combobox, Credit Card Field, Date Picker, File Upload, Form Field, Number Input, Phone Number Field, Radio, Radio Group, Search Field, Select, Slider, Switch, Text Input, Textarea, Validation Message |

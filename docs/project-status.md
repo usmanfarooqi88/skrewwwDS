@@ -1,6 +1,38 @@
 # Project status
 
-Last verified: **2026-09-14** (CE-2A + CE-2B Number Input — COMPLETE; CE-2 IN PROGRESS)
+Last verified: **2026-09-14** (CE-2C Toggle Group — COMPLETE; CE-2 IN PROGRESS)
+
+## 2026-09-14 — CE-2C Toggle Group + Segmented Control boundary
+
+### Decision A
+
+**Toggle Group** is the semantic component. **Segmented Control** is the joined
+presentation / use-case name — **not** a separate React export.
+
+Button Group stays peer actions (no selection). Radio Group stays form-field
+radios. Tabs stay content panels. Toggle Group is single-selection
+`radiogroup`/`radio` with joined chrome. Multiple selection deferred.
+
+Artifact: [`docs/component-expansion.md`](component-expansion.md).
+
+### Implementation
+
+Beta `0.1.0-beta`, React-first / Figma pending (Class D). `/r` deferred to CE-3.
+
+### Inventory delta (source-verified)
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| React implemented | 53 | **54** |
+| Stable / Beta | 27 / 26 | **27 / 27** |
+| Docs (implemented) | 53 | **54** |
+| Agent contracts | 53 | **54** |
+| `/r` components | 8 + foundation | **unchanged** |
+| Class A | 49 | **49** |
+| Class B | 0 | **0** |
+| Class D | 4 | **5** |
+
+**CE-2 overall = IN PROGRESS.** Next: Multi Select — **NOT STARTED**.
 
 ## 2026-09-14 — CE-2A Expansion Prioritization + CE-2B Number Input
 
@@ -2367,15 +2399,16 @@ here instead.
 | **CE-1 — Close genuine public Figma → React gaps** | ✅ **COMPLETE** |
 | **CE-2A Expansion Prioritization** | ✅ **COMPLETE** — [`docs/component-expansion.md`](component-expansion.md) |
 | **CE-2B Number Input** | ✅ **COMPLETE** |
+| **CE-2C Toggle Group** | ✅ **COMPLETE** — Segmented Control resolved by Toggle Group |
 | **CE-2 — Net-New Component Expansion** | **IN PROGRESS** |
-| CE-2 next (Toggle Group) | **NOT STARTED** |
+| CE-2 next (Multi Select) | **NOT STARTED** |
 | CE-3 Distribution Expansion | Later — not started |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 
-**Current focus:** CE-2B Number Input shipped. CE-2 remains **IN PROGRESS**.
-Next approved candidate from CE-2A: **Toggle Group — NOT STARTED**.
+**Current focus:** CE-2C Toggle Group shipped. CE-2 remains **IN PROGRESS**.
+Next candidate from CE-2A ranking: **Multi Select — NOT STARTED**.
 Community/Beta Stabilization remains steady-state (STAB-001…006 open, no P0/P1).
 Do not start CE-3, Reference App, PH-0, or Guard from this status line alone.
 

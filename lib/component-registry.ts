@@ -428,7 +428,7 @@ export function Example() {
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
-      "Figma description recommends role=radiogroup for mutually exclusive selection; Beta React ships independent Buttons with role=group (CE-1B product decision). A future Toggle Group / Segmented Control may cover selection.",
+      "Figma description recommends role=radiogroup for mutually exclusive selection; Beta React ships independent Buttons with role=group (CE-1B product decision). Use Toggle Group for exclusive selection.",
       "Vertical orientation, equal-width, and wrapping are not in the verified Figma set.",
       "Squircle Shape on joined children disables per-button squircle clip so shared outer chrome stays coherent.",
     ],
@@ -448,7 +448,7 @@ export function Example() {
       },
       {
         title: "Is Button Group a segmented control?",
-        body: "No. Figma labels can look like List/Grid or Day/Week/Month, but Beta React does not implement selection state. Use Tabs or a future Toggle Group for exclusive selection.",
+        body: "No. Figma labels can look like List/Grid or Day/Week/Month, but Button Group does not implement selection state. Use Toggle Group for exclusive segmented selection (Segmented Control is that presentation, not a separate component).",
       },
     ],
     apiProps: [
@@ -484,6 +484,137 @@ export function Example() {
       <Button variant="primary">List</Button>
       <Button variant="primary">Grid</Button>
     </ButtonGroup>
+  );
+}`,
+  },
+  {
+    slug: "toggle-group",
+    name: "Toggle Group",
+    category: "Actions",
+    summary:
+      "Toggle Group is exclusive segmented selection (radiogroup) with joined chrome — Segmented Control is this presentation, not a separate component.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/actions.ts",
+    documentationLastUpdated: "2026-09-14",
+    reactLastUpdated: "2026-09-14",
+    figmaReference: "None yet — React-first CE-2C; Figma master pending",
+    documentationUrl: getComponentDocumentationUrl("toggle-group"),
+    supportedVariants: ["single"],
+    supportedSizes: ["sm", "md", "lg"],
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "semantic/border/strong",
+      "semantic/focus-ring",
+      "semantic/surface/subtle",
+      "semantic/text/primary",
+    ],
+    relatedComponents: [
+      { label: "Button Group — joined peer actions (no selection)", href: "/components/button-group" },
+      { label: "Radio Group — form-field exclusive radios", href: "/components/radio-group" },
+      { label: "Tabs — switches content panels", href: "/components/tabs" },
+      { label: "Switch — single binary toggle", href: "/components/switch" },
+    ],
+    relatedTokens: [
+      { label: "semantic/border/default", href: "/foundations" },
+      { label: "semantic/focus-ring", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "Figma master not created yet — intentional React-first CE-2 sequence.",
+      "Multiple selection intentionally deferred; 0.1.0-beta is single-only.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "ToggleGroup = role=radiogroup (joined outer chrome) + ToggleGroupItem children (role=radio).",
+    keyboardBehavior:
+      "Tab lands on the selected item (or first item if none). Arrow keys move focus and select. Home/End jump ends. Space/Enter select the focused item. Re-clicking the selected item does not clear selection.",
+    focusBehavior:
+      "Roving tabindex among radios. Focus-visible ring on the focused segment.",
+    comparisons: [
+      {
+        title: "Toggle Group vs Segmented Control?",
+        body: "Same capability. Skrewww ships Toggle Group as the semantic component; segmented/joined appearance is the default presentation. There is no separate Segmented Control export.",
+      },
+      {
+        title: "Toggle Group vs Button Group?",
+        body: "Button Group joins independent peer actions with no selection state. Toggle Group selects exactly one value among segments.",
+      },
+      {
+        title: "Toggle Group vs Radio Group?",
+        body: "Radio Group is a form-field control with radio indicators, legend, and validation. Toggle Group is compact segmented chrome for toolbar/settings selection.",
+      },
+      {
+        title: "Toggle Group vs Tabs?",
+        body: "Tabs switch associated content panels (tablist/tabpanel). Toggle Group only selects a value — it does not own panels.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "value",
+        type: "string",
+        description: "Controlled selected value. Empty string means none selected yet.",
+      },
+      {
+        name: "defaultValue",
+        type: "string",
+        description: "Uncontrolled initial selected value.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: string) => void",
+        description: "Fires when the selected value changes.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disables the entire group.",
+      },
+      {
+        name: "orientation",
+        type: '"horizontal" | "vertical"',
+        default: '"horizontal"',
+        description: "Layout and arrow-key orientation.",
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        default: '"md"',
+        description: "Segment size matching control height tokens.",
+      },
+      {
+        name: "aria-label",
+        type: "string",
+        description: "Accessible name for the radiogroup when no visible label exists.",
+      },
+      {
+        name: "children",
+        type: "ReactNode",
+        description: "ToggleGroupItem children.",
+      },
+    ],
+    reactExample: `import { useState } from "react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+
+export function Example() {
+  const [value, setValue] = useState("list");
+  return (
+    <ToggleGroup
+      aria-label="View mode"
+      value={value}
+      onValueChange={setValue}
+    >
+      <ToggleGroupItem value="list">List</ToggleGroupItem>
+      <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
+    </ToggleGroup>
   );
 }`,
   },

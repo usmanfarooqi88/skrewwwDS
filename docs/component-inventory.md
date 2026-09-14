@@ -1,6 +1,6 @@
-# Skrewww component inventory (CE-0 → CE-2B)
+# Skrewww component inventory (CE-0 → CE-2C)
 
-> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A/B:** Number Input shipped (CE-2 IN PROGRESS)
+> **Last updated:** 2026-09-14 · **CE-0 freeze SHA:** `7593ea4` · **CE-1:** COMPLETE · **CE-2A–C:** Toggle Group shipped (CE-2 IN PROGRESS)
 > Class B = **0**. CE-2 net-new expansion. See [`docs/component-expansion.md`](component-expansion.md).
 
 This document is the durable planning source for CE-1. Prefer the tables over
@@ -21,28 +21,28 @@ prose. Re-derive volatile counts from `lib/component-registry*.ts` and
 **Do not equate** `content/` count with “missing React components.” Many content
 entries are Figma item primitives that React correctly models via composition.
 
-## Exact totals (verified 2026-09-14, post CE-2B)
+## Exact totals (verified 2026-09-14, post CE-2C)
 
 ### React (canonical registry)
 
 | Metric | Count |
 |--------|------:|
-| Implemented public React components | **53** |
+| Implemented public React components | **54** |
 | Stable | **27** |
-| Beta | **26** |
-| Public docs pages (implemented) | **53** |
-| Agent Kit contracts | **53** |
+| Beta | **27** |
+| Public docs pages (implemented) | **54** |
+| Agent Kit contracts | **54** |
 | `/r` component manifests | **8** (+ `foundation` shared cut = 9 files) |
 
 `/r` components: button, card, divider, form-field, link, spinner, text-input, validation-message.
-CE-1 specialists + Number Input `/r` deferred to **CE-3**.
+CE-1 specialists + Number Input + Toggle Group `/r` deferred to **CE-3**.
 
 ### Figma / documentation inventory
 
 | Metric | Count |
 |--------|------:|
-| `content/` documented entries | **64** |
-| With React counterpart (registry) | **53** |
+| `content/` documented entries | **65** |
+| With React counterpart (registry) | **54** |
 | Docs-only (no React registry entry) | **11** |
 | Of those: internal / building-block (Class C) | **10** |
 | Of those: genuine public Figma→React gap candidates (Class B) | **0** |
@@ -55,7 +55,7 @@ CE-1 specialists + Number Input `/r` deferred to **CE-3**.
 | **A** | Public parity (both sides) | **49** |
 | **B** | Genuine Figma→React gap | **0** |
 | **C** | Figma internal / building block | **10** |
-| **D** | React→Figma gap (confirmed no / pending Figma master) | **4** |
+| **D** | React→Figma gap (confirmed no / pending Figma master) | **5** |
 | **E** | Naming / modeling difference | **1** |
 | **F** | Legacy / unknown | **0** |
 
@@ -65,7 +65,7 @@ CE-1 specialists + Number Input `/r` deferred to **CE-3**.
 |---------------|------:|-------|
 | VERIFIED (`figmaAvailability: available`) | **46** | Includes Slider + Button Group + Split Button + Credit Card Field + Phone Number Field |
 | PARTIAL | **3** | radio-group, data-table, calendar-grid |
-| UNKNOWN / unavailable (Class D) | **4** | Banking pilot trio + Number Input |
+| UNKNOWN / unavailable (Class D) | **5** | Banking pilot trio + Number Input + Toggle Group |
 
 ## Why Figma can have more entries than React
 
@@ -81,14 +81,14 @@ Numerical Figma−React equality is **not** a product goal.
 
 | Category | React | Content docs | Docs-only | Class B gaps | Class C blocks |
 |----------|------:|-------------:|----------:|-------------:|---------------:|
-| Actions | 4 | 5 | 1 | 0 | 0 (+ Icon Button = E) |
+| Actions | 5 | 6 | 1 | 0 | 0 (+ Icon Button = E) |
 | Containers & Overlays | 5 | 6 | 1 | 0 | 1 (accordion-item) |
 | Forms | 17 | 17 | 0 | 0 | 0 |
 | Feedback | 7 | 7 | 0 | 0 | 0 |
 | Navigation | 4 | 11 | 7 | 0 | 7 |
 | Content & Data | 16 | 18 | 2 | 0 | 2 (tree-item, timeline-item) |
 
-Class B = 0. CE-2B Number Input shipped (Class D React-first). Next CE-2: Toggle Group — NOT STARTED.
+Class B = 0. CE-2B Number Input + CE-2C Toggle Group shipped (Class D React-first). Segmented Control resolved by Toggle Group. Next: Multi Select — NOT STARTED.
 
 ## CE-1 status
 
@@ -104,8 +104,9 @@ Class B = 0. CE-2B Number Input shipped (Class D React-first). Next CE-2: Toggle
 |------|--------|
 | **CE-2A Expansion Prioritization** | ✅ COMPLETE — [`docs/component-expansion.md`](component-expansion.md) |
 | **CE-2B Number Input** | ✅ COMPLETE — Beta `0.1.0-beta`; React-first / Figma pending; `/r` deferred to CE-3 |
+| **CE-2C Toggle Group** | ✅ COMPLETE — Beta `0.1.0-beta`; Segmented Control = presentation (decision A); `/r` deferred to CE-3 |
 | **CE-2 overall** | **IN PROGRESS** |
-| **Next candidate** | Toggle Group (P2) — **NOT STARTED** |
+| **Next candidate** | Multi Select (P3) — **NOT STARTED** |
 
 See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 
@@ -113,14 +114,14 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 
 - **Icon Button (Class E)** — product decision whether to keep Button+`aria-label` or add a public React API matching Figma.
 - **PARTIAL parity** — Data Table shell, Radio Group Figma framing, Calendar Grid range/grid verification — dedicated parity tasks, not greenfield components.
-- **Class D** — Banking + Number Input Figma follow-up through normal design workflow.
+- **Class D** — Banking + Number Input + Toggle Group Figma follow-up through normal design workflow.
 
 ## Reference-app readiness
 
 | App type | Readiness | Material gaps |
 |----------|-----------|---------------|
 | SaaS dashboard | **READY WITH GAPS** | denser filters; notification center; optional Icon Button clarity |
-| Settings / admin | **READY WITH GAPS** | Toggle Group; denser form composites |
+| Settings / admin | **READY WITH GAPS** | Toggle Group shipped; denser form composites remain |
 | Form-heavy product | **READY WITH GAPS** | Number Input shipped; denser composites / filters remain |
 | Marketing / content site | **READY** | Core content + actions + feedback sufficient |
 
@@ -128,9 +129,9 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 
 | Layer | Count | Note |
 |-------|------:|------|
-| Implemented | 53 | |
-| Docs | 53 implemented + 11 docs-only | |
-| Agent contracts | 53 | |
+| Implemented | 54 | |
+| Docs | 54 implemented + 11 docs-only | |
+| Agent contracts | 54 | |
 | `/r` distributed components | 8 | + foundation |
 | `/r/registry.json` | 0 | STAB-001 / CE-3 — not this pass |
 
@@ -188,6 +189,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Textarea | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Timeline | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Toast | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
+| Toggle Group | no (React-first / Figma pending) | yes | D | public | Beta | yes | yes | no (CE-3) | UNKNOWN | — | Maintain / later Figma | Actions; CE-2C; radiogroup single; Segmented Control = presentation |
 | Tooltip | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Tree View | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Validation Message | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
@@ -214,13 +216,14 @@ CE-0 does not close STAB-001…STAB-006. Those remain Community/Beta
 steady-state items (`/r/registry.json`, CoC private contact, Figma Pro
 sharing confirmation, Free Figma terms, early external signal, NEW badge).
 
-## Roadmap after CE-2B
+## Roadmap after CE-2C
 
 - Community/Beta Stabilization = steady-state monitoring
 - **CE-0 = COMPLETE**
 - **CE-1 = COMPLETE**
 - **CE-2A Expansion Prioritization = COMPLETE**
 - **CE-2B Number Input = COMPLETE**
+- **CE-2C Toggle Group = COMPLETE** (Segmented Control resolved by Toggle Group)
 - **CE-2 overall = IN PROGRESS**
-- **Next CE-2 candidate = Toggle Group — NOT STARTED**
+- **Next CE-2 candidate = Multi Select — NOT STARTED**
 - CE-3 / Reference App / PH-0 / Guard = later / NOT STARTED

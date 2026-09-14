@@ -50,11 +50,11 @@ export const actionsComponents: ComponentDoc[] = [
     whenToUse:
       "When 2–4 related actions should read as one joined unit (for example List/Grid view triggers or compact action clusters).",
     whenNotToUse:
-      "For mutually exclusive selection/state — use Tabs or wait for a dedicated Toggle Group. For one primary action plus a related menu — use Split Button (CE-1C). For unrelated actions, keep separate Buttons.",
+      "For mutually exclusive selection/state — use Toggle Group (segmented exclusive selection). For one primary action plus a related menu — use Split Button. For unrelated actions, keep separate Buttons.",
     accessibility:
-      "Renders as role=\"group\" with optional aria-label. Each child remains an independent Button (Tab / Enter / Space). Not role=radiogroup — Beta does not implement selection.",
+      "Renders as role=\"group\" with optional aria-label. Each child remains an independent Button (Tab / Enter / Space). Not role=radiogroup — does not implement selection.",
     commonMistakes:
-      "Giving each segment its own outer border (double seams). Putting Button variant/size/loading on the group. Treating the group as a segmented control with selection state.",
+      "Giving each segment its own outer border (double seams). Putting Button variant/size/loading on the group. Treating the group as a segmented control with selection state — use Toggle Group instead.",
     tokensUsed: [
       "component/radius/control",
       "semantic/border/default",
@@ -64,7 +64,33 @@ export const actionsComponents: ComponentDoc[] = [
     properties:
       "Figma: Style × Count. React: children (Buttons) + divider (neutral|primary|danger) for gap chrome. Count is not a React prop.",
     knownLimitation:
-      "Figma prose describes mutually exclusive segments; React Beta ships independent actions (CE-1B). Vertical orientation, equal-width, and wrapping are not verified in Figma.",
+      "Figma prose describes mutually exclusive segments; React ships independent actions (CE-1B). Use Toggle Group for exclusive selection. Vertical orientation, equal-width, and wrapping are not verified in Figma.",
+  },
+  {
+    slug: "toggle-group",
+    name: "Toggle Group",
+    category: "Actions",
+    variants: "Single selection · Size sm/md/lg · Orientation horizontal/vertical — React-first (no Figma master yet)",
+    purpose:
+      "Toggle Group is exclusive segmented selection with joined chrome. It is the Skrewww abstraction for what other systems call a Segmented Control — not a separate component.",
+    whenToUse:
+      "Settings and toolbars where the user picks one option among a small set (List/Grid, Day/Week/Month) and the UI should read as compact joined segments.",
+    whenNotToUse:
+      "Peer independent actions — use Button Group. Form-field exclusive choice with radio indicators — use Radio Group. Switching content panels — use Tabs. Binary on/off — use Switch. Multi-select is not supported in 0.1.0-beta.",
+    accessibility:
+      "role=radiogroup with role=radio items, aria-checked, roving tabindex, arrow-key selection (automatic). Re-selecting the current value does not clear selection. Provide aria-label or aria-labelledby.",
+    commonMistakes:
+      "Using Button Group for exclusive selection. Creating a separate Segmented Control component. Confusing with Tabs (no panels here). Expecting multi-select.",
+    tokensUsed: [
+      "component/radius/control",
+      "semantic/border/default",
+      "semantic/focus-ring",
+      "semantic/surface/subtle",
+    ],
+    properties:
+      "React: value/defaultValue/onValueChange, disabled, orientation, size, aria-label, ToggleGroupItem value/disabled/children. Single selection only.",
+    knownLimitation:
+      "React-first CE-2C — Figma pending. Multiple selection deferred. /r deferred to CE-3. Segmented Control is presentation of Toggle Group, not a second export.",
   },
   {
     slug: "split-button",
@@ -76,7 +102,7 @@ export const actionsComponents: ComponentDoc[] = [
     whenToUse:
       "When there's one clear default action but a few related variants a user occasionally wants instead.",
     whenNotToUse:
-      "When all options are equally likely — use Menu or Select. When actions are peer siblings without a default — use Button Group. Do not use for exclusive selection (Tabs / future Toggle Group).",
+      "When all options are equally likely — use Menu or Select. When actions are peer siblings without a default — use Button Group. Do not use for exclusive selection (Tabs / Toggle Group).",
     accessibility:
       "Two independently focusable, independently labeled controls (two real buttons) inside role=\"group\". Primary Button has no menu ARIA. MenuTrigger Button owns aria-haspopup / aria-expanded. Natural Tab order; Escape closes via Menu.",
     commonMistakes:

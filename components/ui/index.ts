@@ -74,6 +74,13 @@ export type {
 } from "@/components/ui/Button";
 export { ButtonGroup } from "@/components/ui/ButtonGroup";
 export type { ButtonGroupDivider, ButtonGroupProps } from "@/components/ui/ButtonGroup";
+export { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+export type {
+  ToggleGroupItemProps,
+  ToggleGroupOrientation,
+  ToggleGroupProps,
+  ToggleGroupSize,
+} from "@/components/ui/ToggleGroup";
 export { SplitButton } from "@/components/ui/SplitButton";
 export type { SplitButtonDivider, SplitButtonProps } from "@/components/ui/SplitButton";
 export { Card } from "@/components/ui/Card";
