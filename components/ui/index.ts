@@ -185,6 +185,8 @@ export { Pagination, buildPaginationItems, buildPaginationRange } from "@/compon
 export type { PaginationItem, PaginationProps } from "@/components/ui/Pagination";
 export { Tabs, TabsList, TabsPanel, TabsTrigger } from "@/components/ui/Tabs";
 export type { TabsListProps, TabsPanelProps, TabsProps, TabsTriggerProps } from "@/components/ui/Tabs";
+export { Stepper, Step } from "@/components/ui/Stepper";
+export type { StepperProps, StepProps, StepStatus } from "@/components/ui/Stepper";
 export { Radio } from "@/components/ui/Radio";
 export type { RadioProps } from "@/components/ui/Radio";
 export { RadioGroup } from "@/components/ui/RadioGroup";

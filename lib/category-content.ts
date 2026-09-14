@@ -72,7 +72,7 @@ export const categoryPageContent: Record<CategoryName, CategoryPageContent> = {
     accessibilityNotes:
       "Use landmarks, visible focus, and meaningful link text. Do not rely on color alone for the current item.",
     statusNote:
-      "Link, Breadcrumb, Tabs, Pagination, and Menu are implemented in Beta. Sidebar, Stepper, and Top Navigation items remain documentation-only.",
+      "Link, Breadcrumb, Tabs, Pagination, Menu, and Stepper are implemented (Stepper is Beta). Sidebar and Top Navigation items remain documentation-only.",
     indexing: "index",
   },
   Feedback: {

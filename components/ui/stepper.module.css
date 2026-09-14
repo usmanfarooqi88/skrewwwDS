@@ -1,0 +1,131 @@
+/*
+ * Verified live against Figma "Navigation/Step Item" (node 2024:2944) and
+ * the composed "Stepper Trail (example)" frame (node 2024:2949) — see
+ * lib/stepper-figma-metadata.ts. The same 8px gap governs circle-to-label,
+ * step-to-connector, and connector-to-step spacing throughout — confirmed,
+ * not coincidental.
+ */
+
+.stepper {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px — verified itemSpacing */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px — verified itemSpacing */
+}
+
+.control {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px — verified circle-to-label gap */
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  cursor: default;
+  text-align: left;
+}
+
+button.control {
+  cursor: pointer;
+}
+
+button.control:focus-visible {
+  outline: 2px solid var(--semantic-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-full, 9999px);
+}
+
+.circle {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem; /* 24px — verified */
+  height: 1.5rem; /* 24px — verified */
+  border-radius: var(--radius-full, 9999px); /* [VERIFIED] primitive radius/full — no Shape-system participation */
+  border-style: solid;
+  border-color: transparent;
+}
+
+.circleCompleted {
+  background-color: var(--semantic-action-primary);
+}
+
+.circleCurrent {
+  background-color: var(--semantic-surface-default);
+  border-width: 1.5px;
+  border-color: var(--semantic-action-primary);
+}
+
+.circleUpcoming {
+  background-color: var(--semantic-surface-default);
+  border-width: 1.5px;
+  border-color: var(--semantic-border-default);
+}
+
+.checkIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--semantic-text-inverse);
+}
+
+.number {
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: inherit;
+}
+
+.circleCurrent .number {
+  color: var(--semantic-text-primary);
+}
+
+.circleUpcoming .number {
+  color: var(--component-surface-content-muted);
+}
+
+.label {
+  font-size: 1rem; /* 16px — verified */
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.labelCompleted {
+  color: var(--semantic-text-primary);
+  font-weight: 400; /* [VERIFIED] */
+}
+
+.labelCurrent {
+  color: var(--semantic-text-primary);
+  font-weight: 700; /* [VERIFIED] — a non-color signal distinguishing Current */
+}
+
+.labelUpcoming {
+  color: var(--component-surface-content-muted);
+  font-weight: 400; /* [VERIFIED] */
+}
+
+.connector {
+  flex-shrink: 0;
+  width: 2rem; /* 32px — verified */
+  height: 1.5px; /* verified */
+  background-color: var(--semantic-border-default);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}

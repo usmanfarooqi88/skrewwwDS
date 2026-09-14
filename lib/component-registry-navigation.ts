@@ -1,5 +1,9 @@
 import type { ComponentRegistryEntry } from "@/lib/component-registry";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
+import {
+  STEPPER_FIGMA_COMPONENT_SET_NODE_ID,
+  STEPPER_FIGMA_FILE_URL,
+} from "@/lib/stepper-figma-metadata";
 
 const sharedConcepts = {
   shape: {
@@ -460,6 +464,139 @@ export function Example() {
         </MenuItem>
       </MenuContent>
     </Menu>
+  );
+}`,
+  },
+  {
+    slug: "stepper",
+    name: "Stepper",
+    category: "Navigation",
+    summary:
+      "Stepper shows progress through a fixed, known-length, ordered sequence of named steps — a compound Stepper + Step API built against the verified live Navigation/Step Item component set.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "available",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/navigation.ts",
+    documentationLastUpdated: "2026-09-14",
+    reactLastUpdated: "2026-09-14",
+    figmaReference:
+      "Navigation / Step Item — State Completed/Current/Upcoming (3); composed \"Stepper Trail (example)\" frame for multi-step layout/connector reference. No separate Figma \"Stepper\" component exists.",
+    figmaSourceUrl: STEPPER_FIGMA_FILE_URL,
+    figmaNodeId: STEPPER_FIGMA_COMPONENT_SET_NODE_ID,
+    documentationUrl: getComponentDocumentationUrl("stepper"),
+    supportedVariants: ["completed", "current", "upcoming"],
+    supportedSizes: [],
+    tokensUsed: [
+      "semantic/action/primary",
+      "semantic/surface/default",
+      "semantic/border/default",
+      "semantic/text/primary",
+      "semantic/text/inverse",
+      "component/surface/content-muted",
+      "radius/full",
+      "semantic/focus-ring",
+    ],
+    relatedComponents: [
+      { label: "Progress Bar — quantitative percentage, not named steps", href: "/components/progress-bar" },
+      { label: "Tabs — peer content views, not sequential progress", href: "/components/tabs" },
+      { label: "Breadcrumb — hierarchy/location, not a fixed sequence", href: "/components/breadcrumb" },
+      { label: "Pagination — page navigation, no completion state", href: "/components/pagination" },
+      { label: "Timeline — open-ended chronological history, not a fixed known-length process", href: "/components/timeline" },
+    ],
+    relatedTokens: [
+      { label: "semantic/action/primary", href: "/foundations" },
+      { label: "semantic/border/default", href: "/foundations" },
+      { label: "semantic/focus-ring", href: "/foundations" },
+    ],
+    relatedConcepts: [],
+    openQuestions: [
+      "Narrow-viewport and long (5+ step) sequence behavior is not defined by the verified Figma contract — Figma's own composed example is a fixed-width demo. Deferred pending real evidence (Reference App).",
+      "Vertical orientation is not part of the verified contract — no orientation axis exists in Figma at all.",
+      "Whether onStepClick should be provided by default (fully interactive) versus omitted (read-only) is an app-level product decision Figma does not resolve.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "Stepper = ordered list (ol) of Step items, each a 24×24px circle indicator (Check icon when Completed, step number when Current/Upcoming) + label, joined by 32×1.5px connector rectangles between consecutive steps.",
+    keyboardBehavior:
+      "Read-only by default (no onStepClick): steps are not focusable controls. With onStepClick: Completed and Current steps become real buttons in natural Tab order, activated by Enter/Space; Upcoming steps are never focusable or clickable, regardless of onStepClick.",
+    focusBehavior:
+      "Natural DOM tab order across interactive (Completed/Current) steps only — no roving tabindex or arrow-key navigation; Stepper does not use a radiogroup/listbox model. focus-visible ring on interactive steps, offset to avoid clipping.",
+    comparisons: [
+      {
+        title: "What is the difference between Stepper and Progress Bar?",
+        body: "Progress Bar shows a raw percentage with no per-step identity. Stepper shows named, discrete steps with Completed/Current/Upcoming state.",
+      },
+      {
+        title: "What is the difference between Stepper and Breadcrumb?",
+        body: "Breadcrumb shows location in a hierarchy. Stepper shows progress through a linear process — see also Breadcrumb's own documented distinction.",
+      },
+      {
+        title: "What is the difference between Stepper and Timeline?",
+        body: "Timeline is an open-ended chronological log of events. Stepper is a fixed, known-length process with a clear \"you are here\" progress state — semantically different despite visual similarity.",
+      },
+      {
+        title: "Does Stepper own routing or wizard state?",
+        body: "No. Stepper only derives Completed/Current/Upcoming from currentStep and relays onStepClick(index). The app owns navigation, routing, and advancing currentStep.",
+      },
+      {
+        title: "Can Upcoming steps be clicked?",
+        body: "Never. Even when onStepClick is provided, only Completed and Current steps become interactive — Upcoming steps cannot be used to skip ahead.",
+      },
+    ],
+    apiProps: [
+      {
+        name: "currentStep",
+        type: "number",
+        description: "Zero-based index of the current step. Stepper reads this to derive each Step's status — it never mutates it.",
+      },
+      {
+        name: "onStepClick",
+        type: "(index: number) => void",
+        description: "Fires when a Completed or Current step is activated. Omit for a fully read-only Stepper. Upcoming steps never fire this.",
+      },
+      {
+        name: "aria-label",
+        type: "string",
+        description: "Accessible name for the stepper when no visible label exists.",
+      },
+      {
+        name: "aria-labelledby",
+        type: "string",
+        description: "Accessible name reference when a visible label element exists.",
+      },
+      {
+        name: "children",
+        type: "ReactNode",
+        description: "Step children, in order.",
+      },
+      {
+        name: "Step.children",
+        type: "ReactNode",
+        description: "The step's label — the only content Step accepts (no description/state/orientation prop).",
+      },
+    ],
+    reactExample: `import { useState } from "react";
+import { Stepper, Step } from "@/components/ui/Stepper";
+
+export function Example() {
+  const [currentStep, setCurrentStep] = useState(1);
+
+  return (
+    <Stepper
+      currentStep={currentStep}
+      onStepClick={setCurrentStep}
+      aria-label="Checkout progress"
+    >
+      <Step>Account</Step>
+      <Step>Shipping</Step>
+      <Step>Payment</Step>
+      <Step>Complete</Step>
+    </Stepper>
   );
 }`,
   },

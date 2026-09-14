@@ -25,6 +25,7 @@ import { LinkPreview } from "@/components/previews/LinkPreview";
 import { BreadcrumbPreview } from "@/components/previews/BreadcrumbPreview";
 import { TabsPreview } from "@/components/previews/TabsPreview";
 import { PaginationPreview } from "@/components/previews/PaginationPreview";
+import { StepperPreview } from "@/components/previews/StepperPreview";
 import { RadioPreview } from "@/components/previews/RadioPreview";
 import { SwitchPreview } from "@/components/previews/SwitchPreview";
 import { SliderPreview } from "@/components/previews/SliderPreview";
@@ -101,6 +102,7 @@ const previewMap: Record<string, ComponentType> = {
   breadcrumb: BreadcrumbPreview,
   tabs: TabsPreview,
   pagination: PaginationPreview,
+  stepper: StepperPreview,
   alert: AlertPreview,
   badge: BadgePreview,
   toast: ToastPreview,

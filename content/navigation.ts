@@ -78,6 +78,36 @@ export const navigationComponents: ComponentDoc[] = [
     commonMistakes: "Allowing users to click ahead to Upcoming steps that require earlier steps first.",
     tokensUsed: ["semantic/action/primary", "semantic/surface/default", "semantic/border/default"],
     properties: "State as variants — structurally verified so only Completed shows a checkmark. Label (text), per-state Number (text).",
+    knownLimitation:
+      "Implemented in React as the internal state a Stepper Step derives structurally from child order + currentStep (components/ui/Stepper.tsx) — see /components/stepper for the canonical, publicly documented, implemented pattern. This entry remains Figma-facing prose about the underlying Navigation/Step Item component set; node 2024:2944 confirmed via direct Figma MCP inspection (CE-2J, 2026-09-14).",
+  },
+  {
+    slug: "stepper",
+    name: "Stepper",
+    category: "Navigation",
+    variants: "Composed from Step children — state (Completed/Current/Upcoming) derived from position, not a component variant",
+    purpose:
+      "Stepper shows progress through a fixed, known-length, ordered sequence of named steps (checkout, onboarding, setup wizard) — a compound Stepper + Step API built against the verified Navigation/Step Item component set.",
+    whenToUse:
+      "Linear, ordered processes where showing overall progress and remaining steps helps the user, and the full set of steps is known up front.",
+    whenNotToUse:
+      "Non-linear or optional-order tasks — a Stepper implies sequence, which would be misleading otherwise. Peer independent actions (use Button Group). Form-field exclusive choice (use Radio Group). Switching content panels (use Tabs). Open-ended chronological event history (use Timeline).",
+    accessibility:
+      "Renders as a real ordered list. aria-current=\"step\" on the Current step. Current/Completed/Upcoming are distinguished by more than color alone (checkmark vs. number, bold vs. regular label weight, fill vs. outline). Requires an accessible name via aria-label or aria-labelledby.",
+    commonMistakes:
+      "Letting users click ahead to Upcoming steps — Stepper never allows this even when onStepClick is provided. Treating Stepper as a form/wizard state owner — it only derives visual state from currentStep and relays clicks; the app owns navigation, routing, and step progression.",
+    tokensUsed: [
+      "semantic/action/primary",
+      "semantic/surface/default",
+      "semantic/border/default",
+      "semantic/text/primary",
+      "component/surface/content-muted",
+      "radius/full",
+    ],
+    properties:
+      "React: currentStep (number, zero-based), onStepClick?(index), aria-label / aria-labelledby. Step: children (label) only — no state, description, or orientation prop.",
+    knownLimitation:
+      "React-first v1 scope, matching the verified Figma contract exactly: fixed horizontal orientation only (no vertical axis exists in Figma), no description/subtitle/metadata/badge/icon slot, no error/disabled/optional/skipped state, no equal-width mode, and no defined behavior for narrow viewports or long (5+) sequences — Figma's own composed example is a fixed-width demo and does not address this. /r distribution deferred to CE-3.",
   },
   {
     slug: "menu",

@@ -82,7 +82,7 @@ Beta — overview, getting started, and known limitations:
 | Content & Data | Avatar, Banking Account Card, Banking Balance Summary, Banking Transaction Row, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
 | Forms | Checkbox, Combobox, Credit Card Field, Date Picker, File Upload, Form Field, Number Input, Phone Number Field, Radio, Radio Group, Search Field, Select, Slider, Switch, Text Input, Textarea, Validation Message |
 | Feedback | Alert, Badge, Progress Bar, Skeleton, Spinner, Toast, Tooltip |
-| Navigation | Breadcrumb, Menu, Pagination, Tabs |
+| Navigation | Breadcrumb, Menu, Pagination, Stepper, Tabs |
 
 Documentation-only pages clearly state **Figma documented · React not implemented · Documentation only** and do not show live previews.
 
