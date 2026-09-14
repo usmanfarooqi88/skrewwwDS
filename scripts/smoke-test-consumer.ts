@@ -42,10 +42,13 @@ import { join, relative } from "node:path";
 import {
   buildButtonManifest,
   buildCardManifest,
+  buildCheckboxManifest,
   buildDividerManifest,
   buildFormFieldManifest,
   buildFoundationManifest,
   buildLinkManifest,
+  buildProgressBarManifest,
+  buildSkeletonManifest,
   buildSpinnerManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
@@ -68,6 +71,9 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   spinner: buildSpinnerManifest,
   divider: buildDividerManifest,
   link: buildLinkManifest,
+  checkbox: buildCheckboxManifest,
+  "progress-bar": buildProgressBarManifest,
+  skeleton: buildSkeletonManifest,
 };
 
 /**
@@ -273,6 +279,31 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       /example\.com/.test(pageSource),
     harnessAssertionLabel:
       "consumer page imports Link and renders internal, external, and mailto destinations",
+  },
+  checkbox: {
+    criticalPaths: [
+      "components/ui/Checkbox.tsx",
+      "components/ui/checkbox.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Checkbox } from "@/components/ui/Checkbox";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", gap: 12, flexDirection: "column" }}>',
+        '      <Checkbox label="Smoke accept terms" defaultChecked />',
+        '      <Checkbox label="Smoke indeterminate" indeterminate />',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Checkbox"/.test(pageSource) && /Smoke accept terms/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Checkbox and renders labeled instances",
   },
   "spinner-divider-link": {
     criticalPaths: [

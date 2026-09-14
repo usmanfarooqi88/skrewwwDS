@@ -1,6 +1,34 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A Distribution Audit — COMPLETE; CE-3 IN PROGRESS; next CE-3B Tier-1 Stable batch)
+Last verified: **2026-09-15** (CE-3B Tier-1 Stable `/r` expansion — SHIPPED pending CI; CE-3 IN PROGRESS)
+
+## 2026-09-15 — CE-3B Tier-1 Stable distribution batch (SHIPPED)
+
+**Verdict: first low-risk CE-3 implementation batch.** Plan:
+[`docs/distribution-expansion.md`](distribution-expansion.md).
+
+### Distributed (new)
+
+`checkbox`, `progress-bar`, `skeleton`
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| `/r` component manifests | 8 | **11** |
+| + foundation | 9 files | **12** files |
+
+### What changed
+
+- Canonical distribution metadata on the three Stable entries
+- `FILE_DESTINATIONS` + thin `build*Manifest` wrappers + generate CLI wire-up
+- Generator/smoke/Agent Kit installability tests updated
+- Eval undistributed case retargeted to `stepper` (still deferred)
+- No runtime API / visual / Figma changes
+
+### Next
+
+**CE-3C** (`radio`, `switch`) only after this commit’s remote CI is green.
+
+---
 
 ## 2026-09-15 — CE-3A Distribution Audit (COMPLETE)
 

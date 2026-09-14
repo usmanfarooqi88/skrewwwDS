@@ -307,7 +307,7 @@ Verified live (production build + `next start`, see
 | Answers | "How is this installed?" | "What is this, how should it be used?" |
 | Owner | `lib/shadcn-registry-generator.ts` | `lib/agent-kit/contract-compiler.ts` |
 | Shape | shadcn `registry-item.json` (`files[].content`, `dependencies`, `registryDependencies`) | `ComponentAgentContract` (`guidance`, `tokens.used`, `api.properties`, `behavior`, `figma`) |
-| Coverage | 9 items (foundation + 8 components) | 47 (every implemented component) |
+| Coverage | 12 items (foundation + 11 components) | 55 (every implemented component) |
 
 AK-3 added no field to either schema to make them "look symmetrical" —
 `lib/agent-kit/registry-integration.test.ts` asserts a real contract has
@@ -371,12 +371,12 @@ the currently-installable shadcn CLI's own `mcp` subcommand instead
 `isDistributedViaSkrewwwRegistry(slug)` (`lib/agent-kit/project-context.ts`)
 answers "is this component installable via `@skrewww`?" by checking the
 **same** canonical `entry.files` field the shadcn generator itself reads
-— no second, hand-maintained list of "the 8 distributed components" was
+— no second, hand-maintained list of distributed components was
 introduced anywhere. `lib/agent-kit/registry-integration.test.ts` cross-
 checks this against the real generated `public/r/*.json` files, confirms
 a non-distributed-but-implemented component reports `false` (implemented
-≠ installable), and asserts the shadcn generator still builds exactly 9
-manifests — proving AK-3 did not expand distribution coverage.
+≠ installable), and asserts generator output count equals canonical
+`files`-bearing entries + foundation (CE-3 expands that set intentionally).
 
 ### Project context — evidence model
 

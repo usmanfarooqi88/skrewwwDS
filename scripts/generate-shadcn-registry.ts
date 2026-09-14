@@ -9,10 +9,13 @@ import { join } from "node:path";
 import {
   buildButtonManifest,
   buildCardManifest,
+  buildCheckboxManifest,
   buildDividerManifest,
   buildFormFieldManifest,
   buildFoundationManifest,
   buildLinkManifest,
+  buildProgressBarManifest,
+  buildSkeletonManifest,
   buildSpinnerManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
@@ -32,6 +35,9 @@ const manifests = [
   ["spinner.json", buildSpinnerManifest()],
   ["divider.json", buildDividerManifest()],
   ["link.json", buildLinkManifest()],
+  ["checkbox.json", buildCheckboxManifest()],
+  ["progress-bar.json", buildProgressBarManifest()],
+  ["skeleton.json", buildSkeletonManifest()],
 ] as const;
 
 console.log("Generated shadcn registry manifests:");

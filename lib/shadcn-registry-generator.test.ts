@@ -6,10 +6,13 @@ import {
   assertValidShadcnRegistryItem,
   buildButtonManifest,
   buildCardManifest,
+  buildCheckboxManifest,
   buildDividerManifest,
   buildFormFieldManifest,
   buildFoundationManifest,
   buildLinkManifest,
+  buildProgressBarManifest,
+  buildSkeletonManifest,
   buildSpinnerManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
@@ -215,6 +218,9 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildSpinnerManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildDividerManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildLinkManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildCheckboxManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildProgressBarManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildSkeletonManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -328,6 +334,42 @@ describe("shadcn registry generator", () => {
     expect(joined).not.toMatch(/site-config/);
     expect(joined).toMatch(/--link-text-default:\s*var\(--semantic-action-primary\)/);
     expect(joined).not.toMatch(/\/Users\//);
+  });
+
+  it("transports Checkbox with foundation-only registry dependency (Tier-1 Stable)", () => {
+    const manifest = buildCheckboxManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Checkbox.tsx",
+      "components/ui/checkbox.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(manifest.docs).toContain("react, react-dom");
+    expect(manifest.docs).not.toContain("next");
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+  });
+
+  it("transports Progress Bar with foundation-only registry dependency (Tier-1 Stable)", () => {
+    const manifest = buildProgressBarManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/ProgressBar.tsx",
+      "components/ui/progress-bar.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+  });
+
+  it("transports Skeleton with foundation-only registry dependency (Tier-1 Stable)", () => {
+    const manifest = buildSkeletonManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Skeleton.tsx",
+      "components/ui/skeleton.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

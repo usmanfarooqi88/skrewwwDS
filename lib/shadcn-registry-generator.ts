@@ -2,7 +2,8 @@
  * Pure, importable generator for the shadcn-compatible distribution layer
  * (`/r/foundation.json`, `/r/button.json`, `/r/card.json`,
  * `/r/text-input.json`, `/r/form-field.json`, `/r/validation-message.json`,
- * `/r/spinner.json`, `/r/divider.json`, `/r/link.json`).
+ * `/r/spinner.json`, `/r/divider.json`, `/r/link.json`,
+ * `/r/checkbox.json`, `/r/progress-bar.json`, `/r/skeleton.json`).
  * Every function here is a pure transform of real repo files or the
  * canonical registry — importing this module performs no filesystem
  * writes. The file-writing CLI entry point lives in
@@ -16,9 +17,10 @@
  *
  * Scope (see docs/architecture/shadcn-distribution.md): Foundation +
  * Button + Card + Text Input + Form Field + Validation Message + Spinner +
- * Divider + Link. Adding another component means adding its file(s) to
- * FILE_DESTINATIONS and a thin `buildXManifest() { return buildComponentManifest("x"); }`
- * wrapper — buildComponentManifest itself is already generic across any
+ * Divider + Link + Checkbox + Progress Bar + Skeleton. Adding another
+ * component means adding its file(s) to FILE_DESTINATIONS and a thin
+ * `buildXManifest() { return buildComponentManifest("x"); }` wrapper —
+ * buildComponentManifest itself is already generic across any
  * single-component canonical entry, including multi-hop
  * registryDependencies chains (text-input -> form-field ->
  * validation-message -> foundation) and real npm `dependencies`
@@ -140,6 +142,30 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
   "components/ui/link.module.css": {
     type: "registry:ui",
     target: "~/components/ui/link.module.css",
+  },
+  "components/ui/Checkbox.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Checkbox.tsx",
+  },
+  "components/ui/checkbox.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/checkbox.module.css",
+  },
+  "components/ui/ProgressBar.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/ProgressBar.tsx",
+  },
+  "components/ui/progress-bar.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/progress-bar.module.css",
+  },
+  "components/ui/Skeleton.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Skeleton.tsx",
+  },
+  "components/ui/skeleton.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/skeleton.module.css",
   },
   "components/ui/internal/link-utils.ts": {
     type: "registry:lib",
@@ -340,6 +366,18 @@ export function buildDividerManifest(): ShadcnRegistryItem {
 
 export function buildLinkManifest(): ShadcnRegistryItem {
   return buildComponentManifest("link");
+}
+
+export function buildCheckboxManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("checkbox");
+}
+
+export function buildProgressBarManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("progress-bar");
+}
+
+export function buildSkeletonManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("skeleton");
 }
 
 /**

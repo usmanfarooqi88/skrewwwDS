@@ -59,11 +59,12 @@ describe("registry integration — installability is derived from real /r output
   });
 });
 
-describe("registry integration — AK-3 introduced no /r catalog expansion", () => {
-  it("the shadcn manifest generator still builds exactly the same 9 items as before AK-3 (foundation + 8 components)", () => {
+describe("registry integration — /r catalog expands only via intentional CE-3 distribution batches", () => {
+  it("the shadcn manifest generator builds foundation plus every currently distributed component", () => {
     const generatorSource = readFileSync(join(root, "scripts", "generate-shadcn-registry.ts"), "utf8");
     const buildCalls = generatorSource.match(/build\w+Manifest\(\)/g) ?? [];
-    expect(buildCalls).toHaveLength(9);
+    const distributedCount = componentRegistry.filter((entry) => entry.files && entry.files.length > 0).length;
+    expect(buildCalls).toHaveLength(distributedCount + 1); // +1 foundation
   });
 
   it("public/r/ contains exactly one manifest per distributed registry entry plus foundation, nothing extra", () => {

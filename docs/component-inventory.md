@@ -32,10 +32,10 @@ entries are Figma item primitives that React correctly models via composition.
 | Beta | **28** |
 | Public docs pages (implemented) | **55** |
 | Agent Kit contracts | **55** |
-| `/r` component manifests | **8** (+ `foundation` shared cut = 9 files) |
+| `/r` component manifests | **11** (+ `foundation` shared cut = 12 files) |
 
-`/r` components: button, card, divider, form-field, link, spinner, text-input, validation-message.
-CE-1 specialists + Number Input + Toggle Group + **Stepper** `/r` deferred to **CE-3**.
+`/r` components: button, card, checkbox, divider, form-field, link, progress-bar, skeleton, spinner, text-input, validation-message.
+CE-3 IN PROGRESS — CE-3B Tier-1 Stable shipped; CE-3C (`radio`, `switch`) next. Remaining deferred specialists stay out of overnight batches.
 
 ### Figma / documentation inventory
 
@@ -166,8 +166,8 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Implemented | 55 | |
 | Docs | 55 implemented + 11 docs-only | |
 | Agent contracts | 55 | |
-| `/r` distributed components | 8 | + foundation; Stepper deferred to CE-3 |
-| `/r/registry.json` | 0 | STAB-001 / CE-3 — not this pass |
+| `/r` distributed components | 11 | + foundation; CE-3B Tier-1 Stable |
+| `/r/registry.json` | 0 | STAB-001 / later CE-3 — not this pass |
 
 ## Master inventory table
 
@@ -187,7 +187,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Calendar Day | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Calendar Grid | yes | yes | A | public | Beta | yes | yes | no | PARTIAL | P2 | Dedicated parity task if product needs | Content & Data; figmaAvailability=partial |
 | Card | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Containers & Overlays; figmaAvailability=available |
-| Checkbox | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
+| Checkbox | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available; CE-3B `/r` |
 | Combobox | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Credit Card Field | yes (Forms/Credit Card Field `2024:2714`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1D; compound number/expiry/CVC; generic icon; not payment processor |
 | Data Table | yes | yes | A | public | Beta | yes | yes | no | PARTIAL | P2 | Dedicated parity task if product needs | Content & Data; figmaAvailability=partial |
@@ -206,12 +206,12 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Pagination | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
 | Phone Number Field | yes (Forms/Phone Number Field `2024:2776`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1E; country Select + type=tel; flag placeholder decorative; not SMS/carrier verification |
 | Popover | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Containers & Overlays; figmaAvailability=available |
-| Progress Bar | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
+| Progress Bar | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available; CE-3B `/r` |
 | Radio | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Radio Group | yes | yes | A | public | Stable | yes | yes | no | PARTIAL | P2 | Dedicated parity task if product needs | Forms; figmaAvailability=partial |
 | Search Field | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Select | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
-| Skeleton | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
+| Skeleton | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available; CE-3B `/r` |
 | Spinner | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Split Button | yes (Actions/Split Button `2022:1086`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Actions; CE-1C; primary Button + Menu; joined chrome |
 | Stepper | yes (Navigation/Step Item `2024:2944`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Navigation; CE-2K; compound Stepper + Step; state derived from currentStep, not a component variant; Class A per Timeline/Timeline-Item precedent (see classification note above) |
