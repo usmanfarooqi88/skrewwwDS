@@ -158,8 +158,16 @@ test.describe("Reference App forms + overlays", () => {
     const widths = await page.evaluate(() => ({
       viewport: window.innerWidth,
       document: document.documentElement.scrollWidth,
+      body: document.body.scrollWidth,
     }));
-    expect(widths.document).toBeLessThanOrEqual(widths.viewport + 2);
+    expect(widths.body).toBeLessThanOrEqual(widths.viewport + 2);
+    const canScrollX = await page.evaluate(() => {
+      window.scrollTo(document.documentElement.scrollWidth, 0);
+      const after = window.scrollX;
+      window.scrollTo(0, 0);
+      return after > 0;
+    });
+    expect(canScrollX).toBe(false);
     expect(errors).toEqual([]);
   });
 

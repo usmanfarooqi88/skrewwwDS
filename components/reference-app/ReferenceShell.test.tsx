@@ -47,6 +47,7 @@ describe("ReferenceShell", () => {
       "#reference-main",
     );
     expect(screen.getByRole("main")).toHaveAttribute("id", "reference-main");
+    expect(screen.getByRole("main")).toHaveAttribute("tabIndex", "-1");
     expect(
       screen.getByRole("complementary", { name: "Reference app sidebar" }),
     ).toBeInTheDocument();

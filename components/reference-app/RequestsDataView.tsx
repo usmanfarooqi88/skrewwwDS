@@ -314,11 +314,16 @@ export function RequestsDataView() {
         />
       ) : (
         <>
-          <TableScrollArea
-            accessibleLabel="Scrollable requests table"
-            tabIndex={0}
-            data-testid="requests-table-scroll"
-          >
+          {/*
+            Grid containment keeps wide table min-width from inflating page
+            scrollWidth while TableScrollArea owns horizontal scrolling (G0).
+          */}
+          <div className="grid min-w-0 max-w-full">
+            <TableScrollArea
+              accessibleLabel="Scrollable requests table"
+              tabIndex={0}
+              data-testid="requests-table-scroll"
+            >
             <Table data-testid="requests-table">
               <TableCaption>Ops requests</TableCaption>
               <TableHeader>
@@ -420,6 +425,7 @@ export function RequestsDataView() {
               </TableBody>
             </Table>
           </TableScrollArea>
+          </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-ink-500">

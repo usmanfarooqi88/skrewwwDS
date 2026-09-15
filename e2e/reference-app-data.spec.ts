@@ -150,17 +150,28 @@ test.describe("Reference App data workflow", () => {
 
     const scroll = page.getByTestId("requests-table-scroll");
     const metrics = await scroll.evaluate((el) => {
+      const before = window.scrollX;
+      window.scrollTo(document.documentElement.scrollWidth, 0);
+      const canPageScrollX = window.scrollX > 0;
+      window.scrollTo(before, window.scrollY);
       const pageWidth = document.documentElement.scrollWidth;
+      const bodyWidth = document.body.scrollWidth;
       const viewport = window.innerWidth;
       if (el.scrollWidth <= el.clientWidth) {
-        return { canScroll: false, pageWidth, viewport };
+        return { canScroll: false, pageWidth, bodyWidth, viewport, canPageScrollX };
       }
       el.scrollLeft = el.scrollWidth;
-      return { canScroll: el.scrollLeft > 0, pageWidth, viewport };
+      return {
+        canScroll: el.scrollLeft > 0,
+        pageWidth,
+        bodyWidth,
+        viewport,
+        canPageScrollX,
+      };
     });
     expect(metrics.canScroll).toBe(true);
-    // Table may still widen the document slightly; record for RA-5. Local scroll must work.
-    expect(metrics.pageWidth).toBeGreaterThanOrEqual(metrics.viewport);
+    expect(metrics.canPageScrollX).toBe(false);
+    expect(metrics.bodyWidth).toBeLessThanOrEqual(metrics.viewport + 1);
     await expect(page.getByRole("button", { name: /Actions for req_/ }).first()).toBeVisible();
 
     expect(errors).toEqual([]);

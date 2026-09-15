@@ -1,14 +1,37 @@
 # Reference App / Composition Validation Plan
 
-**Phase:** RA-3 ✅ COMPLETE (Forms + overlays)  
-**Status:** New/Edit form workflows shipped — RA-4 responsive/a11y pass not started  
-**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`  
-**Final SHA:** `733c691` (CI success)  
-**Canonical next task:** RA-4 — Responsive / accessibility composition validation (**NOT STARTED**)
+**Phase:** RA-4 ✅ COMPLETE (Responsive + accessibility validation)  
+**Status:** Viewport / keyboard / overflow / overlay reachability validated — RA-5 visual backlog review not started  
+**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`  
+**Canonical next task:** RA-5 — Visual / parity backlog review (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
-Do not create parallel planning docs. RA-4+ starts only after explicit
+Do not create parallel planning docs. RA-5+ starts only after explicit
 human approval.
+
+---
+
+## RA-4 delivery (2026-09-15)
+
+| Item | Result |
+|------|--------|
+| Viewports | 1280×800, 900×800, 390×844, constrained-height **390×640** |
+| Routes | `/reference`, `/data`, `/new`, `/edit/req_001`, `/settings` — all pass overflow + landmarks |
+| Shell a11y | Skip link → `#reference-main` with `tabIndex={-1}`; nav `aria-current`; mobile Drawer focus restore |
+| Keyboard | Form errors + Combobox + discard Dialog Escape/restore; data sort/menu/pagination (prior + new specs) |
+| Table containment | Local `TableScrollArea` scroll; **no user-scrollable page X overflow**; grid + `overflow-x-clip` shell (G0) |
+| Overlays @ short height | Filter Drawer, nav Drawer, discard Dialog actions remain in viewport |
+| Form errors | Inline FormField errors + `aria-invalid`; Toast supplements, does not replace |
+| Axe | **Not added** (no `@axe-core` in repo; plan allows existing tooling only) — Playwright role/name tree used |
+| Hydration | Clean automated Chromium; no product hydration defects |
+| Visual backlog | Textarea inset, table header/actions/scroll cue, Toggle Group Pill — **exposed, not fixed** |
+| G0 fixes | Skip main focus target; shell `overflow-x-clip`; table grid containment; settings placeholder copy (G1) |
+| Unresolved | Chromium may inflate `documentElement.scrollWidth` for wide tables inside `overflow:auto` without enabling page scroll — not G3 |
+| Vitest | 1155 / 1155 |
+| Browser | Reference App Playwright **20 / 20** (shell 4 + data 4 + forms 6 + responsive/a11y 6) |
+| Gaps | No new G3/G4/G5 |
+
+Manual review: all five routes @ 1280×800, 900×800, 390×844; plus `/reference/data` and discard Dialog @ 390×640.
 
 ---
 
@@ -648,7 +671,7 @@ The phase may close when **all** are true:
 | **RA-1** | ✅ COMPLETE — App Shell + fixtures + stub pages | `app/reference/**`, `components/reference-app/**`, `lib/reference-app/**`, `components/DocsChrome.tsx` | Docs chrome bleed; skip-link; routing active state | Vitest + Playwright shell specs | **STOP — no data filters** |
 | **RA-2** | ✅ COMPLETE — Data workflow + Advanced Filters composition | `app/reference/data`, `components/reference-app/Requests*`, `lib/reference-app/query-requests.ts` | Nested Popover avoided via inline desktop filters (G0) | Vitest + Playwright data specs | **STOP — no forms** |
 | **RA-3** | ✅ COMPLETE — Forms + overlays | `RequestForm*`, new/edit pages, `request-form.ts` | Programmatic Dialog needed finalFocusRef (G0) | Vitest + Playwright forms specs | **STOP — no RA-4** |
-| **RA-4** | Responsive + a11y pass across routes | tests + small layout fixes (G0/G1 only) | Accidental G3 API changes | Viewport matrix + axe | Stop before visual bugfix campaigns |
+| **RA-4** | ✅ COMPLETE — Responsive + a11y validation | `e2e/reference-app-responsive-a11y.spec.ts`, shell overflow/skip fixes | Accidental G3 API changes | Viewport matrix + Playwright a11y (no new axe dep) | **STOP — no RA-5** |
 | **RA-5** | Visual/parity backlog **review** | notes in this doc / status; fixes only with approval | Scope into CE visual fixes | Manual + evidence | No drive-by component restyles |
 | **RA-6** | Final validation vs DoD + PH-0 gate | status docs | Premature PH-0 | Full checklist §23 | **STOP** — wait for PH-0 approval |
 
@@ -685,8 +708,9 @@ Reference App:
   RA-1 ✅ COMPLETE
   RA-2 ✅ COMPLETE
   RA-3 ✅ COMPLETE (733c691)
-  RA-4 NOT STARTED  ← next
-  RA-5 … RA-6 later
+  RA-4 ✅ COMPLETE
+  RA-5 NOT STARTED  ← next
+  RA-6 later
 
 PH-0 later
 Guard NOT STARTED

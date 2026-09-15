@@ -50,8 +50,16 @@ export function ReferenceShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="min-w-0 md:ml-64">
-        <main id="reference-main" className="min-h-screen min-w-0">
+      {/*
+        overflow-x-clip keeps wide TableScrollArea content from inflating
+        document/page horizontal scroll while local table scroll still works.
+      */}
+      <div className="min-w-0 overflow-x-clip md:ml-64">
+        <main
+          id="reference-main"
+          tabIndex={-1}
+          className="min-h-screen min-w-0 overflow-x-clip outline-none"
+        >
           {children}
         </main>
       </div>

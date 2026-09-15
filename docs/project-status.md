@@ -1,6 +1,25 @@
 # Project status
 
-Last verified: **2026-09-15** (RA-3 ✅ COMPLETE — New/Edit forms + overlays; RA-4 NOT STARTED; CE-3 remains ✅ COMPLETE)
+Last verified: **2026-09-15** (RA-4 ✅ COMPLETE — responsive/a11y validation; RA-5 NOT STARTED; CE-3 remains ✅ COMPLETE)
+
+## 2026-09-15 — RA-4 Reference App Responsive + Accessibility (COMPLETE)
+
+**Verdict: COMPLETE.** Full Reference App composition validated across desktop
+(1280), narrow (900), mobile (390), and constrained height (390×640). Keyboard
+and landmark checks automated. No DS API changes, no visual-backlog fixes, no
+new dependencies, no axe package (not in repo).
+
+**G0 fixes:** `main#reference-main` `tabIndex={-1}` for skip-link focus;
+shell content `overflow-x-clip`; Requests table wrapped in `grid min-w-0` so
+page cannot scroll horizontally while `TableScrollArea` scrolls locally.
+
+**G1:** Settings placeholder copy updated for RA-4/RA-5 sequencing.
+
+**Evidence:** lint/typecheck/build green; Vitest **1155/1155**; Playwright
+reference **20/20**; registry **53**.
+
+**Canonical next:** **RA-5 — Visual / parity backlog review — NOT STARTED.**
+PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — RA-3 Reference App Forms + Overlays (COMPLETE)
 
@@ -30,6 +49,7 @@ reference **14/14**; registry **53**.
 **CI:** [completed / success](https://github.com/usmanfarooqi88/skrewwwDS/actions/runs/35002885675)
 
 **Canonical next:** **RA-4 — Responsive / accessibility composition validation — NOT STARTED.**
+(superseded — see RA-4 COMPLETE section above)
 PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — RA-2 Reference App Data Workflow (COMPLETE)
