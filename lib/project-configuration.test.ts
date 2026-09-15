@@ -349,6 +349,12 @@ describe("project configuration", () => {
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("credit-card-field.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("number-input.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("file-upload.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("popover.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("tooltip.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("dialog.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("drawer.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("menu.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("split-button.json");
     const validationMessage = getImplementedRegistryEntries().find(
       (entry) => entry.slug === "validation-message",
     );

@@ -1,6 +1,71 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I Form/Composite Batch ✅ SHIPPED — `/r` = foundation + 36; CE-3J = NEXT, NOT STARTED)
+Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J Overlay/Navigation Batch ✅ SHIPPED — `/r` = foundation + 42; CE-3K = NEXT, NOT STARTED)
+
+## 2026-09-15 — CE-3J Overlay/Navigation Distribution Batch (SHIPPED)
+
+**Verdict: COMPLETE.** Shipped exactly the 6 canonical CE-3J slugs from
+`docs/distribution-expansion.md` — `popover`, `tooltip`, `dialog`,
+`drawer`, `menu`, `split-button`. No scope drift into `combobox`/`select`/
+`calendar-*`/`date-picker`/`phone-number-field` (CE-3K).
+
+Baseline verified at `84d4549` (main == origin/main, clean, CI success,
+repo PUBLIC, React 55, Stable/Beta 27/28, Vitest 1111/1111, `/r` =
+foundation + 36).
+
+Reverified the shared overlay runtime stack against real, recursive import
+closure (every helper file's own imports, not just each component's
+direct imports) rather than trusting CE-3G's "~14 files" estimate: the
+actual graph is **18 distinct internal helper files** — 3 more than
+planned (`overlay-types.ts`, a real `import type` needed for the
+consumer's own TypeScript build even though it erases at runtime;
+`overlay-stack.ts` and `useLatestRef.ts`, both transitively required by
+`useOverlayEscape.ts` and several other hooks). `useIsClient.ts` was also
+corrected to belong to Popover/Dialog/Drawer's own internalDependencies,
+not just Tooltip's, since `Portal.tsx` itself imports it.
+
+**One intentional, evidence-based departure from the CE-3G plan:**
+`split-button`'s `registryDependencies` is `@skrewww/foundation` only, not
+`@skrewww/menu` — `SplitButton.tsx` documents `Menu` as a composed peer in
+prose but contains zero actual import of it (verified by reading the
+complete file). Declaring a spurious registryDependency would force every
+Split Button consumer to install Menu's full graph even when unused.
+
+**Consumer validation — all 6 required T4 real, network-backed, installed-
+browser proof (never accepted on `shadcn view` alone):** every one passed —
+`popover` (trigger/content/Escape/focus-return/outside-click), `tooltip`
+(focus-reveal/Escape), `dialog` (focus trap/background-inert/Escape/focus-
+restore/close-button), `drawer` (left-edge geometry/close-button initial
+focus/Escape/focus-restore), `menu` (open/first-item-auto-focus/Enter-
+select/Escape/focus-restore/disabled-item-non-execution — resolving
+`@skrewww/popover` end-to-end, 19 files), `split-button` (installed with
+`menu` as its real documented composition, 22 files — primary click vs.
+menu-trigger click stay independent, Escape closes). Zero console errors
+across all 6. Four test failures surfaced along the way, **all in the
+test harness, not the product**: two missing `expectedSharedTargets:
+["lib/cn.ts"]` declarations, one wrong assumption that opening a menu via
+click needs a follow-up ArrowDown to focus the first item (it doesn't —
+the existing `e2e/menu.spec.ts` itself proves click-open already focuses
+it), and one Playwright exact-text-match misuse. No product code changed;
+no accessibility defect exposed.
+
+**Inventory delta:** `/r` foundation + 36 → foundation + **42**.
+React/Stable-Beta/docs/contracts counts unchanged (distribution-only).
+
+**Eval case retargeting:** `install-undistributed-dialog` (from CE-3I)
+renamed to `install-undistributed-combobox` since `dialog` is now
+genuinely distributed; `combobox` remains undistributed (CE-3K). A
+`recipe-compiler.test.ts` hardcoded example was corrected from asserting
+`dialog` is NOT installable to asserting it now correctly IS — no authored
+Recipe currently references a still-undistributed component, so no valid
+"false" example remained to substitute.
+
+**Validation:** lint clean, typecheck clean, Vitest **1117/1117** (1111
+baseline + 6 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs, `git diff --check`
+clean.
+
+**CE-3K — Search/date interaction batch is next, NOT STARTED.**
 
 ## 2026-09-15 — CE-3I Form/Composite Distribution Batch (SHIPPED)
 
@@ -3392,7 +3457,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE (docs-only); CE-3H ✅ SHIPPED; CE-3I Form/Composite Batch ✅ SHIPPED (`/r` = foundation + 36); CE-3J = NEXT, NOT STARTED |
+| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE (docs-only); CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J Overlay/Navigation Batch ✅ SHIPPED (`/r` = foundation + 42); CE-3K = NEXT, NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |

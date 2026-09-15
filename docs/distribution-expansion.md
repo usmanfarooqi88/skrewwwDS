@@ -5,9 +5,10 @@
 > **CE-3G higher-complexity planning** · Verified 2026-09-15 · Baseline `08bf6a6` · `/r` = foundation + **21**
 > **CE-3H safe compound batch** · Shipped 2026-09-15 · `/r` = foundation + **32**
 > **CE-3I form/composite batch** · Shipped 2026-09-15 · `/r` = foundation + **36**
+> **CE-3J overlay/navigation batch** · Shipped 2026-09-15 · `/r` = foundation + **42**
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I are
-> **SHIPPED** (see Status table). CE-3J onward are **DEFINED — NOT STARTED**
+> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J are
+> **SHIPPED** (see Status table). CE-3K onward are **DEFINED — NOT STARTED**
 > below (see CE-3G section).
 
 ## Purpose
@@ -570,7 +571,8 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3G Higher-Complexity Planning | ✅ COMPLETE (docs-only, see section below) |
 | CE-3H Safe compound batch | ✅ SHIPPED — 11 slugs, see section below |
 | CE-3I Form/composite batch | ✅ SHIPPED — 4 slugs, see section below |
-| CE-3 overall | **IN PROGRESS** — CE-3J = NEXT, NOT STARTED |
+| CE-3J Overlay/navigation batch | ✅ SHIPPED — 6 slugs, see section below |
+| CE-3 overall | **IN PROGRESS** — CE-3K = NEXT, NOT STARTED |
 
 ---
 
@@ -1122,6 +1124,113 @@ foundation + 36 — byte-identical), `git diff --check` clean.
 - **Expected manifest delta:** 36 → 42
 - **Stop conditions:** if T4 browser smoke surfaces a real focus-trap/scroll-lock defect, fix is out of CE-3 scope (no runtime component changes) — halt and report, do not patch silently
 - **Exit gate:** green CI **and** a passing T4 Playwright smoke pass, not just `shadcn view`
+
+#### CE-3J — SHIPPED (2026-09-15)
+
+**Verdict: COMPLETE.** All 6 planned slugs shipped exactly as scoped — no
+scope drift into CE-3K's `combobox`/`select`/`calendar-*`/`date-picker`/
+`phone-number-field`.
+
+**Shared overlay stack, reverified against real source (not copied from the
+CE-3G plan unchecked):** the actual transitive graph is **18 distinct
+internal helper files**, not the ~14 CE-3G estimated — full recursive
+import-closure tracing (every helper file's own imports, not just each
+component's direct imports) found three files the CE-3G count missed:
+`overlay-types.ts` (a real `import type` used by Dialog/Drawer — must exist
+on disk for the consumer's own `next build` TypeScript phase to resolve,
+even though it erases at runtime), `overlay-stack.ts` and `useLatestRef.ts`
+(both transitively required by `useOverlayEscape.ts`, and the latter also
+by `useOutsidePointer.ts`/`useFloatingPosition.ts`/`useFocusTrap.ts`).
+`useIsClient.ts` was also corrected to be attributed to Popover/Dialog/
+Drawer's own internalDependencies, not just Tooltip's — `Portal.tsx` itself
+imports it, so every component bundling `Portal.tsx` needs it too.
+
+**Registry metadata — one intentional departure from the CE-3G plan, based
+on real evidence:** `split-button`'s `registryDependencies` is `["@skrewww/foundation"]`
+only, **not** `@skrewww/menu` as CE-3G's batch definition text suggested.
+`SplitButton.tsx` documents `Menu` as a composed peer in prose (its own
+JSDoc) but contains zero import of `Menu.tsx` or any Menu type — verified by
+reading the complete file. Declaring a registryDependency that reflects no
+real import edge would make every `split-button` consumer install Menu's
+(and transitively Popover's) full graph even when they don't compose it
+that way, which is not what CE-3G's own Part 3 evidence table already
+found ("documents Menu as a composed peer... does not import it").
+
+**Per-slug dependency graphs** (full detail — files, `registryDependencies`,
+`dependencies`, `cssTokens` — in the canonical registry entries):
+
+| Slug | `registryDependencies` | New pattern |
+|------|----------------------------|-----------------|
+| `popover` | `@skrewww/foundation` | Full base overlay stack (13 internal files) |
+| `tooltip` | `@skrewww/foundation` | Own `react-dom` `createPortal` (not the shared `Portal.tsx`) + position/controller helpers |
+| `dialog` | `@skrewww/foundation` | Full modal stack (focus trap, scroll lock, background inert, `overlay-types.ts`) |
+| `drawer` | `@skrewww/foundation` | Identical modal stack to `dialog`, distinct public geometry (left-edge only) |
+| `menu` | `@skrewww/popover`, `@skrewww/foundation` | First component whose registryDependency is another CE-3-distributed component (not Foundation-adjacent) — no re-transported `Popover.tsx`/`popover-position.ts` |
+| `split-button` | `@skrewww/foundation` | Reuses `button-group-context.ts`/`button-group.module.css` verbatim (shared with CE-3H's `button-group`); no `@skrewww/menu` (see above) |
+
+**Import closure:** verified recursively for every transported file,
+including each helper's own imports — this is what surfaced the 3 missed
+files above. No gaps found in the 6 components' own registry entries once
+this full-depth trace was done (unlike CE-3H/I, where the first-pass
+metadata itself had a real omission — CE-3J's upfront rigor caught
+everything before any consumer build ran).
+
+**Consumer validation — all 6 are T4, real and network-backed, none marked
+proven on `shadcn view` alone:**
+
+| Slug | Real installed-consumer proof | Result |
+|------|-------------------------------|--------|
+| `popover` | trigger opens, `aria-expanded`, Escape closes + focus returns to trigger, outside-click closes, zero console errors | ✅ green on first run |
+| `tooltip` | focus reveals (`role="tooltip"`), Escape dismisses | ✅ green on first run |
+| `dialog` | trigger opens, initial focus moves inside (focus trap), background sibling made `inert`, Escape closes + focus restored, `DialogClose` button closes | ✅ green on first run |
+| `drawer` | trigger opens, left-edge geometry (x≤8px), close button receives initial focus, Escape closes + focus restored | ✅ green on first run |
+| `menu` | trigger opens (`aria-expanded`), first item auto-focused on open, Enter selects + fires `onSelect` + closes, Escape closes + focus restored, disabled item does not execute, zero console errors — resolved `@skrewww/popover` end-to-end (19 files installed) | ❌ (2 harness bugs) → fixed → ✅ |
+| `split-button` | installed together with `menu` (its real documented composition, 22 files), primary click fires only the primary action without opening the menu, menu-trigger click opens the menu (`aria-expanded`), Escape closes, zero console errors | ❌ (2 harness bugs) → fixed → ✅ |
+
+All 4 failures across `menu`/`split-button` were **test-harness authoring
+bugs, not product or manifest defects**: two missing `expectedSharedTargets:
+["lib/cn.ts"]` declarations (both components genuinely share `lib/cn.ts`
+with their `@skrewww/popover`/`@skrewww/foundation` chain — same class of
+gap as CE-3I's fix), one incorrect assumption that opening a menu via click
+requires a subsequent `ArrowDown` to focus the first item (it doesn't —
+`e2e/menu.spec.ts` itself asserts the first item is already focused
+immediately after a trigger click), and one Playwright `getByText(...,
+{exact:true})` misuse against a `<p>` whose full text was `"Last action:
+Saved"` rather than just `"Saved"`. No product code changed.
+
+**Accessibility/keyboard proof:** role semantics (`dialog`/`menu`/
+`menuitem`/`tooltip`/`group`), `aria-expanded` on every disclosure trigger,
+`aria-haspopup="menu"` on the Split Button menu trigger, focus-visible
+(outline width) already covered by the existing `split-button.spec.ts`
+suite this task reused rather than re-proving, focus trap (Dialog/Drawer),
+focus restoration (all 4 dismissible overlays), disabled-item semantics
+(`menu`'s `aria-disabled` item does not execute on click). No accessibility
+defect was exposed — nothing to report per Part 14's stop condition.
+
+**Harness changes:** none beyond registering the 6 new manifest builders
+and writing 6 descriptors reusing CE-3I's existing generic `browserAssert`
+hook — no second browser-smoke system, no `startNextServer()` changes.
+
+**Manifest count:** foundation + 36 → foundation + **42** (adds `popover`,
+`tooltip`, `dialog`, `drawer`, `menu`, `split-button`).
+
+**Eval case retargeting:** `install-undistributed-dialog` (created in
+CE-3I) renamed to `install-undistributed-combobox` — `dialog` is now
+genuinely distributed, so its old premise would be factually false;
+`combobox` remains undistributed (CE-3K). A `recipe-compiler.test.ts`
+hardcoded example asserting `dialog` was NOT installable was corrected to
+assert the (now true) installable case — no authored Recipe currently
+references a still-undistributed component, so there was no valid
+"false"-case component left to substitute; the suite's dynamic
+per-recipe/per-component loop (checked against the live registry, not
+hardcoded) already covers every recipe regardless.
+
+**Validation:** lint clean, typecheck clean, Vitest **1117/1117** (1111
+baseline + 6 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs (all 43 items —
+foundation + 42 — byte-identical), `git diff --check` clean.
+
+**CE-3K next — NOT STARTED.**
 
 ### CE-3K — Search/date interaction batch
 

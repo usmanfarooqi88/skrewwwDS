@@ -78,6 +78,12 @@ import {
   buildCreditCardFieldManifest,
   buildNumberInputManifest,
   buildFileUploadManifest,
+  buildPopoverManifest,
+  buildTooltipManifest,
+  buildDialogManifest,
+  buildDrawerManifest,
+  buildMenuManifest,
+  buildSplitButtonManifest,
   type ShadcnRegistryItem,
 } from "../lib/shadcn-registry-generator";
 
@@ -125,6 +131,12 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   "credit-card-field": buildCreditCardFieldManifest,
   "number-input": buildNumberInputManifest,
   "file-upload": buildFileUploadManifest,
+  popover: buildPopoverManifest,
+  tooltip: buildTooltipManifest,
+  dialog: buildDialogManifest,
+  drawer: buildDrawerManifest,
+  menu: buildMenuManifest,
+  "split-button": buildSplitButtonManifest,
 };
 
 /**
@@ -812,6 +824,484 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         .catch(() => {
           throw new Error("Installed File Upload: oversized-file rejection message did not appear.");
         });
+    },
+  },
+  // CE-3J — overlay/navigation batch (all T4: real installed-consumer
+  // browser proof, not just manifest generation). Render harnesses use
+  // plain native <button> trigger children (never the Skrewww Button
+  // component) since none of these 6 components' own registryDependencies
+  // include @skrewww/button — matching what a consumer who installs only
+  // e.g. `shadcn add @skrewww/popover` actually gets. Behaviors reused
+  // directly from the existing authoritative suites: e2e/overlays.spec.ts,
+  // e2e/popover.spec.ts, e2e/drawer.spec.ts, e2e/menu.spec.ts,
+  // e2e/split-button.spec.ts.
+  popover: {
+    criticalPaths: [
+      "components/ui/Popover.tsx",
+      "components/ui/popover.module.css",
+      "components/ui/internal/Portal.tsx",
+      "components/ui/internal/useIsClient.ts",
+      "components/ui/internal/OverlayScopeContext.tsx",
+      "components/ui/internal/useOverlayEscape.ts",
+      "components/ui/internal/overlay-stack.ts",
+      "components/ui/internal/useLatestRef.ts",
+      "components/ui/internal/useOutsidePointer.ts",
+      "components/ui/internal/popover-position.ts",
+      "components/ui/internal/focus-utils.ts",
+      "components/ui/internal/useFloatingPosition.ts",
+      "components/ui/internal/assign-ref.ts",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { Popover, PopoverBody, PopoverContent, PopoverTitle, PopoverTrigger } from "@/components/ui/Popover";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 200 }}>',
+        '      <Popover placement="bottom">',
+        "        <PopoverTrigger>",
+        '          <button type="button">View details</button>',
+        "        </PopoverTrigger>",
+        '        <PopoverContent aria-label="Smoke popover">',
+        "          <PopoverTitle>Smoke popover</PopoverTitle>",
+        "          <PopoverBody>Smoke popover body content</PopoverBody>",
+        "        </PopoverContent>",
+        "      </Popover>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Popover"/.test(pageSource) && /View details/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports Popover and renders a real trigger/content pair, exercising the full overlay helper stack",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 5000;
+      const trigger = page.getByRole("button", { name: "View details" });
+      const content = page.getByRole("dialog", { name: "Smoke popover" });
+
+      await trigger.click();
+      await content.waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Popover: content did not become visible after trigger click.");
+      });
+      const expanded = await trigger.getAttribute("aria-expanded");
+      if (expanded !== "true") throw new Error(`Installed Popover: trigger aria-expanded was "${expanded}", expected "true".`);
+
+      await page.keyboard.press("Escape");
+      await content.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Popover: content did not close on Escape.");
+      });
+      const focusReturned = await trigger.evaluate((el) => el === document.activeElement);
+      if (!focusReturned) throw new Error("Installed Popover: focus did not return to trigger after Escape.");
+
+      await trigger.click();
+      await content.waitFor({ state: "visible", timeout: WAIT_MS });
+      await page.locator("body").click({ position: { x: 5, y: 5 } });
+      await content.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Popover: content did not close on outside click.");
+      });
+    },
+  },
+  tooltip: {
+    criticalPaths: [
+      "components/ui/Tooltip.tsx",
+      "components/ui/tooltip.module.css",
+      "components/ui/internal/tooltip-position.ts",
+      "components/ui/internal/assign-ref.ts",
+      "components/ui/internal/useIsClient.ts",
+      "components/ui/internal/useTooltipController.ts",
+      "components/ui/internal/useOverlayEscape.ts",
+      "components/ui/internal/overlay-stack.ts",
+      "components/ui/internal/useLatestRef.ts",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { Tooltip } from "@/components/ui/Tooltip";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 100 }}>',
+        '      <Tooltip content="Smoke tooltip content">',
+        '        <button type="button" aria-label="Save">Save</button>',
+        "      </Tooltip>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Tooltip"/.test(pageSource) && /Smoke tooltip content/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Tooltip and renders a real trigger, exercising its own portal + position/controller helpers",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 5000;
+      const trigger = page.getByRole("button", { name: "Save" });
+      const tooltip = page.getByRole("tooltip");
+
+      await trigger.focus();
+      await tooltip.waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Tooltip: tooltip did not become visible on trigger focus.");
+      });
+
+      await page.keyboard.press("Escape");
+      await tooltip.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Tooltip: tooltip did not close on Escape.");
+      });
+    },
+  },
+  dialog: {
+    criticalPaths: [
+      "components/ui/Dialog.tsx",
+      "components/ui/dialog.module.css",
+      "components/ui/internal/Portal.tsx",
+      "components/ui/internal/useIsClient.ts",
+      "components/ui/internal/OverlayScopeContext.tsx",
+      "components/ui/internal/useBackgroundInert.ts",
+      "components/ui/internal/useBodyScrollLock.ts",
+      "components/ui/internal/useOverlayEscape.ts",
+      "components/ui/internal/overlay-stack.ts",
+      "components/ui/internal/useLatestRef.ts",
+      "components/ui/internal/useFocusTrap.ts",
+      "components/ui/internal/focus-utils.ts",
+      "components/ui/internal/assign-ref.ts",
+      "components/ui/internal/overlay-types.ts",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import {',
+        "  Dialog,",
+        "  DialogBody,",
+        "  DialogClose,",
+        "  DialogContent,",
+        "  DialogHeader,",
+        "  DialogTitle,",
+        "  DialogTrigger,",
+        '} from "@/components/ui/Dialog";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        "    <Dialog>",
+        "      <DialogTrigger>",
+        '        <button type="button">Open dialog</button>',
+        "      </DialogTrigger>",
+        "      <DialogContent>",
+        "        <DialogHeader>",
+        "          <DialogTitle>Smoke dialog</DialogTitle>",
+        "          <DialogClose />",
+        "        </DialogHeader>",
+        "        <DialogBody>Smoke dialog body</DialogBody>",
+        "      </DialogContent>",
+        "    </Dialog>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Dialog"/.test(pageSource) && /Smoke dialog/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports the Dialog compound family and renders a real modal, exercising focus trap/scroll-lock/background-inert",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 5000;
+      const trigger = page.getByRole("button", { name: "Open dialog" });
+      const dialog = page.getByRole("dialog", { name: "Smoke dialog" });
+
+      await trigger.click();
+      await dialog.waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Dialog: dialog did not become visible after trigger click.");
+      });
+
+      // Focus trap: initial focus moved inside the dialog (not left on the trigger/body).
+      const focusInsideDialog = await page.evaluate(() => {
+        const dialogEl = document.querySelector('[role="dialog"]');
+        return Boolean(dialogEl && dialogEl.contains(document.activeElement));
+      });
+      if (!focusInsideDialog) throw new Error("Installed Dialog: initial focus did not move inside the dialog.");
+
+      // Background inert (when supported by the browser).
+      const inertCount = await page.evaluate(() => {
+        if (!("inert" in HTMLElement.prototype)) return -1;
+        return Array.from(document.body.children).filter((child) => child instanceof HTMLElement && child.inert).length;
+      });
+      if (inertCount === 0) throw new Error("Installed Dialog: no background sibling was made inert while open.");
+
+      await page.keyboard.press("Escape");
+      await dialog.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Dialog: dialog did not close on Escape.");
+      });
+      const focusReturned = await trigger.evaluate((el) => el === document.activeElement);
+      if (!focusReturned) throw new Error("Installed Dialog: focus did not return to trigger after Escape.");
+
+      await trigger.click();
+      await dialog.waitFor({ state: "visible", timeout: WAIT_MS });
+      await page.getByRole("button", { name: "Close dialog" }).click();
+      await dialog.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Dialog: dialog did not close on DialogClose button click.");
+      });
+    },
+  },
+  drawer: {
+    criticalPaths: [
+      "components/ui/Drawer.tsx",
+      "components/ui/drawer.module.css",
+      "components/ui/internal/Portal.tsx",
+      "components/ui/internal/useIsClient.ts",
+      "components/ui/internal/OverlayScopeContext.tsx",
+      "components/ui/internal/useBackgroundInert.ts",
+      "components/ui/internal/useBodyScrollLock.ts",
+      "components/ui/internal/useOverlayEscape.ts",
+      "components/ui/internal/overlay-stack.ts",
+      "components/ui/internal/useLatestRef.ts",
+      "components/ui/internal/useFocusTrap.ts",
+      "components/ui/internal/focus-utils.ts",
+      "components/ui/internal/assign-ref.ts",
+      "components/ui/internal/overlay-types.ts",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import {',
+        "  Drawer,",
+        "  DrawerBody,",
+        "  DrawerClose,",
+        "  DrawerContent,",
+        "  DrawerHeader,",
+        "  DrawerTitle,",
+        "  DrawerTrigger,",
+        '} from "@/components/ui/Drawer";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        "    <Drawer>",
+        "      <DrawerTrigger>",
+        '        <button type="button">Open drawer</button>',
+        "      </DrawerTrigger>",
+        "      <DrawerContent>",
+        "        <DrawerHeader>",
+        "          <DrawerTitle>Smoke drawer</DrawerTitle>",
+        "          <DrawerClose />",
+        "        </DrawerHeader>",
+        "        <DrawerBody>Smoke drawer body</DrawerBody>",
+        "      </DrawerContent>",
+        "    </Drawer>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Drawer"/.test(pageSource) && /Smoke drawer/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports the Drawer compound family and renders a real left-edge panel, exercising the identical modal helper stack to Dialog",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 5000;
+      const trigger = page.getByRole("button", { name: "Open drawer" });
+      const drawer = page.getByRole("dialog", { name: "Smoke drawer" });
+
+      await trigger.click();
+      await drawer.waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Drawer: drawer did not become visible after trigger click.");
+      });
+
+      // Left-edge placement (only supported placement per current contract).
+      const box = await drawer.boundingBox();
+      if (!box || box.x > 8) throw new Error(`Installed Drawer: expected left-edge placement (x<=8), got x=${box?.x}.`);
+
+      // Focus trap: close button receives initial focus (per e2e/drawer.spec.ts).
+      const closeFocused = await page.getByRole("button", { name: "Close drawer" }).evaluate((el) => el === document.activeElement);
+      if (!closeFocused) throw new Error("Installed Drawer: close button did not receive initial focus.");
+
+      await page.keyboard.press("Escape");
+      await drawer.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Drawer: drawer did not close on Escape.");
+      });
+      const focusReturned = await trigger.evaluate((el) => el === document.activeElement);
+      if (!focusReturned) throw new Error("Installed Drawer: focus did not return to trigger after Escape.");
+    },
+  },
+  menu: {
+    criticalPaths: [
+      "components/ui/Menu.tsx",
+      "components/ui/menu.module.css",
+      "components/ui/internal/menu-typeahead.ts",
+      "lib/cn.ts",
+      // Menu's registryDependency (@skrewww/popover) resolves the full
+      // overlay stack via the shadcn CLI's own recursive install — not
+      // re-listed here as a "critical path" since it is Popover's own
+      // manifest that owns these files, not Menu's.
+      "styles/skrewww-foundation.css",
+    ],
+    // lib/cn.ts is independently declared by both menu and its
+    // @skrewww/popover registryDependency.
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { useState } from "react";',
+        'import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/Menu";',
+        "",
+        "export default function Home() {",
+        '  const [lastAction, setLastAction] = useState("No action yet");',
+        "  return (",
+        '    <div style={{ padding: 100 }}>',
+        "      <Menu>",
+        "        <MenuTrigger>",
+        '          <button type="button">Project actions</button>',
+        "        </MenuTrigger>",
+        '        <MenuContent aria-label="Project actions">',
+        '          <MenuItem onSelect={() => setLastAction("Edit profile")}>Edit profile</MenuItem>',
+        '          <MenuItem onSelect={() => setLastAction("Duplicate")}>Duplicate</MenuItem>',
+        '          <MenuItem disabled onSelect={() => setLastAction("Should not fire")}>',
+        "            Export (disabled)",
+        "          </MenuItem>",
+        "        </MenuContent>",
+        "      </Menu>",
+        '      <p data-testid="last-action">Last action: {lastAction}</p>',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Menu"/.test(pageSource) && /Project actions/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports the Menu compound family and renders a real command list, exercising the @skrewww/popover registryDependency resolution",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 5000;
+      const trigger = page.getByRole("button", { name: "Project actions" });
+      const menu = page.getByRole("menu", { name: "Project actions" });
+
+      await trigger.click();
+      await menu.waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Menu: menu did not become visible after trigger click.");
+      });
+      const expanded = await trigger.getAttribute("aria-expanded");
+      if (expanded !== "true") throw new Error(`Installed Menu: trigger aria-expanded was "${expanded}", expected "true".`);
+
+      // Opening via click already focuses the first item (matches
+      // e2e/menu.spec.ts's "navigates with arrow keys" test, which asserts
+      // this immediately after a trigger click with no ArrowDown press).
+      const firstItem = page.getByRole("menuitem", { name: "Edit profile" });
+      await firstItem.waitFor({ state: "visible", timeout: WAIT_MS });
+      const firstFocused = await firstItem.evaluate((el) => el === document.activeElement);
+      if (!firstFocused) throw new Error("Installed Menu: first menu item was not focused after opening via click.");
+
+      await page.keyboard.press("Enter");
+      await menu.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Menu: menu did not close after Enter selection.");
+      });
+      await page.getByTestId("last-action").getByText("Edit profile").waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Menu: onSelect callback did not fire for the selected item.");
+      });
+
+      await trigger.click();
+      await menu.waitFor({ state: "visible", timeout: WAIT_MS });
+      await page.keyboard.press("Escape");
+      await menu.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Menu: menu did not close on Escape.");
+      });
+      const focusReturned = await trigger.evaluate((el) => el === document.activeElement);
+      if (!focusReturned) throw new Error("Installed Menu: focus did not return to trigger after Escape.");
+
+      await trigger.click();
+      await menu.waitFor({ state: "visible", timeout: WAIT_MS });
+      await page.getByRole("menuitem", { name: "Export (disabled)" }).click({ force: true });
+      const stillOpen = await menu.isVisible();
+      if (!stillOpen) throw new Error("Installed Menu: disabled item execution closed the menu (it should not execute).");
+    },
+  },
+  "split-button": {
+    criticalPaths: [
+      "components/ui/SplitButton.tsx",
+      "components/ui/button-group-context.ts",
+      "components/ui/button-group.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    // Real intended usage composes Menu (documented peer, not imported) —
+    // installed together here, matching e2e/split-button.spec.ts's own
+    // "primary Button + Menu trigger" structure.
+    extraAdds: ["menu"],
+    // lib/cn.ts is independently declared by split-button, menu, and menu's
+    // own @skrewww/popover registryDependency.
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { useState } from "react";',
+        'import { SplitButton } from "@/components/ui/SplitButton";',
+        'import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/Menu";',
+        "",
+        "export default function Home() {",
+        '  const [lastAction, setLastAction] = useState("No action yet");',
+        "  return (",
+        '    <div style={{ padding: 100 }}>',
+        '      <SplitButton aria-label="Save options">',
+        '        <button type="button" onClick={() => setLastAction("Saved")}>',
+        "          Save",
+        "        </button>",
+        "        <Menu>",
+        "          <MenuTrigger>",
+        '            <button type="button" aria-label="Save options menu">',
+        "              ▾",
+        "            </button>",
+        "          </MenuTrigger>",
+        '          <MenuContent aria-label="Save options menu">',
+        '            <MenuItem onSelect={() => setLastAction("Saved as draft")}>Save as draft</MenuItem>',
+        "          </MenuContent>",
+        "        </Menu>",
+        "      </SplitButton>",
+        '      <p data-testid="last-action">Last action: {lastAction}</p>',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/SplitButton"/.test(pageSource) && /Save options/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports SplitButton composed with a real installed Menu, exercising adjacency chrome + the documented (not imported) peer composition",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 5000;
+      const group = page.getByRole("group", { name: "Save options" });
+      const primary = group.getByRole("button", { name: "Save", exact: true });
+      const menuTrigger = group.getByRole("button", { name: "Save options menu" });
+      const menu = page.getByRole("menu", { name: "Save options menu" });
+
+      await primary.click();
+      await page.getByTestId("last-action").filter({ hasText: "Last action: Saved" }).waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Split Button: primary click did not fire the primary action.");
+      });
+      const menuOpenedByPrimary = await menu.isVisible();
+      if (menuOpenedByPrimary) throw new Error("Installed Split Button: primary click incorrectly opened the menu.");
+
+      await menuTrigger.click();
+      await menu.waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Split Button: menu trigger click did not open the menu.");
+      });
+      const expanded = await menuTrigger.getAttribute("aria-expanded");
+      if (expanded !== "true") throw new Error(`Installed Split Button: menu trigger aria-expanded was "${expanded}", expected "true".`);
+
+      await page.keyboard.press("Escape");
+      await menu.waitFor({ state: "detached", timeout: WAIT_MS }).catch(() => {
+        throw new Error("Installed Split Button: menu did not close on Escape.");
+      });
     },
   },
   "spinner-divider-link": {

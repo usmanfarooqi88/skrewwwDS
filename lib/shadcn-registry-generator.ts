@@ -429,6 +429,123 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:lib",
     target: "~/components/ui/internal/file-upload-validation.ts",
   },
+  // CE-3J — overlay/navigation batch
+  "components/ui/Popover.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Popover.tsx",
+  },
+  "components/ui/popover.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/popover.module.css",
+  },
+  "components/ui/Tooltip.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Tooltip.tsx",
+  },
+  "components/ui/tooltip.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/tooltip.module.css",
+  },
+  "components/ui/Dialog.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Dialog.tsx",
+  },
+  "components/ui/dialog.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/dialog.module.css",
+  },
+  "components/ui/Drawer.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Drawer.tsx",
+  },
+  "components/ui/drawer.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/drawer.module.css",
+  },
+  "components/ui/Menu.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Menu.tsx",
+  },
+  "components/ui/menu.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/menu.module.css",
+  },
+  "components/ui/SplitButton.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/SplitButton.tsx",
+  },
+  "components/ui/internal/Portal.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/Portal.tsx",
+  },
+  "components/ui/internal/OverlayScopeContext.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/OverlayScopeContext.tsx",
+  },
+  "components/ui/internal/useIsClient.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useIsClient.ts",
+  },
+  "components/ui/internal/useOverlayEscape.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useOverlayEscape.ts",
+  },
+  "components/ui/internal/overlay-stack.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/overlay-stack.ts",
+  },
+  "components/ui/internal/useLatestRef.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useLatestRef.ts",
+  },
+  "components/ui/internal/useOutsidePointer.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useOutsidePointer.ts",
+  },
+  "components/ui/internal/popover-position.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/popover-position.ts",
+  },
+  "components/ui/internal/focus-utils.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/focus-utils.ts",
+  },
+  "components/ui/internal/useFloatingPosition.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useFloatingPosition.ts",
+  },
+  "components/ui/internal/assign-ref.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/assign-ref.ts",
+  },
+  "components/ui/internal/useBackgroundInert.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useBackgroundInert.ts",
+  },
+  "components/ui/internal/useBodyScrollLock.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useBodyScrollLock.ts",
+  },
+  "components/ui/internal/useFocusTrap.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useFocusTrap.ts",
+  },
+  "components/ui/internal/overlay-types.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/overlay-types.ts",
+  },
+  "components/ui/internal/tooltip-position.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/tooltip-position.ts",
+  },
+  "components/ui/internal/useTooltipController.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useTooltipController.ts",
+  },
+  "components/ui/internal/menu-typeahead.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/menu-typeahead.ts",
+  },
 };
 
 export function classifyFile(relPath: string): { type: ShadcnFileType; target: string } {
@@ -734,6 +851,31 @@ export function buildNumberInputManifest(): ShadcnRegistryItem {
 
 export function buildFileUploadManifest(): ShadcnRegistryItem {
   return buildComponentManifest("file-upload");
+}
+
+// CE-3J — overlay/navigation batch
+export function buildPopoverManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("popover");
+}
+
+export function buildTooltipManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("tooltip");
+}
+
+export function buildDialogManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("dialog");
+}
+
+export function buildDrawerManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("drawer");
+}
+
+export function buildMenuManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("menu");
+}
+
+export function buildSplitButtonManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("split-button");
 }
 
 /**

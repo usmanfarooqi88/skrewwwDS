@@ -167,10 +167,16 @@ describe("Recipe compiler — maturity and installability", () => {
       }
     }
 
+    // dialog became @skrewww-distributed in CE-3J — this spot-check now
+    // exercises the "correctly derived true" side rather than "false" (no
+    // authored recipe currently references a still-undistributed
+    // component, so there is no valid "false" example to hardcode here;
+    // the loop above already covers every recipe/component pair
+    // dynamically against the live registry regardless).
     const confirmation = recipes.find((r) => r.id === "destructive-confirmation")!;
     const dialog = confirmation.components.find((c) => c.slug === "dialog")!;
-    expect(dialog.installableViaSkrewwwRegistry).toBe(false);
-    expect(dialog.installCommand).toBeUndefined();
+    expect(dialog.installableViaSkrewwwRegistry).toBe(true);
+    expect(dialog.installCommand).toBe("npx shadcn add @skrewww/dialog");
   });
 });
 

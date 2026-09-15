@@ -44,6 +44,12 @@ import {
   buildCreditCardFieldManifest,
   buildNumberInputManifest,
   buildFileUploadManifest,
+  buildPopoverManifest,
+  buildTooltipManifest,
+  buildDialogManifest,
+  buildDrawerManifest,
+  buildMenuManifest,
+  buildSplitButtonManifest,
 } from "../lib/shadcn-registry-generator";
 
 const OUT_DIR = join(process.cwd(), "public", "r");
@@ -88,6 +94,12 @@ const manifests = [
   ["credit-card-field.json", buildCreditCardFieldManifest()],
   ["number-input.json", buildNumberInputManifest()],
   ["file-upload.json", buildFileUploadManifest()],
+  ["popover.json", buildPopoverManifest()],
+  ["tooltip.json", buildTooltipManifest()],
+  ["dialog.json", buildDialogManifest()],
+  ["drawer.json", buildDrawerManifest()],
+  ["menu.json", buildMenuManifest()],
+  ["split-button.json", buildSplitButtonManifest()],
 ] as const;
 
 console.log("Generated shadcn registry manifests:");

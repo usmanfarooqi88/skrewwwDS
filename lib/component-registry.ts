@@ -699,6 +699,22 @@ export function Example() {
       "color/brand/700",
       "color/danger/700",
     ],
+    // SplitButton.tsx documents Menu as a composed peer (prose only — see
+    // its own JSDoc) but does not import Menu.tsx or any Menu type at all;
+    // CE-3J's own real-import verification found no @skrewww/menu edge, so
+    // it is intentionally not declared as a registryDependency here — a
+    // corrected departure from the CE-3G plan's aspirational "menu becomes
+    // one for split-button" note, matching real source evidence instead.
+    dependencies: [],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: [
+      "lib/cn.ts",
+      "components/ui/button-group-context.ts",
+      "components/ui/button-group.module.css",
+    ],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/SplitButton.tsx"],
     relatedComponents: [
       { label: "Button — primary action and menu trigger chrome", href: "/components/button" },
       { label: "Menu — secondary popup and items", href: "/components/menu" },

@@ -93,14 +93,14 @@ export const EVAL_CASES: readonly AuthoredEvalCase[] = [
     },
   },
   {
-    id: "install-undistributed-dialog",
-    title: "Dialog exists but is not shadcn-distributed",
+    id: "install-undistributed-combobox",
+    title: "Combobox exists but is not shadcn-distributed",
     category: "installability",
     userTask:
-      "Add a Skrewww Dialog. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
+      "Add a Skrewww Combobox. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
     consumerFixtureId: "configured-rounded-glass",
-    relevantComponentSlugs: ["dialog"],
-    requiredComponentSlugs: ["dialog"],
+    relevantComponentSlugs: ["combobox"],
+    requiredComponentSlugs: ["combobox"],
     allowedInstallCommands: [],
     forbidInventedInstallCommands: true,
     projectContext: {

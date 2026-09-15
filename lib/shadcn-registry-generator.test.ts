@@ -41,6 +41,12 @@ import {
   buildCreditCardFieldManifest,
   buildNumberInputManifest,
   buildFileUploadManifest,
+  buildPopoverManifest,
+  buildTooltipManifest,
+  buildDialogManifest,
+  buildDrawerManifest,
+  buildMenuManifest,
+  buildSplitButtonManifest,
   classifyFile,
   extractFoundationCss,
   extractFoundationCssFromSource,
@@ -271,6 +277,12 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildCreditCardFieldManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildNumberInputManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildFileUploadManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildPopoverManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildTooltipManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildDialogManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildDrawerManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildMenuManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildSplitButtonManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -761,6 +773,123 @@ describe("shadcn registry generator", () => {
     expect(manifest.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
     expect(JSON.stringify(manifest)).not.toMatch(/FormField\.tsx/);
+  });
+
+  // CE-3J — overlay/navigation batch
+  it("transports Popover with the full overlay helper stack (Portal/escape/outside-pointer/floating-position/focus)", () => {
+    const manifest = buildPopoverManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Popover.tsx",
+      "components/ui/internal/OverlayScopeContext.tsx",
+      "components/ui/internal/Portal.tsx",
+      "components/ui/internal/assign-ref.ts",
+      "components/ui/internal/focus-utils.ts",
+      "components/ui/internal/overlay-stack.ts",
+      "components/ui/internal/popover-position.ts",
+      "components/ui/internal/useFloatingPosition.ts",
+      "components/ui/internal/useIsClient.ts",
+      "components/ui/internal/useLatestRef.ts",
+      "components/ui/internal/useOutsidePointer.ts",
+      "components/ui/internal/useOverlayEscape.ts",
+      "components/ui/popover.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports Tooltip with its own portal (react-dom createPortal, not the shared Portal.tsx) + position/controller helpers", () => {
+    const manifest = buildTooltipManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Tooltip.tsx",
+      "components/ui/internal/assign-ref.ts",
+      "components/ui/internal/overlay-stack.ts",
+      "components/ui/internal/tooltip-position.ts",
+      "components/ui/internal/useIsClient.ts",
+      "components/ui/internal/useLatestRef.ts",
+      "components/ui/internal/useOverlayEscape.ts",
+      "components/ui/internal/useTooltipController.ts",
+      "components/ui/tooltip.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(JSON.stringify(manifest)).not.toMatch(/internal\/Portal\.tsx/);
+  });
+
+  it("transports Dialog with the full modal helper stack (focus trap, scroll lock, background inert, overlay-types)", () => {
+    const manifest = buildDialogManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Dialog.tsx",
+      "components/ui/dialog.module.css",
+      "components/ui/internal/OverlayScopeContext.tsx",
+      "components/ui/internal/Portal.tsx",
+      "components/ui/internal/assign-ref.ts",
+      "components/ui/internal/focus-utils.ts",
+      "components/ui/internal/overlay-stack.ts",
+      "components/ui/internal/overlay-types.ts",
+      "components/ui/internal/useBackgroundInert.ts",
+      "components/ui/internal/useBodyScrollLock.ts",
+      "components/ui/internal/useFocusTrap.ts",
+      "components/ui/internal/useIsClient.ts",
+      "components/ui/internal/useLatestRef.ts",
+      "components/ui/internal/useOverlayEscape.ts",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports Drawer with the identical modal helper stack to Dialog", () => {
+    const manifest = buildDrawerManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Drawer.tsx",
+      "components/ui/drawer.module.css",
+      "components/ui/internal/OverlayScopeContext.tsx",
+      "components/ui/internal/Portal.tsx",
+      "components/ui/internal/assign-ref.ts",
+      "components/ui/internal/focus-utils.ts",
+      "components/ui/internal/overlay-stack.ts",
+      "components/ui/internal/overlay-types.ts",
+      "components/ui/internal/useBackgroundInert.ts",
+      "components/ui/internal/useBodyScrollLock.ts",
+      "components/ui/internal/useFocusTrap.ts",
+      "components/ui/internal/useIsClient.ts",
+      "components/ui/internal/useLatestRef.ts",
+      "components/ui/internal/useOverlayEscape.ts",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports Menu with a @skrewww/popover registryDependency, no re-transported Popover.tsx", () => {
+    const manifest = buildMenuManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Menu.tsx",
+      "components/ui/internal/menu-typeahead.ts",
+      "components/ui/menu.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/popover", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(JSON.stringify(manifest)).not.toMatch(/Popover\.tsx|popover-position\.ts/);
+  });
+
+  it("transports Split Button reusing button-group-context.ts + button-group.module.css verbatim, no @skrewww/menu registryDep (no real Menu import)", () => {
+    const manifest = buildSplitButtonManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/SplitButton.tsx",
+      "components/ui/button-group-context.ts",
+      "components/ui/button-group.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(JSON.stringify(manifest)).not.toMatch(/@skrewww\/menu|Menu\.tsx/);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {
