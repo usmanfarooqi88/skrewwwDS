@@ -361,6 +361,8 @@ describe("project configuration", () => {
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("calendar-grid.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("date-picker.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("phone-number-field.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("tree-view.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("data-table.json");
     const validationMessage = getImplementedRegistryEntries().find(
       (entry) => entry.slug === "validation-message",
     );

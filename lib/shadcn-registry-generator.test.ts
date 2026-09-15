@@ -53,6 +53,8 @@ import {
   buildCalendarGridManifest,
   buildDatePickerManifest,
   buildPhoneNumberFieldManifest,
+  buildTreeViewManifest,
+  buildDataTableManifest,
   classifyFile,
   extractFoundationCss,
   extractFoundationCssFromSource,
@@ -295,6 +297,8 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildCalendarGridManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildDatePickerManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildPhoneNumberFieldManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildTreeViewManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildDataTableManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -1005,6 +1009,36 @@ describe("shadcn registry generator", () => {
     expect(manifest.registryDependencies).toEqual(["@skrewww/select", "@skrewww/validation-message", "@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual([]);
     expect(JSON.stringify(manifest)).not.toMatch(/Select\.tsx|ValidationMessage\.tsx/);
+  });
+
+  // CE-3L — data/tree batch
+  it("transports Tree View with its own TreeItem/tree-flatten helpers, no shared overlay stack", () => {
+    const manifest = buildTreeViewManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/TreeView.tsx",
+      "components/ui/internal/TreeItem.tsx",
+      "components/ui/internal/tree-flatten.ts",
+      "components/ui/internal/tree-item.module.css",
+      "components/ui/tree-view.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports Data Table with a @skrewww/table registryDependency, no re-transported Table.tsx, and no composition-example deps (Pagination/Menu/Checkbox)", () => {
+    const manifest = buildDataTableManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/DataTableSortHeader.tsx",
+      "components/ui/data-table-sort-header.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "lib/use-data-table-sort.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/table", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/Table\.tsx|Pagination\.tsx|Menu\.tsx|Checkbox\.tsx|@skrewww\/pagination|@skrewww\/menu|@skrewww\/checkbox/);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

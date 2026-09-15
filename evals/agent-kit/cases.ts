@@ -93,14 +93,14 @@ export const EVAL_CASES: readonly AuthoredEvalCase[] = [
     },
   },
   {
-    id: "install-undistributed-tree-view",
-    title: "Tree View exists but is not shadcn-distributed",
+    id: "install-undistributed-bar-chart",
+    title: "Bar Chart exists but is not shadcn-distributed",
     category: "installability",
     userTask:
-      "Add a Skrewww Tree View. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
+      "Add a Skrewww Bar Chart. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
     consumerFixtureId: "configured-rounded-glass",
-    relevantComponentSlugs: ["tree-view"],
-    requiredComponentSlugs: ["tree-view"],
+    relevantComponentSlugs: ["bar-chart"],
+    requiredComponentSlugs: ["bar-chart"],
     allowedInstallCommands: [],
     forbidInventedInstallCommands: true,
     projectContext: {

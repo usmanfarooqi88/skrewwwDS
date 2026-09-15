@@ -100,6 +100,8 @@ import {
   buildCalendarGridManifest,
   buildDatePickerManifest,
   buildPhoneNumberFieldManifest,
+  buildTreeViewManifest,
+  buildDataTableManifest,
   type ShadcnRegistryItem,
 } from "../lib/shadcn-registry-generator";
 
@@ -159,6 +161,8 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   "calendar-grid": buildCalendarGridManifest,
   "date-picker": buildDatePickerManifest,
   "phone-number-field": buildPhoneNumberFieldManifest,
+  "tree-view": buildTreeViewManifest,
+  "data-table": buildDataTableManifest,
 };
 
 /**
@@ -1786,6 +1790,231 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       await country.getByText("United Kingdom (+44)", { exact: false }).waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
         throw new Error("Installed Phone Number Field: selecting a country option did not update the country selector display.");
       });
+    },
+  },
+  // CE-3L — data/tree batch. Behaviors reused directly from the existing
+  // authoritative suites: e2e/tree-view.spec.ts, e2e/data-table.spec.ts.
+  "tree-view": {
+    criticalPaths: [
+      "components/ui/TreeView.tsx",
+      "components/ui/tree-view.module.css",
+      "components/ui/internal/TreeItem.tsx",
+      "components/ui/internal/tree-item.module.css",
+      "components/ui/internal/tree-flatten.ts",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { TreeView } from "@/components/ui/TreeView";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        "      <TreeView",
+        '        aria-label="Project files"',
+        '        defaultExpanded={["src"]}',
+        '        defaultSelected="index"',
+        "        data={[",
+        "          {",
+        '            id: "src",',
+        '            label: "src",',
+        "            children: [",
+        "              {",
+        '                id: "components",',
+        '                label: "components",',
+        "                children: [",
+        '                  { id: "button", label: "Button.tsx" },',
+        '                  { id: "card", label: "Card.tsx" },',
+        "                ],",
+        "              },",
+        '              { id: "index", label: "index.tsx" },',
+        "            ],",
+        "          },",
+        '          { id: "readme", label: "README.md" },',
+        "        ]}",
+        "      />",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/TreeView"/.test(pageSource) && /Project files/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports TreeView and renders a real hierarchical tree with its own TreeItem/tree-flatten helpers",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 5000;
+      const tree = page.getByRole("tree", { name: "Project files" });
+      const src = tree.getByRole("treeitem", { name: "src" });
+      const components = tree.getByRole("treeitem", { name: "components" });
+      const buttonFile = tree.getByRole("treeitem", { name: "Button.tsx" });
+      const indexFile = tree.getByRole("treeitem", { name: "index.tsx" });
+      const readme = tree.getByRole("treeitem", { name: "README.md" });
+
+      await src.waitFor({ state: "visible", timeout: WAIT_MS });
+      const srcExpanded = await src.getAttribute("aria-expanded");
+      if (srcExpanded !== "true") throw new Error(`Installed Tree View: "src" aria-expanded was "${srcExpanded}", expected "true" (default expanded).`);
+      if ((await buttonFile.count()) !== 0) throw new Error("Installed Tree View: \"components\" should be collapsed by default, but its child \"Button.tsx\" is already visible.");
+      const indexSelected = await indexFile.getAttribute("aria-selected");
+      if (indexSelected !== "true") throw new Error(`Installed Tree View: "index.tsx" aria-selected was "${indexSelected}", expected "true" (default selected).`);
+      const srcTabindex = await src.getAttribute("tabindex");
+      const readmeTabindex = await readme.getAttribute("tabindex");
+      if (srcTabindex !== "0" || readmeTabindex !== "-1") {
+        throw new Error(`Installed Tree View: roving tabindex incorrect (src="${srcTabindex}", readme="${readmeTabindex}"), expected src="0", readme="-1".`);
+      }
+
+      await src.focus();
+      await page.keyboard.press("ArrowDown");
+      const componentsFocusedAfterDown = await components.evaluate((el) => el === document.activeElement);
+      if (!componentsFocusedAfterDown) throw new Error("Installed Tree View: ArrowDown from \"src\" did not move focus to \"components\".");
+
+      await page.keyboard.press("ArrowRight");
+      const componentsExpanded = await components.getAttribute("aria-expanded");
+      if (componentsExpanded !== "true") throw new Error(`Installed Tree View: ArrowRight did not expand "components" (aria-expanded="${componentsExpanded}").`);
+      await buttonFile.waitFor({ state: "visible", timeout: WAIT_MS });
+      const buttonFocusedAfterRight = await buttonFile.evaluate((el) => el === document.activeElement);
+      if (!buttonFocusedAfterRight) throw new Error("Installed Tree View: ArrowRight did not move focus onto the first child \"Button.tsx\".");
+
+      await page.keyboard.press("ArrowLeft");
+      const componentsFocusedAfterLeft1 = await components.evaluate((el) => el === document.activeElement);
+      if (!componentsFocusedAfterLeft1) throw new Error("Installed Tree View: ArrowLeft on a leaf did not move focus to its parent \"components\".");
+
+      await page.keyboard.press("ArrowLeft");
+      const componentsCollapsed = await components.getAttribute("aria-expanded");
+      if (componentsCollapsed !== "false") throw new Error(`Installed Tree View: second ArrowLeft did not collapse "components" (aria-expanded="${componentsCollapsed}").`);
+      if ((await buttonFile.count()) !== 0) throw new Error("Installed Tree View: \"Button.tsx\" is still visible after \"components\" collapsed.");
+
+      await readme.focus();
+      await page.keyboard.press("Enter");
+      const readmeSelected = await readme.getAttribute("aria-selected");
+      if (readmeSelected !== "true") throw new Error(`Installed Tree View: Enter did not select "README.md" (aria-selected="${readmeSelected}").`);
+      const indexDeselected = await indexFile.getAttribute("aria-selected");
+      if (indexDeselected !== "false") throw new Error(`Installed Tree View: selecting "README.md" did not deselect "index.tsx" (aria-selected="${indexDeselected}").`);
+    },
+  },
+  "data-table": {
+    criticalPaths: [
+      "components/ui/DataTableSortHeader.tsx",
+      "components/ui/data-table-sort-header.module.css",
+      "lib/use-data-table-sort.ts",
+      "components/ui/Table.tsx",
+      "components/ui/table.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    // lib/cn.ts is independently declared by both data-table and its
+    // @skrewww/table registryDependency. lib/use-controllable.ts is NOT
+    // shared — Table.tsx is purely presentational (no controllable state);
+    // only data-table's own bundled use-data-table-sort.ts needs it.
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { useDataTableSort } from "@/lib/use-data-table-sort";',
+        'import { DataTableSortHeader } from "@/components/ui/DataTableSortHeader";',
+        'import {',
+        "  Table,",
+        "  TableHeader,",
+        "  TableBody,",
+        "  TableRow,",
+        "  TableHead,",
+        "  TableCell,",
+        "  TableScrollArea,",
+        '} from "@/components/ui/Table";',
+        "",
+        'const rows = [',
+        '  { id: "1", name: "Atlas", value: 3 },',
+        '  { id: "2", name: "Voyager", value: 1 },',
+        '  { id: "3", name: "Anchor", value: 2 },',
+        "];",
+        "",
+        "export default function Home() {",
+        '  const { getSortDirection, toggleSort } = useDataTableSort<"name">();',
+        '  const sortDirection = getSortDirection("name");',
+        "  const sortedRows = [...rows];",
+        '  if (sortDirection !== "none") {',
+        "    sortedRows.sort((a, b) =>",
+        '      sortDirection === "ascending" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name),',
+        "    );",
+        "  }",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <TableScrollArea>',
+        '        <Table data-testid="data-table-preview">',
+        "          <TableHeader>",
+        "            <TableRow>",
+        "              <DataTableSortHeader",
+        "                sortDirection={sortDirection}",
+        '                onSort={() => toggleSort("name")}',
+        "              >",
+        "                Name",
+        "              </DataTableSortHeader>",
+        "              <TableHead>Value</TableHead>",
+        "            </TableRow>",
+        "          </TableHeader>",
+        "          <TableBody>",
+        "            {sortedRows.map((row) => (",
+        "              <TableRow key={row.id}>",
+        "                <TableCell>{row.name}</TableCell>",
+        "                <TableCell>{row.value}</TableCell>",
+        "              </TableRow>",
+        "            ))}",
+        "          </TableBody>",
+        "        </Table>",
+        "      </TableScrollArea>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/DataTableSortHeader"/.test(pageSource) && /useDataTableSort/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page composes DataTableSortHeader + useDataTableSort over a real installed Table, exercising the @skrewww/table registryDependency resolution",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 5000;
+      const header = page.getByRole("columnheader", { name: "Name" });
+      const sortButton = page.getByRole("button", { name: "Name" });
+      const firstDataCell = () =>
+        page.locator('[data-testid="data-table-preview"] tbody tr').first().locator("td").first();
+
+      await header.waitFor({ state: "visible", timeout: WAIT_MS });
+      const initialSort = await header.getAttribute("aria-sort");
+      if (initialSort !== "none") throw new Error(`Installed Data Table: initial aria-sort was "${initialSort}", expected "none".`);
+
+      await sortButton.click();
+      let sort = await header.getAttribute("aria-sort");
+      if (sort !== "ascending") throw new Error(`Installed Data Table: aria-sort after first click was "${sort}", expected "ascending".`);
+      let firstCellText = await firstDataCell().textContent();
+      if (firstCellText !== "Anchor") throw new Error(`Installed Data Table: ascending sort did not reorder rows (first cell "${firstCellText}", expected "Anchor").`);
+
+      await sortButton.click();
+      sort = await header.getAttribute("aria-sort");
+      if (sort !== "descending") throw new Error(`Installed Data Table: aria-sort after second click was "${sort}", expected "descending".`);
+      firstCellText = await firstDataCell().textContent();
+      if (firstCellText !== "Voyager") throw new Error(`Installed Data Table: descending sort did not reorder rows (first cell "${firstCellText}", expected "Voyager").`);
+
+      await sortButton.click();
+      sort = await header.getAttribute("aria-sort");
+      if (sort !== "none") throw new Error(`Installed Data Table: aria-sort after third click was "${sort}", expected "none".`);
+      firstCellText = await firstDataCell().textContent();
+      if (firstCellText !== "Atlas") throw new Error(`Installed Data Table: third click did not cycle back to the original row order (first cell "${firstCellText}", expected "Atlas").`);
+
+      // Keyboard operability: Enter then Space.
+      await sortButton.focus();
+      await page.keyboard.press("Enter");
+      sort = await header.getAttribute("aria-sort");
+      if (sort !== "ascending") throw new Error(`Installed Data Table: Enter did not sort ascending (aria-sort="${sort}").`);
+      await page.keyboard.press(" ");
+      sort = await header.getAttribute("aria-sort");
+      if (sort !== "descending") throw new Error(`Installed Data Table: Space did not advance the sort cycle to descending (aria-sort="${sort}").`);
     },
   },
   "spinner-divider-link": {

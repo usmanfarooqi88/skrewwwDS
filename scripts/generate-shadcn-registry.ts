@@ -56,6 +56,8 @@ import {
   buildCalendarGridManifest,
   buildDatePickerManifest,
   buildPhoneNumberFieldManifest,
+  buildTreeViewManifest,
+  buildDataTableManifest,
 } from "../lib/shadcn-registry-generator";
 
 const OUT_DIR = join(process.cwd(), "public", "r");
@@ -112,6 +114,8 @@ const manifests = [
   ["combobox.json", buildComboboxManifest()],
   ["date-picker.json", buildDatePickerManifest()],
   ["phone-number-field.json", buildPhoneNumberFieldManifest()],
+  ["tree-view.json", buildTreeViewManifest()],
+  ["data-table.json", buildDataTableManifest()],
 ] as const;
 
 console.log("Generated shadcn registry manifests:");

@@ -7,10 +7,11 @@
 > **CE-3I form/composite batch** · Shipped 2026-09-15 · `/r` = foundation + **36**
 > **CE-3J overlay/navigation batch** · Shipped 2026-09-15 · `/r` = foundation + **42**
 > **CE-3K search/date interaction batch** · Shipped 2026-09-15 · `/r` = foundation + **48**
+> **CE-3L data/tree batch** · Shipped 2026-09-15 · `/r` = foundation + **50**
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J/K are
-> **SHIPPED** (see Status table). CE-3L onward are **DEFINED — NOT STARTED**
-> below (see CE-3G section).
+> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J/K/L
+> are **SHIPPED** (see Status table). CE-3M onward are **DEFINED — NOT
+> STARTED** below (see CE-3G section).
 
 ## Purpose
 
@@ -574,7 +575,8 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3I Form/composite batch | ✅ SHIPPED — 4 slugs, see section below |
 | CE-3J Overlay/navigation batch | ✅ SHIPPED — 6 slugs, see section below |
 | CE-3K Search/date interaction batch | ✅ SHIPPED — 6 slugs, see section below |
-| CE-3 overall | **IN PROGRESS** — CE-3L = NEXT, NOT STARTED |
+| CE-3L Data/tree batch | ✅ SHIPPED — 2 slugs, see section below |
+| CE-3 overall | **IN PROGRESS** — CE-3M = NEXT, NOT STARTED |
 
 ---
 
@@ -1363,6 +1365,84 @@ foundation + 48 — byte-identical), `git diff --check` clean.
 - **Expected manifest delta:** 48 → 50
 - **Stop conditions:** none beyond standard CI gate
 - **Exit gate:** green CI
+
+#### CE-3L — SHIPPED (2026-09-15)
+
+**Verdict: COMPLETE.** Both planned slugs shipped exactly as scoped — no
+scope drift into CE-3M's `bar-chart`/`line-chart`.
+
+**Data Table architecture, reverified and preserved exactly as CE-3G
+found it:** `data-table` has no dedicated top-level component
+(`DataTable.tsx` does not exist) — its canonical registry item's owned
+files are `DataTableSortHeader.tsx` + `data-table-sort-header.module.css`
+only. `DataTableSortHeader.tsx` directly imports `TableHead` (a real value
+import) from `Table.tsx`, so `@skrewww/table` (already `/r`-distributed
+since CE-3F) is a genuine `registryDependency` — not re-transported files.
+`Pagination`/`Menu`/`Checkbox`, all documented in `relatedComponents` as
+composition **examples**, are confirmed **not** imported by
+`DataTableSortHeader.tsx` and were correctly excluded from
+`registryDependencies` — no example-leakage into the manifest.
+
+**Tree View's runtime graph, fully self-contained (no overlay stack):**
+`TreeView.tsx` + `internal/TreeItem.tsx` + `internal/tree-item.module.css`
++ `internal/tree-flatten.ts`, plus the already-mapped `lib/cn.ts`/
+`lib/use-controllable.ts`. `TreeItem.tsx` needed its own `@phosphor-icons/react`
+dependency (the expand/collapse chevron) — the only npm dependency in
+either of this batch's two slugs.
+
+**Third-party dependency reverification:** zero new packages found in
+either slug — confirmed no `recharts` or any other library leaked in from
+CE-3M's future scope.
+
+**Registry dependency graph:**
+
+| Slug | `registryDependencies` |
+|------|----------------------------|
+| `tree-view` | `@skrewww/foundation` |
+| `data-table` | `@skrewww/table`, `@skrewww/foundation` |
+
+**Import closure:** verified recursively for both; no gaps found on the
+first pass this time (all 3 prior batches' lessons — transitive CSS,
+transitive npm deps, shared-target completeness — were applied upfront).
+
+**Consumer validation — both required real installed-browser proof, both
+green on the first attempt:**
+
+| Slug | Tier | Proof | Result |
+|------|------|-------|--------|
+| `tree-view` | T4 | default expanded/collapsed/selected state, roving tabindex (`tabindex="0"`/`"-1"`), ArrowDown moves focus, ArrowRight expands + moves focus to first child, ArrowLeft (leaf→parent, then collapse), Enter selects + deselects the prior selection — 8 files, zero console errors | ✅ |
+| `data-table` | T3 | `aria-sort` full cycle (`none`→`ascending`→`descending`→`none`) with real row reordering on each click, keyboard operability (Enter then Space advances the same cycle) — 8 files via `@skrewww/table`, zero console errors | ✅ |
+
+**Two harness-authoring bugs found and fixed (not product defects):**
+one `expectedSharedTargets` omission direction inverted from the usual
+CE-3H–K pattern — `lib/use-controllable.ts` was incorrectly declared
+shared for `data-table` (assumed `Table.tsx` needed it, matching the
+"CSS/helper is usually shared" pattern from every prior overlay-adjacent
+batch); real evidence showed `Table.tsx` is purely presentational with no
+controllable state, so only `data-table`'s own bundled
+`use-data-table-sort.ts` needs it — not a shared target at all. Fixed by
+narrowing `expectedSharedTargets` to `["lib/cn.ts"]` only.
+
+**Table/Data Table visual backlog (header fill coverage, Actions-cell/
+ellipsis treatment, horizontal-scroll discoverability, future sticky
+Actions column, overflow edge fade) — confirmed NOT touched.** No product
+CSS, markup, or behavior changed anywhere in this batch; distribution
+transports the existing implementation byte-for-byte. These remain saved
+items for a future, separate visual-parity task.
+
+**Manifest count:** foundation + 48 → foundation + **50** (adds
+`tree-view`, `data-table`).
+
+**Eval case retargeting:** `install-undistributed-tree-view` (from CE-3K)
+renamed to `install-undistributed-bar-chart` — `tree-view` is now
+genuinely distributed; `bar-chart` remains undistributed (CE-3M).
+
+**Validation:** lint clean, typecheck clean, Vitest **1125/1125** (1123
+baseline + 2 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs (all 51 items —
+foundation + 50 — byte-identical), `git diff --check` clean.
+
+**CE-3M next — NOT STARTED.**
 
 ### CE-3M — Charts batch
 

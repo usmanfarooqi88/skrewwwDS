@@ -1,6 +1,67 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K Search/Date Interaction Batch ✅ SHIPPED — `/r` = foundation + 48; CE-3L = NEXT, NOT STARTED)
+Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K ✅ SHIPPED; CE-3L Data/Tree Batch ✅ SHIPPED — `/r` = foundation + 50; CE-3M = NEXT, NOT STARTED)
+
+## 2026-09-15 — CE-3L Data/Tree Distribution Batch (SHIPPED)
+
+**Verdict: COMPLETE.** Shipped exactly the 2 canonical CE-3L slugs from
+`docs/distribution-expansion.md` — `tree-view`, `data-table`.
+
+Baseline verified at `af30e89` (main == origin/main, clean, CI success,
+repo PUBLIC, React 55, Stable/Beta 27/28, Vitest 1123/1123, `/r` =
+foundation + 48).
+
+Data Table's architecture was preserved exactly as CE-3G found it: no
+dedicated `DataTable.tsx` exists; the canonical registry item's owned files
+are `DataTableSortHeader.tsx` + its CSS only. `DataTableSortHeader.tsx`
+directly imports `TableHead` from `Table.tsx`, so `@skrewww/table`
+(already `/r`-distributed since CE-3F) is a real `registryDependency` —
+not re-transported. `Pagination`/`Menu`/`Checkbox`, documented as
+composition examples, are confirmed **not** imported and were correctly
+excluded. Tree View's runtime graph is fully self-contained — no overlay
+stack — needing only `TreeItem.tsx`/`tree-item.module.css`/
+`tree-flatten.ts` plus the already-mapped `cn`/`use-controllable` helpers.
+Zero new third-party packages in either slug (reverified — no `recharts`
+leaked in early from CE-3M's future scope).
+
+**Consumer validation — both real, installed-browser proof, both green on
+the first attempt** (all prior batches' lessons — transitive CSS,
+transitive npm deps, shared-target completeness — were applied upfront,
+so import closure had no gaps this time): `tree-view` (T4 — default
+expanded/collapsed/selected state, roving tabindex, ArrowDown/ArrowRight/
+ArrowLeft navigation, Enter selection, 8 files, zero console errors),
+`data-table` (T3 — full `aria-sort` cycle none→ascending→descending→none
+with real row reordering on each click, keyboard operability via Enter
+then Space, 8 files via `@skrewww/table`, zero console errors).
+
+**One harness-authoring bug found and fixed (not a product defect):** an
+`expectedSharedTargets` entry was incorrectly added for `data-table`
+(`lib/use-controllable.ts`, assumed shared with `Table.tsx` by pattern-
+matching prior batches) — real evidence showed `Table.tsx` is purely
+presentational with no controllable state, so that file is only declared
+by `data-table`'s own bundled `use-data-table-sort.ts`, not shared at all.
+Fixed by narrowing the declaration.
+
+**Table/Data Table visual backlog (header fill coverage, Actions-cell/
+ellipsis treatment, horizontal-scroll discoverability, future sticky
+Actions column, overflow edge fade) — confirmed NOT touched.** No product
+CSS, markup, or behavior changed; distribution transports the existing
+implementation byte-for-byte. These remain a separate, future visual-
+parity task.
+
+**Inventory delta:** `/r` foundation + 48 → foundation + **50**.
+React/Stable-Beta/docs/contracts counts unchanged (distribution-only).
+
+**Eval case retargeting:** `install-undistributed-tree-view` (from CE-3K)
+renamed to `install-undistributed-bar-chart` — `tree-view` is now
+genuinely distributed; `bar-chart` remains undistributed (CE-3M).
+
+**Validation:** lint clean, typecheck clean, Vitest **1125/1125** (1123
+baseline + 2 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs, `git diff --check`
+clean.
+
+**CE-3M — Charts batch is next, NOT STARTED.**
 
 ## 2026-09-15 — CE-3K Search/Date Interaction Distribution Batch (SHIPPED)
 
@@ -3528,7 +3589,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE (docs-only); CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K Search/Date Interaction Batch ✅ SHIPPED (`/r` = foundation + 48); CE-3L = NEXT, NOT STARTED |
+| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE (docs-only); CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K ✅ SHIPPED; CE-3L Data/Tree Batch ✅ SHIPPED (`/r` = foundation + 50); CE-3M = NEXT, NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |

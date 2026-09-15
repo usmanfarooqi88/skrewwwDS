@@ -669,6 +669,19 @@ export function Example() {
       "semantic/focus-ring",
       "table-header-text",
     ],
+    // DataTableSortHeader.tsx directly imports TableHead from Table.tsx
+    // (a real value import) — @skrewww/table is therefore a genuine
+    // registryDependency, not re-transported files. Pagination/Menu/
+    // Checkbox (below) are documented composition EXAMPLES only —
+    // DataTableSortHeader.tsx never imports any of them — so they are
+    // deliberately NOT declared as registryDependencies here.
+    dependencies: ["@phosphor-icons/react"],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts", "lib/use-controllable.ts", "lib/use-data-table-sort.ts"],
+    registryDependencies: ["@skrewww/table", "@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/DataTableSortHeader.tsx", "components/ui/data-table-sort-header.module.css"],
+    cssTokens: ["--semantic-focus-ring", "--semantic-icon-muted", "--table-header-text"],
     relatedComponents: [
       { label: "Table — presentational foundation Data Table composes", href: "/components/table" },
       { label: "Pagination — external composition for paged data", href: "/components/pagination" },
@@ -851,6 +864,18 @@ export function Example() {
       "component/radius/control",
       "semantic/focus-ring",
     ],
+    dependencies: ["@phosphor-icons/react"],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: [
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "components/ui/internal/TreeItem.tsx",
+      "components/ui/internal/tree-item.module.css",
+      "components/ui/internal/tree-flatten.ts",
+    ],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/TreeView.tsx", "components/ui/tree-view.module.css"],
     relatedComponents: [
       { label: "List Item — flat, non-nested row alternative", href: "/components/list-item" },
       { label: "Menu — the item-hover token Tree Item reuses", href: "/components/menu" },

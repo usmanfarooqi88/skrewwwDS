@@ -91,11 +91,12 @@ describe("AK-5 eval cases — integrity", () => {
     expect(isDistributedViaSkrewwwRegistry("tabs")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("dialog")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("combobox")).toBe(true);
-    expect(isDistributedViaSkrewwwRegistry("tree-view")).toBe(false);
+    expect(isDistributedViaSkrewwwRegistry("tree-view")).toBe(true);
+    expect(isDistributedViaSkrewwwRegistry("bar-chart")).toBe(false);
     const spinnerCase = EVAL_CASES.find((c) => c.id === "install-distributed-spinner")!;
-    const treeViewCase = EVAL_CASES.find((c) => c.id === "install-undistributed-tree-view")!;
+    const barChartCase = EVAL_CASES.find((c) => c.id === "install-undistributed-bar-chart")!;
     expect(spinnerCase.allowedInstallCommands?.[0]).toContain("@skrewww/spinner");
-    expect(treeViewCase.allowedInstallCommands).toEqual([]);
+    expect(barChartCase.allowedInstallCommands).toEqual([]);
   });
 
   it("covers the required capability classes", () => {
@@ -152,13 +153,13 @@ describe("AK-5 scorer", () => {
 
   it("detects false install commands and wrong maturity", () => {
     const { contracts } = compileKit();
-    const treeViewCase = EVAL_CASES.find((c) => c.id === "install-undistributed-tree-view")!;
+    const barChartCase = EVAL_CASES.find((c) => c.id === "install-undistributed-bar-chart")!;
     const installScore = scoreEvalCase({
-      evalCase: treeViewCase,
+      evalCase: barChartCase,
       condition: "off",
       rawOutput: declaration({
-        componentSlugs: ["tree-view"],
-        installCommands: ["npx shadcn add @skrewww/tree-view"],
+        componentSlugs: ["bar-chart"],
+        installCommands: ["npx shadcn add @skrewww/bar-chart"],
         shapeMode: "rounded",
         surfaceMode: "glass",
         skrewwwRegistryConfigured: true,

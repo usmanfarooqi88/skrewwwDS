@@ -643,6 +643,39 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:lib",
     target: "~/lib/phone-number-field-countries.ts",
   },
+  // CE-3L — data/tree batch
+  "components/ui/TreeView.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/TreeView.tsx",
+  },
+  "components/ui/tree-view.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/tree-view.module.css",
+  },
+  "components/ui/internal/TreeItem.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/TreeItem.tsx",
+  },
+  "components/ui/internal/tree-item.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/tree-item.module.css",
+  },
+  "components/ui/internal/tree-flatten.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/tree-flatten.ts",
+  },
+  "components/ui/DataTableSortHeader.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/DataTableSortHeader.tsx",
+  },
+  "components/ui/data-table-sort-header.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/data-table-sort-header.module.css",
+  },
+  "lib/use-data-table-sort.ts": {
+    type: "registry:lib",
+    target: "~/lib/use-data-table-sort.ts",
+  },
 };
 
 export function classifyFile(relPath: string): { type: ShadcnFileType; target: string } {
@@ -998,6 +1031,15 @@ export function buildDatePickerManifest(): ShadcnRegistryItem {
 
 export function buildPhoneNumberFieldManifest(): ShadcnRegistryItem {
   return buildComponentManifest("phone-number-field");
+}
+
+// CE-3L — data/tree batch
+export function buildTreeViewManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("tree-view");
+}
+
+export function buildDataTableManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("data-table");
 }
 
 /**
