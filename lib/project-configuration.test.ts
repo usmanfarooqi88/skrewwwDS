@@ -334,6 +334,17 @@ describe("project configuration", () => {
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("slider.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("stepper.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("table.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("badge.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("tag.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("list-item.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("timeline.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("empty-state.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("alert.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("toast.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("button-group.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("toggle-group.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("accordion.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("tabs.json");
     const validationMessage = getImplementedRegistryEntries().find(
       (entry) => entry.slug === "validation-message",
     );

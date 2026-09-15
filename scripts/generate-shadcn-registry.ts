@@ -29,6 +29,17 @@ import {
   buildTextareaManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
+  buildBadgeManifest,
+  buildTagManifest,
+  buildListItemManifest,
+  buildTimelineManifest,
+  buildEmptyStateManifest,
+  buildAlertManifest,
+  buildToastManifest,
+  buildButtonGroupManifest,
+  buildToggleGroupManifest,
+  buildAccordionManifest,
+  buildTabsManifest,
 } from "../lib/shadcn-registry-generator";
 
 const OUT_DIR = join(process.cwd(), "public", "r");
@@ -58,6 +69,17 @@ const manifests = [
   ["slider.json", buildSliderManifest()],
   ["stepper.json", buildStepperManifest()],
   ["table.json", buildTableManifest()],
+  ["badge.json", buildBadgeManifest()],
+  ["tag.json", buildTagManifest()],
+  ["list-item.json", buildListItemManifest()],
+  ["timeline.json", buildTimelineManifest()],
+  ["empty-state.json", buildEmptyStateManifest()],
+  ["alert.json", buildAlertManifest()],
+  ["toast.json", buildToastManifest()],
+  ["button-group.json", buildButtonGroupManifest()],
+  ["toggle-group.json", buildToggleGroupManifest()],
+  ["accordion.json", buildAccordionManifest()],
+  ["tabs.json", buildTabsManifest()],
 ] as const;
 
 console.log("Generated shadcn registry manifests:");

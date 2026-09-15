@@ -62,6 +62,17 @@ import {
   buildTextareaManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
+  buildBadgeManifest,
+  buildTagManifest,
+  buildListItemManifest,
+  buildTimelineManifest,
+  buildEmptyStateManifest,
+  buildAlertManifest,
+  buildToastManifest,
+  buildButtonGroupManifest,
+  buildToggleGroupManifest,
+  buildAccordionManifest,
+  buildTabsManifest,
   type ShadcnRegistryItem,
 } from "../lib/shadcn-registry-generator";
 
@@ -94,6 +105,17 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   slider: buildSliderManifest,
   stepper: buildStepperManifest,
   table: buildTableManifest,
+  badge: buildBadgeManifest,
+  tag: buildTagManifest,
+  "list-item": buildListItemManifest,
+  timeline: buildTimelineManifest,
+  "empty-state": buildEmptyStateManifest,
+  alert: buildAlertManifest,
+  toast: buildToastManifest,
+  "button-group": buildButtonGroupManifest,
+  "toggle-group": buildToggleGroupManifest,
+  accordion: buildAccordionManifest,
+  tabs: buildTabsManifest,
 };
 
 /**
@@ -437,6 +459,135 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     assertHarness: (pageSource) =>
       /from "@\/components\/ui\/Slider"/.test(pageSource) && /Smoke volume/.test(pageSource),
     harnessAssertionLabel: "consumer page imports Slider and renders labeled control",
+  },
+  // CE-3H — safe compound batch: one descriptor per genuinely new transport
+  // pattern (not one per slug — matches CE-3D/E/F precedent).
+  badge: {
+    criticalPaths: [
+      "components/ui/Badge.tsx",
+      "components/ui/badge.module.css",
+      "components/ui/internal/feedback-types.ts",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Badge } from "@/components/ui/Badge";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", gap: 12 }}>',
+        '      <Badge variant="success">Smoke active</Badge>',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Badge"/.test(pageSource) && /Smoke active/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports Badge and renders it, exercising the shared internal/feedback-types.ts type-only helper",
+  },
+  // First-ever zero-owned-CSS component: Alert.tsx transports no CSS of its
+  // own, only the internal FeedbackSurface cluster (its own CSS + icons +
+  // types) — proves cn.ts's transitive-only inclusion resolves correctly.
+  alert: {
+    criticalPaths: [
+      "components/ui/Alert.tsx",
+      "components/ui/internal/FeedbackSurface.tsx",
+      "components/ui/internal/feedback-surface.module.css",
+      "components/ui/internal/feedback-icons.tsx",
+      "components/ui/internal/feedback-types.ts",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Alert } from "@/components/ui/Alert";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <Alert type="info" title="Smoke alert" description="Smoke description" />',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Alert"/.test(pageSource) && /Smoke alert/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports Alert (no owned CSS) and renders it, proving the shared FeedbackSurface helper cluster transports correctly",
+  },
+  // First-ever multi-registryDependency composition without file
+  // re-transport: EmptyState imports the real Button and Link components,
+  // resolved as @skrewww/button + @skrewww/link registry deps, never
+  // re-transported as files inside empty-state's own manifest.
+  "empty-state": {
+    criticalPaths: [
+      "components/ui/EmptyState.tsx",
+      "components/ui/empty-state.module.css",
+      "components/ui/Button.tsx",
+      "components/ui/Link.tsx",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { EmptyState } from "@/components/ui/EmptyState";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        "    <EmptyState",
+        '      title="Smoke empty state"',
+        '      description="Smoke description"',
+        '      primaryAction={{ label: "Smoke action", href: "/" }}',
+        "    />",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/EmptyState"/.test(pageSource) && /Smoke empty state/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports EmptyState and renders it, exercising the two-registryDependency (@skrewww/button + @skrewww/link) composition graph",
+  },
+  // Compound context + dedicated keyboard-helper pattern (also covers
+  // accordion/toggle-group's identical shape — inline context, no separate
+  // context file, plus one keyboard helper + use-controllable).
+  tabs: {
+    criticalPaths: [
+      "components/ui/Tabs.tsx",
+      "components/ui/tabs.module.css",
+      "components/ui/internal/tab-keyboard.ts",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Tabs, TabsList, TabsTrigger, TabsPanel } from "@/components/ui/Tabs";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <Tabs defaultValue="one">',
+        '      <TabsList aria-label="Smoke tabs">',
+        '        <TabsTrigger value="one">Smoke tab one</TabsTrigger>',
+        '        <TabsTrigger value="two">Smoke tab two</TabsTrigger>',
+        "      </TabsList>",
+        '      <TabsPanel value="one">Smoke panel one</TabsPanel>',
+        '      <TabsPanel value="two">Smoke panel two</TabsPanel>',
+        "    </Tabs>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Tabs"/.test(pageSource) && /Smoke tab one/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports the Tabs compound family and renders a real tablist, exercising the inline-context + tab-keyboard.ts helper pattern",
   },
   "spinner-divider-link": {
     criticalPaths: [

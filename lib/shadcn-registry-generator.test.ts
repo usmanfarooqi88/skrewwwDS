@@ -26,6 +26,17 @@ import {
   buildTableManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
+  buildBadgeManifest,
+  buildTagManifest,
+  buildListItemManifest,
+  buildTimelineManifest,
+  buildEmptyStateManifest,
+  buildAlertManifest,
+  buildToastManifest,
+  buildButtonGroupManifest,
+  buildToggleGroupManifest,
+  buildAccordionManifest,
+  buildTabsManifest,
   classifyFile,
   extractFoundationCss,
   extractFoundationCssFromSource,
@@ -241,6 +252,17 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildSliderManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildStepperManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildTableManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildBadgeManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildTagManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildListItemManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildTimelineManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildEmptyStateManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildAlertManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildToastManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildButtonGroupManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildToggleGroupManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildAccordionManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildTabsManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -530,6 +552,148 @@ describe("shadcn registry generator", () => {
     expect(manifest.dependencies).toEqual([]);
     expect(manifest.name).toBe("table");
     expect(manifest.files.some((file) => /data-table/i.test(file.path))).toBe(false);
+  });
+
+  // CE-3H — safe compound batch
+  it("transports Badge with Phosphor npm dep + shared feedback-types.ts helper", () => {
+    const manifest = buildBadgeManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Badge.tsx",
+      "components/ui/badge.module.css",
+      "components/ui/internal/feedback-types.ts",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports Tag with Phosphor npm dep, no shared helpers", () => {
+    const manifest = buildTagManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Tag.tsx",
+      "components/ui/tag.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports List Item with the already-mapped link-utils.ts helper", () => {
+    const manifest = buildListItemManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/ListItem.tsx",
+      "components/ui/internal/link-utils.ts",
+      "components/ui/list-item.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+  });
+
+  it("transports Timeline with its own internal TimelineItemRow subcomponent (one registry item)", () => {
+    const manifest = buildTimelineManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Timeline.tsx",
+      "components/ui/internal/TimelineItemRow.tsx",
+      "components/ui/internal/timeline-item-row.module.css",
+      "components/ui/timeline.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(manifest.name).toBe("timeline");
+  });
+
+  it("transports Empty State with Button + Link registryDependencies, no re-transported Button/Link files", () => {
+    const manifest = buildEmptyStateManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/EmptyState.tsx",
+      "components/ui/empty-state.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/button", "@skrewww/link", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(JSON.stringify(manifest)).not.toMatch(/Button\.tsx|Link\.tsx/);
+  });
+
+  it("transports Alert with the shared FeedbackSurface helper cluster (incl. transitive lib/cn.ts, no own CSS)", () => {
+    const manifest = buildAlertManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Alert.tsx",
+      "components/ui/internal/FeedbackSurface.tsx",
+      "components/ui/internal/feedback-icons.tsx",
+      "components/ui/internal/feedback-surface.module.css",
+      "components/ui/internal/feedback-types.ts",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(manifest.files.some((file) => file.path === "components/ui/alert.module.css")).toBe(false);
+  });
+
+  it("transports Toast with the same shared FeedbackSurface helper cluster as Alert", () => {
+    const manifest = buildToastManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/ToastProvider.tsx",
+      "components/ui/internal/FeedbackSurface.tsx",
+      "components/ui/internal/feedback-icons.tsx",
+      "components/ui/internal/feedback-surface.module.css",
+      "components/ui/internal/feedback-types.ts",
+      "components/ui/toast.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports Button Group with the shared button-group-context.ts helper", () => {
+    const manifest = buildButtonGroupManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/ButtonGroup.tsx",
+      "components/ui/button-group-context.ts",
+      "components/ui/button-group.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+  });
+
+  it("transports Toggle Group with its keyboard helper + use-controllable (no npm dep)", () => {
+    const manifest = buildToggleGroupManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/ToggleGroup.tsx",
+      "components/ui/internal/toggle-group-keyboard.ts",
+      "components/ui/toggle-group.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+  });
+
+  it("transports Accordion with use-controllable + Phosphor, inline context needs no separate file", () => {
+    const manifest = buildAccordionManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Accordion.tsx",
+      "components/ui/accordion.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports Tabs with tab-keyboard.ts + use-controllable (no npm dep)", () => {
+    const manifest = buildTabsManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Tabs.tsx",
+      "components/ui/internal/tab-keyboard.ts",
+      "components/ui/tabs.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

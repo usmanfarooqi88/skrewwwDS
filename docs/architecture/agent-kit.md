@@ -307,7 +307,7 @@ Verified live (production build + `next start`, see
 | Answers | "How is this installed?" | "What is this, how should it be used?" |
 | Owner | `lib/shadcn-registry-generator.ts` | `lib/agent-kit/contract-compiler.ts` |
 | Shape | shadcn `registry-item.json` (`files[].content`, `dependencies`, `registryDependencies`) | `ComponentAgentContract` (`guidance`, `tokens.used`, `api.properties`, `behavior`, `figma`) |
-| Coverage | 22 items (foundation + 21 components) | 55 (every implemented component) |
+| Coverage | 33 items (foundation + 32 components) | 55 (every implemented component) |
 
 AK-3 added no field to either schema to make them "look symmetrical" —
 `lib/agent-kit/registry-integration.test.ts` asserts a real contract has

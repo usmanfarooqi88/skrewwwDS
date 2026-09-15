@@ -93,14 +93,14 @@ export const EVAL_CASES: readonly AuthoredEvalCase[] = [
     },
   },
   {
-    id: "install-undistributed-tabs",
-    title: "Tabs exists but is not shadcn-distributed",
+    id: "install-undistributed-dialog",
+    title: "Dialog exists but is not shadcn-distributed",
     category: "installability",
     userTask:
-      "Add a Skrewww Tabs. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
+      "Add a Skrewww Dialog. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
     consumerFixtureId: "configured-rounded-glass",
-    relevantComponentSlugs: ["tabs"],
-    requiredComponentSlugs: ["tabs"],
+    relevantComponentSlugs: ["dialog"],
+    requiredComponentSlugs: ["dialog"],
     allowedInstallCommands: [],
     forbidInventedInstallCommands: true,
     projectContext: {

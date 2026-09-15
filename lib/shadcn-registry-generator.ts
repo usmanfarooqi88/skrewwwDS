@@ -259,6 +259,127 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:lib",
     target: "~/lib/use-controllable.ts",
   },
+  // CE-3H — safe compound batch
+  "components/ui/Badge.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Badge.tsx",
+  },
+  "components/ui/badge.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/badge.module.css",
+  },
+  "components/ui/internal/feedback-types.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/feedback-types.ts",
+  },
+  "components/ui/Tag.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Tag.tsx",
+  },
+  "components/ui/tag.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/tag.module.css",
+  },
+  "components/ui/ListItem.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/ListItem.tsx",
+  },
+  "components/ui/list-item.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/list-item.module.css",
+  },
+  "components/ui/Timeline.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Timeline.tsx",
+  },
+  "components/ui/timeline.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/timeline.module.css",
+  },
+  "components/ui/internal/TimelineItemRow.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/TimelineItemRow.tsx",
+  },
+  "components/ui/internal/timeline-item-row.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/timeline-item-row.module.css",
+  },
+  "components/ui/EmptyState.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/EmptyState.tsx",
+  },
+  "components/ui/empty-state.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/empty-state.module.css",
+  },
+  "components/ui/Alert.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Alert.tsx",
+  },
+  "components/ui/internal/FeedbackSurface.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/FeedbackSurface.tsx",
+  },
+  "components/ui/internal/feedback-surface.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/feedback-surface.module.css",
+  },
+  "components/ui/internal/feedback-icons.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/feedback-icons.tsx",
+  },
+  "components/ui/ToastProvider.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/ToastProvider.tsx",
+  },
+  "components/ui/toast.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/toast.module.css",
+  },
+  "components/ui/ButtonGroup.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/ButtonGroup.tsx",
+  },
+  "components/ui/button-group.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/button-group.module.css",
+  },
+  "components/ui/button-group-context.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/button-group-context.ts",
+  },
+  "components/ui/ToggleGroup.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/ToggleGroup.tsx",
+  },
+  "components/ui/toggle-group.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/toggle-group.module.css",
+  },
+  "components/ui/internal/toggle-group-keyboard.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/toggle-group-keyboard.ts",
+  },
+  "components/ui/Accordion.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Accordion.tsx",
+  },
+  "components/ui/accordion.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/accordion.module.css",
+  },
+  "components/ui/Tabs.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Tabs.tsx",
+  },
+  "components/ui/tabs.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/tabs.module.css",
+  },
+  "components/ui/internal/tab-keyboard.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/tab-keyboard.ts",
+  },
 };
 
 export function classifyFile(relPath: string): { type: ShadcnFileType; target: string } {
@@ -502,6 +623,51 @@ export function buildStepperManifest(): ShadcnRegistryItem {
 
 export function buildTableManifest(): ShadcnRegistryItem {
   return buildComponentManifest("table");
+}
+
+// CE-3H — safe compound batch
+export function buildBadgeManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("badge");
+}
+
+export function buildTagManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("tag");
+}
+
+export function buildListItemManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("list-item");
+}
+
+export function buildTimelineManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("timeline");
+}
+
+export function buildEmptyStateManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("empty-state");
+}
+
+export function buildAlertManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("alert");
+}
+
+export function buildToastManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("toast");
+}
+
+export function buildButtonGroupManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("button-group");
+}
+
+export function buildToggleGroupManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("toggle-group");
+}
+
+export function buildAccordionManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("accordion");
+}
+
+export function buildTabsManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("tabs");
 }
 
 /**

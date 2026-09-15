@@ -88,11 +88,12 @@ describe("AK-5 eval cases — integrity", () => {
     expect(isDistributedViaSkrewwwRegistry("spinner")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("checkbox")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("stepper")).toBe(true);
-    expect(isDistributedViaSkrewwwRegistry("tabs")).toBe(false);
+    expect(isDistributedViaSkrewwwRegistry("tabs")).toBe(true);
+    expect(isDistributedViaSkrewwwRegistry("dialog")).toBe(false);
     const spinnerCase = EVAL_CASES.find((c) => c.id === "install-distributed-spinner")!;
-    const tabsCase = EVAL_CASES.find((c) => c.id === "install-undistributed-tabs")!;
+    const dialogCase = EVAL_CASES.find((c) => c.id === "install-undistributed-dialog")!;
     expect(spinnerCase.allowedInstallCommands?.[0]).toContain("@skrewww/spinner");
-    expect(tabsCase.allowedInstallCommands).toEqual([]);
+    expect(dialogCase.allowedInstallCommands).toEqual([]);
   });
 
   it("covers the required capability classes", () => {
@@ -149,13 +150,13 @@ describe("AK-5 scorer", () => {
 
   it("detects false install commands and wrong maturity", () => {
     const { contracts } = compileKit();
-    const tabsCase = EVAL_CASES.find((c) => c.id === "install-undistributed-tabs")!;
+    const dialogCase = EVAL_CASES.find((c) => c.id === "install-undistributed-dialog")!;
     const installScore = scoreEvalCase({
-      evalCase: tabsCase,
+      evalCase: dialogCase,
       condition: "off",
       rawOutput: declaration({
-        componentSlugs: ["tabs"],
-        installCommands: ["npx shadcn add @skrewww/tabs"],
+        componentSlugs: ["dialog"],
+        installCommands: ["npx shadcn add @skrewww/dialog"],
         shapeMode: "rounded",
         surfaceMode: "glass",
         skrewwwRegistryConfigured: true,

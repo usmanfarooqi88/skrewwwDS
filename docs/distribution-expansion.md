@@ -3,9 +3,10 @@
 > **CE-3A** · Verified 2026-09-15 · Baseline `2b01ca5` · React **55** (27 Stable / 28 Beta)
 > **CE-3D/E/F planning** · Verified 2026-09-15 · Baseline `a867076` · `/r` = foundation + **13**
 > **CE-3G higher-complexity planning** · Verified 2026-09-15 · Baseline `08bf6a6` · `/r` = foundation + **21**
+> **CE-3H safe compound batch** · Shipped 2026-09-15 · `/r` = foundation + **32**
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture. Implementation batches CE-3D/E/F are
-> **SHIPPED** (see Status table). CE-3H onward are **DEFINED — NOT STARTED**
+> shadcn transport architecture. Implementation batches CE-3D/E/F/H are
+> **SHIPPED** (see Status table). CE-3I onward are **DEFINED — NOT STARTED**
 > below (see CE-3G section).
 
 ## Purpose
@@ -566,7 +567,8 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3E Stable phosphor + Skrewww graph | ✅ COMPLETE (`f200b15`) |
 | CE-3F Selected proven Beta | ✅ SHIPPED — `slider`, `stepper`, `table` |
 | CE-3G Higher-Complexity Planning | ✅ COMPLETE (docs-only, see section below) |
-| CE-3 overall | **IN PROGRESS** — CE-3H = NEXT, NOT STARTED |
+| CE-3H Safe compound batch | ✅ SHIPPED — 11 slugs, see section below |
+| CE-3 overall | **IN PROGRESS** — CE-3I = NEXT, NOT STARTED |
 
 ---
 
@@ -911,6 +913,100 @@ Adjusted from the task's suggested CE-3H–M names using the evidence above —
 - **Expected manifest delta:** 21 → 32
 - **Stop conditions:** any slug requiring an import not already catalogued in Part 1/12 must halt that slug, not the batch
 - **Exit gate:** green CI on the batch SHA before CE-3I
+
+#### CE-3H — SHIPPED (2026-09-15)
+
+**Verdict: COMPLETE.** All 11 planned slugs shipped exactly as scoped — no
+slug added or dropped, no scope drift into CE-3I+.
+
+**Registry metadata** populated on each canonical entry from real source
+evidence (not the CE-3G plan alone — reverified against actual imports):
+`files`, `internalDependencies`, `dependencies`, `registryDependencies`,
+`hostRequirements`, `coreDependencies: ["tokens"]`. `empty-state` composes
+`Button`/`Link` as `registryDependencies` (`@skrewww/button`,
+`@skrewww/link`) — never re-transported as files, matching the
+`breadcrumb`→`@skrewww/link` precedent. `alert`/`toast` transport the
+shared `FeedbackSurface.tsx` + `feedback-surface.module.css` +
+`feedback-icons.tsx` + `feedback-types.ts` cluster (`alert` has zero owned
+CSS — its only visual surface is the shared `FeedbackSurface`). `alert`
+needed `lib/cn.ts` as a transitive internalDependency even though
+`Alert.tsx` itself never imports `cn` directly — `FeedbackSurface.tsx`
+(bundled) does, and import closure must hold for every transported file,
+not just the entry point.
+
+**Real defect found and fixed (not scope creep):** the CE-3G plan assumed
+`button-group`/`split-button` were the only consumers of
+`button-group-context.ts`. A real consumer smoke test on `empty-state`
+(which composes `Button`) failed `next build` with `Module not found:
+Can't resolve '@/components/ui/button-group-context'` — `Button.tsx` has
+called `useButtonGroupItem()` since CE-1B, but Button's own
+already-shipped (CE-3B) registry entry never declared this
+`internalDependency`. Fixed by adding
+`"components/ui/button-group-context.ts"` to `button`'s
+`internalDependencies` (the file was already correctly mapped in
+`FILE_DESTINATIONS` from this same batch's `button-group` work). This is a
+distribution-metadata correction on an existing entry, not a component
+API/behavior/runtime change — `@skrewww/button`'s manifest now transports
+one more file than before; nothing about `Button`'s public API, behavior,
+or Figma parity changed. Re-verified: full Vitest suite green, `empty-state`
+smoke test green after the fix.
+
+**`cssTokens` populated** (not part of the original CE-3G plan, but
+required by an existing, unrelated test —
+`lib/component-registry.test.ts`'s "declares exactly the custom properties
+actually referenced" check — which was previously dormant for these 11
+entries because `entry.files` was `undefined`; populating `files` for
+distribution activated it) for the 9 slugs with owned CSS files (`alert`
+has none; `timeline`'s owned `timeline.module.css` uses zero `var(--...)`
+references, so it correctly needs none) — each array is the exact,
+test-verified set of custom properties the real CSS file references, not
+approximated.
+
+**Consumer validation (real, network-backed, not simulated):**
+
+| Slug | Pattern proven | Result |
+|------|------------------|--------|
+| `tabs` | Compound family + inline context + `tab-keyboard.ts` helper (representative of `accordion`/`toggle-group`'s identical shape) | ✅ full `create-next-app` → `shadcn view` → `shadcn add` → `next build` → Foundation CSS activation, all 13 stages green |
+| `empty-state` | Two-`registryDependency` composition (`@skrewww/button` + `@skrewww/link`), no file re-transport | ❌ then ✅ — first run surfaced the Button defect above; green after the fix |
+| `badge` | Shared type-only helper (`feedback-types.ts`) + proven Phosphor pattern | ✅ all 13 stages green |
+| `alert` | Zero-owned-CSS component + shared `FeedbackSurface` internal cluster | ✅ all 13 stages green |
+
+The remaining 7 slugs (`tag`, `list-item`, `timeline`, `toast`,
+`button-group`, `toggle-group`, `accordion`) were not independently
+smoke-run — each shares an already-proven pattern (`tag`≈`badge`'s
+Phosphor+cn shape; `list-item`≈`link`/`pagination`'s already-proven
+`link-utils.ts` shape; `timeline` is a strict subset of the proven
+single-internal-subcomponent shape; `toast`=`alert`'s identical
+`FeedbackSurface` cluster; `button-group`≈`switch`'s proven
+context+`use-controllable` shape, and is additionally exercised
+transitively by every `empty-state`-style Button composition;
+`toggle-group`/`accordion`=`tabs`'s identical inline-context+keyboard-helper
+shape) — matching the "representative" scope of Part 8, not an exhaustive
+per-slug run.
+
+**Tests:** 22 new generator assertions (structural validity + exact
+transport list per slug), `lib/project-configuration.test.ts` extended
+with the 11 new manifest filenames, `evals/agent-kit/cases.ts`'s
+`install-undistributed-tabs` eval case renamed to
+`install-undistributed-dialog` (tabs is now genuinely distributed, so the
+case's own premise — "exists but is not shadcn-distributed" — would
+otherwise be factually false; `dialog` remains undistributed, confirmed
+against Part 14/CE-3J).
+
+**Manifest count:** foundation + 21 → foundation + **32** (foundation +
+`avatar`, `badge`, `breadcrumb`, `button`, `card`, `checkbox`, `divider`,
+`form-field`, `link`, `pagination`, `progress-bar`, `radio`,
+`radio-group`, `skeleton`, `slider`, `spinner`, `stepper`, `switch`,
+`table`, `tag`, `text-input`, `textarea`, `validation-message`,
+`list-item`, `timeline`, `empty-state`, `alert`, `toast`, `button-group`,
+`toggle-group`, `accordion`, `tabs` = 32 components).
+
+**Validation:** lint clean, typecheck clean, Vitest 1107/1107 (1096
+baseline + 11 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs (all 32 manifests
+byte-identical), `git diff --check` clean.
+
+**CE-3I next — NOT STARTED.**
 
 ### CE-3I — Form/composite batch
 

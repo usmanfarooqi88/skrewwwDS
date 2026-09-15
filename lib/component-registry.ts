@@ -222,10 +222,16 @@ export const componentRegistry: ComponentRegistryEntry[] = [
     // packages the registry should install (see `hostRequirements`).
     dependencies: [],
     hostRequirements: ["react", "react-dom", "next"],
-    // lib/cn.ts (class-name join helper) and the `LoadingSpinner` export
-    // from components/ui/icons.tsx — copied alongside Button, never public
-    // Skrewww registry components in their own right.
-    internalDependencies: ["lib/cn.ts", "components/ui/icons.tsx"],
+    // lib/cn.ts (class-name join helper), the `LoadingSpinner` export from
+    // components/ui/icons.tsx, and button-group-context.ts (Button reads
+    // useButtonGroupItem() to apply joined-item geometry inside a Button
+    // Group / Split Button) — copied alongside Button, never public
+    // Skrewww registry components in their own right. The
+    // button-group-context.ts entry was added in CE-3H after a real
+    // consumer smoke test (empty-state, which composes Button) surfaced
+    // a "Module not found" build failure — Button.tsx has imported this
+    // context since CE-1B, but it was never declared here.
+    internalDependencies: ["lib/cn.ts", "components/ui/icons.tsx", "components/ui/button-group-context.ts"],
     // The shared Foundation resource (universal Primitive/Semantic/Brand/
     // Shape/Surface/control-sizing tier + the shared accessibility utility
     // in styles/foundation.css) — does not have its own registry entry
@@ -417,6 +423,20 @@ export function Example() {
       "color/brand/700",
       "color/danger/700",
     ],
+    dependencies: [],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts", "components/ui/button-group-context.ts"],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/ButtonGroup.tsx", "components/ui/button-group.module.css"],
+    cssTokens: [
+      "--button-group-divider",
+      "--component-button-radius-control",
+      "--primitive-color-brand-700",
+      "--primitive-color-danger-700",
+      "--semantic-border-default",
+      "--shape-radius-control",
+    ],
     relatedComponents: [
       { label: "Button — each action in the group", href: "/components/button" },
       { label: "Split Button — primary action plus related menu", href: "/components/split-button" },
@@ -513,6 +533,40 @@ export function Example() {
       "semantic/focus-ring",
       "semantic/surface/subtle",
       "semantic/text/primary",
+    ],
+    dependencies: [],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: [
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "components/ui/internal/toggle-group-keyboard.ts",
+    ],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/ToggleGroup.tsx", "components/ui/toggle-group.module.css"],
+    cssTokens: [
+      "--component-button-radius-control",
+      "--component-surface-gradient-overlay",
+      "--control-font-size-lg",
+      "--control-font-size-md",
+      "--control-font-size-sm",
+      "--control-height-lg",
+      "--control-height-md",
+      "--control-height-sm",
+      "--control-padding-x-lg",
+      "--control-padding-x-md",
+      "--control-padding-x-sm",
+      "--glass-backdrop-filter-sm",
+      "--opacity-disabled",
+      "--semantic-border-default",
+      "--semantic-border-strong",
+      "--semantic-focus-ring",
+      "--semantic-surface-default",
+      "--semantic-surface-elevated",
+      "--semantic-surface-subtle",
+      "--semantic-text-primary",
+      "--shape-radius-control",
+      "--surface-fill-control",
     ],
     relatedComponents: [
       { label: "Button Group — joined peer actions (no selection)", href: "/components/button-group" },

@@ -1,6 +1,72 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G Higher-Complexity Planning ✅ COMPLETE, docs-only; CE-3H = NEXT, NOT STARTED)
+Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G Higher-Complexity Planning ✅ COMPLETE, docs-only; CE-3H Safe Compound Batch ✅ SHIPPED — `/r` = foundation + 32; CE-3I = NEXT, NOT STARTED)
+
+## 2026-09-15 — CE-3H Safe Compound Distribution Batch (SHIPPED)
+
+**Verdict: COMPLETE.** Shipped exactly the 11 canonical CE-3H slugs from
+`docs/distribution-expansion.md` — `badge`, `tag`, `list-item`, `timeline`,
+`empty-state`, `alert`, `toast`, `button-group`, `toggle-group`,
+`accordion`, `tabs`. No scope drift into CE-3I (form/composite) or beyond.
+
+Baseline verified at `4e656cc` (main == origin/main, clean, CI success,
+repo PUBLIC, React 55, Stable/Beta 27/28, Vitest 1096/1096, `/r` =
+foundation + 21).
+
+Every slug's distribution metadata (`files`, `internalDependencies`,
+`dependencies`, `registryDependencies`, `hostRequirements`) was reverified
+against real source imports, not copied from the CE-3G plan unchecked —
+`empty-state` composes `Button`/`Link` as `registryDependencies` (no file
+re-transport, matching the `breadcrumb`→`@skrewww/link` precedent);
+`alert`/`toast` transport a shared `FeedbackSurface` internal cluster
+(`alert` has zero owned CSS).
+
+**Real defect found and fixed via consumer smoke testing:** `Button.tsx`
+has called `useButtonGroupItem()` from `button-group-context.ts` since
+CE-1B, but Button's own already-shipped (CE-3B) registry entry never
+declared that `internalDependency` — invisible until a real `empty-state`
+consumer install actually tried to build and hit `Module not found`. Fixed
+by adding the missing internalDependency to `button`'s canonical entry —
+a distribution-metadata correction, not a component API/behavior/runtime
+change. Full Vitest suite and the `empty-state` smoke test are both green
+after the fix.
+
+`cssTokens` populated for the 9 slugs with owned CSS (required by an
+existing `lib/component-registry.test.ts` check that was previously
+dormant for these entries since `entry.files` was `undefined` before this
+batch) — each array is the exact, test-verified set of custom properties
+the real CSS references.
+
+**Consumer validation (real, network-backed):** 4 representative smoke
+tests run via `npm run smoke:consumer` (full `create-next-app` → `shadcn
+view`/`add` → `next build` → Foundation CSS activation, all against the
+real `ui.shadcn.com`-pinned CLI) — `tabs` (compound+context+keyboard-helper
+pattern), `empty-state` (multi-registryDependency composition — first run
+caught the Button defect, second run green), `badge` (shared type-only
+helper), `alert` (zero-owned-CSS + shared helper cluster). The remaining 7
+slugs share an already-proven pattern from these 4 or from CE-3B–F
+(`tag`≈`badge`, `list-item`≈`link`/`pagination`, `timeline`≈single-
+subcomponent shape, `toast`=`alert`'s identical cluster,
+`button-group`≈`switch`'s context+`use-controllable` shape,
+`toggle-group`/`accordion`=`tabs`'s identical shape) — not independently
+run, matching the "representative" scope the task specified.
+
+**Tests:** 22 new generator assertions, `lib/project-configuration.test.ts`
+extended, and `evals/agent-kit/cases.ts`'s `install-undistributed-tabs`
+eval case renamed to `install-undistributed-dialog` (tabs is now genuinely
+distributed, so its old premise would be factually false; `dialog` remains
+undistributed per CE-3J's own scope).
+
+**Inventory delta:** `/r` foundation + 21 → foundation + **32**.
+React/Stable-Beta/docs/contracts counts unchanged (CE-3 is distribution-
+only — no new component, no maturity change, no Figma/API change).
+
+**Validation:** lint clean, typecheck clean, Vitest **1107/1107** (1096
+baseline + 11 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs, `git diff --check`
+clean.
+
+**CE-3I — Form/composite batch is next, NOT STARTED.**
 
 ## 2026-09-15 — CE-3G Higher-Complexity Distribution Planning (COMPLETE, docs-only)
 
@@ -3251,7 +3317,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped (`/r` = foundation + 21); CE-3G Higher-Complexity Planning ✅ COMPLETE (docs-only); CE-3H = NEXT, NOT STARTED |
+| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G Higher-Complexity Planning ✅ COMPLETE (docs-only); CE-3H Safe Compound Batch ✅ SHIPPED (`/r` = foundation + 32); CE-3I = NEXT, NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
