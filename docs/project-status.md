@@ -1,6 +1,36 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3 ✅ COMPLETE — CE-3O final validation against production `30d2981`; 52/55 distributed; `/r/registry.json` live; next = Reference App / Composition Validation NOT STARTED)
+Last verified: **2026-09-15** (RA-0 ✅ COMPLETE — Reference App plan at `docs/reference-app-plan.md`; CE-3 remains ✅ COMPLETE; RA-1 NOT STARTED)
+
+## 2026-09-15 — RA-0 Reference App / Composition Validation (COMPLETE — planning/audit only)
+
+**Verdict: COMPLETE.** Scope + architecture audit only. No Reference App
+routes, screens, AppShell export, Multi Select, visual-backlog fixes,
+API changes, Figma writes, or dependency additions.
+
+**Canonical plan:** [`docs/reference-app-plan.md`](reference-app-plan.md)
+(first and only Reference App planning doc — no prior `docs/reference-app*.md`).
+
+**Selected scenario:** compact SaaS ops / admin workspace (desktop-first).
+
+**Routes (planned, not built):** `/reference`, `/reference/data`,
+`/reference/edit/[id]` or `/reference/new`, `/reference/settings`.
+
+**Composition decisions carried forward:**
+- App Shell — composition first (no `AppShell` component in RA)
+- Advanced Filters / Notification Center — application composition
+- Command Palette (searchable) — **BLOCKED/DEFERRED** (a11y role model unresolved, G5)
+- Multi Select — MVP **COMPOSITION SUFFICIENT** (Checkbox + Tags); searchable multi remains design-first / a11y-blocked
+
+**Phase sequence:** RA-1 App Shell + fixtures → RA-2 Data/filters →
+RA-3 Forms/overlays → RA-4 Responsive/a11y → RA-5 Visual backlog review →
+RA-6 Final validation / PH-0 gate.
+
+**CE-3 unchanged:** 52/55 distributed; 53 registry items; banking three
+intentionally undistributed; Class B = 0.
+
+**Canonical next:** **RA-1 — App Shell + fixture foundation — NOT STARTED.**
+PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — CE-3O Final Distribution Validation (COMPLETE) → CE-3 CLOSED
 
@@ -41,7 +71,7 @@ vertical Pill; Textarea padding — post-CE-3 parity work.
 
 **CE-3 = ✅ COMPLETE.**
 
-**Canonical next:** Reference App / Composition Validation — **NOT STARTED**.
+**Canonical next (superseded):** see RA-0 section above — **RA-1 NOT STARTED**.
 PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — CE-3N Registry Index + Discovery (SHIPPED)
