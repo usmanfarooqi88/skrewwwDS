@@ -387,3 +387,21 @@
     transform: rotate(360deg);
   }
 }
+
+/*
+ * Joined-item boundary suppression — placed last and keyed off
+ * `.button.inGroup` (not bare `.inGroup`) so it outranks every
+ * variant/Glass rule above regardless of cascade position. Secondary's own
+ * border-color (`.secondary .visualSurface`) and the Glass rim's `::before`
+ * gradient are each drawn per-button; inside a ButtonGroup/SplitButton they
+ * would compound with the shared group chrome (wrapper border + 2px
+ * divider-gap fill) into a doubled seam. Adjacency chrome lives on the
+ * group only — see button-group.module.css.
+ */
+.button.inGroup .visualSurface {
+  border-color: transparent;
+}
+
+.button.inGroup .visualSurface::before {
+  content: none;
+}

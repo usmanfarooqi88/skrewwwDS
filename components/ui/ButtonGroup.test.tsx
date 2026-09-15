@@ -103,6 +103,22 @@ describe("ButtonGroup", () => {
     expect(getComputedStyle(grid).borderTopRightRadius).not.toBe("");
   });
 
+  it("suppresses each joined Button's own border/rim so only the group's divider shows (RA-5 doubled-divider fix)", () => {
+    render(
+      <ButtonGroup aria-label="View">
+        <Button variant="secondary">List</Button>
+        <Button variant="primary">Grid</Button>
+        <Button variant="danger">Delete</Button>
+      </ButtonGroup>,
+    );
+    for (const name of ["List", "Grid", "Delete"]) {
+      const button = screen.getByRole("button", { name });
+      const visualSurface = button.querySelector('[class*="visualSurface"]');
+      expect(visualSurface).not.toBeNull();
+      expect(getComputedStyle(visualSurface as Element).borderColor).toBe("rgba(0, 0, 0, 0)");
+    }
+  });
+
   it("accepts className on the group wrapper", () => {
     render(
       <ButtonGroup aria-label="View" className="extra-group">

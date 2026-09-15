@@ -202,4 +202,14 @@ describe("SplitButton", () => {
     expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
     expect(screen.queryByRole("radio")).not.toBeInTheDocument();
   });
+
+  it("suppresses each segment's own border/rim so only the group's divider shows (RA-5 doubled-divider fix, shared with ButtonGroup)", () => {
+    render(<SaveSplitFixture />);
+    for (const name of ["Save", "More save options"]) {
+      const button = screen.getByRole("button", { name });
+      const visualSurface = button.querySelector('[class*="visualSurface"]');
+      expect(visualSurface).not.toBeNull();
+      expect(getComputedStyle(visualSurface as Element).borderColor).toBe("rgba(0, 0, 0, 0)");
+    }
+  });
 });
