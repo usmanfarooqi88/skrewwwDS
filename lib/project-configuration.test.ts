@@ -355,6 +355,12 @@ describe("project configuration", () => {
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("drawer.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("menu.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("split-button.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("combobox.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("select.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("calendar-day.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("calendar-grid.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("date-picker.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("phone-number-field.json");
     const validationMessage = getImplementedRegistryEntries().find(
       (entry) => entry.slug === "validation-message",
     );

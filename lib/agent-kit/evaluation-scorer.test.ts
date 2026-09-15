@@ -90,11 +90,12 @@ describe("AK-5 eval cases — integrity", () => {
     expect(isDistributedViaSkrewwwRegistry("stepper")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("tabs")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("dialog")).toBe(true);
-    expect(isDistributedViaSkrewwwRegistry("combobox")).toBe(false);
+    expect(isDistributedViaSkrewwwRegistry("combobox")).toBe(true);
+    expect(isDistributedViaSkrewwwRegistry("tree-view")).toBe(false);
     const spinnerCase = EVAL_CASES.find((c) => c.id === "install-distributed-spinner")!;
-    const comboboxCase = EVAL_CASES.find((c) => c.id === "install-undistributed-combobox")!;
+    const treeViewCase = EVAL_CASES.find((c) => c.id === "install-undistributed-tree-view")!;
     expect(spinnerCase.allowedInstallCommands?.[0]).toContain("@skrewww/spinner");
-    expect(comboboxCase.allowedInstallCommands).toEqual([]);
+    expect(treeViewCase.allowedInstallCommands).toEqual([]);
   });
 
   it("covers the required capability classes", () => {
@@ -151,13 +152,13 @@ describe("AK-5 scorer", () => {
 
   it("detects false install commands and wrong maturity", () => {
     const { contracts } = compileKit();
-    const comboboxCase = EVAL_CASES.find((c) => c.id === "install-undistributed-combobox")!;
+    const treeViewCase = EVAL_CASES.find((c) => c.id === "install-undistributed-tree-view")!;
     const installScore = scoreEvalCase({
-      evalCase: comboboxCase,
+      evalCase: treeViewCase,
       condition: "off",
       rawOutput: declaration({
-        componentSlugs: ["combobox"],
-        installCommands: ["npx shadcn add @skrewww/combobox"],
+        componentSlugs: ["tree-view"],
+        installCommands: ["npx shadcn add @skrewww/tree-view"],
         shapeMode: "rounded",
         surfaceMode: "glass",
         skrewwwRegistryConfigured: true,

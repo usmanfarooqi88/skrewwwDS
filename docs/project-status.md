@@ -1,6 +1,77 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J Overlay/Navigation Batch ✅ SHIPPED — `/r` = foundation + 42; CE-3K = NEXT, NOT STARTED)
+Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K Search/Date Interaction Batch ✅ SHIPPED — `/r` = foundation + 48; CE-3L = NEXT, NOT STARTED)
+
+## 2026-09-15 — CE-3K Search/Date Interaction Distribution Batch (SHIPPED)
+
+**Verdict: COMPLETE.** Shipped exactly the 6 canonical CE-3K slugs from
+`docs/distribution-expansion.md` — `combobox`, `select`, `calendar-day`,
+`calendar-grid`, `date-picker`, `phone-number-field`.
+
+Baseline verified at `db5172b` (main == origin/main, clean, CI success,
+repo PUBLIC, React 55, Stable/Beta 27/28, Vitest 1117/1117, `/r` =
+foundation + 42).
+
+`calendar-day` is a real canonical registry item that `calendar-grid`
+composes via a `@skrewww/calendar-day` registryDependency (matching CE-3J's
+Menu→Popover precedent), not re-transported files.
+`CalendarMonthCell.tsx`/`CalendarYearCell.tsx` are internal-only building
+blocks (no registry entry of their own), transported as `calendar-grid`'s
+own files. `date-picker` composes both `@skrewww/calendar-grid` and
+`@skrewww/popover` directly; `phone-number-field` composes
+`@skrewww/select` (a real import of `Select.tsx`'s `SelectControl` export).
+No external date library exists anywhere in this family — reverified,
+fully hand-rolled.
+
+**Two real registry-metadata gaps found via consumer builds** (the first
+genuine product-transport misses since CE-3H): `date-picker` and
+`phone-number-field` both import `TextInputControl.tsx`, which itself
+needs `text-input.module.css` — that transitive CSS dependency was missed
+for these two entries on the first pass, caught by real `next build`
+"Module not found" failures, not static review. Both fixed.
+
+**A genuine external-tooling finding, diagnosed and isolated from any
+Skrewww defect:** `calendar-grid`'s ~66KB manifest (the largest `shadcn
+view` payload in this repo) exposed a real Node.js `child_process`
+pipe-buffering bug in the smoke harness's own stdout-capture — fixed
+generically by redirecting captured stdout to a real temp file instead of
+a pipe. Separately, `shadcn@4.16.2 add` was found to reproducibly strip a
+file's leading standalone `/** ... */` comment line on write (confirmed
+even for a single-source install, so not a shared-target artifact) — zero
+functional impact, every line of real code transports byte-for-byte. The
+harness's byte-identical check now recognizes this one diagnosed shape and
+reports it visibly rather than silently passing or falsely failing.
+
+**Consumer validation — all 6 required T4 real, network-backed, installed-
+browser proof:** `combobox` (focus-opens/filters/Enter-commits/Escape-
+preserves-value), `select` (click-opens/Home-End-nav/Enter-commits/Escape-
+restores-focus), `calendar-day` (standalone render + selection callback),
+`calendar-grid` (arrow-key nav/month nav/Enter-selects/month-drill-up —
+15 files via `@skrewww/calendar-day`), `date-picker` (calendar opens/day-
+click updates field/Escape restores focus — 34 files via both
+`@skrewww/calendar-grid` and `@skrewww/popover`), `phone-number-field`
+(`type="tel"` input/country listbox — 23 files via `@skrewww/select`).
+Zero console errors across all 6.
+
+**Harness-authoring bugs found and fixed (not product defects):**
+`Select`'s controlled API uses native `onChange`, not a custom
+`onValueChange` like Combobox/DatePicker/PhoneNumberField have — a real
+API difference the render harness got wrong initially. `Combobox` opens on
+`onFocus`, not a click handler — Playwright's `.click()` didn't reliably
+transfer focus in headless automation even though a live manual click
+(verified through the browser pane) worked correctly; switched to
+`.focus()`. Four more `expectedSharedTargets` omissions (same class as
+CE-3I/J).
+
+**Inventory delta:** `/r` foundation + 42 → foundation + **48**.
+React/Stable-Beta/docs/contracts counts unchanged (distribution-only).
+
+**Validation:** lint clean, typecheck clean, Vitest **1123/1123** (1117
+baseline + 6 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs, `git diff --check`
+clean.
+
+**CE-3L — Data/tree batch is next, NOT STARTED.**
 
 ## 2026-09-15 — CE-3J Overlay/Navigation Distribution Batch (SHIPPED)
 
@@ -3457,7 +3528,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE (docs-only); CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J Overlay/Navigation Batch ✅ SHIPPED (`/r` = foundation + 42); CE-3K = NEXT, NOT STARTED |
+| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE (docs-only); CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K Search/Date Interaction Batch ✅ SHIPPED (`/r` = foundation + 48); CE-3L = NEXT, NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |

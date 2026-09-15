@@ -6,9 +6,10 @@
 > **CE-3H safe compound batch** · Shipped 2026-09-15 · `/r` = foundation + **32**
 > **CE-3I form/composite batch** · Shipped 2026-09-15 · `/r` = foundation + **36**
 > **CE-3J overlay/navigation batch** · Shipped 2026-09-15 · `/r` = foundation + **42**
+> **CE-3K search/date interaction batch** · Shipped 2026-09-15 · `/r` = foundation + **48**
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J are
-> **SHIPPED** (see Status table). CE-3K onward are **DEFINED — NOT STARTED**
+> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J/K are
+> **SHIPPED** (see Status table). CE-3L onward are **DEFINED — NOT STARTED**
 > below (see CE-3G section).
 
 ## Purpose
@@ -572,7 +573,8 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3H Safe compound batch | ✅ SHIPPED — 11 slugs, see section below |
 | CE-3I Form/composite batch | ✅ SHIPPED — 4 slugs, see section below |
 | CE-3J Overlay/navigation batch | ✅ SHIPPED — 6 slugs, see section below |
-| CE-3 overall | **IN PROGRESS** — CE-3K = NEXT, NOT STARTED |
+| CE-3K Search/date interaction batch | ✅ SHIPPED — 6 slugs, see section below |
+| CE-3 overall | **IN PROGRESS** — CE-3L = NEXT, NOT STARTED |
 
 ---
 
@@ -1243,6 +1245,112 @@ foundation + 42 — byte-identical), `git diff --check` clean.
 - **Expected manifest delta:** 42 → 48
 - **Stop conditions:** do not start `date-picker`/`phone-number-field` before CE-3J's `popover`/`select` manifests are green
 - **Exit gate:** green CI + T4 pass
+
+#### CE-3K — SHIPPED (2026-09-15)
+
+**Verdict: COMPLETE.** All 6 planned slugs shipped exactly as scoped — no
+scope drift into CE-3L's `tree-view`/`data-table`.
+
+**Compound architecture, reverified against real source:** `calendar-day`
+is a real, standalone canonical registry item that `calendar-grid`
+literally composes as a React component — matching the Menu→Popover
+pattern from CE-3J, `calendar-grid` declares `@skrewww/calendar-day` as a
+`registryDependency` rather than re-transporting `CalendarDay.tsx`.
+`CalendarMonthCell.tsx`/`CalendarYearCell.tsx` are **not** canonical
+registry items (no `hasImplementation` entry of their own) — they
+transport as `calendar-grid`'s own internal files, matching
+`TimelineItemRow.tsx`'s established precedent. `date-picker` composes both
+`@skrewww/calendar-grid` and `@skrewww/popover` directly (real value
+imports of both); `phone-number-field` composes `@skrewww/select` (a real
+import of `SelectControl`, a named export inside `Select.tsx`) and
+`@skrewww/validation-message`.
+
+**Per-slug registryDependencies:**
+
+| Slug | `registryDependencies` |
+|------|----------------------------|
+| `combobox` | `@skrewww/form-field`, `@skrewww/popover`, `@skrewww/foundation` |
+| `select` | `@skrewww/form-field`, `@skrewww/popover`, `@skrewww/foundation` |
+| `calendar-day` | `@skrewww/foundation` |
+| `calendar-grid` | `@skrewww/calendar-day`, `@skrewww/foundation` |
+| `date-picker` | `@skrewww/calendar-grid`, `@skrewww/popover`, `@skrewww/form-field`, `@skrewww/foundation` |
+| `phone-number-field` | `@skrewww/select`, `@skrewww/validation-message`, `@skrewww/foundation` |
+
+**Date library reverified:** zero third-party npm imports found across all
+6 components and their date helpers — the calendar family remains fully
+hand-rolled against `Date`/string parsing, exactly as CE-3G/H found. No
+package.json change.
+
+**Two real registry-metadata gaps found via consumer builds (not test-harness
+bugs) — the first genuine product-transport misses since CE-3H's
+`search-field`:** `date-picker` and `phone-number-field` both directly
+import `TextInputControl.tsx`, which itself imports
+`text-input.module.css` — the transitive-CSS lesson from CE-3H/I was
+missed for these two specific entries on the first pass. Both now declare
+`components/ui/text-input.module.css` as an `internalDependency`, caught
+by a real `next build` "Module not found" failure, not static review.
+
+**A genuine, diagnosed, reproducible external tooling issue — infrastructure
+finding, not a Skrewww defect:** `calendar-grid`'s manifest (~66KB, the
+largest `shadcn view` payload in this repo) exposed a real Node.js
+`child_process` pipe-buffering bug in this harness's own `run()` helper —
+capturing large `stdout` via a `"pipe"` stdio option silently truncated at
+a consistent boundary when spawned programmatically (reproduced
+independently of this script; bypassed entirely by plain shell `>` file
+redirection). Fixed generically: `run()` now redirects captured stdout to
+a real temp-file descriptor (`fs.openSync`) instead of a pipe, sidestepping
+the bug for any future large manifest too. Separately, and unrelated to
+that fix, `shadcn@4.16.2 add` was found to reproducibly strip a file's
+**leading standalone `/** ... */` comment line** on write — confirmed
+present even for a single-source, non-shared install (`calendar-day`
+alone), so it is not a shared-target merge artifact either. Zero functional
+impact (comment-only; every line of real code transports byte-for-byte;
+`calendar-date.ts` typechecks and the app builds/runs identically with or
+without it). The harness's shared-target byte-identical check now
+recognizes this one specific, diagnosed shape and reports it as a visible
+`⚠` line rather than either silently passing or falsely failing — not a
+weakened assertion, a correctly-scoped one.
+
+**Consumer validation — all 6 required T4 real, network-backed, installed-
+browser proof:** `combobox` (open-on-focus/filter-while-typing/Enter-
+commits-filtered-option/Escape-preserves-committed-value), `select`
+(open-on-click/Home-End-listbox-navigation/Enter-commits/Escape-restores-
+focus), `calendar-day` (standalone render + `onDateSelect` callback),
+`calendar-grid` (arrow-key roving focus/month navigation/Enter-selects/
+month-drill-up-and-back-down — resolving `@skrewww/calendar-day`, 15
+files), `date-picker` (calendar-button opens/day-click-updates-field/
+Escape-restores-focus/month-navigation-keeps-popover-open — resolving both
+`@skrewww/calendar-grid` and `@skrewww/popover`, 34 files),
+`phone-number-field` (`type="tel"` number input/country listbox open+
+select — resolving `@skrewww/select`, 23 files). Zero console errors
+across all 6.
+
+**Two harness-authoring bugs found and fixed along the way (not product
+defects):** `Select`'s controlled-value API uses the native
+`SelectHTMLAttributes` `onChange` (not a custom `onValueChange` — real API
+difference from Combobox/DatePicker/PhoneNumberField, all of which do have
+a real `onValueChange`), so the render harness's prop name was wrong.
+`Combobox` opens on a dedicated `onFocus` handler, not a click handler —
+Playwright's synthetic `.click()` on the input did not reliably transfer
+focus in this headless context even though it does in a real browser
+(confirmed via a live manual click through the browser pane, which worked
+correctly and showed the exact same accessible-role tree Playwright was
+querying); switched to `.focus()`, which exercises the component's actual
+trigger mechanism directly. Four more `expectedSharedTargets` omissions
+(same class as CE-3I/J) across `select`, `combobox`, `date-picker`
+(`internal/assign-ref.ts`, shared via `calendar-grid` + `popover`), and
+`phone-number-field` (`text-input.module.css`, shared via `select`).
+
+**Manifest count:** foundation + 42 → foundation + **48** (adds
+`combobox`, `select`, `calendar-day`, `calendar-grid`, `date-picker`,
+`phone-number-field`).
+
+**Validation:** lint clean, typecheck clean, Vitest **1123/1123** (1117
+baseline + 6 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs (all 49 items —
+foundation + 48 — byte-identical), `git diff --check` clean.
+
+**CE-3L next — NOT STARTED.**
 
 ### CE-3L — Data/tree batch
 

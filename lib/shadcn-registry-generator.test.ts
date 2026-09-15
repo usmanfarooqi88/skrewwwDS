@@ -47,6 +47,12 @@ import {
   buildDrawerManifest,
   buildMenuManifest,
   buildSplitButtonManifest,
+  buildComboboxManifest,
+  buildSelectManifest,
+  buildCalendarDayManifest,
+  buildCalendarGridManifest,
+  buildDatePickerManifest,
+  buildPhoneNumberFieldManifest,
   classifyFile,
   extractFoundationCss,
   extractFoundationCssFromSource,
@@ -283,6 +289,12 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildDrawerManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildMenuManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildSplitButtonManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildComboboxManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildSelectManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildCalendarDayManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildCalendarGridManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildDatePickerManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildPhoneNumberFieldManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -890,6 +902,109 @@ describe("shadcn registry generator", () => {
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual([]);
     expect(JSON.stringify(manifest)).not.toMatch(/@skrewww\/menu|Menu\.tsx/);
+  });
+
+  // CE-3K — search/date interaction batch
+  it("transports Combobox with form-field + popover registryDeps and its own filter/keyboard/scroll helpers", () => {
+    const manifest = buildComboboxManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Combobox.tsx",
+      "components/ui/combobox.module.css",
+      "components/ui/internal/combobox-filter.ts",
+      "components/ui/internal/combobox-keyboard.ts",
+      "components/ui/internal/combobox-list-status.ts",
+      "components/ui/internal/combobox-scroll.ts",
+      "components/ui/text-input.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/popover", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/Popover\.tsx|FormField\.tsx/);
+  });
+
+  it("transports Select with form-field + popover registryDeps, no TextInputControl (Select builds its own trigger)", () => {
+    const manifest = buildSelectManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Select.tsx",
+      "components/ui/select.module.css",
+      "components/ui/text-input.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/popover", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/TextInputControl\.tsx/);
+  });
+
+  it("transports Calendar Day standalone with only calendar-date.ts, no npm dependency", () => {
+    const manifest = buildCalendarDayManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/CalendarDay.tsx",
+      "components/ui/calendar-day.module.css",
+      "components/ui/internal/calendar-date.ts",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+  });
+
+  it("transports Calendar Grid with a @skrewww/calendar-day registryDependency, no re-transported CalendarDay.tsx", () => {
+    const manifest = buildCalendarGridManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/CalendarGrid.tsx",
+      "components/ui/CalendarMonthCell.tsx",
+      "components/ui/CalendarYearCell.tsx",
+      "components/ui/calendar-grid.module.css",
+      "components/ui/calendar-period-cell.module.css",
+      "components/ui/internal/assign-ref.ts",
+      "components/ui/internal/calendar-date.ts",
+      "components/ui/internal/calendar-math.ts",
+      "components/ui/internal/useCalendarCellGridKeyboard.ts",
+      "components/ui/internal/useCalendarKeyboard.ts",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/calendar-day", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/"path":"components\/ui\/CalendarDay\.tsx"/);
+  });
+
+  it("transports Date Picker composing calendar-grid + popover + form-field registryDeps, with its own transitive calendar-date.ts", () => {
+    const manifest = buildDatePickerManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/DatePicker.tsx",
+      "components/ui/TextInputControl.tsx",
+      "components/ui/date-picker.module.css",
+      "components/ui/internal/calendar-date.ts",
+      "components/ui/text-input.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual([
+      "@skrewww/calendar-grid",
+      "@skrewww/popover",
+      "@skrewww/form-field",
+      "@skrewww/foundation",
+    ]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/CalendarGrid\.tsx|Popover\.tsx/);
+  });
+
+  it("transports Phone Number Field with select + validation-message registryDeps and its own country-data helper", () => {
+    const manifest = buildPhoneNumberFieldManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/PhoneNumberField.tsx",
+      "components/ui/TextInputControl.tsx",
+      "components/ui/phone-number-field.module.css",
+      "components/ui/text-input.module.css",
+      "lib/cn.ts",
+      "lib/phone-number-field-countries.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/select", "@skrewww/validation-message", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(JSON.stringify(manifest)).not.toMatch(/Select\.tsx|ValidationMessage\.tsx/);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

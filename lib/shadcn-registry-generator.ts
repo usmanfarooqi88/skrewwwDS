@@ -546,6 +546,103 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:lib",
     target: "~/components/ui/internal/menu-typeahead.ts",
   },
+  // CE-3K — search/date interaction batch
+  "components/ui/Combobox.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Combobox.tsx",
+  },
+  "components/ui/combobox.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/combobox.module.css",
+  },
+  "components/ui/internal/combobox-filter.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/combobox-filter.ts",
+  },
+  "components/ui/internal/combobox-list-status.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/combobox-list-status.ts",
+  },
+  "components/ui/internal/combobox-keyboard.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/combobox-keyboard.ts",
+  },
+  "components/ui/internal/combobox-scroll.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/combobox-scroll.ts",
+  },
+  "components/ui/Select.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Select.tsx",
+  },
+  "components/ui/select.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/select.module.css",
+  },
+  "components/ui/CalendarDay.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/CalendarDay.tsx",
+  },
+  "components/ui/calendar-day.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/calendar-day.module.css",
+  },
+  "components/ui/internal/calendar-date.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/calendar-date.ts",
+  },
+  "components/ui/CalendarGrid.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/CalendarGrid.tsx",
+  },
+  "components/ui/calendar-grid.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/calendar-grid.module.css",
+  },
+  "components/ui/CalendarMonthCell.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/CalendarMonthCell.tsx",
+  },
+  "components/ui/CalendarYearCell.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/CalendarYearCell.tsx",
+  },
+  "components/ui/calendar-period-cell.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/calendar-period-cell.module.css",
+  },
+  "components/ui/internal/calendar-math.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/calendar-math.ts",
+  },
+  "components/ui/internal/useCalendarKeyboard.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useCalendarKeyboard.ts",
+  },
+  "components/ui/internal/useCalendarCellGridKeyboard.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/useCalendarCellGridKeyboard.ts",
+  },
+  "components/ui/DatePicker.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/DatePicker.tsx",
+  },
+  "components/ui/date-picker.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/date-picker.module.css",
+  },
+  "components/ui/PhoneNumberField.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/PhoneNumberField.tsx",
+  },
+  "components/ui/phone-number-field.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/phone-number-field.module.css",
+  },
+  "lib/phone-number-field-countries.ts": {
+    type: "registry:lib",
+    target: "~/lib/phone-number-field-countries.ts",
+  },
 };
 
 export function classifyFile(relPath: string): { type: ShadcnFileType; target: string } {
@@ -876,6 +973,31 @@ export function buildMenuManifest(): ShadcnRegistryItem {
 
 export function buildSplitButtonManifest(): ShadcnRegistryItem {
   return buildComponentManifest("split-button");
+}
+
+// CE-3K — search/date interaction batch
+export function buildComboboxManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("combobox");
+}
+
+export function buildSelectManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("select");
+}
+
+export function buildCalendarDayManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("calendar-day");
+}
+
+export function buildCalendarGridManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("calendar-grid");
+}
+
+export function buildDatePickerManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("date-picker");
+}
+
+export function buildPhoneNumberFieldManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("phone-number-field");
 }
 
 /**
