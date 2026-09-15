@@ -26,8 +26,10 @@ generic/core ceiling.
 - Leakage: no hostRequirements / absolute paths / banking in index
 
 **Final counts:** React 55 · Stable/Beta 27/28 · distributed **52/55** ·
-registry items **53** (Foundation + 52) · Vitest **1135/1135** (no new
-CE-3O tests required — permanent guards already landed in CE-3N).
+registry items **53** (Foundation + 52) · Vitest **1135/1135**. One
+non-product CE-3O harness note: two `CalendarGrid` range-mode userEvent
+tests received a 15s timeout under full-suite load (assertions unchanged)
+to clear a pre-existing flake.
 
 **Deferred (intentional):** banking-account-card,
 banking-balance-summary, banking-transaction-row — specialized
