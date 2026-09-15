@@ -223,6 +223,30 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:ui",
     target: "~/components/ui/RadioGroup.tsx",
   },
+  "components/ui/Slider.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Slider.tsx",
+  },
+  "components/ui/slider.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/slider.module.css",
+  },
+  "components/ui/Stepper.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Stepper.tsx",
+  },
+  "components/ui/stepper.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/stepper.module.css",
+  },
+  "components/ui/Table.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Table.tsx",
+  },
+  "components/ui/table.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/table.module.css",
+  },
   "components/ui/internal/link-utils.ts": {
     type: "registry:lib",
     target: "~/components/ui/internal/link-utils.ts",
@@ -466,6 +490,18 @@ export function buildBreadcrumbManifest(): ShadcnRegistryItem {
 
 export function buildRadioGroupManifest(): ShadcnRegistryItem {
   return buildComponentManifest("radio-group");
+}
+
+export function buildSliderManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("slider");
+}
+
+export function buildStepperManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("stepper");
+}
+
+export function buildTableManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("table");
 }
 
 /**

@@ -23,6 +23,9 @@ import {
   buildSkeletonManifest,
   buildSpinnerManifest,
   buildSwitchManifest,
+  buildSliderManifest,
+  buildStepperManifest,
+  buildTableManifest,
   buildTextareaManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
@@ -52,6 +55,9 @@ const manifests = [
   ["avatar.json", buildAvatarManifest()],
   ["breadcrumb.json", buildBreadcrumbManifest()],
   ["radio-group.json", buildRadioGroupManifest()],
+  ["slider.json", buildSliderManifest()],
+  ["stepper.json", buildStepperManifest()],
+  ["table.json", buildTableManifest()],
 ] as const;
 
 console.log("Generated shadcn registry manifests:");

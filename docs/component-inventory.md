@@ -32,10 +32,10 @@ entries are Figma item primitives that React correctly models via composition.
 | Beta | **28** |
 | Public docs pages (implemented) | **55** |
 | Agent Kit contracts | **55** |
-| `/r` component manifests | **18** (+ `foundation` shared cut = 19 files) |
+| `/r` component manifests | **21** (+ `foundation` shared cut = 22 files) |
 
-`/r` components: avatar, breadcrumb, button, card, checkbox, divider, form-field, link, pagination, progress-bar, radio, radio-group, skeleton, spinner, switch, text-input, textarea, validation-message.
-CE-3 IN PROGRESS — CE-3E shipped; CE-3F next.
+`/r` components: avatar, breadcrumb, button, card, checkbox, divider, form-field, link, pagination, progress-bar, radio, radio-group, skeleton, slider, spinner, stepper, switch, table, text-input, textarea, validation-message.
+CE-3 IN PROGRESS — CE-3D/E/F overnight batches complete; higher-complexity planning next.
 
 ### Figma / documentation inventory
 
@@ -166,7 +166,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Implemented | 55 | |
 | Docs | 55 implemented + 11 docs-only | |
 | Agent contracts | 55 | |
-| `/r` distributed components | 18 | + foundation; CE-3E Stable phosphor + Skrewww graph |
+| `/r` distributed components | 21 | + foundation; CE-3F selected Beta |
 | `/r/registry.json` | 0 | STAB-001 / later CE-3 — not this pass |
 
 ## Master inventory table
@@ -214,10 +214,10 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Skeleton | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available; CE-3B `/r` |
 | Spinner | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Split Button | yes (Actions/Split Button `2022:1086`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Actions; CE-1C; primary Button + Menu; joined chrome |
-| Stepper | yes (Navigation/Step Item `2024:2944`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Navigation; CE-2K; compound Stepper + Step; state derived from currentStep, not a component variant; Class A per Timeline/Timeline-Item precedent (see classification note above) |
+| Stepper | yes (Navigation/Step Item `2024:2944`) | yes | A | public | Beta | yes | yes | yes | VERIFIED | — | Maintain | Navigation; CE-2K; compound Stepper + Step; CE-3F `/r` |
 | Switch | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available; CE-3C `/r` |
-| Slider | yes (Forms/Slider `2024:2373`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1A; State Default/Hover/Focused/Disabled; single-thumb |
-| Table | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
+| Slider | yes (Forms/Slider `2024:2373`) | yes | A | public | Beta | yes | yes | yes | VERIFIED | — | Maintain | Forms; CE-1A; single-thumb; CE-3F `/r` |
+| Table | yes | yes | A | public | Beta | yes | yes | yes | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available; CE-3F `/r` (not data-table) |
 | Tabs | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
 | Tag | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Text Input | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available |

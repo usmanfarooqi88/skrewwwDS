@@ -56,6 +56,9 @@ import {
   buildSkeletonManifest,
   buildSpinnerManifest,
   buildSwitchManifest,
+  buildSliderManifest,
+  buildStepperManifest,
+  buildTableManifest,
   buildTextareaManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
@@ -88,6 +91,9 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   avatar: buildAvatarManifest,
   breadcrumb: buildBreadcrumbManifest,
   "radio-group": buildRadioGroupManifest,
+  slider: buildSliderManifest,
+  stepper: buildStepperManifest,
+  table: buildTableManifest,
 };
 
 /**
@@ -406,6 +412,31 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     assertHarness: (pageSource) =>
       /from "@\/components\/ui\/Avatar"/.test(pageSource) && /Smoke avatar/.test(pageSource),
     harnessAssertionLabel: "consumer page imports Avatar and renders labeled initials",
+  },
+  slider: {
+    criticalPaths: [
+      "components/ui/Slider.tsx",
+      "components/ui/slider.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    renderHarness: () =>
+      [
+        'import { Slider } from "@/components/ui/Slider";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <Slider label="Smoke volume" defaultValue={40} min={0} max={100} />',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Slider"/.test(pageSource) && /Smoke volume/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Slider and renders labeled control",
   },
   "spinner-divider-link": {
     criticalPaths: [

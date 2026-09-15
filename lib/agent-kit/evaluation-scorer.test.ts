@@ -87,11 +87,12 @@ describe("AK-5 eval cases — integrity", () => {
   it("aligns installability expectations with distribution evidence", () => {
     expect(isDistributedViaSkrewwwRegistry("spinner")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("checkbox")).toBe(true);
-    expect(isDistributedViaSkrewwwRegistry("stepper")).toBe(false);
+    expect(isDistributedViaSkrewwwRegistry("stepper")).toBe(true);
+    expect(isDistributedViaSkrewwwRegistry("tabs")).toBe(false);
     const spinnerCase = EVAL_CASES.find((c) => c.id === "install-distributed-spinner")!;
-    const stepperCase = EVAL_CASES.find((c) => c.id === "install-undistributed-stepper")!;
+    const tabsCase = EVAL_CASES.find((c) => c.id === "install-undistributed-tabs")!;
     expect(spinnerCase.allowedInstallCommands?.[0]).toContain("@skrewww/spinner");
-    expect(stepperCase.allowedInstallCommands).toEqual([]);
+    expect(tabsCase.allowedInstallCommands).toEqual([]);
   });
 
   it("covers the required capability classes", () => {
@@ -148,13 +149,13 @@ describe("AK-5 scorer", () => {
 
   it("detects false install commands and wrong maturity", () => {
     const { contracts } = compileKit();
-    const stepperCase = EVAL_CASES.find((c) => c.id === "install-undistributed-stepper")!;
+    const tabsCase = EVAL_CASES.find((c) => c.id === "install-undistributed-tabs")!;
     const installScore = scoreEvalCase({
-      evalCase: stepperCase,
+      evalCase: tabsCase,
       condition: "off",
       rawOutput: declaration({
-        componentSlugs: ["stepper"],
-        installCommands: ["npx shadcn add @skrewww/stepper"],
+        componentSlugs: ["tabs"],
+        installCommands: ["npx shadcn add @skrewww/tabs"],
         shapeMode: "rounded",
         surfaceMode: "glass",
         skrewwwRegistryConfigured: true,

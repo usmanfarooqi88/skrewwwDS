@@ -21,6 +21,9 @@ import {
   buildAvatarManifest,
   buildBreadcrumbManifest,
   buildRadioGroupManifest,
+  buildSliderManifest,
+  buildStepperManifest,
+  buildTableManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
   classifyFile,
@@ -235,6 +238,9 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildAvatarManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildBreadcrumbManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildRadioGroupManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildSliderManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildStepperManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildTableManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -487,6 +493,43 @@ describe("shadcn registry generator", () => {
     ]);
     expect(manifest.dependencies).toEqual([]);
     expect(manifest.files.some((file) => file.path.endsWith(".css"))).toBe(false);
+  });
+
+  it("transports Slider (selected Beta) with use-controllable", () => {
+    const manifest = buildSliderManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Slider.tsx",
+      "components/ui/slider.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(componentRegistry.find((e) => e.slug === "slider")?.status).toBe("beta");
+  });
+
+  it("transports Stepper (selected Beta) with Phosphor, without Data Table leakage", () => {
+    const manifest = buildStepperManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Stepper.tsx",
+      "components/ui/stepper.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/DataTable|data-table/);
+  });
+
+  it("transports Table (selected Beta) as basic table only", () => {
+    const manifest = buildTableManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Table.tsx",
+      "components/ui/table.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(manifest.name).toBe("table");
+    expect(manifest.files.some((file) => /data-table/i.test(file.path))).toBe(false);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

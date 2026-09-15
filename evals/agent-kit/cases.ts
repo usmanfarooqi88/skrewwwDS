@@ -93,14 +93,14 @@ export const EVAL_CASES: readonly AuthoredEvalCase[] = [
     },
   },
   {
-    id: "install-undistributed-stepper",
-    title: "Stepper exists but is not shadcn-distributed",
+    id: "install-undistributed-tabs",
+    title: "Tabs exists but is not shadcn-distributed",
     category: "installability",
     userTask:
-      "Add a Skrewww Stepper. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
+      "Add a Skrewww Tabs. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
     consumerFixtureId: "configured-rounded-glass",
-    relevantComponentSlugs: ["stepper"],
-    requiredComponentSlugs: ["stepper"],
+    relevantComponentSlugs: ["tabs"],
+    requiredComponentSlugs: ["tabs"],
     allowedInstallCommands: [],
     forbidInventedInstallCommands: true,
     projectContext: {

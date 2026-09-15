@@ -1,6 +1,19 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3E Stable phosphor + Skrewww graph — SHIPPED pending CI; CE-3 IN PROGRESS)
+Last verified: **2026-09-15** (CE-3F selected Beta `/r` — SHIPPED pending CI; CE-3 IN PROGRESS)
+
+## 2026-09-15 — CE-3F Selected proven Beta (SHIPPED)
+
+**Verdict: `slider`, `stepper`, `table` distributed.** Maturity remains Beta.
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| `/r` component manifests | 18 | **21** |
+
+Overnight CE-3D→E→F complete. **STOP** — next needs attended planning
+(tabs/overlays/charts/banking/`/r/registry.json`).
+
+---
 
 ## 2026-09-15 — CE-3E Stable phosphor + Skrewww graph (SHIPPED)
 
