@@ -3,6 +3,7 @@
 **Phase:** RA-3 ✅ COMPLETE (Forms + overlays)  
 **Status:** New/Edit form workflows shipped — RA-4 responsive/a11y pass not started  
 **Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`  
+**Final SHA:** `733c691` (CI success)  
 **Canonical next task:** RA-4 — Responsive / accessibility composition validation (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
@@ -28,6 +29,7 @@ human approval.
 | Vitest | 1155 / 1155 |
 | Browser | Reference App Playwright **14 / 14** (shell 4 + data 4 + forms 6) |
 | Gaps | G0 only (finalFocusRef for programmatic Dialog) |
+| SHA / CI | `733c691` — Actions run [35002885675](https://github.com/usmanfarooqi88/skrewwwDS/actions/runs/35002885675) success |
 
 Manual review: `/reference/new` and `/reference/edit/req_001` @ 1280×800 and 390×844; bottom “More actions” Menu for collision.
 
@@ -682,7 +684,7 @@ Reference App:
   RA-0 ✅ COMPLETE
   RA-1 ✅ COMPLETE
   RA-2 ✅ COMPLETE
-  RA-3 ✅ COMPLETE
+  RA-3 ✅ COMPLETE (733c691)
   RA-4 NOT STARTED  ← next
   RA-5 … RA-6 later
 
