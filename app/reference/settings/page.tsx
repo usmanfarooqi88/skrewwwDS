@@ -6,7 +6,7 @@ export default function ReferenceSettingsPage() {
     <>
       <ReferencePageHeader
         title="Settings"
-        description="Preferences placeholder. Shape/Surface gallery ships in RA-5 — not expanded here."
+        description="Preferences placeholder — no in-app Shape/Surface switcher here."
         breadcrumb={[
           { label: "Overview", home: true, href: "/reference" },
           { label: "Settings" },
@@ -15,8 +15,11 @@ export default function ReferenceSettingsPage() {
       <div className="px-4 py-6 md:px-8">
         <Card title="Appearance later" headingLevel="h2">
           <p className="text-sm text-ink-600">
-            Shell and navigation are validated in RA-4. Default product Shape/Surface
-            remains from the root document until the RA-5 gallery.
+            Shell and navigation are validated in RA-4. Shape/Surface composition
+            is validated on the component docs pages (see the Shape/Surface
+            switcher on any component page, e.g. Toggle Group or Button Group) —
+            this app keeps the default product Shape/Surface from the root
+            document.
           </p>
         </Card>
       </div>

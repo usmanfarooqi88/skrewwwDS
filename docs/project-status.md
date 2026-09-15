@@ -1,6 +1,58 @@
 # Project status
 
-Last verified: **2026-09-16** (RA-4 ✅ COMPLETE + RA-4 follow-up ✅ COMPLETE; RA-5 ✅ COMPLETE — visual/parity backlog review; RA-6 NEXT, NOT STARTED; CE-3 remains ✅ COMPLETE)
+Last verified: **2026-09-16** (**REFERENCE APP / COMPOSITION VALIDATION phase ✅ COMPLETE** — RA-0 through RA-6 all done; PH-0 entry gate evaluated READY, PH-0 itself NOT STARTED pending human approval; CE-3 remains ✅ COMPLETE)
+
+## 2026-09-16 — RA-6 Final Validation + Reference App Phase Closure (COMPLETE)
+
+**Verdict: COMPLETE.** **Reference App / Composition Validation phase is now
+✅ COMPLETE** (RA-0 through RA-6). All 15 Definition of Done criteria
+(`docs/reference-app-plan.md` §23) evaluated **PASS**, no FAIL items.
+
+**Final route inventory:** all 5 canonical routes plus a second valid edit
+fixture and one invalid edit ID (→ real 404, not a blank page) verified
+live — zero console errors, zero hydration warnings.
+
+**Final journey:** Overview → Requests (search/filter/sort/paginate/row
+Menu) → Edit (prefill, discard dialog, update) → New (validation, submit,
+Toast) → Settings, fully keyboard-operable, matching the existing
+`reference-app-data.spec.ts` + `reference-app-forms.spec.ts` +
+`reference-app-responsive-a11y.spec.ts` coverage. Form data remains
+session-only — an existing, honest, documented limitation, not a gap.
+
+**Analytics banner regression (RA-4 follow-up):** re-verified live at
+1280×700 with genuinely cleared consent — trigger unoccluded, Menu fully
+in-viewport, spacer reserves the banner's real height. No regression.
+
+**One G1 fix this session:** `app/reference/settings/page.tsx` promised an
+in-app "Shape/Surface gallery ships in RA-5" that was never actually
+RA-5's scope (RA-5 was a backlog *review*). Corrected the copy to
+accurately point at the component docs pages' existing Shape/Surface
+switcher instead of an unplanned in-app gallery.
+
+**G0–G5 final inventory:** no unresolved critical G3 or G5. The one G5
+(searchable Command Palette) remains explicitly deferred with rationale —
+not silently dropped. Searchable Multi Select remains composition-
+sufficient for MVP, design-first/blocked for the searchable variant. Two
+RA-5 visual items remain deferred and non-blocking: Table caption/header
+visual split (pending Figma Caption contract) and Button Group Squircle
+outer silhouette (needs new Figma-verified geometry).
+
+**Banking independence:** zero references to any `banking-*` component
+across `app/reference/`, `components/reference-app/`, `lib/reference-app/`.
+
+**Distribution regression:** `generate:registry` deterministic, 53
+manifests + `registry.json` = 54 files (unchanged set), 52/55 generic/core
+components distributed — matches CE-3 exactly.
+
+**Evidence:** lint/typecheck/build green; Vitest **1158/1158**; Reference
+App Playwright **21/21**; focused RA-5-touched e2e (Table/Data-Table/
+Button-Group/Split-Button/Toggle-Group) **49/49**; `git diff --check`
+clean. Full writeup:
+[docs/reference-app-plan.md](reference-app-plan.md#ra-6--final-validation--phase-closure-2026-09-16).
+
+**PH-0 entry gate: READY** (all 8 criteria in §25 evaluated PASS). **PH-0
+— Pre-Guard Hardening is the canonical next roadmap item — NOT STARTED,
+awaiting explicit human approval**, per this task's stop boundary.
 
 ## 2026-09-16 — RA-5 Visual / Parity Backlog Review (COMPLETE)
 
@@ -3934,8 +3986,8 @@ here instead.
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
 | CE-3 Distribution Expansion | ✅ **COMPLETE** — CE-3A–O done; 52/55 + `/r/registry.json` live on `30d2981`; next = Reference App NOT STARTED |
-| Reference App / Composition Validation | **IN PROGRESS** — RA-0–RA-4 ✅, RA-4 follow-up ✅, RA-5 ✅ (visual/parity backlog review); RA-6 (final validation) = NEXT, NOT STARTED |
-| PH-0 Pre-Guard Hardening | Later — not started |
+| Reference App / Composition Validation | ✅ **COMPLETE** — RA-0–RA-6 ✅ (RA-4 follow-up ✅); DoD (§23) all PASS; PH-0 entry gate (§25) READY |
+| PH-0 Pre-Guard Hardening | **NEXT** — entry gate READY; NOT STARTED, awaiting explicit human approval |
 | Skrewww Guard | Later — NOT STARTED |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta

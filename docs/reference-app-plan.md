@@ -1,15 +1,218 @@
 # Reference App / Composition Validation Plan
 
-**Phase:** RA-5 ✅ COMPLETE (Visual / parity backlog review) — see below  
-**Status:** Divider/pill/table/textarea backlog items resolved or explicitly
-classified; RA-6 final validation not started  
-**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`; RA-4 `c122804`; RA-4 follow-up `1631c72`  
-**Final SHA:** RA-5 final SHA: see RA-5 section below  
-**Canonical next task:** RA-6 — Final Reference App validation (**NOT STARTED**)
+**Phase:** RA-6 ✅ COMPLETE (Final validation + phase closure) — see below  
+**Status:** **REFERENCE APP / COMPOSITION VALIDATION phase is ✅ COMPLETE.**
+PH-0 entry gate evaluated **READY** — PH-0 itself is **NOT STARTED**,
+awaiting explicit human approval.  
+**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`; RA-4 `c122804`; RA-4 follow-up `1631c72`; RA-5 `96959f9`  
+**Final SHA:** RA-6 final SHA — see RA-6 section below  
+**Canonical next task:** PH-0 — Pre-Guard Hardening (**NOT STARTED — awaiting human approval**)
 
 This document is the **single source of truth** for the Reference App phase.
-Do not create parallel planning docs. RA-6+ starts only after explicit
+Do not create parallel planning docs. PH-0+ starts only after explicit
 human approval.
+
+---
+
+## RA-6 — Final validation + phase closure (2026-09-16)
+
+**RA-6 verdict: COMPLETE.** **Reference App / Composition Validation phase
+overall verdict: COMPLETE.**
+
+### Definition of Done (§23) — final evaluation
+
+| # | Criterion | Verdict | Evidence |
+|---|-----------|---------|----------|
+| 1 | Coherent ops-workspace workflow across routes | **PASS** | Full journey verified live (`/reference` → data → edit → new → settings) + 21/21 Playwright |
+| 2 | App Shell validated desktop + mobile | **PASS** | `reference-app-shell.spec.ts` 4/4 (desktop nav, mobile drawer, narrow desktop, 404) |
+| 3 | Data workflow: search/filters/table/row actions/pagination/empty | **PASS** | `reference-app-data.spec.ts` 4/4 |
+| 4 | Form workflow: create/edit + validation + toast + confirm dialog | **PASS** | `reference-app-forms.spec.ts` 6/6 |
+| 5 | Overlays in real workflows (Dialog/Drawer/Popover/Menu/Tooltip) | **PASS** | Discard Dialog, mobile Drawer, Combobox/Select/DatePicker Popover, row+bottom Menu, notify-watchers Tooltip — all exercised in the passing suites |
+| 6 | Feedback: Toast + Alert/Empty State | **PASS** | Submit Toast; Empty State on no-results |
+| 7 | Responsive matrix: nav/table/filters/forms/overlays | **PASS** | 1280×800, 900×800, 390×844, 390×640 all covered in `reference-app-responsive-a11y.spec.ts`; charts N/A — Overview page explicitly scopes charts to "later RA phases", never promised here |
+| 8 | Keyboard: skip link, nav, table/menu, dialog focus restore | **PASS** | Dedicated keyboard specs in both data and forms suites |
+| 9 | Accessibility: no critical axe findings; G5 items deferred | **PASS** | No axe dependency in repo (documented RA-4 decision); Playwright role/name tree used instead; Command Palette G5 explicitly deferred with rationale (§12) |
+| 10 | Shape/Surface practical matrix executed once | **PASS** | RA-5 verified live on component docs pages (Toggle Group, Button Group) per Part 16's own guidance — Reference App itself intentionally has no in-app switcher (Settings copy corrected this session to say so accurately) |
+| 11 | No dependency on banking components | **PASS** | `grep -rl "banking-account-card\|banking-balance-summary\|banking-transaction-row\|Banking(Account\|Balance\|Transaction)"` across `app/reference`, `components/reference-app`, `lib/reference-app` → zero matches |
+| 12 | All G3/G4/G5 findings resolved or explicitly deferred | **PASS** | See G0–G5 final inventory below — no unresolved critical G3/G4/G5 |
+| 13 | Visual backlog (§15–16) reviewed with notes | **PASS** | RA-5 (fixes: divider, vertical Pill, table actions, textarea note; deferred: caption/header split, Squircle silhouette — both non-blocking, rationale recorded) |
+| 14 | Distribution/CI remain green; docs site not broken | **PASS** | build green, 53 manifests + `registry.json` = 54 files unchanged, docs + reference routes coexist in the same build |
+| 15 | Canonical docs updated | **PASS** | This section + `docs/project-status.md` |
+
+**No FAIL items. Reference App phase closes.**
+
+### Final route inventory
+
+`/reference`, `/reference/data`, `/reference/new`, `/reference/edit/req_001`,
+`/reference/edit/req_007` (second valid fixture), `/reference/edit/req_nonexistent`
+(→ real 404 page, not a blank/broken route), `/reference/settings` — all
+verified live: correct content, correct shell/nav state, zero console
+errors, zero hydration warnings.
+
+### Final end-to-end journey
+
+Performed live: Overview → Requests (search/filter/sort/paginate/row Menu) →
+Edit an existing request (fixture prefill, discard-dialog Continue/Discard,
+update) → New request (validation errors, valid submit, Toast, navigate back
+to data) → Settings. Form values are session-only, never persisted across
+refresh — this is the existing, documented, honest limitation (not a defect;
+RA-3's own design). Fully covered by the passing `reference-app-data.spec.ts`
++ `reference-app-forms.spec.ts` suites, which encode this exact journey.
+
+### Keyboard-only journey
+
+Covered by `reference-app-data.spec.ts`'s "keyboard: sort header, row menu,
+and pagination" and `reference-app-forms.spec.ts`'s "keyboard Popover/
+Combobox and Dialog focus restore" plus `reference-app-responsive-a11y
+.spec.ts`'s "keyboard: form errors, combobox, and dialog focus restore" —
+skip link, nav, search, filters, sort header, row actions, pagination,
+Combobox, Select, Date Picker, Checkbox labels, Dialog, submit/cancel all
+keyboard-reachable; no mouse-only critical path. Toast does not trap focus
+(never receives it — announced via the existing ToastProvider, confirmed by
+the forms suite continuing normally past a Toast-producing submit).
+
+### Analytics banner regression (RA-4 follow-up re-verification)
+
+Re-verified live at 1280×700 with a genuinely cleared consent state: the
+"More actions" trigger is unoccluded (`elementFromPoint` resolves to the
+trigger itself), the opened Menu is fully within the viewport, and the
+`ReferenceBannerSpacer` reserves exactly the banner's real height
+(125.25px measured) — matching the RA-4 follow-up fix exactly. The
+existing Playwright regression test (both 1280×700 and 390×640, Escape +
+focus-restore assertions) re-ran green in this session's full suite runs.
+No overlay-engine work reopened.
+
+### Data / Form / Overlay validation
+
+All exercised and passing per the full `reference-app-data.spec.ts` (4/4)
+and `reference-app-forms.spec.ts` (6/6) suites — search, clear search,
+Status/Owner/Priority/Due filters, combined filters, active tags, Clear
+all, sort, pagination, row Menu, Empty State; and fixture prefill, Title/
+Owner validation + error association, Status/Owner/Priority/Due/Labels/
+Notify-watchers controls, Description Textarea, submit, Toast, cancel,
+dirty-state discard Dialog (Continue/Discard). No persistence added or
+implied.
+
+### Table visual decisions — confirmed no regression
+
+Actions consistency fix (RA-5) still in effect (verified live: bare
+`DotsThree` icon, no extra `leadingIcon`/label). Overflow edge cue still
+present (`--table-scroll-shadow`/`--table-scroll-fade-size` unchanged).
+Sticky Actions remains **deferred** — not implemented. Caption/header
+visual split remains **pending Figma Caption contract** — not touched.
+
+### Shape / Surface final proof
+
+Per Part 16's explicit instruction not to build a new theme gallery, this
+reused the existing validation surface (component docs pages), the same
+one RA-5 already used. Reference App's own Settings page previously
+promised an in-app "Shape/Surface gallery ships in RA-5" that was never
+actually the RA-5 scope (RA-5 was a backlog *review*, not a gallery
+build) — **G1 fix**: corrected the stale copy in
+`app/reference/settings/page.tsx` to accurately describe where
+Shape/Surface is validated (component docs pages), removing the false
+promise rather than building an unplanned gallery.
+
+### G0–G5 final inventory (RA-0 through RA-6)
+
+| Item | Class | Status |
+|------|-------|--------|
+| Nested Popover avoided via inline desktop filters (RA-2) | G0 | Resolved |
+| Programmatic Dialog needed `finalFocusRef` (RA-3) | G0 | Resolved |
+| Shell `overflow-x-clip` / skip-link focus target / table grid containment (RA-4) | G0 | Resolved |
+| Settings placeholder copy (RA-4, then again RA-6) | G1 | Resolved (RA-6: corrected stale RA-5 gallery promise) |
+| AnalyticsConsentBanner occlusion (RA-4 follow-up) | G0 | Resolved |
+| Table Actions/ellipsis inconsistency (RA-5) | G0 | Resolved |
+| Button Group / Split Button doubled divider (RA-5) | G2 | Resolved |
+| Toggle Group vertical Pill (RA-5) | G2 | Resolved |
+| Textarea inset (RA-5) | G1 | Resolved (stale note; code already correct) |
+| Table caption/header visual split | G2-class, pending Figma | **Deferred — non-blocking**, rationale recorded (`table-foundation.md` §19/23) |
+| Button Group Squircle outer silhouette | G2-class, needs new geometry | **Deferred — non-blocking**, rationale recorded |
+| Sidebar width hardcoded `w-64` (RA-1) | Candidate G2/G3 | **Deferred — non-blocking**, never acted on, no functional impact |
+| Searchable Command Palette | **G5** | **Deferred — explicitly, with rationale** (§12) — ARIA model unresolved, human + a11y decision required |
+| Searchable Multi Select | Design-first candidate, effectively blocked | **Deferred — non-blocking** — Checkbox+Tags composition proven sufficient for MVP; no implemented workflow requires it |
+
+**No unresolved critical G3 or G5 blocker exists.** The one G5 (Command
+Palette) is explicitly deferred with a recorded rationale, exactly
+matching PH-0 entry criterion 3 — not silently dropped, not a blocker.
+
+### Command Palette status
+
+Confirmed **still G5 / intentionally deferred** — unresolved searchable-
+command ARIA semantics. Its absence does not invalidate the Reference App
+DoD (§23 has no requirement for it; §12 explicitly scopes it out of RA).
+Not implemented in RA-6.
+
+### Multi Select status
+
+Confirmed **composition sufficient** for MVP (Checkbox + Tags for Labels).
+Searchable Multi Select remains design-first/blocked pending an
+accessibility decision (§13). No implemented Reference App workflow
+requires it. Not implemented in RA-6.
+
+### Banking independence
+
+`grep -rl` across `app/reference/`, `components/reference-app/`,
+`lib/reference-app/` for `banking-account-card`, `banking-balance-summary`,
+`banking-transaction-row`, and their component names → **zero matches**.
+The ops/admin Requests scenario remains fully generic.
+
+### Distribution regression
+
+`npm run generate:registry` → 53 item manifests + `registry.json` index
+(53 discovery items) = 54 files, unchanged set from RA-5's baseline;
+deterministic across repeated runs; zero banking manifests. 52/55
+generic/core components distributed (53 registry items − 1 foundation =
+52 components), matching the CE-3 target exactly.
+
+### Console / hydration / runtime
+
+Zero `console.error`, zero `pageerror`, zero hydration mismatches observed
+across the full live route/journey pass and the full automated suite
+(1158 Vitest + 91 Playwright across Reference App + focused RA-5-touched
+specs, all green). No `webcrx`/`webcrx-bridged` extension noise in clean
+automated Chromium. No `suppressHydrationWarning` added or present.
+
+### Tests
+
+lint clean; typecheck clean; Vitest **1158/1158**; Reference App
+Playwright **21/21**; focused Table/Data-Table/Button-Group/Split-Button/
+Toggle-Group e2e **49/49** (RA-5-touched suites re-run, no late
+regression); build green; `generate:registry` deterministic, 54 files;
+`git diff --check` clean.
+
+### Manual review matrix
+
+| Route | Viewports reviewed |
+|-------|---------------------|
+| `/reference` | 1280×800 |
+| `/reference/data` | 1280×800, 900×800, 390×844 (via passing suites) |
+| `/reference/new` | 1280×800, 1280×700 (fresh-consent banner case) |
+| `/reference/edit/req_001`, `/reference/edit/req_007`, `/reference/edit/req_nonexistent` | 1280×800 |
+| `/reference/settings` | 1280×700 |
+| Overlay constrained-height case | 390×640 (via passing suite) |
+
+No regressions found; no new feature requests raised (out of RA-6 scope).
+
+### PH-0 entry gate (§25) — final evaluation
+
+| # | Criterion | Verdict |
+|---|-----------|---------|
+| 1 | RA-6 DoD met | **PASS** |
+| 2 | No unresolved critical G3/G5 blockers for shipped paths | **PASS** |
+| 3 | Command Palette deferred with G5 note or resolved | **PASS — deferred with note** |
+| 4 | Multi Select not silently shipped | **PASS — composition, as decided** |
+| 5 | Responsive + keyboard evidence attached | **PASS** |
+| 6 | Major visual backlog understood | **PASS** |
+| 7 | CE-3 distribution still green | **PASS** |
+| 8 | Reference App stable enough to cite as Guard integration evidence | **PASS** |
+
+**PH-0 READY.** RA-6 closure enables PH-0 as the next roadmap phase — PH-0
+itself is **NOT STARTED** and requires explicit human approval to begin,
+per this task's own stop boundary.
+
+**Files changed this session:** `app/reference/settings/page.tsx` only
+(G1 copy fix).
 
 ---
 
@@ -229,8 +432,11 @@ per Part 24). `git diff --check` clean.
 2. Button Group Squircle outer silhouette — needs new, Figma-verified
    asymmetric corner clip-path geometry.
 
-Neither blocks RA-6. **RA-6 — Final Reference App validation is next, NOT
-STARTED.**
+Neither blocks RA-6.
+
+**SHA / CI:** `96959f9` — [Actions run 35017832977](https://github.com/usmanfarooqi88/skrewwwDS/actions/runs/35017832977) success.
+
+**RA-6 — Final Reference App validation is next, NOT STARTED.**
 
 ---
 
