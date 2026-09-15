@@ -560,7 +560,7 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3A Distribution Audit | ✅ COMPLETE (`702787d`) |
 | CE-3B Tier-1 Stable batch | ✅ COMPLETE (`5952a0e`) |
 | CE-3C Tier-2 Stable batch | ✅ COMPLETE (`a867076`) |
-| CE-3D Stable chain + link-utils | **DEFINED — NOT STARTED** (`textarea`, `pagination`) |
+| CE-3D Stable chain + link-utils | ✅ SHIPPED — `textarea`, `pagination` |
 | CE-3E Stable phosphor + Skrewww graph | **DEFINED — NOT STARTED** (`avatar`, `breadcrumb`, `radio-group`) |
 | CE-3F Selected proven Beta | **DEFINED — NOT STARTED** (`slider`, `stepper`, `table`) |
 | CE-3 overall | **IN PROGRESS** (`/r/registry.json` later) |

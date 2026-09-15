@@ -1,6 +1,21 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3D/E/F batches DEFINED in planning — NOT STARTED; CE-3 IN PROGRESS)
+Last verified: **2026-09-15** (CE-3D textarea + pagination `/r` — SHIPPED pending CI; CE-3 IN PROGRESS)
+
+## 2026-09-15 — CE-3D Stable chain + link-utils (SHIPPED)
+
+**Verdict: `textarea` + `pagination` distributed.** Plan:
+[`docs/distribution-expansion.md`](distribution-expansion.md).
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| `/r` component manifests | 13 | **15** |
+
+New patterns: shared `text-input.module.css` internal CSS; `public/right-bottom-icon.svg` → `~/public/...`.
+
+Next: **CE-3E** after this commit’s remote CI is green.
+
+---
 
 ## 2026-09-15 — CE-3D/E/F batch definition (PLANNING ONLY)
 

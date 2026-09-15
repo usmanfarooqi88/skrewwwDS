@@ -3,8 +3,7 @@
  * (`/r/foundation.json`, `/r/button.json`, `/r/card.json`,
  * `/r/text-input.json`, `/r/form-field.json`, `/r/validation-message.json`,
  * `/r/spinner.json`, `/r/divider.json`, `/r/link.json`,
- * `/r/checkbox.json`, `/r/progress-bar.json`, `/r/skeleton.json`,
- * `/r/radio.json`, `/r/switch.json`).
+ * `/r/radio.json`, `/r/switch.json`, `/r/textarea.json`, `/r/pagination.json`).
  * Every function here is a pure transform of real repo files or the
  * canonical registry — importing this module performs no filesystem
  * writes. The file-writing CLI entry point lives in
@@ -16,12 +15,12 @@
  * skrewww-claude-project-instructions.md — see
  * docs/architecture/shadcn-distribution.md for how the two relate.
  *
- * Scope (see docs/architecture/shadcn-distribution.md): Foundation +
- * Button + Card + Text Input + Form Field + Validation Message + Spinner +
- * Divider + Link + Checkbox + Progress Bar + Skeleton + Radio + Switch.
- * Adding another component means adding its file(s) to FILE_DESTINATIONS
- * and a thin `buildXManifest() { return buildComponentManifest("x"); }`
- * wrapper — buildComponentManifest itself is already generic across any
+ * Scope (see docs/architecture/shadcn-distribution.md and
+ * docs/distribution-expansion.md): Foundation + distributed components
+ * through CE-3D (including Textarea + Pagination). Adding another
+ * component means adding its file(s) to FILE_DESTINATIONS and a thin
+ * `buildXManifest() { return buildComponentManifest("x"); }` wrapper —
+ * buildComponentManifest itself is already generic across any
  * single-component canonical entry, including multi-hop
  * registryDependencies chains (text-input -> form-field ->
  * validation-message -> foundation) and real npm `dependencies`
@@ -183,6 +182,26 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
   "components/ui/switch.module.css": {
     type: "registry:ui",
     target: "~/components/ui/switch.module.css",
+  },
+  "components/ui/Textarea.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Textarea.tsx",
+  },
+  "components/ui/textarea.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/textarea.module.css",
+  },
+  "public/right-bottom-icon.svg": {
+    type: "registry:file",
+    target: "~/public/right-bottom-icon.svg",
+  },
+  "components/ui/Pagination.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Pagination.tsx",
+  },
+  "components/ui/pagination.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/pagination.module.css",
   },
   "components/ui/internal/link-utils.ts": {
     type: "registry:lib",
@@ -407,6 +426,14 @@ export function buildRadioManifest(): ShadcnRegistryItem {
 
 export function buildSwitchManifest(): ShadcnRegistryItem {
   return buildComponentManifest("switch");
+}
+
+export function buildTextareaManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("textarea");
+}
+
+export function buildPaginationManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("pagination");
 }
 
 /**

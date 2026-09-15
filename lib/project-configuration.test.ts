@@ -326,6 +326,8 @@ describe("project configuration", () => {
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("skeleton.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("radio.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("switch.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("textarea.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("pagination.json");
     const validationMessage = getImplementedRegistryEntries().find(
       (entry) => entry.slug === "validation-message",
     );

@@ -16,6 +16,8 @@ import {
   buildSkeletonManifest,
   buildSpinnerManifest,
   buildSwitchManifest,
+  buildTextareaManifest,
+  buildPaginationManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
   classifyFile,
@@ -225,6 +227,8 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildSkeletonManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildRadioManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildSwitchManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildTextareaManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildPaginationManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -401,6 +405,41 @@ describe("shadcn registry generator", () => {
       type: "registry:lib",
       target: "~/lib/use-controllable.ts",
     });
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+  });
+
+  it("transports Textarea with form-field registryDeps, shared text-input CSS, and public SVG asset", () => {
+    const manifest = buildTextareaManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Textarea.tsx",
+      "components/ui/text-input.module.css",
+      "components/ui/textarea.module.css",
+      "lib/cn.ts",
+      "public/right-bottom-icon.svg",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(manifest.files.find((file) => file.path === "public/right-bottom-icon.svg")).toEqual(
+      expect.objectContaining({
+        type: "registry:file",
+        target: "~/public/right-bottom-icon.svg",
+      }),
+    );
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+    expect(JSON.stringify(manifest)).not.toMatch(/FormField\.tsx/);
+  });
+
+  it("transports Pagination with link-utils and next host docs", () => {
+    const manifest = buildPaginationManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Pagination.tsx",
+      "components/ui/internal/link-utils.ts",
+      "components/ui/pagination.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(manifest.docs).toContain("next");
     expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
   });
 

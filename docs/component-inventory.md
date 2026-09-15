@@ -32,10 +32,10 @@ entries are Figma item primitives that React correctly models via composition.
 | Beta | **28** |
 | Public docs pages (implemented) | **55** |
 | Agent Kit contracts | **55** |
-| `/r` component manifests | **13** (+ `foundation` shared cut = 14 files) |
+| `/r` component manifests | **15** (+ `foundation` shared cut = 16 files) |
 
-`/r` components: button, card, checkbox, divider, form-field, link, progress-bar, radio, skeleton, spinner, switch, text-input, validation-message.
-CE-3 IN PROGRESS — CE-3A/B/C overnight batches complete; `/r/registry.json` and remaining tiers later.
+`/r` components: button, card, checkbox, divider, form-field, link, pagination, progress-bar, radio, skeleton, spinner, switch, text-input, textarea, validation-message.
+CE-3 IN PROGRESS — CE-3D shipped; CE-3E next.
 
 ### Figma / documentation inventory
 
@@ -166,7 +166,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Implemented | 55 | |
 | Docs | 55 implemented + 11 docs-only | |
 | Agent contracts | 55 | |
-| `/r` distributed components | 13 | + foundation; CE-3B + CE-3C Stable batches |
+| `/r` distributed components | 15 | + foundation; CE-3D Stable chain + link-utils |
 | `/r/registry.json` | 0 | STAB-001 / later CE-3 — not this pass |
 
 ## Master inventory table
@@ -203,7 +203,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | List Item | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Menu | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
 | Number Input | no (React-first / Figma pending) | yes | D | public | Beta | yes | yes | no (CE-3) | UNKNOWN | — | Maintain / later Figma | Forms; CE-2B; text+spinbutton; steppers; not currency/Slider |
-| Pagination | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
+| Pagination | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Navigation; figmaAvailability=available; CE-3D `/r` |
 | Phone Number Field | yes (Forms/Phone Number Field `2024:2776`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Forms; CE-1E; country Select + type=tel; flag placeholder decorative; not SMS/carrier verification |
 | Popover | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Containers & Overlays; figmaAvailability=available |
 | Progress Bar | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available; CE-3B `/r` |
@@ -221,7 +221,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Tabs | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
 | Tag | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Text Input | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
-| Textarea | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
+| Textarea | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available; CE-3D `/r` |
 | Timeline | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
 | Toast | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Toggle Group | no (React-first / Figma pending) | yes | D | public | Beta | yes | yes | no (CE-3) | UNKNOWN | — | Maintain / later Figma | Actions; CE-2C; radiogroup single; Segmented Control = presentation |

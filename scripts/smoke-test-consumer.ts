@@ -47,11 +47,13 @@ import {
   buildFormFieldManifest,
   buildFoundationManifest,
   buildLinkManifest,
+  buildPaginationManifest,
   buildProgressBarManifest,
   buildRadioManifest,
   buildSkeletonManifest,
   buildSpinnerManifest,
   buildSwitchManifest,
+  buildTextareaManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
   type ShadcnRegistryItem,
@@ -78,6 +80,8 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   skeleton: buildSkeletonManifest,
   radio: buildRadioManifest,
   switch: buildSwitchManifest,
+  textarea: buildTextareaManifest,
+  pagination: buildPaginationManifest,
 };
 
 /**
@@ -334,6 +338,42 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     assertHarness: (pageSource) =>
       /from "@\/components\/ui\/Switch"/.test(pageSource) && /Smoke notifications/.test(pageSource),
     harnessAssertionLabel: "consumer page imports Switch and renders labeled instances",
+  },
+  textarea: {
+    criticalPaths: [
+      "components/ui/Textarea.tsx",
+      "components/ui/textarea.module.css",
+      "components/ui/text-input.module.css",
+      "public/right-bottom-icon.svg",
+      "components/ui/FormField.tsx",
+      "components/ui/form-field.module.css",
+      "components/ui/ValidationMessage.tsx",
+      "components/ui/validation-message.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { Textarea } from "@/components/ui/Textarea";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        "    <Textarea",
+        '      label="Smoke description"',
+        '      placeholder="Type something"',
+        '      error="Smoke validation"',
+        "      rows={3}",
+        "    />",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Textarea"/.test(pageSource) && /Smoke description/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports Textarea and renders labeled control with validation",
   },
   "spinner-divider-link": {
     criticalPaths: [
