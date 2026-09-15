@@ -366,10 +366,12 @@ the currently-installable shadcn CLI's own `mcp` subcommand instead
   independent, optional follow-up for whichever future phase owns
   distribution-surface completeness.
 
-> **Current (CE-3N, 2026-09-15):** `/r/registry.json` is now generated from
-> the same distributed manifest collection as individual `/r/<name>.json`
-> items. Local `shadcn list`/`search` against that index is proven. Live
-> production endpoint confirmation remains CE-3O.
+> **Current (CE-3N shipped; CE-3O live-validated 2026-09-15):**
+> `/r/registry.json` is generated from the same distributed manifest
+> collection as individual `/r/<name>.json` items. Production
+> `https://skrewww.com/r/registry.json` (deploy SHA `30d2981`) serves 53
+> discovery items; `shadcn list`/`search`/`view`/`add` against the live
+> namespace are proven. `/agent/*` remains knowledge/contracts only.
 
 ### Registry integration — installability detection
 

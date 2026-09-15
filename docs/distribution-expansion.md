@@ -10,10 +10,10 @@
 > **CE-3L data/tree batch** · Shipped 2026-09-15 · `/r` = foundation + **50**
 > **CE-3M charts batch** · Shipped 2026-09-15 · `/r` = foundation + **52**
 > **CE-3N registry index** · Shipped 2026-09-15 · `/r/registry.json` discovery catalog
+> **CE-3O final validation** · Complete 2026-09-15 · CE-3 CLOSED at 52/55
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J/K/L/M/N
-> are **SHIPPED** (see Status table). CE-3O onward are **DEFINED — NOT
-> STARTED** below (see CE-3G section).
+> shadcn transport architecture. Implementation batches CE-3D–O are
+> **SHIPPED / COMPLETE** (see Status table).
 
 ## Purpose
 
@@ -580,7 +580,8 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3L Data/tree batch | ✅ SHIPPED — 2 slugs, see section below |
 | CE-3M Charts batch | ✅ SHIPPED — 2 slugs, see section below |
 | CE-3N Registry index | ✅ SHIPPED — `/r/registry.json`, see section below |
-| CE-3 overall | **IN PROGRESS** — CE-3O = NEXT, NOT STARTED |
+| CE-3O Final validation | ✅ COMPLETE — live production proof, see section below |
+| CE-3 overall | ✅ **COMPLETE** — 52/55 generic/core + Foundation index |
 
 ---
 
@@ -1517,7 +1518,37 @@ array).
 `view` still returns full install payloads; `add @skrewww/button` smoke
 regression green.
 
-**CE-3O — final distribution validation is next, NOT STARTED.**
+**CE-3O — final distribution validation is next, NOT STARTED.** (superseded —
+see CE-3O COMPLETE section below)
+
+### CE-3O — Final distribution validation (COMPLETE)
+
+**Verdict: COMPLETE.** Production `https://skrewww.com` deploy SHA
+`30d2981` proven end-to-end.
+
+**Live endpoints:** `/r/registry.json` + all 53 `/r/<name>.json` → HTTP 200,
+valid JSON, index↔item 1:1, no banking, no `content` on index files, no
+`hostRequirements`/path leakage. Invalid slug → normal static 404 HTML.
+
+**Live shadcn@4.16.2 discovery against production:**
+`list` total 53 · `search` finds button/combobox/data-table/bar-chart ·
+`view`/`add` green.
+
+**Representative live install matrix (fresh create-next-app consumers):**
+button, number-input, select (form-field+popover+foundation chain),
+dialog (self-contained overlay), popover, date-picker (full calendar
+chain), data-table, bar-chart (`recharts` auto-installed), tabs,
+tree-view, file-upload, foundation direct, shared
+combobox+select+date-picker collision — all build green.
+
+**Browser spot checks (smoke harness):** date-picker, tree-view,
+file-upload, bar-chart — zero console/page/hydration errors.
+
+**Coverage:** 52/55 React · Foundation + 52 = 53 registry items · three
+banking pilots specialized distribution deferred · Class B remains 0.
+
+**CE-3 = ✅ COMPLETE.** Canonical next: Reference App / Composition
+Validation — NOT STARTED.
 
 ### CE-3M — Charts batch (planning notes retained)
 

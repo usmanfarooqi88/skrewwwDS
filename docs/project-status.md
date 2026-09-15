@@ -1,6 +1,46 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A–M ✅ shipped; CE-3N Registry Index ✅ SHIPPED — `/r/registry.json` + discovery; CE-3O = NEXT, NOT STARTED)
+Last verified: **2026-09-15** (CE-3 ✅ COMPLETE — CE-3O final validation against production `30d2981`; 52/55 distributed; `/r/registry.json` live; next = Reference App / Composition Validation NOT STARTED)
+
+## 2026-09-15 — CE-3O Final Distribution Validation (COMPLETE) → CE-3 CLOSED
+
+**Verdict: COMPLETE.** CE-3 distribution expansion closed at the planned
+generic/core ceiling.
+
+**Production:** `https://skrewww.com` deployment
+`dpl_DoTdLbYvf4c1RjaGw4AEizXJjn2b` / alias Ready on git SHA **`30d2981`**
+(`feat(distribution): add generated registry index`). Live
+`/r/registry.json` byte-identical to local generation (53 items).
+
+**Live proof:**
+- Endpoints: registry + foundation/button/combobox/data-table/bar-chart
+  (and all 53 index↔item pairs) HTTP 200, schema-valid
+- Discovery: `shadcn list/search/view` against production @skrewww
+- Install matrix (live add → next build): button, number-input, select
+  chain, dialog, popover, date-picker chain, data-table, bar-chart
+  (recharts), tabs, tree-view, file-upload, foundation direct, shared
+  combobox+select+date-picker
+- Browser smoke: date-picker, tree-view, file-upload, bar-chart — zero
+  console errors
+- Invalid slug `/r/definitely-not-a-component.json` → 404 HTML
+- Leakage: no hostRequirements / absolute paths / banking in index
+
+**Final counts:** React 55 · Stable/Beta 27/28 · distributed **52/55** ·
+registry items **53** (Foundation + 52) · Vitest **1135/1135** (no new
+CE-3O tests required — permanent guards already landed in CE-3N).
+
+**Deferred (intentional):** banking-account-card,
+banking-balance-summary, banking-transaction-row — specialized
+distribution deferred. CE-0 parity Class B remains 0.
+
+**Visual backlog (untouched):** Table/Data Table header/actions/scroll;
+Button Group dividers/Squircle/Glass; Split Button divider; Toggle Group
+vertical Pill; Textarea padding — post-CE-3 parity work.
+
+**CE-3 = ✅ COMPLETE.**
+
+**Canonical next:** Reference App / Composition Validation — **NOT STARTED**.
+PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — CE-3N Registry Index + Discovery (SHIPPED)
 
@@ -27,7 +67,8 @@ smoke regression green. Namespace `@skrewww` → `/r/{name}.json` unchanged.
 **Counts:** 53 item manifests + 53 discovery items; coverage 52/55.
 Vitest **1135/1135** (1127 baseline + 8 new index/consistency tests).
 
-**CE-3O — FINAL DISTRIBUTION VALIDATION is next, NOT STARTED.**
+**CE-3O — FINAL DISTRIBUTION VALIDATION is next, NOT STARTED.** (superseded —
+see CE-3O COMPLETE / CE-3 CLOSED section above)
 
 ## 2026-09-15 — CE-3M Charts Distribution Batch (SHIPPED)
 
@@ -3667,7 +3708,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–M ✅ shipped; CE-3N Registry Index ✅ SHIPPED (`/r/registry.json`); CE-3O = NEXT, NOT STARTED |
+| CE-3 Distribution Expansion | ✅ **COMPLETE** — CE-3A–O done; 52/55 + `/r/registry.json` live on `30d2981`; next = Reference App NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |

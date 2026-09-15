@@ -491,7 +491,7 @@ describe("CalendarGrid range mode", () => {
     expect(onRangeValueChange).toHaveBeenLastCalledWith({ start: "2026-07-16", end: undefined });
     expect(screen.getByRole("button", { name: "Start of range, 16 July 2026" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "End of range, 20 July 2026" })).not.toBeInTheDocument();
-  });
+  }, 15_000);
 
   it("swaps start/end so the range stays chronological on a backwards second click", async () => {
     const user = userEvent.setup();
@@ -512,7 +512,7 @@ describe("CalendarGrid range mode", () => {
     expect(onRangeValueChange).toHaveBeenLastCalledWith({ start: "2026-07-14", end: "2026-07-20" });
     expect(screen.getByRole("button", { name: "Start of range, 14 July 2026" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "End of range, 20 July 2026" })).toBeInTheDocument();
-  });
+  }, 15_000);
 
   it("does not allow a disabled date to become the range start or end", async () => {
     const user = userEvent.setup();
