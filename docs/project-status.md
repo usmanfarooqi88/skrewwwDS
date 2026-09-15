@@ -29,7 +29,9 @@ fail without the fix and pass with it.
 
 **Evidence:** lint/typecheck/build green; Vitest **1155/1155** (unchanged);
 Reference App Playwright **21/21** (20 baseline + 1 new); registry **53**
-(unchanged, distribution-unrelated). Full writeup:
+(unchanged, distribution-unrelated). SHA/CI: `e0a11d3` —
+[Actions run 35013543814](https://github.com/usmanfarooqi88/skrewwwDS/actions/runs/35013543814)
+success. Full writeup:
 [docs/reference-app-plan.md](reference-app-plan.md#ra-4-follow-up--overlay-viewport-collision-bug-2026-09-16).
 
 RA-4 remains ✅ COMPLETE. **RA-5 — Visual / parity backlog review remains

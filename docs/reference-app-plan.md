@@ -4,7 +4,7 @@
 follow-up functional fix (RA-4 follow-up, 2026-09-16) — see below  
 **Status:** Viewport / keyboard / overflow / overlay reachability validated — RA-5 visual backlog review not started  
 **Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`; RA-4 `c122804`  
-**Final SHA:** `c122804` (CI success); RA-4 follow-up final SHA: see RA-4 follow-up section below  
+**Final SHA:** `c122804` (CI success); RA-4 follow-up final SHA: `e0a11d3` (CI success)  
 **Canonical next task:** RA-5 — Visual / parity backlog review (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
@@ -88,9 +88,14 @@ reachability fix only.
 **Validation:** Vitest 1155/1155 (unchanged — no unit tests added, proof is
 Playwright-level), Reference App Playwright **21/21** (20 baseline + 1 new),
 lint clean, typecheck clean, build green, `generate:registry` deterministic
-(53 manifests + `registry.json` = 54 files, unchanged), `git diff --check`
-clean. Diff scoped to exactly 2 files changed + 1 new file — no DS/product
-source touched.
+(53 manifests + `registry.json` = 54 files, unchanged). `git diff --check`
+on the code diff (5 files: 1 new component, `ReferenceShell.tsx` wiring,
+`e2e/reference-app-forms.spec.ts` regression test, both docs) flagged only
+this file's own pre-existing, intentional Markdown hard-line-break style
+(trailing double-space) on newly-added lines matching the header block's
+existing unchanged convention — not a real whitespace defect, left as-is.
+
+**SHA / CI:** `e0a11d3` — [Actions run 35013543814](https://github.com/usmanfarooqi88/skrewwwDS/actions/runs/35013543814) success.
 
 RA-4 remains ✅ COMPLETE after this follow-up. RA-5 remains **NOT STARTED**.
 
