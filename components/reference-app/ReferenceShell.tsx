@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReferenceBannerSpacer } from "@/components/reference-app/ReferenceBannerSpacer";
 import { ReferenceMobileHeader } from "@/components/reference-app/ReferenceMobileHeader";
 import { ReferenceNav } from "@/components/reference-app/ReferenceNav";
 import { ReferenceUserMenu } from "@/components/reference-app/ReferenceUserMenu";
@@ -61,6 +62,7 @@ export function ReferenceShell({ children }: { children: React.ReactNode }) {
           className="min-h-screen min-w-0 overflow-x-clip outline-none"
         >
           {children}
+          <ReferenceBannerSpacer />
         </main>
       </div>
     </div>

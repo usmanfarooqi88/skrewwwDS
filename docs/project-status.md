@@ -1,6 +1,39 @@
 # Project status
 
-Last verified: **2026-09-15** (RA-4 ✅ COMPLETE — responsive/a11y validation; RA-5 NOT STARTED; CE-3 remains ✅ COMPLETE)
+Last verified: **2026-09-16** (RA-4 ✅ COMPLETE — responsive/a11y validation, plus a RA-4 follow-up functional fix for an overlay-viewport-collision bug found by human review; RA-5 NOT STARTED; CE-3 remains ✅ COMPLETE)
+
+## 2026-09-16 — RA-4 Follow-up: Overlay Viewport Collision Bug (COMPLETE)
+
+**Verdict: COMPLETE (G0).** Human manual review of the shipped RA-4 build
+found the "More actions" Menu trigger near the bottom of `/reference/new`
+fully hidden behind the site-wide, fixed `AnalyticsConsentBanner` for a
+first-time visitor (undecided consent) — unreachable by pointer, previously
+missed because `e2e/reference-app-forms.spec.ts` always pre-seeds a
+"denied" consent choice, so the automated collision test had never once run
+with the banner actually present.
+
+**Root cause:** confirmed via live reproduction to be a Reference App
+layout composition gap, not a shared Menu/Popover defect —
+`computePopoverPosition` correctly flips/clamps once the trigger is
+reachable. Fix: new `ReferenceBannerSpacer` client component reserves
+scroll space (measured live via `ResizeObserver`, not a guessed constant)
+equal to the banner's real height at the end of the Reference App's own
+`<main>`, so content never renders underneath it. No DS/Popover/Menu source
+changed.
+
+**Regression proof:** new Playwright test explicitly clears the seeded
+consent value and asserts, at both 1280×700 and 390×640, that the trigger
+is unoccluded, the opened menu is fully within the viewport, Escape closes
+it with focus restored, and there are zero console errors — confirmed to
+fail without the fix and pass with it.
+
+**Evidence:** lint/typecheck/build green; Vitest **1155/1155** (unchanged);
+Reference App Playwright **21/21** (20 baseline + 1 new); registry **53**
+(unchanged, distribution-unrelated). Full writeup:
+[docs/reference-app-plan.md](reference-app-plan.md#ra-4-follow-up--overlay-viewport-collision-bug-2026-09-16).
+
+RA-4 remains ✅ COMPLETE. **RA-5 — Visual / parity backlog review remains
+NOT STARTED.**
 
 ## 2026-09-15 — RA-4 Reference App Responsive + Accessibility (COMPLETE)
 

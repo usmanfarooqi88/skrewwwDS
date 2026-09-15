@@ -1,14 +1,98 @@
 # Reference App / Composition Validation Plan
 
-**Phase:** RA-4 ✅ COMPLETE (Responsive + accessibility validation)  
+**Phase:** RA-4 ✅ COMPLETE (Responsive + accessibility validation), with a
+follow-up functional fix (RA-4 follow-up, 2026-09-16) — see below  
 **Status:** Viewport / keyboard / overflow / overlay reachability validated — RA-5 visual backlog review not started  
-**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`  
-**Final SHA:** `c122804` (CI success)  
+**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`; RA-4 `c122804`  
+**Final SHA:** `c122804` (CI success); RA-4 follow-up final SHA: see RA-4 follow-up section below  
 **Canonical next task:** RA-5 — Visual / parity backlog review (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
 Do not create parallel planning docs. RA-5+ starts only after explicit
 human approval.
+
+---
+
+## RA-4 follow-up — overlay viewport collision bug (2026-09-16)
+
+Human manual review of the shipped RA-4 build found one real functional
+defect the RA-3/RA-4 automated collision proof had missed: the bottom-of-page
+"More actions" Menu trigger (`RequestFormWorkflow.tsx`'s dedicated overlay
+collision-audit zone, `/reference/new`) was fully hidden behind the
+site-wide, fixed, bottom-pinned `AnalyticsConsentBanner` for a genuine
+first-time visitor (undecided analytics consent) — unreachable by pointer,
+and reported by the reviewer as the menu "opening downward and extending
+below the visible viewport."
+
+**Root cause:** NOT a defect in the shared `computePopoverPosition`
+positioning engine (`components/ui/internal/popover-position.ts`) —
+verified directly, live, that it correctly flips placement to `top` and
+clamps fully inside the viewport once the trigger is reachable. The actual
+defect is a **Reference App layout composition gap (G0)**: the
+`AnalyticsConsentBanner` (`components/analytics/AnalyticsConsentBanner.tsx`,
+`fixed inset-x-0 bottom-0`, `z-40`) is rendered site-wide in `AppProviders`,
+outside the Reference App's own component tree, and nothing in the
+Reference App's layout reserved space for it — so ordinary page content,
+including the collision-audit Menu trigger, could render directly
+underneath its opaque (`bg-white/95 backdrop-blur-sm`) surface. Confirmed
+via `document.elementFromPoint()` at the trigger's exact center returning
+the banner `<div>`, not the trigger, for a first-time visitor.
+
+**Why RA-3/RA-4's own automated collision test never caught it:**
+`e2e/reference-app-forms.spec.ts`'s `beforeEach` unconditionally seeds
+`localStorage["skrewww.analyticsConsent.v1"] = "denied"` via
+`addInitScript` before every test in the file — including the existing
+"Menu near viewport bottom flips or stays reachable" test. A `"denied"`
+(decided) consent state means `showBanner` is always `false`, so that test
+has never once run with the banner actually present. The automated proof
+was real but incomplete: it validated `computePopoverPosition`'s own
+viewport-boundary math, not the Reference App's composition around a
+site-wide fixed element it doesn't control.
+
+**Fix (G0, Reference App composition only — no DS/Popover/Menu source
+touched):** new `components/reference-app/ReferenceBannerSpacer.tsx`, a
+small client component that reads `showBanner` from the existing
+`useAnalyticsConsent()` hook and measures the live banner's real rendered
+height via `ResizeObserver` (not a guessed constant — the banner's text
+wraps to different heights per viewport width), rendering a same-height
+spacer at the end of the Reference App's own scrollable `<main>`
+(`ReferenceShell.tsx`). This reserves exactly enough scroll space so
+Reference App content never ends up underneath the banner; padding is zero
+whenever the banner isn't shown, so normal layout, `computePopoverPosition`'s
+existing flip/clamp behavior, keyboard handling, and focus restoration are
+all unchanged.
+
+**Regression proof:** new Playwright test in
+`e2e/reference-app-forms.spec.ts` ("More actions Menu stays reachable past
+the analytics consent banner for a first-time visitor") explicitly clears
+the seeded consent value (reproducing a genuine first-time visitor), scrolls
+to the true page bottom, and asserts — at both **1280×700** and **390×640**
+— that (1) `document.elementFromPoint()` at the trigger's center resolves to
+the trigger itself, not the banner, (2) the opened menu's bounding box is
+fully within the viewport, (3) Escape closes it and restores focus to the
+trigger, and (4) zero console errors. Verified this test fails (occlusion
+assertion) with the fix reverted and passes with it restored, before
+keeping it.
+
+**Other overlay types re-checked (Part 8):** Combobox (Owner field) and
+Date Picker (Due date field) on the same route were manually re-verified
+live — both position correctly and are unaffected, since neither
+organically sits in the banner's footprint. All three share the same
+`computePopoverPosition` engine; only the page-bottom Menu trigger's
+literal DOM position ever overlapped the banner.
+
+**Visual backlog (Table/Data Table, Button Group, Split Button, Toggle
+Group, Textarea) — confirmed untouched.** This was a functional
+reachability fix only.
+
+**Validation:** Vitest 1155/1155 (unchanged — no unit tests added, proof is
+Playwright-level), Reference App Playwright **21/21** (20 baseline + 1 new),
+lint clean, typecheck clean, build green, `generate:registry` deterministic
+(53 manifests + `registry.json` = 54 files, unchanged), `git diff --check`
+clean. Diff scoped to exactly 2 files changed + 1 new file — no DS/product
+source touched.
+
+RA-4 remains ✅ COMPLETE after this follow-up. RA-5 remains **NOT STARTED**.
 
 ---
 

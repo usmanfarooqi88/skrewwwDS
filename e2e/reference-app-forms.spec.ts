@@ -149,6 +149,66 @@ test.describe("Reference App forms + overlays", () => {
     expect(errors).toEqual([]);
   });
 
+  test("More actions Menu stays reachable past the analytics consent banner for a first-time visitor", async ({
+    page,
+  }) => {
+    // Human review (RA-4 follow-up) found the bottom-of-page "More actions"
+    // trigger fully hidden behind the fixed, bottom-pinned
+    // AnalyticsConsentBanner for a real first-time visitor (undecided
+    // consent). This file's beforeEach always seeds "denied" consent, which
+    // suppresses the banner entirely and is exactly why the existing
+    // "Menu near viewport bottom" test above never caught this — it has
+    // never run with the banner actually present. This test explicitly
+    // clears that seeded value so the banner renders, reproducing the real
+    // scenario.
+    await page.addInitScript(() => window.localStorage.removeItem("skrewww.analyticsConsent.v1"));
+
+    for (const viewport of [
+      { width: 1280, height: 700 },
+      { width: 390, height: 640 },
+    ]) {
+      const errors = await collectConsoleErrors(page);
+      await page.setViewportSize(viewport);
+      await page.goto("/reference/new");
+
+      const banner = page.getByRole("region", { name: "Analytics preferences" });
+      await expect(banner).toBeVisible();
+
+      const trigger = page.getByTestId("request-form-bottom-menu");
+      await trigger.scrollIntoViewIfNeeded();
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+
+      // The core regression: the trigger must be the actual top element at
+      // its own center point — not covered by the fixed banner — before we
+      // even try to click it.
+      const occluder = await trigger.evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        const top = document.elementFromPoint(
+          rect.left + rect.width / 2,
+          rect.top + rect.height / 2,
+        );
+        return top === el || (el.contains(top) ?? false);
+      });
+      expect(occluder).toBe(true);
+
+      await trigger.click();
+      const menu = page.getByRole("menu", { name: "More request actions" });
+      await expect(menu).toBeVisible();
+      const metrics = await menu.evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        return { top: rect.top, bottom: rect.bottom, viewport: window.innerHeight };
+      });
+      expect(metrics.top).toBeGreaterThanOrEqual(0);
+      expect(metrics.bottom).toBeLessThanOrEqual(metrics.viewport + 1);
+
+      await page.keyboard.press("Escape");
+      await expect(menu).toHaveCount(0);
+      await expect(trigger).toBeFocused();
+
+      expect(errors).toEqual([]);
+    }
+  });
+
   test("mobile form layout at 390px", async ({ page }) => {
     const errors = await collectConsoleErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
