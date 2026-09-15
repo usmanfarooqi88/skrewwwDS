@@ -1,6 +1,31 @@
 # Project status
 
-Last verified: **2026-09-15** (RA-1 ✅ COMPLETE — App Shell + fixtures at `/reference`; RA-2 NOT STARTED; CE-3 remains ✅ COMPLETE)
+Last verified: **2026-09-15** (RA-2 ✅ COMPLETE — `/reference/data` workflow; RA-3 NOT STARTED; CE-3 remains ✅ COMPLETE)
+
+## 2026-09-15 — RA-2 Reference App Data Workflow (COMPLETE)
+
+**Verdict: COMPLETE.** Ops “Requests” data workflow on `/reference/data`.
+No forms, settings gallery, Command Palette, Multi Select, Table CSS fixes,
+sticky Actions, DS API changes, or new dependencies.
+
+**Workflow:** SearchField + advanced filters (Status/Owner/Priority/Due) +
+Data Table sort + row Menu (View/Edit) + Pagination (6/page) + Empty State.
+
+**Fixtures:** 18 deterministic requests (`req_001`–`req_018`). Pure pipeline in
+`lib/reference-app/query-requests.ts` (search → filter → sort → paginate).
+
+**Filter composition:** shared `RequestFiltersForm`; desktop live inline panel;
+mobile Drawer + Apply. Desktop Popover abandoned as G0 after Select-in-Popover
+dismiss/click-through (primitives already nest Popover).
+
+**Visual backlog (exposed, not fixed):** table header fill, Actions/ellipsis,
+horizontal-scroll discoverability; page may still widen slightly at 390px.
+
+**Evidence:** lint/typecheck/build green; Vitest **1149/1149**; Playwright
+reference shell+data **8/8**; `generate:registry` **53** items.
+
+**Canonical next:** **RA-3 — Forms + overlays — NOT STARTED.**
+PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — RA-1 Reference App App Shell + Fixture Foundation (COMPLETE)
 
@@ -28,6 +53,7 @@ stable IDs (`req_001`…); no network/auth/DB.
 **Canonical plan:** [`docs/reference-app-plan.md`](reference-app-plan.md).
 
 **Canonical next:** **RA-2 — Data workflow — NOT STARTED.**
+(superseded — see RA-2 COMPLETE section above)
 PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — RA-0 Reference App / Composition Validation (COMPLETE — planning/audit only)

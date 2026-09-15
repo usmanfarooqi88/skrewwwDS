@@ -50,8 +50,8 @@ export function ReferenceShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="md:ml-64">
-        <main id="reference-main" className="min-h-screen">
+      <div className="min-w-0 md:ml-64">
+        <main id="reference-main" className="min-h-screen min-w-0">
           {children}
         </main>
       </div>

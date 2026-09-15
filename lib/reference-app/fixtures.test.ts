@@ -11,18 +11,32 @@ import { isReferenceNavItemActive, REFERENCE_NAV_ITEMS } from "@/lib/reference-a
 
 describe("reference-app fixtures", () => {
   it("exposes stable request IDs and deterministic summary counts", () => {
+    expect(REFERENCE_REQUESTS).toHaveLength(18);
     expect(REFERENCE_REQUESTS.map((r) => r.id)).toEqual([
       "req_001",
       "req_002",
       "req_003",
       "req_004",
       "req_005",
+      "req_006",
+      "req_007",
+      "req_008",
+      "req_009",
+      "req_010",
+      "req_011",
+      "req_012",
+      "req_013",
+      "req_014",
+      "req_015",
+      "req_016",
+      "req_017",
+      "req_018",
     ]);
     expect(getWorkspaceSummary()).toEqual({
-      openCount: 2,
-      inProgressCount: 1,
-      resolvedThisWeek: 1,
-      totalCount: 5,
+      openCount: 7,
+      inProgressCount: 5,
+      resolvedThisWeek: 4,
+      totalCount: 18,
     });
   });
 

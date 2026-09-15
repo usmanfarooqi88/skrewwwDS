@@ -1,13 +1,34 @@
 # Reference App / Composition Validation Plan
 
-**Phase:** RA-1 ✅ COMPLETE (App Shell + fixture foundation)  
-**Status:** Shell and fixtures shipped — data/forms workflows not started  
-**Baseline:** CE-3 closed at `55b4bd2`; RA-0 plan at `74bbf3b`  
-**Canonical next task:** RA-2 — Data workflow (**NOT STARTED**)
+**Phase:** RA-2 ✅ COMPLETE (Data workflow)  
+**Status:** `/reference/data` ops queue shipped — forms/overlays not started  
+**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`  
+**Canonical next task:** RA-3 — Forms + overlays (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
-Do not create parallel planning docs. RA-2+ starts only after explicit
+Do not create parallel planning docs. RA-3+ starts only after explicit
 human approval.
+
+---
+
+## RA-2 delivery (2026-09-15)
+
+| Item | Result |
+|------|--------|
+| Workflow | Search + filters + sort + row Menu + pagination + Empty State on `/reference/data` |
+| Fixtures | Extended to **18** deterministic requests (`req_001`–`req_018`); page size 6 |
+| Pipeline | Pure `lib/reference-app/query-requests.ts`: search → filters → sort → paginate |
+| Filters | Shared `RequestFiltersForm` — desktop **live** inline panel; mobile **Drawer + Apply** |
+| Table | `Table` + `TableScrollArea` + `DataTableSortHeader` + `useDataTableSort` |
+| Columns | Request, Status, Owner, Priority, Due, Updated, Actions |
+| Row actions | View/Edit → `/reference/edit/[id]`; Archive deferred |
+| Plan delta | Desktop used inline panel instead of Popover — Select/Combobox/DatePicker already nest Popover; nesting caused dismiss/click-through (**G0**) |
+| Visual backlog | Exposed, **not fixed** (header fill / actions / scroll discoverability) |
+| Vitest | 1149 / 1149 |
+| Browser | `e2e/reference-app-data.spec.ts` (4) + shell (4) = 8 |
+| Gaps | G0 only; no G3/G4/G5 implemented |
+
+Manual review: `/reference/data` at 1280×800, 900×800, 390×844.
 
 ---
 
@@ -601,7 +622,7 @@ The phase may close when **all** are true:
 |-------|-------|--------------|-------|------------|---------------|
 | **RA-0** | This audit | `docs/reference-app-plan.md`, `docs/project-status.md` | Scope creep into build | Doc quality | **STOP — no routes** |
 | **RA-1** | ✅ COMPLETE — App Shell + fixtures + stub pages | `app/reference/**`, `components/reference-app/**`, `lib/reference-app/**`, `components/DocsChrome.tsx` | Docs chrome bleed; skip-link; routing active state | Vitest + Playwright shell specs | **STOP — no data filters** |
-| **RA-2** | Data workflow + Advanced Filters composition | reference data route modules | Table overflow; filter state complexity | Vitest + browser | No Multi Select component; no table API expansion without approval |
+| **RA-2** | ✅ COMPLETE — Data workflow + Advanced Filters composition | `app/reference/data`, `components/reference-app/Requests*`, `lib/reference-app/query-requests.ts` | Nested Popover avoided via inline desktop filters (G0) | Vitest + Playwright data specs | **STOP — no forms** |
 | **RA-3** | Forms + overlays + notifications composition | edit/new + settings + header notifications | Focus traps; stacked Drawers | Keyboard + a11y | No Command Palette searchable; no Credit Card |
 | **RA-4** | Responsive + a11y pass across routes | tests + small layout fixes (G0/G1 only) | Accidental G3 API changes | Viewport matrix + axe | Stop before visual bugfix campaigns |
 | **RA-5** | Visual/parity backlog **review** | notes in this doc / status; fixes only with approval | Scope into CE visual fixes | Manual + evidence | No drive-by component restyles |
@@ -638,8 +659,9 @@ CE-3 ✅ COMPLETE (55b4bd2)
 Reference App:
   RA-0 ✅ COMPLETE
   RA-1 ✅ COMPLETE
-  RA-2 NOT STARTED  ← next
-  RA-3 … RA-6 later
+  RA-2 ✅ COMPLETE
+  RA-3 NOT STARTED  ← next
+  RA-4 … RA-6 later
 
 PH-0 later
 Guard NOT STARTED
