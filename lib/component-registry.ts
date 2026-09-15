@@ -565,6 +565,7 @@ export function Example() {
       "--semantic-surface-elevated",
       "--semantic-surface-subtle",
       "--semantic-text-primary",
+      "--shape-radius-container",
       "--shape-radius-control",
       "--surface-fill-control",
     ],

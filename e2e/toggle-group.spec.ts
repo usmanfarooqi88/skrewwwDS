@@ -45,4 +45,40 @@ test.describe("Toggle Group", () => {
     await expect(group.getByRole("radio", { name: "List" })).toBeVisible();
     await expect(group.getByRole("radio", { name: "Grid" })).toBeVisible();
   });
+
+  test("vertical + Pill caps at the container radius instead of the full 9999px stadium (RA-5 fix)", async ({
+    page,
+  }) => {
+    const controls = page.getByTestId("toggle-group-preview-mode-controls");
+    const vertical = page.getByRole("radiogroup", { name: "Density" });
+
+    // Sharp/Rounded/Squircle stay on the plain control-radius path — only
+    // Pill needed the orientation-aware cap.
+    for (const [shape, expectedControlRadius] of [
+      ["Sharp", "0px"],
+      ["Rounded", "4px"],
+      ["Squircle", "8px"],
+    ] as const) {
+      await controls.getByRole("button", { name: shape }).click();
+      await expect(vertical).toHaveCSS("border-radius", expectedControlRadius);
+    }
+
+    await controls.getByRole("button", { name: "Pill" }).click();
+    const [groupRadius, containerToken] = await Promise.all([
+      vertical.evaluate((node) => getComputedStyle(node).borderRadius),
+      vertical.evaluate((node) => getComputedStyle(node).getPropertyValue("--shape-radius-container").trim()),
+    ]);
+    expect(groupRadius).not.toBe("9999px");
+    expect(groupRadius).toBe(containerToken);
+
+    const items = vertical.getByRole("radio");
+    const firstRadius = await items.first().evaluate((node) => getComputedStyle(node).borderRadius);
+    const lastRadius = await items.last().evaluate((node) => getComputedStyle(node).borderRadius);
+    expect(firstRadius).not.toContain("9999px");
+    expect(lastRadius).not.toContain("9999px");
+
+    // Horizontal Pill is unaffected — still the true stadium shape.
+    const horizontal = page.getByRole("radiogroup", { name: "View mode" }).first();
+    await expect(horizontal).toHaveCSS("border-radius", "9999px");
+  });
 });

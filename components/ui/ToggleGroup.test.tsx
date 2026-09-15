@@ -120,4 +120,21 @@ describe("ToggleGroup", () => {
     );
     expect(screen.getByRole("radiogroup")).toHaveClass("extra");
   });
+
+  it("scopes the vertical + Pill radius cap to Pill mode only via a dedicated CSS rule (RA-5 fix; real var() resolution verified in e2e/toggle-group.spec.ts, not jsdom)", () => {
+    render(
+      <div data-skrewww-shape="pill">
+        <ToggleGroup aria-label="Density" orientation="vertical" defaultValue="compact">
+          <ToggleGroupItem value="compact">Compact</ToggleGroupItem>
+          <ToggleGroupItem value="comfortable">Comfortable</ToggleGroupItem>
+        </ToggleGroup>
+      </div>,
+    );
+    const group = screen.getByRole("radiogroup");
+    // jsdom does not reliably resolve var()-based border-radius (confirmed
+    // via probe), so this only asserts the structural hook the CSS rule
+    // keys off: group carries both the base and vertical classes.
+    expect(group.className).toMatch(/group/);
+    expect(group.className).toMatch(/vertical/);
+  });
 });

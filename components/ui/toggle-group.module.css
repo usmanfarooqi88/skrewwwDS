@@ -67,6 +67,30 @@
   border-radius: var(--component-button-radius-control, var(--shape-radius-control));
 }
 
+/* Vertical + Pill: a full 9999px control radius on a narrow, stacked item
+   reads as circular rather than pill-shaped. Cap at Pill mode's own
+   container radius — already this system's "capped, not full stadium"
+   value (see [data-skrewww-shape="pill"] in styles/tokens.css) — instead
+   of inventing a new number. Horizontal Pill is unaffected and keeps the
+   true stadium shape. */
+[data-skrewww-shape="pill"] .group.vertical {
+  border-radius: var(--shape-radius-container);
+}
+
+[data-skrewww-shape="pill"] .vertical > .item:first-child {
+  border-start-start-radius: var(--shape-radius-container);
+  border-start-end-radius: var(--shape-radius-container);
+}
+
+[data-skrewww-shape="pill"] .vertical > .item:last-child {
+  border-end-start-radius: var(--shape-radius-container);
+  border-end-end-radius: var(--shape-radius-container);
+}
+
+[data-skrewww-shape="pill"] .group.vertical > .item:only-child {
+  border-radius: var(--shape-radius-container);
+}
+
 .sizeSm {
   min-height: var(--control-height-sm);
   padding: 0 var(--control-padding-x-sm);
