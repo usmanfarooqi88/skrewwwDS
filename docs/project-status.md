@@ -1,6 +1,74 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3F selected Beta `/r` — SHIPPED pending CI; CE-3 IN PROGRESS)
+Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G Higher-Complexity Planning ✅ COMPLETE, docs-only; CE-3H = NEXT, NOT STARTED)
+
+## 2026-09-15 — CE-3G Higher-Complexity Distribution Planning (COMPLETE, docs-only)
+
+**Verdict: COMPLETE.** Baseline verified at `08bf6a6` (main == origin/main,
+clean, CI success, repo PUBLIC, React 55, Stable/Beta 27/28, Vitest
+1096/1096, `/r` = foundation + 21). No `/r` manifest, `FILE_DESTINATIONS`
+entry, or runtime component changed — planning only, per task scope.
+
+Audited all 34 undistributed implemented components via direct
+source/import inspection (not name assumptions): full per-slug file/helper/
+dependency table in `docs/distribution-expansion.md` (CE-3G section).
+Confirmed 21 distributed + 34 remaining = 55, no missing/duplicate slug.
+
+**Complexity reclassification (H1–H7):** H1 single-file (5: badge, tag,
+list-item, timeline, empty-state) · H2 compound/composite + shared helper
+(11: alert, toast, accordion, tabs, toggle-group, button-group,
+split-button, search-field, credit-card-field, number-input, file-upload)
+· H3 overlay/portal/focus (5: popover, dialog, drawer, tooltip, menu) · H4
+search/date (6: combobox, select, calendar-day, calendar-grid, date-picker,
+phone-number-field) · H5 data/tree (2: tree-view, data-table) · H6 charts
+(2: bar-chart, line-chart) · H7 banking (3, deferred — see below).
+
+**Key findings:**
+- `menu` is Popover-built (overlay), not a "safe compound" — moved out of
+  the naive Part 3 grouping once evidence showed the real import graph.
+- `split-button` reuses `button-group-context.ts` + `button-group.module.css`
+  verbatim with `button-group` but does not import `Menu` directly —
+  transport-ready, sequencing-blocked (ships with CE-3J so its documented
+  usage isn't misleading standalone).
+- Only genuinely new third-party npm dependency across all 34: `recharts`
+  (bar-chart, line-chart, and transitively two of three banking components).
+  No date library, no positioning library — calendar math and popover
+  positioning are both hand-rolled internal code.
+- All three banking components (`banking-account-card`,
+  `banking-balance-summary`, `banking-transaction-row`) have
+  `figmaAvailability: "unavailable"` — Class B (Part 10): technically
+  distributable, intentionally deferred for lack of verified Figma parity,
+  not for transport reasons. Matches the CE-2 precedent of never treating
+  unverified content as shippable.
+
+**Batches defined (none implemented):** CE-3H safe compound (11 slugs) →
+CE-3I form/composite (4) → CE-3J overlay/navigation (6, requires T4 browser
+smoke) → CE-3K search/date (6, depends on CE-3J for Popover) → CE-3L
+data/tree (2) → CE-3M charts (2, first real `recharts` install dependency)
+→ CE-3N `/r/registry.json` derivation → CE-3O final consumer/MCP
+validation. Full per-batch slugs, mappings, `registryDependencies`, test
+tiers, and exit gates in `docs/distribution-expansion.md`.
+
+**Consumer test tiers defined:** T1 (manifest+view) / T2 (fresh add+build)
+/ T3 (installed browser render+basic interaction) / T4 (full
+interaction/a11y smoke). Overlays (H3) and search/date (H4) require T4 —
+explicit instruction: must not be accepted on JSON generation alone.
+
+**Target coverage decision: 52 of 55** (Option B — all generic/core;
+banking's 3 slugs excluded pending Figma verification, not vanity-count
+chasing).
+
+**`/r/registry.json` sequencing decision:** Option D — named future phase
+**CE-3N**, sequenced after CE-3M (generic/core coverage complete), before
+CE-3O (final validation). Not now (would index 21 of 52 prematurely); not
+after all-55 (banking has no ETA and shouldn't block the other 52's index).
+
+**Validation:** lint clean, typecheck clean, Vitest **1096/1096** (baseline
+unchanged — docs-only, no source/generator touched), `git diff --check`
+clean.
+
+**Current state:** CE-3A–F ✅ · CE-3G Higher-Complexity Planning ✅ ·
+**Next exact implementation batch: CE-3H — DEFINED, NOT STARTED.**
 
 ## 2026-09-15 — CE-3F Selected proven Beta (SHIPPED)
 
@@ -3183,7 +3251,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **NEXT — NOT STARTED** |
+| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped (`/r` = foundation + 21); CE-3G Higher-Complexity Planning ✅ COMPLETE (docs-only); CE-3H = NEXT, NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
