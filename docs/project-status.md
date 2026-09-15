@@ -1,6 +1,55 @@
 # Project status
 
-Last verified: **2026-09-16** (RA-4 ✅ COMPLETE — responsive/a11y validation, plus a RA-4 follow-up functional fix for an overlay-viewport-collision bug found by human review; RA-5 NOT STARTED; CE-3 remains ✅ COMPLETE)
+Last verified: **2026-09-16** (RA-4 ✅ COMPLETE + RA-4 follow-up ✅ COMPLETE; RA-5 ✅ COMPLETE — visual/parity backlog review; RA-6 NEXT, NOT STARTED; CE-3 remains ✅ COMPLETE)
+
+## 2026-09-16 — RA-5 Visual / Parity Backlog Review (COMPLETE)
+
+**Verdict: COMPLETE.** Audited all five canonical backlog items (Table/Data
+Table, Button Group, Split Button, Toggle Group, Textarea) against recorded
+Figma intent and current React behavior.
+
+**Fixed (G0/G2, unambiguous):**
+- Button Group / Split Button doubled divider — `.inGroup .visualSurface`
+  never suppressed its own `border-color`/Glass `::before` rim, so a
+  joined button's own boundary compounded with the shared group divider.
+  One shared fix in `button.module.css` (both components use the same
+  joined-control infrastructure), verified live across all variants/
+  surfaces on both component doc pages.
+- Toggle Group vertical + Pill — capped at `--shape-radius-container`
+  (16px, the existing "capped, not full stadium" Pill-mode token) instead
+  of the full 9999px control radius, which read as circular on a narrow
+  stacked item. Scoped to `[data-skrewww-shape="pill"] .vertical` only;
+  other shapes/horizontal unaffected.
+- Table Actions/ellipsis inconsistency — Reference App's row-action
+  trigger now matches the canonical `TablePreview.tsx` icon-only pattern
+  exactly (was using an extra `leadingIcon` + invisible label that also
+  wasted layout width).
+- Textarea inset — confirmed already resolved (numeric padding-top/
+  padding-left match fixed 2026-08-06; live glyph-position measurement
+  shows ~1px difference, imperceptible). Removed the stale backlog note
+  from the Reference App form; no code change needed.
+
+**Explicitly stopped, not guessed (pending Figma / new geometry):**
+- Table caption/header visual split — blocked on
+  `table-foundation.md`'s own already-recorded "Caption visual pending"
+  status.
+- Button Group Squircle outer silhouette — needs new, Figma-verified
+  asymmetric (two-corner) clip-path geometry not derivable from the
+  existing symmetric squircle polygon without guessing.
+
+Table's overflow edge-fade/shadow cue was found already implemented and
+sufficient — no new mechanism built. Sticky Actions column: **deferred**,
+matching `table-foundation.md`'s existing v1 sticky-headers exclusion.
+
+**Evidence:** lint/typecheck/build green; Vitest **1158/1158** (1155 +
+3 new); Reference App Playwright **21/21** (unchanged); full Table/
+Data-Table/Button-Group/Split-Button/Toggle-Group e2e **70/70**; registry
+**53** manifests + `registry.json` = 54 files (unchanged set, content
+changed as expected since source changed). Full writeup:
+[docs/reference-app-plan.md](reference-app-plan.md#ra-5--visual--parity-backlog-review-2026-09-16).
+
+RA-4 and RA-4 follow-up remain ✅ COMPLETE. **RA-6 — Final Reference App
+validation is next, NOT STARTED.**
 
 ## 2026-09-16 — RA-4 Follow-up: Overlay Viewport Collision Bug (COMPLETE)
 
@@ -3885,7 +3934,7 @@ here instead.
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
 | CE-3 Distribution Expansion | ✅ **COMPLETE** — CE-3A–O done; 52/55 + `/r/registry.json` live on `30d2981`; next = Reference App NOT STARTED |
-| Reference App / Composition Validation | Later — not started |
+| Reference App / Composition Validation | **IN PROGRESS** — RA-0–RA-4 ✅, RA-4 follow-up ✅, RA-5 ✅ (visual/parity backlog review); RA-6 (final validation) = NEXT, NOT STARTED |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |
 

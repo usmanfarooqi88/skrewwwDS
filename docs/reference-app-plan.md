@@ -1,15 +1,236 @@
 # Reference App / Composition Validation Plan
 
-**Phase:** RA-4 ✅ COMPLETE (Responsive + accessibility validation), with a
-follow-up functional fix (RA-4 follow-up, 2026-09-16) — see below  
-**Status:** Viewport / keyboard / overflow / overlay reachability validated — RA-5 visual backlog review not started  
-**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`; RA-4 `c122804`  
-**Final SHA:** `c122804` (CI success); RA-4 follow-up final SHA: `e0a11d3` (CI success)  
-**Canonical next task:** RA-5 — Visual / parity backlog review (**NOT STARTED**)
+**Phase:** RA-5 ✅ COMPLETE (Visual / parity backlog review) — see below  
+**Status:** Divider/pill/table/textarea backlog items resolved or explicitly
+classified; RA-6 final validation not started  
+**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`; RA-4 `c122804`; RA-4 follow-up `1631c72`  
+**Final SHA:** RA-5 final SHA: see RA-5 section below  
+**Canonical next task:** RA-6 — Final Reference App validation (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
-Do not create parallel planning docs. RA-5+ starts only after explicit
+Do not create parallel planning docs. RA-6+ starts only after explicit
 human approval.
+
+---
+
+## RA-5 — Visual / parity backlog review (2026-09-16)
+
+**Verdict: COMPLETE.** All five canonical backlog areas (Table/Data Table,
+Button Group, Split Button, Toggle Group, Textarea) audited against
+recorded Figma intent and current React behavior. Clear, unambiguous
+G0/G1/G2 items fixed; items requiring new unverified geometry or a
+pending Figma contract were explicitly classified and left unfixed
+per the Figma-first rule, not guessed.
+
+### Table / Data Table
+
+- **Header fill:** per-cell/per-row gray fill coverage measured directly
+  (`getBoundingClientRect`) at both the initial view and while fully
+  horizontally scrolled — the `<thead>` background correctly covers its
+  own full row in both cases. The one real visual artifact found is a
+  **caption-to-header transition**: the native `<caption>` row (required
+  directly above `<thead>`) has no fill of its own, so the container's
+  rounded top corners render inside the *white* caption band rather than
+  the gray header band, reading as "the gray fill stops short of the
+  rounded corners." `docs/architecture/table-foundation.md` already
+  records the Caption visual contract as **"Temporary; canonical Figma
+  Caption visual pending"** (§19, §23) — **classification: STOP, blocked
+  on a pending Figma Caption contract**, not guessed here.
+- **Actions/ellipsis consistency: G0, fixed.** `RequestsDataView.tsx`'s
+  row-action trigger used `leadingIcon={<DotsThree size={16}/>}` plus an
+  invisible `sr-only` "Open" label — a real, avoidable inconsistency
+  against the canonical `components/previews/TablePreview.tsx` pattern
+  (bare `<DotsThree size={18}/>` as the button's only child, no
+  `leadingIcon`, no extra label). The `leadingIcon` form also wastes
+  layout width via `.content`'s flex `gap` reserved next to a zero-width
+  invisible label. Fixed by matching the canonical pattern exactly —
+  Reference App composition only, no DS change.
+- **Overflow discoverability / edge cue:** already implemented — a
+  four-layer `background-image` on `.scrollArea` (`table.module.css`)
+  pairs a solid opaque fade (`background-attachment: local`, pinned to
+  the true content start/end) with a shadow cue
+  (`background-attachment: scroll`, pinned to the current viewport edge),
+  driven by `--table-scroll-shadow`/`--table-scroll-fade-size` (both
+  defined in `styles/tokens.css`). This already satisfies Part 5's
+  requirements (doesn't hide data, keyboard-safe, disappears with no
+  overflow, tracks scroll position). **Decision: keep as-is, no new
+  mechanism needed.**
+- **Sticky Actions column: C. DEFER.** `table-foundation.md` §24
+  explicitly excludes sticky headers (and, by the same reasoning, any
+  sticky column) from v1 scope as a deliberate architecture boundary —
+  introducing sticky Actions now would need the same infrastructure work
+  already deferred. Matches the existing decision; not introduced here.
+
+### Button Group / Split Button (shared infrastructure)
+
+Both compose the exact same `ButtonGroupContext` + `button-group.module.css`
+`.group`/`.dividerXxx` classes (confirmed via source — `SplitButton.tsx`
+imports both directly) — **one shared fix covers both**, per Part 10.
+
+- **Doubled divider: G2, fixed.** Root cause: `.inGroup .visualSurface`
+  (the CSS already documented as "adjacency chrome lives on the group")
+  only reset `clip-path`, never `border-color`. Secondary's own boundary
+  (`.secondary .visualSurface { border-color: ... }`) and the Glass rim's
+  `::before` gradient are each drawn **per button**, so inside a joined
+  group they painted their own edge directly against the shared wrapper's
+  border + 2px divider-gap fill — a real doubled seam, reproduced and
+  measured (`getComputedStyle().borderColor` returning the highlight
+  color instead of transparent for every grouped Secondary/Glass button).
+  Fixed in `components/ui/button.module.css` with `.button.inGroup
+  .visualSurface { border-color: transparent }` and `.button.inGroup
+  .visualSurface::before { content: none }` — placed last in the file and
+  keyed off the higher-specificity `.button.inGroup` (not bare
+  `.inGroup`) so it outranks every variant/Glass rule regardless of
+  cascade position. Verified live across primary/secondary/danger in both
+  Flat and Glass surface on both `/components/button-group` and
+  `/components/split-button`.
+- **Squircle outer silhouette: STOP, needs new geometry, not guessed.**
+  Per the registry's own documented tradeoff ("Squircle Shape on joined
+  children disables per-button squircle clip so shared outer chrome stays
+  coherent"), joined children deliberately use plain `border-radius`
+  outer corners instead of the true superellipse `clip-path`, and the
+  `.group` wrapper itself never applies squircle clip-path either
+  (avoiding a real, existing a11y hazard — clip-path/overflow on `.group`
+  would clip focus-visible rings on middle children exactly like the
+  already-documented "do NOT overflow:hidden" note explains). A correct
+  fix needs **new asymmetric (two-corner) squircle clip-path geometry**
+  for the first/last child only — not derivable from the existing
+  symmetric 4-corner polygon in `styles/tokens.css` without introducing
+  unverified curve math, which Part 7 explicitly forbids ("do not
+  approximate with unrelated border-radius values"). Left unfixed;
+  recorded as a real, open, correctly-diagnosed gap.
+- **Glass surface review: no additional Button-Group-specific defect
+  found beyond the divider fix above.** The doubled-divider fix already
+  removes the Glass rim's per-button `::before` gradient inside groups
+  (the primary contributor to "internal highlights/separators" looking
+  wrong). Inner highlights, text contrast, and disabled treatment for
+  standalone (non-grouped) Glass buttons are outside RA-5's Button-Group
+  scope and were not found to regress.
+- **Split Button shapes/states:** verified live across primary/secondary/
+  danger, disabled-primary, disabled-menu, and loading combinations on
+  `/components/split-button` — all now render with `border-color:
+  transparent` on the joined seam, same fix, same verification method.
+
+### Toggle Group vertical Pill
+
+**G2, fixed**, using the human-approved direction from the RA-5 brief
+itself (Toggle Group has no Figma master yet —
+`figmaAvailability: "unavailable"` — so this direction, not a Figma
+lookup, is the canonical intent here). Root cause: `.vertical > .item`
+corners and the `.group.vertical` wrapper itself used
+`--component-button-radius-control` unconditionally, which resolves to
+Pill mode's `9999px` — on a narrow, tall stacked item this clamps into a
+near-circular cap instead of a pill. Fixed with a `[data-skrewww-shape=
+"pill"] .group.vertical` / `.vertical > .item:first-child` /
+`:last-child` override using `--shape-radius-container` (16px) —
+**reusing the existing semantic token already defined for exactly this
+"capped, not full stadium" Pill-mode concept** (the same token Card's
+container radius uses), not a new invented number. Sharp/Rounded/Squircle
+vertical behavior is untouched (only the `[data-skrewww-shape="pill"]`
+selector is added); horizontal Pill is untouched (still the true 9999px
+stadium). Verified live via the Shape switcher on `/components/toggle-group`
+across all four shapes, and via a new Playwright regression test.
+
+### Textarea inset
+
+**Resolved already — stale backlog note, no code defect.** `git blame`
+shows `padding-top: var(--control-padding-x-md)` (matching
+`padding-left`'s source token exactly) was fixed on 2026-08-06, over a
+month before RA-3/RA-4 repeatedly re-flagged "Textarea inset" as an open
+item. Live measurement (a font/line-height-faithful clone with
+`Range.getBoundingClientRect()` on the actual text) shows the inset from
+the border-box edge to the visible glyph ink is 17px left vs. 18px top —
+a ~1px difference from ordinary line-height leading, in the *opposite*
+direction from the original complaint, and imperceptible. Fix: removed
+the stale "Textarea inset is a known visual backlog item." copy from
+`RequestForm.tsx`'s Description field — no CSS change, since none is
+needed.
+
+### Shape / Surface regression matrix
+
+- **Shape:** Sharp/Rounded/Pill/Squircle re-verified live for Toggle
+  Group (vertical + horizontal) and Button Group/Split Button (divider
+  fix, all three variants). Table/Data Table do not respond to Shape at
+  all (`table-foundation.md` §20: Rounded-only, `cornerSmoothing=0`,
+  under every Shape ancestor) — confirmed intentional, not re-tested.
+- **Surface:** Flat/Glass re-verified live for the divider fix (Gradient
+  not separately re-verified — it shares Flat's border-color path, no
+  Gradient-specific rule exists for the fixed properties). Table/Data
+  Table are Flat-only by design (`table-foundation.md` §20) — confirmed
+  intentional, not re-tested.
+
+### Accessibility non-regression
+
+Focus-visible rings are unaffected — the fix only changes
+`border-color`/`content` on an `aria-hidden` decorative layer
+(`.visualSurface`), never the actual `outline`/`box-shadow` focus
+treatment on `.button` itself, and `.inGroup:focus-visible { z-index: 1
+}` is untouched. Table semantics, keyboard reachability, and the RA-4
+follow-up's overlay-collision fix are untouched (Part 22 — not reopened).
+
+### G0–G5 summary
+
+| Item | Classification | Outcome |
+|------|-----------------|---------|
+| Table header cell fill | Not a defect | No change |
+| Table caption/header visual split | Pending Figma Caption contract | **STOP — reported** |
+| Table Actions/ellipsis consistency | G0 | Fixed |
+| Table overflow edge cue | Already implemented | Kept as-is |
+| Table sticky Actions | Architecture-deferred (matches existing v1 boundary) | **C. DEFER** |
+| Button Group / Split Button doubled divider | G2 | Fixed (shared) |
+| Button Group Squircle outer silhouette | Needs new unverified geometry | **STOP — reported** |
+| Button Group Glass | No additional defect beyond divider fix | Reviewed, no separate fix needed |
+| Split Button shapes/states | G2 (shared fix) | Fixed |
+| Toggle Group vertical Pill | G2 | Fixed |
+| Textarea inset | Stale backlog note (already resolved 2026-08-06) | G1 doc fix |
+
+### Figma sync matrix
+
+| Item | Classification |
+|------|-----------------|
+| Button Group / Split Button divider fix | **A. React-only** — corrects an implementation gap against the CSS's own already-documented intent ("adjacency chrome lives on the group"); no Figma content changes |
+| Toggle Group vertical Pill | **A. React-only** — Toggle Group has no Figma master at all yet (`figmaAvailability: "unavailable"`); direction came from this task's own human-approved brief, nothing to sync |
+| Table Actions consistency | **A. React-only** — Reference App composition now matches the already-canonical `TablePreview.tsx` docs example; no Figma change |
+| Textarea inset | **A. React-only** (no code change; stale doc copy only) |
+| Table caption/header visual split | **C. Figma ambiguity / pending** — `table-foundation.md` already records the Caption visual contract as pending; needs a Figma Caption master before any React change |
+| Button Group Squircle | **C. Pending** — needs Figma-verified asymmetric corner geometry before any React change |
+
+No Figma Pro-only content was touched. No Figma Free content was touched.
+
+### Manual review matrix
+
+| Surface | Viewports checked |
+|---------|--------------------|
+| `/reference/data` (Table/Data Table) | 1280×800, 390×844 |
+| `/reference/new` (Textarea) | 1280×800 |
+| `/components/button-group` | Desktop, Flat + Glass surface |
+| `/components/split-button` | Desktop, Flat + Glass surface, all variants/sizes/states |
+| `/components/toggle-group` | Desktop, all four Shape modes, horizontal + vertical |
+
+### Validation
+
+Vitest **1158/1158** (1155 baseline + 3 new: doubled-divider regression in
+`ButtonGroup.test.tsx`/`SplitButton.test.tsx`, a structural Toggle Group
+test — the vertical-Pill radius itself is verified in Playwright, not
+jsdom, since jsdom does not reliably resolve `var()`-based `border-radius`,
+confirmed via direct probe). Reference App Playwright **21/21**
+(unchanged — one existing test strengthened, not added). Full e2e for
+Table/Data Table/Button Group/Split Button/Toggle Group: **70/70**
+including one new Toggle Group Shape-matrix test. lint/typecheck/build
+green. `generate:registry` deterministic, 53 manifests + `registry.json` =
+54 files (unchanged set — only source content changed, which is expected
+per Part 24). `git diff --check` clean.
+
+### Remaining open items after RA-5
+
+1. Table caption/header visual split — blocked on a Figma-verified
+   Caption contract (already tracked as pending in
+   `table-foundation.md`).
+2. Button Group Squircle outer silhouette — needs new, Figma-verified
+   asymmetric corner clip-path geometry.
+
+Neither blocks RA-6. **RA-6 — Final Reference App validation is next, NOT
+STARTED.**
 
 ---
 
