@@ -1,13 +1,34 @@
 # Reference App / Composition Validation Plan
 
-**Phase:** RA-0 (scope + architecture audit)  
-**Status:** COMPLETE (planning only — no Reference App implementation)  
-**Baseline:** CE-3 closed at `55b4bd2` (52/55 distributed, 53 registry items including Foundation)  
-**Canonical next task:** RA-1 — App Shell + fixture foundation (**NOT STARTED**)
+**Phase:** RA-1 ✅ COMPLETE (App Shell + fixture foundation)  
+**Status:** Shell and fixtures shipped — data/forms workflows not started  
+**Baseline:** CE-3 closed at `55b4bd2`; RA-0 plan at `74bbf3b`  
+**Canonical next task:** RA-2 — Data workflow (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
-Do not create parallel planning docs. Implementation starts only after
-explicit human approval of RA-0 and an explicit start of RA-1.
+Do not create parallel planning docs. RA-2+ starts only after explicit
+human approval.
+
+---
+
+## RA-1 delivery (2026-09-15)
+
+| Item | Result |
+|------|--------|
+| Routes | `/reference`, `/reference/data`, `/reference/new`, `/reference/edit/[id]`, `/reference/settings` |
+| Shell | Application composition in `components/reference-app/` — **no** `AppShell` DS export |
+| Docs isolation | `DocsChrome` skips docs Sidebar/MobileDocsNav on `/reference/*` |
+| Nav | Shared `REFERENCE_NAV_ITEMS` for desktop aside + mobile `Drawer` |
+| Fixtures | `lib/reference-app/` — owners, labels, 5 requests, workspace summary |
+| State | Local React state for mobile drawer only |
+| Shape/Surface | Default root tokens only — gallery deferred |
+| Command Palette / Multi Select | Untouched (RA-0 decisions hold) |
+| Visual backlog | Untouched |
+| Vitest | 1143 / 1143 (1135 baseline + 8 RA-1) |
+| Browser | `e2e/reference-app-shell.spec.ts` — desktop / 900px / mobile Escape+focus |
+| Gaps | No G3/G4/G5 discovered in RA-1; sidebar width remains hardcoded `w-64` (known candidate G2/G3, not acted on) |
+
+Manual visual review: `/reference` at 1280×800 and 390×844.
 
 ---
 
@@ -579,7 +600,7 @@ The phase may close when **all** are true:
 | Phase | Scope | Likely files | Risks | Validation | Stop boundary |
 |-------|-------|--------------|-------|------------|---------------|
 | **RA-0** | This audit | `docs/reference-app-plan.md`, `docs/project-status.md` | Scope creep into build | Doc quality | **STOP — no routes** |
-| **RA-1** | App Shell layout + fixtures + `/reference` stub pages | `app/reference/**`, `lib/reference-app/**` | Docs chrome bleed; skip-link; routing active state | Smoke render; responsive nav | No data filters yet |
+| **RA-1** | ✅ COMPLETE — App Shell + fixtures + stub pages | `app/reference/**`, `components/reference-app/**`, `lib/reference-app/**`, `components/DocsChrome.tsx` | Docs chrome bleed; skip-link; routing active state | Vitest + Playwright shell specs | **STOP — no data filters** |
 | **RA-2** | Data workflow + Advanced Filters composition | reference data route modules | Table overflow; filter state complexity | Vitest + browser | No Multi Select component; no table API expansion without approval |
 | **RA-3** | Forms + overlays + notifications composition | edit/new + settings + header notifications | Focus traps; stacked Drawers | Keyboard + a11y | No Command Palette searchable; no Credit Card |
 | **RA-4** | Responsive + a11y pass across routes | tests + small layout fixes (G0/G1 only) | Accidental G3 API changes | Viewport matrix + axe | Stop before visual bugfix campaigns |
@@ -615,9 +636,10 @@ RA-0 must **not**: create routes/screens; implement Multi Select or AppShell; fi
 CE-3 ✅ COMPLETE (55b4bd2)
 
 Reference App:
-  RA-0 ✅ COMPLETE (this plan)
-  RA-1 NOT STARTED  ← next
-  RA-2 … RA-6 later
+  RA-0 ✅ COMPLETE
+  RA-1 ✅ COMPLETE
+  RA-2 NOT STARTED  ← next
+  RA-3 … RA-6 later
 
 PH-0 later
 Guard NOT STARTED

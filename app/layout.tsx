@@ -4,8 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Sidebar } from "@/components/Sidebar";
-import { MobileDocsNav } from "@/components/MobileDocsNav";
+import { DocsChrome } from "@/components/DocsChrome";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { JsonLd } from "@/components/docs/JsonLd";
 import { siteStructuredData } from "@/lib/structured-data";
@@ -106,9 +105,7 @@ gtag('consent', 'default', {
           </Script>
         ) : null}
         <AppProviders gaMeasurementId={gaMeasurementId}>
-          <Sidebar />
-          <MobileDocsNav />
-          <main className="min-h-screen md:ml-64">{children}</main>
+          <DocsChrome>{children}</DocsChrome>
         </AppProviders>
       </body>
     </html>

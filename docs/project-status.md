@@ -1,6 +1,34 @@
 # Project status
 
-Last verified: **2026-09-15** (RA-0 ✅ COMPLETE — Reference App plan at `docs/reference-app-plan.md`; CE-3 remains ✅ COMPLETE; RA-1 NOT STARTED)
+Last verified: **2026-09-15** (RA-1 ✅ COMPLETE — App Shell + fixtures at `/reference`; RA-2 NOT STARTED; CE-3 remains ✅ COMPLETE)
+
+## 2026-09-15 — RA-1 Reference App App Shell + Fixture Foundation (COMPLETE)
+
+**Verdict: COMPLETE.** First Reference App implementation phase. No data
+workflow, forms, Shape/Surface gallery, Command Palette, Multi Select,
+visual-backlog fixes, DS API changes, or new dependencies.
+
+**Routes:** `/reference`, `/reference/data`, `/reference/new`,
+`/reference/edit/[id]`, `/reference/settings` (later routes are placeholders).
+
+**Shell architecture (application composition only):**
+- `components/DocsChrome.tsx` — docs Sidebar/MobileDocsNav skipped on `/reference/*`
+- `components/reference-app/ReferenceShell.tsx` — skip link, desktop aside, main
+- Shared `ReferenceNav` + mobile `Drawer` (same nav tree)
+- `ReferencePageHeader` — Breadcrumb + title + optional actions
+- Inert Alerts affordance + account `Menu` (notification center deferred)
+
+**Fixtures:** `lib/reference-app/` — typed owners/labels/requests + summary;
+stable IDs (`req_001`…); no network/auth/DB.
+
+**Evidence:** lint/typecheck/build green; Vitest **1143/1143**; Playwright
+`e2e/reference-app-shell.spec.ts` (desktop, 900px, mobile Escape/focus);
+`generate:registry` still **53** items; visual backlog untouched; no G3/G4/G5.
+
+**Canonical plan:** [`docs/reference-app-plan.md`](reference-app-plan.md).
+
+**Canonical next:** **RA-2 — Data workflow — NOT STARTED.**
+PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — RA-0 Reference App / Composition Validation (COMPLETE — planning/audit only)
 
@@ -30,6 +58,7 @@ RA-6 Final validation / PH-0 gate.
 intentionally undistributed; Class B = 0.
 
 **Canonical next:** **RA-1 — App Shell + fixture foundation — NOT STARTED.**
+(superseded — see RA-1 COMPLETE section above)
 PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — CE-3O Final Distribution Validation (COMPLETE) → CE-3 CLOSED
