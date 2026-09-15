@@ -9,9 +9,10 @@
 > **CE-3K search/date interaction batch** · Shipped 2026-09-15 · `/r` = foundation + **48**
 > **CE-3L data/tree batch** · Shipped 2026-09-15 · `/r` = foundation + **50**
 > **CE-3M charts batch** · Shipped 2026-09-15 · `/r` = foundation + **52**
+> **CE-3N registry index** · Shipped 2026-09-15 · `/r/registry.json` discovery catalog
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J/K/L/M
-> are **SHIPPED** (see Status table). CE-3N onward are **DEFINED — NOT
+> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J/K/L/M/N
+> are **SHIPPED** (see Status table). CE-3O onward are **DEFINED — NOT
 > STARTED** below (see CE-3G section).
 
 ## Purpose
@@ -578,7 +579,8 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3K Search/date interaction batch | ✅ SHIPPED — 6 slugs, see section below |
 | CE-3L Data/tree batch | ✅ SHIPPED — 2 slugs, see section below |
 | CE-3M Charts batch | ✅ SHIPPED — 2 slugs, see section below |
-| CE-3 overall | **IN PROGRESS** — CE-3N = NEXT, NOT STARTED |
+| CE-3N Registry index | ✅ SHIPPED — `/r/registry.json`, see section below |
+| CE-3 overall | **IN PROGRESS** — CE-3O = NEXT, NOT STARTED |
 
 ---
 
@@ -1476,7 +1478,46 @@ parity Class B; Class B remains 0).
 **Inventory delta:** `/r` foundation + 50 → foundation + **52**
 (= **53** registry items including foundation). Coverage **52/55**.
 
-**CE-3N — `/r/registry.json` is next, NOT STARTED.**
+**CE-3N — `/r/registry.json` is next, NOT STARTED.** (superseded — see CE-3N
+SHIPPED section below)
+
+### CE-3N — Registry index derivation (SHIPPED)
+
+**Verdict: COMPLETE.** Generated `/r/registry.json` from the **same**
+`buildDistributedRegistryItems()` collection that writes individual
+`/r/<name>.json` manifests — no second allowlist, no hand-maintained slug
+list.
+
+**Official schema (verified 2026-09-15 against ui.shadcn.com):**
+`$schema`, `name`, `homepage`, `items[]` where each item is a registry-item
+projection. Index `files` omit `content` (Registry Directory rule). Allowed
+item fields used: `name`, `type`, `title`, `description`, `dependencies`,
+`registryDependencies`, `files` (`path`/`type`/`target`).
+
+**CE-3G Part 19 contradiction resolved in favor of official schema + CE-3N
+constraints:** do **not** invent maturity / category / figmaAvailability
+fields on the shadcn index. Maturity stays canonical/docs-side.
+Distribution availability ≠ maturity.
+
+**Foundation policy:** **included** — Foundation is a real installable
+`@skrewww/foundation` item (`type: registry:file`). Not excluded by schema.
+
+**Counts:**
+- Individual manifests: **53** (foundation + 52 components)
+- Discovery index items: **53** (Foundation included)
+- Component coverage represented: **52/55**
+- Banking pilots absent naturally (not in distributed collection)
+
+**Ordering:** deterministic generation order — Foundation first, then
+components in historical CE-3 sequence (same as prior explicit writer
+array).
+
+**Discovery proof (shadcn@4.16.2 against locally served `public/`):**
+`list @skrewww` → 53 total; `search` finds button/combobox/bar-chart;
+`view` still returns full install payloads; `add @skrewww/button` smoke
+regression green.
+
+**CE-3O — final distribution validation is next, NOT STARTED.**
 
 ### CE-3M — Charts batch (planning notes retained)
 

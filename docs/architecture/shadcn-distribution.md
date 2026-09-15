@@ -51,9 +51,10 @@ in scope here.
   boundary-comment markers (not hardcoded line numbers). Importing this
   module never writes a file.
 - **`scripts/generate-shadcn-registry.ts`** is the only place that writes
-  to disk — a thin CLI wrapper around the three `build*Manifest()`
-  functions, writing `public/r/foundation.json`, `public/r/button.json`,
-  and `public/r/card.json`.
+  to disk — a thin CLI wrapper around `buildDistributedRegistryItems()`
+  + `buildRegistryIndex()`, writing every `public/r/<name>.json` install
+  manifest and the discovery catalog `public/r/registry.json` from that
+  **same** ordered collection (CE-3N). No second allowlist.
 - **Transport-layer flattening happens only in the generator.** The
   canonical type keeps a component's own `files` and its private
   `internalDependencies` as separate arrays; the private
@@ -129,19 +130,28 @@ change is made in this pass.
 
 ## URL shape
 
-Served as static files under `public/r/`, at `/r/{name}.json`:
-production shape `https://skrewww.com/r/{name}.json` (per
-`source-of-truth.md`'s domain table). Current CE-3C cut (fourteen items):
-`foundation`, `button`, `card`, `text-input`, `form-field`,
-`validation-message`, `spinner`, `divider`, `link`, `checkbox`,
-`progress-bar`, `skeleton`, `radio`, `switch`. See
-[`docs/distribution-expansion.md`](../distribution-expansion.md).
+Served as static files under `public/r/`:
+
+- Install / view payloads: `/r/{name}.json`
+  (e.g. `https://skrewww.com/r/button.json`)
+- Discovery catalog (CE-3N): `/r/registry.json`
+  (e.g. `https://skrewww.com/r/registry.json`) — official shadcn
+  `registry.json` schema; `shadcn list` / `search` fetch this path via the
+  configured `@skrewww` namespace URL template
+  (`…/r/{name}.json` with `name=registry`). Index items omit file
+  `content`; install payloads remain on the individual manifests.
+  Foundation is included as an installable `registry:file` item. Current
+  coverage: foundation + 52 component manifests = **53** discovery items
+  (52/55 React components; three banking pilots intentionally deferred).
+  See [`docs/distribution-expansion.md`](../distribution-expansion.md).
+
 This coexists with `/registry.json`
 at the root — a different path, a different purpose (shadcn CLI
 consumption vs. the existing public registry feed) — with zero changes to
 `app/registry.json/route.ts`, `lib/registry-public.ts`, or
 `PublicRegistryMetadata.schemaVersion` (still `1.4.0`). Existing
-`/registry.json` consumers are unaffected.
+`/registry.json` consumers are unaffected. Agent Kit (`/agent/*`) remains
+knowledge/contracts only — never merged into the shadcn index.
 
 ## Known follow-ups (not resolved in this pass)
 

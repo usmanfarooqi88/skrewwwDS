@@ -1,6 +1,33 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K ✅ SHIPPED; CE-3L ✅ SHIPPED; CE-3M Charts Batch ✅ SHIPPED — `/r` = foundation + 52; CE-3N = NEXT, NOT STARTED)
+Last verified: **2026-09-15** (CE-3A–M ✅ shipped; CE-3N Registry Index ✅ SHIPPED — `/r/registry.json` + discovery; CE-3O = NEXT, NOT STARTED)
+
+## 2026-09-15 — CE-3N Registry Index + Discovery (SHIPPED)
+
+**Verdict: COMPLETE.** Generated `public/r/registry.json` from
+`buildDistributedRegistryItems()` — the same ordered collection that writes
+individual manifests. No second allowlist.
+
+Baseline: `f07eace` (main == origin/main, clean, CI success, repo PUBLIC,
+Vitest 1127/1127, `/r` = foundation + 52 = 53 items, coverage 52/55).
+
+**Official shadcn registry.json schema verified** (`$schema`, `name`,
+`homepage`, `items`). Index items project install manifests without
+`content` / `$schema` / `author` / `docs`. No invented maturity fields
+(CE-3G Part 19 richer metadata superseded by official schema + CE-3N).
+
+**Foundation:** included (`registry:file`). **Banking pilots:** absent
+naturally. **Beta distributed items:** present (e.g. badge, combobox,
+bar-chart).
+
+**Discovery (local served registry, shadcn@4.16.2):** list total 53;
+search finds button / combobox / bar-chart; view unchanged; button add
+smoke regression green. Namespace `@skrewww` → `/r/{name}.json` unchanged.
+
+**Counts:** 53 item manifests + 53 discovery items; coverage 52/55.
+Vitest **1135/1135** (1127 baseline + 8 new index/consistency tests).
+
+**CE-3O — FINAL DISTRIBUTION VALIDATION is next, NOT STARTED.**
 
 ## 2026-09-15 — CE-3M Charts Distribution Batch (SHIPPED)
 
@@ -49,7 +76,8 @@ baseline + 2 new chart generator tests), build green, `generate:registry`
 deterministic (53 items), `git diff --check` clean. Visual backlog (Table,
 Button Group, Split Button, Toggle Group, Textarea) — NOT touched.
 
-**CE-3N — `/r/registry.json` is next, NOT STARTED.**
+**CE-3N — `/r/registry.json` is next, NOT STARTED.** (superseded — see CE-3N
+SHIPPED section above)
 
 ## 2026-09-15 — CE-3L Data/Tree Distribution Batch (SHIPPED)
 
@@ -3639,7 +3667,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–L ✅ shipped; CE-3M Charts Batch ✅ SHIPPED (`/r` = foundation + 52); CE-3N = NEXT, NOT STARTED |
+| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–M ✅ shipped; CE-3N Registry Index ✅ SHIPPED (`/r/registry.json`); CE-3O = NEXT, NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |

@@ -55,6 +55,43 @@ export type ShadcnRegistryItem = {
   files: ShadcnRegistryFile[];
 };
 
+/**
+ * Catalog-facing file entry for `/r/registry.json`. Official Registry
+ * Directory guidance requires that index `files` omit `content` — install
+ * payloads stay on the individual `/r/<name>.json` manifests.
+ */
+export type ShadcnRegistryIndexFile = {
+  path: string;
+  type: ShadcnFileType;
+  target?: string;
+};
+
+/** Catalog item projected from a generated install manifest (CE-3N). */
+export type ShadcnRegistryIndexItem = {
+  name: string;
+  type: ShadcnFileType;
+  title: string;
+  description: string;
+  dependencies: string[];
+  registryDependencies: string[];
+  files: ShadcnRegistryIndexFile[];
+};
+
+/**
+ * Official shadcn `registry.json` root document
+ * (`https://ui.shadcn.com/schema/registry.json`).
+ */
+export type ShadcnRegistry = {
+  $schema: string;
+  name: string;
+  homepage: string;
+  items: ShadcnRegistryIndexItem[];
+};
+
+/** Registry metadata for the generated `/r/registry.json` catalog. */
+export const SKREWWW_SHADCN_REGISTRY_NAME = "skrewww";
+export const SKREWWW_SHADCN_REGISTRY_HOMEPAGE = "https://skrewww.com";
+
 export function readSourceFile(relPath: string): string {
   return readFileSync(join(REPO_ROOT, relPath), "utf8");
 }
@@ -1069,6 +1106,115 @@ export function buildLineChartManifest(): ShadcnRegistryItem {
 }
 
 /**
+ * Single ordered collection of every installable `@skrewww/*` registry
+ * item currently generated. Order is deliberate and deterministic:
+ * Foundation first, then component manifests in the historical CE-3
+ * generation sequence (same order previously hard-coded in
+ * `scripts/generate-shadcn-registry.ts`). Both individual `/r/<name>.json`
+ * writes and `/r/registry.json` derive from this list — no second allowlist.
+ */
+export function buildDistributedRegistryItems(): ShadcnRegistryItem[] {
+  return [
+    buildFoundationManifest(),
+    buildButtonManifest(),
+    buildCardManifest(),
+    buildTextInputManifest(),
+    buildFormFieldManifest(),
+    buildValidationMessageManifest(),
+    buildSpinnerManifest(),
+    buildDividerManifest(),
+    buildLinkManifest(),
+    buildCheckboxManifest(),
+    buildProgressBarManifest(),
+    buildSkeletonManifest(),
+    buildRadioManifest(),
+    buildSwitchManifest(),
+    buildTextareaManifest(),
+    buildPaginationManifest(),
+    buildAvatarManifest(),
+    buildBreadcrumbManifest(),
+    buildRadioGroupManifest(),
+    buildSliderManifest(),
+    buildStepperManifest(),
+    buildTableManifest(),
+    buildBadgeManifest(),
+    buildTagManifest(),
+    buildListItemManifest(),
+    buildTimelineManifest(),
+    buildEmptyStateManifest(),
+    buildAlertManifest(),
+    buildToastManifest(),
+    buildButtonGroupManifest(),
+    buildToggleGroupManifest(),
+    buildAccordionManifest(),
+    buildTabsManifest(),
+    buildSearchFieldManifest(),
+    buildCreditCardFieldManifest(),
+    buildNumberInputManifest(),
+    buildFileUploadManifest(),
+    buildPopoverManifest(),
+    buildTooltipManifest(),
+    buildDialogManifest(),
+    buildDrawerManifest(),
+    buildMenuManifest(),
+    buildSplitButtonManifest(),
+    buildCalendarDayManifest(),
+    buildCalendarGridManifest(),
+    buildSelectManifest(),
+    buildComboboxManifest(),
+    buildDatePickerManifest(),
+    buildPhoneNumberFieldManifest(),
+    buildTreeViewManifest(),
+    buildDataTableManifest(),
+    buildBarChartManifest(),
+    buildLineChartManifest(),
+  ];
+}
+
+/**
+ * Project an install manifest into a discovery/catalog item.
+ *
+ * Keeps only official shadcn registry-item fields useful for list/search.
+ * Strips `content` (Directory / discovery rule), `$schema`, `author`, and
+ * `docs` (host-requirement prose stays on the install manifest only).
+ * Does not invent maturity/category/Figma fields — those remain
+ * canonical/docs-side (CE-3G Part 19's richer index metadata is superseded
+ * by the current official schema + CE-3N constraints).
+ */
+export function projectRegistryIndexItem(item: ShadcnRegistryItem): ShadcnRegistryIndexItem {
+  return {
+    name: item.name,
+    type: item.type,
+    title: item.title,
+    description: item.description,
+    dependencies: [...item.dependencies],
+    registryDependencies: [...item.registryDependencies],
+    files: item.files.map((file) => ({
+      path: file.path,
+      type: file.type,
+      ...(file.target ? { target: file.target } : {}),
+    })),
+  };
+}
+
+/**
+ * Build `/r/registry.json` from the same distributed manifest collection
+ * used for individual item files. Foundation is included because it is a
+ * real installable `@skrewww/foundation` registry item (type
+ * `registry:file`) — not excluded by schema.
+ */
+export function buildRegistryIndex(
+  items: ShadcnRegistryItem[] = buildDistributedRegistryItems(),
+): ShadcnRegistry {
+  return {
+    $schema: "https://ui.shadcn.com/schema/registry.json",
+    name: SKREWWW_SHADCN_REGISTRY_NAME,
+    homepage: SKREWWW_SHADCN_REGISTRY_HOMEPAGE,
+    items: items.map(projectRegistryIndexItem),
+  };
+}
+
+/**
  * Lightweight structural check against the real shadcn registry-item.json
  * shape (confirmed via a live fetch of ui.shadcn.com's own schema/example
  * during the POC — not reproduced here as a live network call, since a
@@ -1115,5 +1261,106 @@ export function assertValidShadcnRegistryItem(item: unknown): asserts item is Sh
           "this generator requires explicit, non-empty targets for every file.",
       );
     }
+  }
+}
+
+const ALLOWED_INDEX_ITEM_KEYS = new Set([
+  "name",
+  "type",
+  "title",
+  "description",
+  "dependencies",
+  "registryDependencies",
+  "files",
+]);
+
+const ALLOWED_INDEX_FILE_KEYS = new Set(["path", "type", "target"]);
+
+/**
+ * Structural check for the generated `/r/registry.json` catalog against the
+ * official shadcn registry.json shape. Index items must not carry install
+ * `content`, `hostRequirements`, or other canonical-only fields.
+ */
+export function assertValidShadcnRegistry(registry: unknown): asserts registry is ShadcnRegistry {
+  if (typeof registry !== "object" || registry === null) {
+    throw new Error("shadcn registry must be an object");
+  }
+  const candidate = registry as Record<string, unknown>;
+
+  if (candidate.$schema !== "https://ui.shadcn.com/schema/registry.json") {
+    throw new Error('shadcn registry "$schema" must be https://ui.shadcn.com/schema/registry.json');
+  }
+  if (typeof candidate.name !== "string" || candidate.name === "") {
+    throw new Error('shadcn registry "name" must be a non-empty string');
+  }
+  if (typeof candidate.homepage !== "string" || candidate.homepage === "") {
+    throw new Error('shadcn registry "homepage" must be a non-empty string');
+  }
+  if (!Array.isArray(candidate.items) || candidate.items.length === 0) {
+    throw new Error('shadcn registry "items" must be a non-empty array');
+  }
+
+  const seen = new Set<string>();
+  for (const item of candidate.items as unknown[]) {
+    if (typeof item !== "object" || item === null) {
+      throw new Error("shadcn registry index item must be an object");
+    }
+    const indexItem = item as Record<string, unknown>;
+    for (const key of Object.keys(indexItem)) {
+      if (!ALLOWED_INDEX_ITEM_KEYS.has(key)) {
+        throw new Error(`shadcn registry index item has unexpected field "${key}"`);
+      }
+    }
+    for (const field of ["name", "type", "title", "description"] as const) {
+      if (typeof indexItem[field] !== "string" || indexItem[field] === "") {
+        throw new Error(`shadcn registry index item missing required non-empty string field "${field}"`);
+      }
+    }
+    for (const field of ["dependencies", "registryDependencies"] as const) {
+      const value = indexItem[field];
+      if (!Array.isArray(value) || !value.every((entry) => typeof entry === "string")) {
+        throw new Error(`shadcn registry index item field "${field}" must be a string array`);
+      }
+    }
+    if (!Array.isArray(indexItem.files) || indexItem.files.length === 0) {
+      throw new Error('shadcn registry index item "files" must be a non-empty array');
+    }
+    for (const file of indexItem.files as unknown[]) {
+      if (typeof file !== "object" || file === null) {
+        throw new Error("shadcn registry index file entry must be an object");
+      }
+      const fileCandidate = file as Record<string, unknown>;
+      for (const key of Object.keys(fileCandidate)) {
+        if (!ALLOWED_INDEX_FILE_KEYS.has(key)) {
+          throw new Error(`shadcn registry index file entry has unexpected field "${key}"`);
+        }
+      }
+      if (typeof fileCandidate.path !== "string" || fileCandidate.path === "") {
+        throw new Error('shadcn registry index file entry missing non-empty "path"');
+      }
+      if (typeof fileCandidate.type !== "string" || fileCandidate.type === "") {
+        throw new Error('shadcn registry index file entry missing non-empty "type"');
+      }
+      if ("content" in fileCandidate) {
+        throw new Error("shadcn registry index file entry must not include content");
+      }
+      if ("target" in fileCandidate && (typeof fileCandidate.target !== "string" || fileCandidate.target === "")) {
+        throw new Error('shadcn registry index file entry "target" must be a non-empty string when present');
+      }
+    }
+
+    const name = indexItem.name as string;
+    if (seen.has(name)) {
+      throw new Error(`shadcn registry index contains duplicate item name "${name}"`);
+    }
+    seen.add(name);
+  }
+
+  const serialized = JSON.stringify(candidate);
+  if (serialized.includes("hostRequirements")) {
+    throw new Error("shadcn registry index must not leak hostRequirements");
+  }
+  if (serialized.includes("/Users/") || serialized.includes("\\\\")) {
+    throw new Error("shadcn registry index must not contain absolute filesystem paths");
   }
 }

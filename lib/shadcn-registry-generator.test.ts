@@ -57,6 +57,12 @@ import {
   buildDataTableManifest,
   buildBarChartManifest,
   buildLineChartManifest,
+  buildDistributedRegistryItems,
+  buildRegistryIndex,
+  projectRegistryIndexItem,
+  assertValidShadcnRegistry,
+  SKREWWW_SHADCN_REGISTRY_NAME,
+  SKREWWW_SHADCN_REGISTRY_HOMEPAGE,
   classifyFile,
   extractFoundationCss,
   extractFoundationCssFromSource,
@@ -1108,5 +1114,82 @@ describe("shadcn registry generator", () => {
     };
 
     expect(() => assertValidShadcnRegistryItem(invalid)).toThrow(/empty target/);
+  });
+
+  // CE-3N — generated /r/registry.json discovery index
+  it("derives the registry index from the same distributed collection used for item manifests", () => {
+    const items = buildDistributedRegistryItems();
+    const index = buildRegistryIndex(items);
+    expect(items).toHaveLength(53);
+    expect(index.items).toHaveLength(53);
+    expect(items.map((item) => item.name)).toEqual(index.items.map((item) => item.name));
+    expect(items[0]?.name).toBe("foundation");
+    expect(index.name).toBe(SKREWWW_SHADCN_REGISTRY_NAME);
+    expect(index.homepage).toBe(SKREWWW_SHADCN_REGISTRY_HOMEPAGE);
+    expect(() => assertValidShadcnRegistry(index)).not.toThrow();
+  });
+
+  it("projects index items without install content, docs, author, $schema, or hostRequirements", () => {
+    const button = buildButtonManifest();
+    const projected = projectRegistryIndexItem(button);
+    expect(projected).toEqual({
+      name: "button",
+      type: "registry:ui",
+      title: button.title,
+      description: button.description,
+      dependencies: button.dependencies,
+      registryDependencies: button.registryDependencies,
+      files: button.files.map((file) => ({ path: file.path, type: file.type, target: file.target })),
+    });
+    expect(JSON.stringify(projected)).not.toMatch(/"content"|hostRequirements|"docs"|"author"|\$schema/);
+  });
+
+  it("keeps Foundation in the discovery index as an installable registry:file item", () => {
+    const index = buildRegistryIndex();
+    const foundation = index.items.find((item) => item.name === "foundation");
+    expect(foundation).toBeDefined();
+    expect(foundation!.type).toBe("registry:file");
+    expect(foundation!.files.some((file) => file.target === "~/styles/skrewww-foundation.css")).toBe(true);
+  });
+
+  it("includes selected distributed Beta components and excludes banking pilots naturally", () => {
+    const names = new Set(buildRegistryIndex().items.map((item) => item.name));
+    expect(names.has("badge")).toBe(true);
+    expect(names.has("combobox")).toBe(true);
+    expect(names.has("bar-chart")).toBe(true);
+    expect(names.has("banking-account-card")).toBe(false);
+    expect(names.has("banking-balance-summary")).toBe(false);
+    expect(names.has("banking-transaction-row")).toBe(false);
+  });
+
+  it("preserves representative registryDependencies and npm dependencies on index items", () => {
+    const index = buildRegistryIndex();
+    const byName = Object.fromEntries(index.items.map((item) => [item.name, item]));
+    expect(byName.button.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(byName.combobox.registryDependencies).toEqual([
+      "@skrewww/form-field",
+      "@skrewww/popover",
+      "@skrewww/foundation",
+    ]);
+    expect(byName["bar-chart"].dependencies).toEqual(["recharts"]);
+  });
+
+  it("enforces item ↔ manifest consistency for every discovery entry", () => {
+    const items = buildDistributedRegistryItems();
+    const index = buildRegistryIndex(items);
+    const itemNames = new Set(items.map((item) => item.name));
+    for (const entry of index.items) {
+      expect(itemNames.has(entry.name), entry.name).toBe(true);
+    }
+    for (const item of items) {
+      expect(index.items.some((entry) => entry.name === item.name), item.name).toBe(true);
+    }
+    expect(new Set(index.items.map((entry) => entry.name)).size).toBe(index.items.length);
+  });
+
+  it("produces a deterministic registry index across repeated builds", () => {
+    const first = JSON.stringify(buildRegistryIndex());
+    const second = JSON.stringify(buildRegistryIndex());
+    expect(first).toBe(second);
   });
 });

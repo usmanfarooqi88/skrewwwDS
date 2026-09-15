@@ -34,7 +34,9 @@ describe("registry integration — Agent Kit slug resolves to a real registry en
 describe("registry integration — installability is derived from real /r output, never asserted independently", () => {
   regenerateShadcnRegistry();
   const rFiles = readdirSync(R_DIR).filter((name) => name.endsWith(".json"));
-  const distributedNames = rFiles.map((name) => name.replace(/\.json$/, "")).filter((name) => name !== "foundation");
+  const distributedNames = rFiles
+    .map((name) => name.replace(/\.json$/, ""))
+    .filter((name) => name !== "foundation" && name !== "registry");
 
   it("every slug isDistributedViaSkrewwwRegistry() reports true for has a matching public/r/<slug>.json file", () => {
     for (const entry of componentRegistry) {
@@ -61,17 +63,40 @@ describe("registry integration — installability is derived from real /r output
 
 describe("registry integration — /r catalog expands only via intentional CE-3 distribution batches", () => {
   it("the shadcn manifest generator builds foundation plus every currently distributed component", () => {
-    const generatorSource = readFileSync(join(root, "scripts", "generate-shadcn-registry.ts"), "utf8");
-    const buildCalls = generatorSource.match(/build\w+Manifest\(\)/g) ?? [];
+    const generatorSource = readFileSync(join(root, "lib", "shadcn-registry-generator.ts"), "utf8");
+    const collectionMatch = generatorSource.match(
+      /export function buildDistributedRegistryItems\(\): ShadcnRegistryItem\[] \{([\s\S]*?)\n\}/,
+    );
+    expect(collectionMatch).toBeTruthy();
+    const buildCalls = collectionMatch![1].match(/build\w+Manifest\(\)/g) ?? [];
     const distributedCount = componentRegistry.filter((entry) => entry.files && entry.files.length > 0).length;
     expect(buildCalls).toHaveLength(distributedCount + 1); // +1 foundation
   });
 
-  it("public/r/ contains exactly one manifest per distributed registry entry plus foundation, nothing extra", () => {
+  it("public/r/ contains exactly one manifest per distributed registry entry plus foundation and registry index", () => {
     regenerateShadcnRegistry();
     const distributedCount = componentRegistry.filter((entry) => entry.files && entry.files.length > 0).length;
     const actualFiles = readdirSync(R_DIR).filter((name) => name.endsWith(".json"));
-    expect(actualFiles).toHaveLength(distributedCount + 1); // +1 for foundation.json
+    expect(actualFiles).toContain("registry.json");
+    expect(actualFiles).toHaveLength(distributedCount + 2); // +1 foundation.json +1 registry.json
+  }, 30_000);
+
+  it("registry.json discovery items match individual /r manifests 1:1 with no banking leakage", () => {
+    regenerateShadcnRegistry();
+    const index = JSON.parse(readFileSync(join(R_DIR, "registry.json"), "utf8")) as {
+      items: Array<{ name: string; files: Array<{ content?: string }> }>;
+    };
+    expect(index.items.length).toBeGreaterThan(0);
+    for (const item of index.items) {
+      expect(existsSync(join(R_DIR, `${item.name}.json`)), item.name).toBe(true);
+      expect(item.files.every((file) => !("content" in file))).toBe(true);
+      expect(item.name.startsWith("banking-")).toBe(false);
+    }
+    const manifestNames = readdirSync(R_DIR)
+      .filter((name) => name.endsWith(".json") && name !== "registry.json")
+      .map((name) => name.replace(/\.json$/, ""))
+      .sort();
+    expect(index.items.map((item) => item.name).sort()).toEqual(manifestNames);
   }, 30_000);
 });
 
