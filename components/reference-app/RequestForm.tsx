@@ -78,7 +78,7 @@ export function RequestForm({
         onChange={(event) => onChange({ ...values, description: event.target.value })}
         error={errors.description}
         rows={5}
-        supportingText="Context for the assignee. Textarea inset is a known visual backlog item."
+        supportingText="Context for the assignee."
       />
 
       <div className="grid gap-6 sm:grid-cols-2">

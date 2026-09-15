@@ -84,7 +84,13 @@ test.describe("Reference App data workflow", () => {
     expect(firstAfterSort).not.toBe(firstBeforeSort);
     expect(firstAfterSort).toBe("req_014");
 
-    await page.getByRole("button", { name: "Actions for req_014" }).click();
+    const rowActionsTrigger = page.getByRole("button", { name: "Actions for req_014" });
+    // RA-5 fix: matches the canonical icon-only pattern from
+    // components/previews/TablePreview.tsx (bare icon child, no separate
+    // leadingIcon + sr-only label span, which previously widened the
+    // button via an unnecessary flex gap to an invisible label).
+    await expect(rowActionsTrigger.locator("text=Open")).toHaveCount(0);
+    await rowActionsTrigger.click();
     await expect(page.getByRole("menuitem", { name: "View / Edit" })).toBeVisible();
     await page.keyboard.press("Escape");
 

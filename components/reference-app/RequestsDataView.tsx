@@ -405,9 +405,8 @@ export function RequestsDataView() {
                             variant="secondary"
                             size="sm"
                             aria-label={`Actions for ${request.id}`}
-                            leadingIcon={<DotsThree size={16} weight="bold" aria-hidden="true" />}
                           >
-                            <span className="sr-only">Open</span>
+                            <DotsThree size={18} weight="bold" aria-hidden="true" />
                           </Button>
                         </MenuTrigger>
                         <MenuContent aria-label={`Actions for ${request.id}`}>
