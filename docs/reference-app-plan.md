@@ -1,13 +1,35 @@
 # Reference App / Composition Validation Plan
 
-**Phase:** RA-2 ✅ COMPLETE (Data workflow)  
-**Status:** `/reference/data` ops queue shipped — forms/overlays not started  
-**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`  
-**Canonical next task:** RA-3 — Forms + overlays (**NOT STARTED**)
+**Phase:** RA-3 ✅ COMPLETE (Forms + overlays)  
+**Status:** New/Edit form workflows shipped — RA-4 responsive/a11y pass not started  
+**Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`  
+**Canonical next task:** RA-4 — Responsive / accessibility composition validation (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
-Do not create parallel planning docs. RA-3+ starts only after explicit
+Do not create parallel planning docs. RA-4+ starts only after explicit
 human approval.
+
+---
+
+## RA-3 delivery (2026-09-15)
+
+| Item | Result |
+|------|--------|
+| Routes | `/reference/new`, `/reference/edit/[id]` real form workflows |
+| Shared composition | `RequestForm` + `RequestFormWorkflow` (app-scoped, not DS) |
+| Fields | Title, Description (Textarea), Status, Owner, Due, Labels (Checkbox), Priority (Toggle Group), Notify watchers (Switch) |
+| Validation | Title + owner required; FormField errors; toast on invalid submit |
+| Submit | Toast success → navigate `/reference/data` (**not persisted** across refresh) |
+| Discard | Dialog when dirty Cancel; Continue / Discard; `finalFocusRef` on Cancel |
+| Overlays | Combobox/Select/DatePicker Popovers; Dialog discard; Menu collision zone; Tooltip on notify help |
+| Collision audit | Shared `computePopoverPosition` flip/clamp — Menu + Combobox near bottom stay in viewport (**outcome C / G0 wiring**) |
+| Hydration | Clean Playwright Chromium: no `webcrx` hydration noise — extension-only when seen manually |
+| Visual backlog | Textarea inset + Toggle Group Pill exposed, **not fixed** |
+| Vitest | 1155 / 1155 |
+| Browser | Reference App Playwright **14 / 14** (shell 4 + data 4 + forms 6) |
+| Gaps | G0 only (finalFocusRef for programmatic Dialog) |
+
+Manual review: `/reference/new` and `/reference/edit/req_001` @ 1280×800 and 390×844; bottom “More actions” Menu for collision.
 
 ---
 
@@ -623,7 +645,7 @@ The phase may close when **all** are true:
 | **RA-0** | This audit | `docs/reference-app-plan.md`, `docs/project-status.md` | Scope creep into build | Doc quality | **STOP — no routes** |
 | **RA-1** | ✅ COMPLETE — App Shell + fixtures + stub pages | `app/reference/**`, `components/reference-app/**`, `lib/reference-app/**`, `components/DocsChrome.tsx` | Docs chrome bleed; skip-link; routing active state | Vitest + Playwright shell specs | **STOP — no data filters** |
 | **RA-2** | ✅ COMPLETE — Data workflow + Advanced Filters composition | `app/reference/data`, `components/reference-app/Requests*`, `lib/reference-app/query-requests.ts` | Nested Popover avoided via inline desktop filters (G0) | Vitest + Playwright data specs | **STOP — no forms** |
-| **RA-3** | Forms + overlays + notifications composition | edit/new + settings + header notifications | Focus traps; stacked Drawers | Keyboard + a11y | No Command Palette searchable; no Credit Card |
+| **RA-3** | ✅ COMPLETE — Forms + overlays | `RequestForm*`, new/edit pages, `request-form.ts` | Programmatic Dialog needed finalFocusRef (G0) | Vitest + Playwright forms specs | **STOP — no RA-4** |
 | **RA-4** | Responsive + a11y pass across routes | tests + small layout fixes (G0/G1 only) | Accidental G3 API changes | Viewport matrix + axe | Stop before visual bugfix campaigns |
 | **RA-5** | Visual/parity backlog **review** | notes in this doc / status; fixes only with approval | Scope into CE visual fixes | Manual + evidence | No drive-by component restyles |
 | **RA-6** | Final validation vs DoD + PH-0 gate | status docs | Premature PH-0 | Full checklist §23 | **STOP** — wait for PH-0 approval |
@@ -660,8 +682,9 @@ Reference App:
   RA-0 ✅ COMPLETE
   RA-1 ✅ COMPLETE
   RA-2 ✅ COMPLETE
-  RA-3 NOT STARTED  ← next
-  RA-4 … RA-6 later
+  RA-3 ✅ COMPLETE
+  RA-4 NOT STARTED  ← next
+  RA-5 … RA-6 later
 
 PH-0 later
 Guard NOT STARTED

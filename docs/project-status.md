@@ -1,6 +1,33 @@
 # Project status
 
-Last verified: **2026-09-15** (RA-2 ✅ COMPLETE — `/reference/data` workflow; RA-3 NOT STARTED; CE-3 remains ✅ COMPLETE)
+Last verified: **2026-09-15** (RA-3 ✅ COMPLETE — New/Edit forms + overlays; RA-4 NOT STARTED; CE-3 remains ✅ COMPLETE)
+
+## 2026-09-15 — RA-3 Reference App Forms + Overlays (COMPLETE)
+
+**Verdict: COMPLETE.** Realistic New/Edit request forms with Dialog discard,
+Toast feedback, and overlay collision audit. No Multi Select, Command Palette,
+Notification Center expansion, visual-backlog fixes, DS API changes, or new
+dependencies. No File Upload (not required by scenario).
+
+**Fields:** Title, Description (Textarea), Status (Select), Owner (Combobox),
+Due (Date Picker), Labels (Checkbox composition), Priority (Toggle Group),
+Notify watchers (Switch + Tooltip).
+
+**Behavior:** validate → toast; success navigates to `/reference/data` without
+cross-refresh persistence. Dirty Cancel opens discard Dialog with Continue /
+Discard; `finalFocusRef` restores Cancel focus (G0).
+
+**Collision:** Menu + Combobox near viewport bottom remain in-bounds via shared
+`computePopoverPosition` flip/clamp — existing DS capability (not a G3 gap).
+
+**Hydration:** automated Chromium clean; manual `webcrx` attributes treated as
+browser-extension noise (no `suppressHydrationWarning`).
+
+**Evidence:** lint/typecheck/build green; Vitest **1155/1155**; Playwright
+reference **14/14**; registry **53**.
+
+**Canonical next:** **RA-4 — Responsive / accessibility composition validation — NOT STARTED.**
+PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — RA-2 Reference App Data Workflow (COMPLETE)
 
@@ -25,6 +52,7 @@ horizontal-scroll discoverability; page may still widen slightly at 390px.
 reference shell+data **8/8**; `generate:registry` **53** items.
 
 **Canonical next:** **RA-3 — Forms + overlays — NOT STARTED.**
+(superseded — see RA-3 COMPLETE section above)
 PH-0 later · Guard NOT STARTED.
 
 ## 2026-09-15 — RA-1 Reference App App Shell + Fixture Foundation (COMPLETE)
