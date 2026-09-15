@@ -1059,6 +1059,12 @@ const monthlySignups = [
 export function Example() {
   return <BarChart data={monthlySignups} label="Monthly signups" />;
 }`,
+    dependencies: ["recharts"],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts"],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/BarChart.tsx", "components/ui/bar-chart.module.css"],
   },
   {
     slug: "line-chart",
@@ -1138,6 +1144,12 @@ const monthlySignups = [
 export function Example() {
   return <LineChart data={monthlySignups} label="Monthly signups" />;
 }`,
+    dependencies: ["recharts"],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts"],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/LineChart.tsx", "components/ui/line-chart.module.css"],
   },
   {
     slug: "timeline",

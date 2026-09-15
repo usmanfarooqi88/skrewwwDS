@@ -93,14 +93,14 @@ export const EVAL_CASES: readonly AuthoredEvalCase[] = [
     },
   },
   {
-    id: "install-undistributed-bar-chart",
-    title: "Bar Chart exists but is not shadcn-distributed",
+    id: "install-undistributed-banking-account-card",
+    title: "Banking Account Card exists but is not shadcn-distributed",
     category: "installability",
     userTask:
-      "Add a Skrewww Bar Chart. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
+      "Add a Skrewww Banking Account Card. If it is installable via npx shadcn add @skrewww/..., provide the command; otherwise say it is not currently distributed that way.",
     consumerFixtureId: "configured-rounded-glass",
-    relevantComponentSlugs: ["bar-chart"],
-    requiredComponentSlugs: ["bar-chart"],
+    relevantComponentSlugs: ["banking-account-card"],
+    requiredComponentSlugs: ["banking-account-card"],
     allowedInstallCommands: [],
     forbidInventedInstallCommands: true,
     projectContext: {

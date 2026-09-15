@@ -102,6 +102,8 @@ import {
   buildPhoneNumberFieldManifest,
   buildTreeViewManifest,
   buildDataTableManifest,
+  buildBarChartManifest,
+  buildLineChartManifest,
   type ShadcnRegistryItem,
 } from "../lib/shadcn-registry-generator";
 
@@ -163,6 +165,8 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   "phone-number-field": buildPhoneNumberFieldManifest,
   "tree-view": buildTreeViewManifest,
   "data-table": buildDataTableManifest,
+  "bar-chart": buildBarChartManifest,
+  "line-chart": buildLineChartManifest,
 };
 
 /**
@@ -2015,6 +2019,212 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       await page.keyboard.press(" ");
       sort = await header.getAttribute("aria-sort");
       if (sort !== "descending") throw new Error(`Installed Data Table: Space did not advance the sort cycle to descending (aria-sort="${sort}").`);
+    },
+  },
+  // CE-3M — charts batch. Behaviors reused from e2e/bar-chart.spec.ts and
+  // e2e/line-chart.spec.ts. Fixture owns container dimensions; production
+  // component sizing is unchanged. First real `recharts` npm install path.
+  "bar-chart": {
+    criticalPaths: [
+      "components/ui/BarChart.tsx",
+      "components/ui/bar-chart.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { BarChart } from "@/components/ui/BarChart";',
+        "",
+        "const data = [",
+        '  { label: "Jan", value: 58 },',
+        '  { label: "Feb", value: 72 },',
+        '  { label: "Mar", value: 91 },',
+        '  { label: "Apr", value: 84 },',
+        '  { label: "May", value: 110 },',
+        '  { label: "Jun", value: 140 },',
+        "];",
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <div id="chart-fixture" style={{ width: 600 }}>',
+        '        <BarChart data={data} label="Monthly signups" height={320} />',
+        "      </div>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/BarChart"/.test(pageSource) && /Monthly signups/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports BarChart and renders single-series monthly signup data",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 8000;
+      const chart = page.getByRole("img", { name: "Monthly signups" });
+      await chart.waitFor({ state: "visible", timeout: WAIT_MS });
+
+      const svg = chart.locator("svg").first();
+      await svg.waitFor({ state: "visible", timeout: WAIT_MS });
+      const bars = chart.locator(".recharts-bar-rectangle path");
+      await bars.first().waitFor({ state: "attached", timeout: WAIT_MS });
+      const barCount = await bars.count();
+      if (barCount !== 6) {
+        throw new Error(`Installed Bar Chart: expected 6 bar paths, found ${barCount}.`);
+      }
+
+      const heights = await bars.evaluateAll((paths) =>
+        paths.map((p) => {
+          const d = p.getAttribute("d") ?? "";
+          const match = d.match(/v (-?[\d.]+)/);
+          return match ? Math.abs(Number(match[1])) : 0;
+        }),
+      );
+      if (heights.some((h) => !(h > 0))) {
+        throw new Error(`Installed Bar Chart: expected positive bar geometry, got [${heights.join(", ")}].`);
+      }
+      const maxIdx = heights.indexOf(Math.max(...heights));
+      const minIdx = heights.indexOf(Math.min(...heights));
+      if (maxIdx !== 5 || minIdx !== 0) {
+        throw new Error(
+          `Installed Bar Chart: proportional heights wrong (maxIdx=${maxIdx}, minIdx=${minIdx}, heights=[${heights.join(", ")}]).`,
+        );
+      }
+
+      const table = page.locator("table.sr-only");
+      if ((await table.count()) !== 1) throw new Error("Installed Bar Chart: expected one visually-hidden data table.");
+      const jan = await table.getByRole("row", { name: /Jan/ }).textContent();
+      const jun = await table.getByRole("row", { name: /Jun/ }).textContent();
+      if (!jan?.includes("58") || !jun?.includes("140")) {
+        throw new Error(`Installed Bar Chart: hidden table data mismatch (jan="${jan}", jun="${jun}").`);
+      }
+
+      // ResponsiveContainer contract: fluid width fills the fixture parent.
+      const beforeWidth = await svg.evaluate((el) => el.getBoundingClientRect().width);
+      await page.locator("#chart-fixture").evaluate((el) => {
+        (el as HTMLElement).style.width = "360px";
+        window.dispatchEvent(new Event("resize"));
+      });
+      await page.waitForFunction(
+        (previous) => {
+          const node = document.querySelector("#chart-fixture svg");
+          if (!node) return false;
+          return Math.abs(node.getBoundingClientRect().width - previous) > 40;
+        },
+        beforeWidth,
+        { timeout: WAIT_MS },
+      );
+      const afterWidth = await svg.evaluate((el) => el.getBoundingClientRect().width);
+      if (!(afterWidth > 0) || !(await chart.isVisible())) {
+        throw new Error("Installed Bar Chart: chart disappeared after container resize.");
+      }
+      if (!(afterWidth < beforeWidth)) {
+        throw new Error(
+          `Installed Bar Chart: expected SVG to shrink after narrowing the fixture (before=${beforeWidth}, after=${afterWidth}).`,
+        );
+      }
+    },
+  },
+  "line-chart": {
+    criticalPaths: [
+      "components/ui/LineChart.tsx",
+      "components/ui/line-chart.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { LineChart } from "@/components/ui/LineChart";',
+        "",
+        "const data = [",
+        '  { label: "Jan", value: 58 },',
+        '  { label: "Feb", value: 72 },',
+        '  { label: "Mar", value: 91 },',
+        '  { label: "Apr", value: 84 },',
+        '  { label: "May", value: 110 },',
+        '  { label: "Jun", value: 140 },',
+        "];",
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <div id="chart-fixture" style={{ width: 600 }}>',
+        '        <LineChart data={data} label="Monthly signups trend" height={320} />',
+        "      </div>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/LineChart"/.test(pageSource) && /Monthly signups trend/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports LineChart and renders single-series monthly signup trend data",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 8000;
+      const chart = page.getByRole("img", { name: "Monthly signups trend" });
+      await chart.waitFor({ state: "visible", timeout: WAIT_MS });
+
+      const svg = chart.locator("svg").first();
+      await svg.waitFor({ state: "visible", timeout: WAIT_MS });
+      const curve = chart.locator(".recharts-line-curve");
+      await curve.first().waitFor({ state: "attached", timeout: WAIT_MS });
+      if ((await curve.count()) !== 1) {
+        throw new Error(`Installed Line Chart: expected 1 line curve, found ${await curve.count()}.`);
+      }
+      const dots = chart.locator(".recharts-line-dots circle");
+      await dots.first().waitFor({ state: "attached", timeout: WAIT_MS });
+      if ((await dots.count()) !== 6) {
+        throw new Error(`Installed Line Chart: expected 6 point markers, found ${await dots.count()}.`);
+      }
+
+      const cys = await dots.evaluateAll((els) => els.map((d) => Number(d.getAttribute("cy"))));
+      if (cys.indexOf(Math.min(...cys)) !== 5 || cys.indexOf(Math.max(...cys)) !== 0) {
+        throw new Error(`Installed Line Chart: proportional point positions wrong (cys=[${cys.join(", ")}]).`);
+      }
+
+      const table = page.locator("table.sr-only");
+      if ((await table.count()) !== 1) throw new Error("Installed Line Chart: expected one visually-hidden data table.");
+      const jan = await table.getByRole("row", { name: /Jan/ }).textContent();
+      const jun = await table.getByRole("row", { name: /Jun/ }).textContent();
+      if (!jan?.includes("58") || !jun?.includes("140")) {
+        throw new Error(`Installed Line Chart: hidden table data mismatch (jan="${jan}", jun="${jun}").`);
+      }
+
+      if ((await chart.locator(".recharts-cartesian-axis").count()) !== 0) {
+        throw new Error("Installed Line Chart: unexpected cartesian axis rendered.");
+      }
+      if ((await chart.locator(".recharts-legend-wrapper").count()) !== 0) {
+        throw new Error("Installed Line Chart: unexpected legend rendered.");
+      }
+
+      const beforeWidth = await svg.evaluate((el) => el.getBoundingClientRect().width);
+      await page.locator("#chart-fixture").evaluate((el) => {
+        (el as HTMLElement).style.width = "360px";
+        window.dispatchEvent(new Event("resize"));
+      });
+      await page.waitForFunction(
+        (previous) => {
+          const node = document.querySelector("#chart-fixture svg");
+          if (!node) return false;
+          return Math.abs(node.getBoundingClientRect().width - previous) > 40;
+        },
+        beforeWidth,
+        { timeout: WAIT_MS },
+      );
+      const afterWidth = await svg.evaluate((el) => el.getBoundingClientRect().width);
+      if (!(afterWidth > 0) || !(await chart.isVisible())) {
+        throw new Error("Installed Line Chart: chart disappeared after container resize.");
+      }
+      if (!(afterWidth < beforeWidth)) {
+        throw new Error(
+          `Installed Line Chart: expected SVG to shrink after narrowing the fixture (before=${beforeWidth}, after=${afterWidth}).`,
+        );
+      }
     },
   },
   "spinner-divider-link": {

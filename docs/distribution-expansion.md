@@ -8,9 +8,10 @@
 > **CE-3J overlay/navigation batch** · Shipped 2026-09-15 · `/r` = foundation + **42**
 > **CE-3K search/date interaction batch** · Shipped 2026-09-15 · `/r` = foundation + **48**
 > **CE-3L data/tree batch** · Shipped 2026-09-15 · `/r` = foundation + **50**
+> **CE-3M charts batch** · Shipped 2026-09-15 · `/r` = foundation + **52**
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J/K/L
-> are **SHIPPED** (see Status table). CE-3M onward are **DEFINED — NOT
+> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I/J/K/L/M
+> are **SHIPPED** (see Status table). CE-3N onward are **DEFINED — NOT
 > STARTED** below (see CE-3G section).
 
 ## Purpose
@@ -576,7 +577,8 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3J Overlay/navigation batch | ✅ SHIPPED — 6 slugs, see section below |
 | CE-3K Search/date interaction batch | ✅ SHIPPED — 6 slugs, see section below |
 | CE-3L Data/tree batch | ✅ SHIPPED — 2 slugs, see section below |
-| CE-3 overall | **IN PROGRESS** — CE-3M = NEXT, NOT STARTED |
+| CE-3M Charts batch | ✅ SHIPPED — 2 slugs, see section below |
+| CE-3 overall | **IN PROGRESS** — CE-3N = NEXT, NOT STARTED |
 
 ---
 
@@ -1442,9 +1444,41 @@ baseline + 2 new), build green (55 Agent contracts, 86 static pages),
 `generate:registry` deterministic across repeated runs (all 51 items —
 foundation + 50 — byte-identical), `git diff --check` clean.
 
-**CE-3M next — NOT STARTED.**
+**CE-3M next — was NOT STARTED at CE-3L ship; now SHIPPED (see below).**
 
-### CE-3M — Charts batch
+### CE-3M — Charts batch (SHIPPED)
+
+**Verdict: COMPLETE.** Shipped exactly the 2 canonical CE-3M slugs —
+`bar-chart`, `line-chart`. First real non-phosphor npm installer dependency
+(`recharts`) proven through a fresh consumer `shadcn add` → `next build` →
+`next start` → headless Chromium path.
+
+**Transport (per slug):**
+- Files: `BarChart.tsx` / `LineChart.tsx` + own CSS module + `lib/cn.ts`
+- `registryDependencies`: `@skrewww/foundation` only
+- `dependencies`: `["recharts"]`
+- `hostRequirements` never leak into the generated JSON
+- No banking files; manifests do not cross-transport the sibling chart
+
+**Consumer validation (T3, both green):**
+| Slug | Proof | Result |
+|------|-------|--------|
+| `bar-chart` | SVG + 6 proportional bar paths, `role="img"` + sr-only data table, ResponsiveContainer resize, zero console errors; npm delta `[recharts]` | ✅ |
+| `line-chart` | SVG + 1 curve + 6 proportional dots, no axes/legend, sr-only table, ResponsiveContainer resize, zero console errors; npm delta `[recharts]` | ✅ |
+
+**Eval retargeting:** `install-undistributed-bar-chart` →
+`install-undistributed-banking-account-card` — charts are now distributed;
+remaining implemented-but-undistributed are the three specialized banking
+pilots (`banking-account-card`, `banking-balance-summary`,
+`banking-transaction-row`) — specialized distribution deferred (not CE-0
+parity Class B; Class B remains 0).
+
+**Inventory delta:** `/r` foundation + 50 → foundation + **52**
+(= **53** registry items including foundation). Coverage **52/55**.
+
+**CE-3N — `/r/registry.json` is next, NOT STARTED.**
+
+### CE-3M — Charts batch (planning notes retained)
 
 - **Slugs:** `bar-chart`, `line-chart` (2)
 - **Complexity class:** H6
@@ -1457,8 +1491,9 @@ foundation + 50 — byte-identical), `git diff --check` clean.
 - **Exit gate:** green CI + successful fresh-install `recharts` smoke
 
 Banking (`banking-account-card`, `banking-balance-summary`,
-`banking-transaction-row`) is **intentionally not given a batch number** —
-Class B per Part 10, blocked on Figma verification, not scheduled.
+`banking-transaction-row`) remains **intentionally deferred** —
+specialized distribution deferred pending Figma verification, not
+scheduled in CE-3M.
 
 ## PART 15 — Overnight-safe boundary
 

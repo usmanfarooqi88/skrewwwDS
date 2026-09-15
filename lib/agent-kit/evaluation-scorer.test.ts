@@ -92,11 +92,13 @@ describe("AK-5 eval cases — integrity", () => {
     expect(isDistributedViaSkrewwwRegistry("dialog")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("combobox")).toBe(true);
     expect(isDistributedViaSkrewwwRegistry("tree-view")).toBe(true);
-    expect(isDistributedViaSkrewwwRegistry("bar-chart")).toBe(false);
+    expect(isDistributedViaSkrewwwRegistry("bar-chart")).toBe(true);
+    expect(isDistributedViaSkrewwwRegistry("line-chart")).toBe(true);
+    expect(isDistributedViaSkrewwwRegistry("banking-account-card")).toBe(false);
     const spinnerCase = EVAL_CASES.find((c) => c.id === "install-distributed-spinner")!;
-    const barChartCase = EVAL_CASES.find((c) => c.id === "install-undistributed-bar-chart")!;
+    const bankingCase = EVAL_CASES.find((c) => c.id === "install-undistributed-banking-account-card")!;
     expect(spinnerCase.allowedInstallCommands?.[0]).toContain("@skrewww/spinner");
-    expect(barChartCase.allowedInstallCommands).toEqual([]);
+    expect(bankingCase.allowedInstallCommands).toEqual([]);
   });
 
   it("covers the required capability classes", () => {
@@ -153,13 +155,13 @@ describe("AK-5 scorer", () => {
 
   it("detects false install commands and wrong maturity", () => {
     const { contracts } = compileKit();
-    const barChartCase = EVAL_CASES.find((c) => c.id === "install-undistributed-bar-chart")!;
+    const bankingCase = EVAL_CASES.find((c) => c.id === "install-undistributed-banking-account-card")!;
     const installScore = scoreEvalCase({
-      evalCase: barChartCase,
+      evalCase: bankingCase,
       condition: "off",
       rawOutput: declaration({
-        componentSlugs: ["bar-chart"],
-        installCommands: ["npx shadcn add @skrewww/bar-chart"],
+        componentSlugs: ["banking-account-card"],
+        installCommands: ["npx shadcn add @skrewww/banking-account-card"],
         shapeMode: "rounded",
         surfaceMode: "glass",
         skrewwwRegistryConfigured: true,

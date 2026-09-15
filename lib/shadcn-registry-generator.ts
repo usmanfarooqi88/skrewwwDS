@@ -676,6 +676,23 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:lib",
     target: "~/lib/use-data-table-sort.ts",
   },
+  // CE-3M — charts batch
+  "components/ui/BarChart.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/BarChart.tsx",
+  },
+  "components/ui/bar-chart.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/bar-chart.module.css",
+  },
+  "components/ui/LineChart.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/LineChart.tsx",
+  },
+  "components/ui/line-chart.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/line-chart.module.css",
+  },
 };
 
 export function classifyFile(relPath: string): { type: ShadcnFileType; target: string } {
@@ -1040,6 +1057,15 @@ export function buildTreeViewManifest(): ShadcnRegistryItem {
 
 export function buildDataTableManifest(): ShadcnRegistryItem {
   return buildComponentManifest("data-table");
+}
+
+// CE-3M — charts batch
+export function buildBarChartManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("bar-chart");
+}
+
+export function buildLineChartManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("line-chart");
 }
 
 /**

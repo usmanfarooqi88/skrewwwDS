@@ -1,6 +1,55 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K ✅ SHIPPED; CE-3L Data/Tree Batch ✅ SHIPPED — `/r` = foundation + 50; CE-3M = NEXT, NOT STARTED)
+Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K ✅ SHIPPED; CE-3L ✅ SHIPPED; CE-3M Charts Batch ✅ SHIPPED — `/r` = foundation + 52; CE-3N = NEXT, NOT STARTED)
+
+## 2026-09-15 — CE-3M Charts Distribution Batch (SHIPPED)
+
+**Verdict: COMPLETE.** Shipped exactly the 2 canonical CE-3M slugs —
+`bar-chart`, `line-chart`. First real non-phosphor npm installer dependency
+(`recharts`) proven end-to-end through fresh consumer install.
+
+Baseline before CE-3M: `39c4199` (main == origin/main, clean, CI success,
+repo PUBLIC, Vitest 1125/1125, `/r` = foundation + 50 = 51 items).
+
+**Source/runtime graph (both charts):**
+`BarChart.tsx` / `LineChart.tsx` + own CSS module; direct `recharts`
+imports (`Bar`/`BarChart`/`ResponsiveContainer`/`XAxis` and
+`Line`/`LineChart`/`ResponsiveContainer`); `cn` via `lib/cn.ts`; Foundation
+tokens for chart colors. `"use client"` preserved in transport. No banking
+files; manifests do not cross-include the sibling chart.
+
+**Transport:**
+- `FILE_DESTINATIONS` for both TSX + CSS modules
+- `registryDependencies`: `@skrewww/foundation`
+- `dependencies`: `["recharts"]` (no manual d3/react-is pins)
+- `hostRequirements` absent from generated JSON
+
+**Consumer validation — both T3 installed-browser proofs green:**
+`bar-chart` (SVG + 6 proportional bars, `role="img"` + sr-only table,
+ResponsiveContainer resize, zero console/page errors; npm delta
+`[recharts]`), `line-chart` (SVG + curve + 6 proportional dots, no
+axes/legend, sr-only table, ResponsiveContainer resize, zero console
+errors; npm delta `[recharts]`).
+
+**Accessibility (existing contract only):** `role="img"` + required
+`label`/`aria-label` + visually-hidden data table — verified in installed
+consumer. No new a11y APIs invented.
+
+**Eval retargeting:** `install-undistributed-bar-chart` →
+`install-undistributed-banking-account-card`. Remaining
+implemented-but-undistributed: `banking-account-card`,
+`banking-balance-summary`, `banking-transaction-row` — specialized
+distribution deferred (canonical CE-0 parity Class B remains 0).
+
+**Inventory delta:** `/r` foundation + 50 → foundation + **52**
+(= **53** registry items). Coverage **52/55**.
+
+**Validation:** lint clean, typecheck clean, Vitest **1127/1127** (1125
+baseline + 2 new chart generator tests), build green, `generate:registry`
+deterministic (53 items), `git diff --check` clean. Visual backlog (Table,
+Button Group, Split Button, Toggle Group, Textarea) — NOT touched.
+
+**CE-3N — `/r/registry.json` is next, NOT STARTED.**
 
 ## 2026-09-15 — CE-3L Data/Tree Distribution Batch (SHIPPED)
 
@@ -61,7 +110,8 @@ baseline + 2 new), build green (55 Agent contracts, 86 static pages),
 `generate:registry` deterministic across repeated runs, `git diff --check`
 clean.
 
-**CE-3M — Charts batch is next, NOT STARTED.**
+**CE-3M — Charts batch is next, NOT STARTED.** (superseded — see CE-3M
+SHIPPED section above)
 
 ## 2026-09-15 — CE-3K Search/Date Interaction Distribution Batch (SHIPPED)
 
@@ -3589,7 +3639,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE (docs-only); CE-3H ✅ SHIPPED; CE-3I ✅ SHIPPED; CE-3J ✅ SHIPPED; CE-3K ✅ SHIPPED; CE-3L Data/Tree Batch ✅ SHIPPED (`/r` = foundation + 50); CE-3M = NEXT, NOT STARTED |
+| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–L ✅ shipped; CE-3M Charts Batch ✅ SHIPPED (`/r` = foundation + 52); CE-3N = NEXT, NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |

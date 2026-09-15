@@ -55,6 +55,8 @@ import {
   buildPhoneNumberFieldManifest,
   buildTreeViewManifest,
   buildDataTableManifest,
+  buildBarChartManifest,
+  buildLineChartManifest,
   classifyFile,
   extractFoundationCss,
   extractFoundationCssFromSource,
@@ -299,6 +301,8 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildPhoneNumberFieldManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildTreeViewManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildDataTableManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildBarChartManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildLineChartManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -1039,6 +1043,55 @@ describe("shadcn registry generator", () => {
     expect(manifest.registryDependencies).toEqual(["@skrewww/table", "@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
     expect(JSON.stringify(manifest)).not.toMatch(/Table\.tsx|Pagination\.tsx|Menu\.tsx|Checkbox\.tsx|@skrewww\/pagination|@skrewww\/menu|@skrewww\/checkbox/);
+  });
+
+  // CE-3M — charts batch
+  it("transports Bar Chart with recharts npm dependency, foundation-only registryDeps, and no line/banking leakage", () => {
+    const manifest = buildBarChartManifest();
+    expect(manifest.name).toBe("bar-chart");
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/BarChart.tsx",
+      "components/ui/bar-chart.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.files.map((file) => file.target).sort()).toEqual([
+      "~/components/ui/BarChart.tsx",
+      "~/components/ui/bar-chart.module.css",
+      "~/lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["recharts"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+    expect(JSON.stringify(manifest)).not.toMatch(
+      /LineChart\.tsx|line-chart\.module\.css|banking-|BankingAccount|BankingBalance|BankingTransaction/,
+    );
+    const tsx = manifest.files.find((file) => file.path === "components/ui/BarChart.tsx")!;
+    expect(tsx.content).toMatch(/^["']use client["']/);
+    expect(tsx.content).toMatch(/from ["']recharts["']/);
+  });
+
+  it("transports Line Chart with recharts npm dependency, foundation-only registryDeps, and no bar/banking leakage", () => {
+    const manifest = buildLineChartManifest();
+    expect(manifest.name).toBe("line-chart");
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/LineChart.tsx",
+      "components/ui/line-chart.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.files.map((file) => file.target).sort()).toEqual([
+      "~/components/ui/LineChart.tsx",
+      "~/components/ui/line-chart.module.css",
+      "~/lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["recharts"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+    expect(JSON.stringify(manifest)).not.toMatch(
+      /BarChart\.tsx|bar-chart\.module\.css|banking-|BankingAccount|BankingBalance|BankingTransaction/,
+    );
+    const tsx = manifest.files.find((file) => file.path === "components/ui/LineChart.tsx")!;
+    expect(tsx.content).toMatch(/^["']use client["']/);
+    expect(tsx.content).toMatch(/from ["']recharts["']/);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

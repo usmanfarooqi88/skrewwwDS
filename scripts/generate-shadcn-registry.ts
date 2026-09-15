@@ -58,6 +58,8 @@ import {
   buildPhoneNumberFieldManifest,
   buildTreeViewManifest,
   buildDataTableManifest,
+  buildBarChartManifest,
+  buildLineChartManifest,
 } from "../lib/shadcn-registry-generator";
 
 const OUT_DIR = join(process.cwd(), "public", "r");
@@ -116,6 +118,8 @@ const manifests = [
   ["phone-number-field.json", buildPhoneNumberFieldManifest()],
   ["tree-view.json", buildTreeViewManifest()],
   ["data-table.json", buildDataTableManifest()],
+  ["bar-chart.json", buildBarChartManifest()],
+  ["line-chart.json", buildLineChartManifest()],
 ] as const;
 
 console.log("Generated shadcn registry manifests:");
