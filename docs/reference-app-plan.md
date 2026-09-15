@@ -3,6 +3,7 @@
 **Phase:** RA-4 ✅ COMPLETE (Responsive + accessibility validation)  
 **Status:** Viewport / keyboard / overflow / overlay reachability validated — RA-5 visual backlog review not started  
 **Baseline:** CE-3 `55b4bd2`; RA-0 `74bbf3b`; RA-1 `c353358`; RA-2 `668e91a`; RA-3 `733c691`  
+**Final SHA:** `c122804` (CI success)  
 **Canonical next task:** RA-5 — Visual / parity backlog review (**NOT STARTED**)
 
 This document is the **single source of truth** for the Reference App phase.
@@ -30,6 +31,7 @@ human approval.
 | Vitest | 1155 / 1155 |
 | Browser | Reference App Playwright **20 / 20** (shell 4 + data 4 + forms 6 + responsive/a11y 6) |
 | Gaps | No new G3/G4/G5 |
+| SHA / CI | `c122804` — Actions run [35009562057](https://github.com/usmanfarooqi88/skrewwwDS/actions/runs/35009562057) success |
 
 Manual review: all five routes @ 1280×800, 900×800, 390×844; plus `/reference/data` and discard Dialog @ 390×640.
 
@@ -708,7 +710,7 @@ Reference App:
   RA-1 ✅ COMPLETE
   RA-2 ✅ COMPLETE
   RA-3 ✅ COMPLETE (733c691)
-  RA-4 ✅ COMPLETE
+  RA-4 ✅ COMPLETE (c122804)
   RA-5 NOT STARTED  ← next
   RA-6 later
 

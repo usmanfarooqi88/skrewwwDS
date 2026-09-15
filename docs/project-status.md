@@ -18,6 +18,9 @@ page cannot scroll horizontally while `TableScrollArea` scrolls locally.
 **Evidence:** lint/typecheck/build green; Vitest **1155/1155**; Playwright
 reference **20/20**; registry **53**.
 
+**Final SHA:** `c1228042244be430e45028edbf0d8f1964d34b77`  
+**CI:** [completed / success](https://github.com/usmanfarooqi88/skrewwwDS/actions/runs/35009562057)
+
 **Canonical next:** **RA-5 — Visual / parity backlog review — NOT STARTED.**
 PH-0 later · Guard NOT STARTED.
 
