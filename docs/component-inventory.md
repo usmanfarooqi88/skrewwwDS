@@ -32,10 +32,10 @@ entries are Figma item primitives that React correctly models via composition.
 | Beta | **28** |
 | Public docs pages (implemented) | **55** |
 | Agent Kit contracts | **55** |
-| `/r` component manifests | **15** (+ `foundation` shared cut = 16 files) |
+| `/r` component manifests | **18** (+ `foundation` shared cut = 19 files) |
 
-`/r` components: button, card, checkbox, divider, form-field, link, pagination, progress-bar, radio, skeleton, spinner, switch, text-input, textarea, validation-message.
-CE-3 IN PROGRESS — CE-3D shipped; CE-3E next.
+`/r` components: avatar, breadcrumb, button, card, checkbox, divider, form-field, link, pagination, progress-bar, radio, radio-group, skeleton, spinner, switch, text-input, textarea, validation-message.
+CE-3 IN PROGRESS — CE-3E shipped; CE-3F next.
 
 ### Figma / documentation inventory
 
@@ -166,7 +166,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Implemented | 55 | |
 | Docs | 55 implemented + 11 docs-only | |
 | Agent contracts | 55 | |
-| `/r` distributed components | 15 | + foundation; CE-3D Stable chain + link-utils |
+| `/r` distributed components | 18 | + foundation; CE-3E Stable phosphor + Skrewww graph |
 | `/r/registry.json` | 0 | STAB-001 / later CE-3 — not this pass |
 
 ## Master inventory table
@@ -175,13 +175,13 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 |-----------|-------|-------|-------|-----------------|-------------|------|-------|----|--------|----------|------|-------|
 | Accordion | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Containers & Overlays; figmaAvailability=available |
 | Alert | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
-| Avatar | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
+| Avatar | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available; CE-3E `/r` |
 | Badge | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Feedback; figmaAvailability=available |
 | Banking Account Card | no (confirmed absent) | yes | D | public | Beta | yes | yes | no | UNKNOWN | P3 | Optional Figma Industry follow-up | Content & Data; figmaAvailability=unavailable |
 | Banking Balance Summary | no (confirmed absent) | yes | D | public | Beta | yes | yes | no | UNKNOWN | P3 | Optional Figma Industry follow-up | Content & Data; figmaAvailability=unavailable |
 | Banking Transaction Row | no (confirmed absent) | yes | D | public | Beta | yes | yes | no | UNKNOWN | P3 | Optional Figma Industry follow-up | Content & Data; figmaAvailability=unavailable |
 | Bar Chart | yes | yes | A | public | Beta | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
-| Breadcrumb | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Navigation; figmaAvailability=available |
+| Breadcrumb | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Navigation; figmaAvailability=available; CE-3E `/r` |
 | Button | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Actions; figmaAvailability=available |
 | Button Group | yes (Actions/Button Group `2022:1013`) | yes | A | public | Beta | yes | yes | no (CE-3) | VERIFIED | — | Maintain | Actions; CE-1B; joined independent Buttons; not radiogroup |
 | Calendar Day | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Content & Data; figmaAvailability=available |
@@ -208,7 +208,7 @@ See full scoring in [`docs/component-expansion.md`](component-expansion.md).
 | Popover | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Containers & Overlays; figmaAvailability=available |
 | Progress Bar | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available; CE-3B `/r` |
 | Radio | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Forms; figmaAvailability=available; CE-3C `/r` |
-| Radio Group | yes | yes | A | public | Stable | yes | yes | no | PARTIAL | P2 | Dedicated parity task if product needs | Forms; figmaAvailability=partial |
+| Radio Group | yes | yes | A | public | Stable | yes | yes | yes | PARTIAL | P2 | Dedicated parity task if product needs | Forms; figmaAvailability=partial; CE-3E `/r` |
 | Search Field | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Select | yes | yes | A | public | Stable | yes | yes | no | VERIFIED | — | Maintain | Forms; figmaAvailability=available |
 | Skeleton | yes | yes | A | public | Stable | yes | yes | yes | VERIFIED | — | Maintain | Feedback; figmaAvailability=available; CE-3B `/r` |

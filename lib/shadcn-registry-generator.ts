@@ -203,6 +203,26 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:ui",
     target: "~/components/ui/pagination.module.css",
   },
+  "components/ui/Avatar.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Avatar.tsx",
+  },
+  "components/ui/avatar.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/avatar.module.css",
+  },
+  "components/ui/Breadcrumb.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/Breadcrumb.tsx",
+  },
+  "components/ui/breadcrumb.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/breadcrumb.module.css",
+  },
+  "components/ui/RadioGroup.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/RadioGroup.tsx",
+  },
   "components/ui/internal/link-utils.ts": {
     type: "registry:lib",
     target: "~/components/ui/internal/link-utils.ts",
@@ -434,6 +454,18 @@ export function buildTextareaManifest(): ShadcnRegistryItem {
 
 export function buildPaginationManifest(): ShadcnRegistryItem {
   return buildComponentManifest("pagination");
+}
+
+export function buildAvatarManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("avatar");
+}
+
+export function buildBreadcrumbManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("breadcrumb");
+}
+
+export function buildRadioGroupManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("radio-group");
 }
 
 /**

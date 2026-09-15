@@ -50,6 +50,9 @@ import {
   buildPaginationManifest,
   buildProgressBarManifest,
   buildRadioManifest,
+  buildRadioGroupManifest,
+  buildAvatarManifest,
+  buildBreadcrumbManifest,
   buildSkeletonManifest,
   buildSpinnerManifest,
   buildSwitchManifest,
@@ -82,6 +85,9 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   switch: buildSwitchManifest,
   textarea: buildTextareaManifest,
   pagination: buildPaginationManifest,
+  avatar: buildAvatarManifest,
+  breadcrumb: buildBreadcrumbManifest,
+  "radio-group": buildRadioGroupManifest,
 };
 
 /**
@@ -374,6 +380,32 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       /from "@\/components\/ui\/Textarea"/.test(pageSource) && /Smoke description/.test(pageSource),
     harnessAssertionLabel:
       "consumer page imports Textarea and renders labeled control with validation",
+  },
+  avatar: {
+    criticalPaths: [
+      "components/ui/Avatar.tsx",
+      "components/ui/avatar.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { Avatar } from "@/components/ui/Avatar";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", gap: 12 }}>',
+        '      <Avatar initials="SK" label="Smoke avatar" />',
+        '      <Avatar decorative />',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/Avatar"/.test(pageSource) && /Smoke avatar/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports Avatar and renders labeled initials",
   },
   "spinner-divider-link": {
     criticalPaths: [

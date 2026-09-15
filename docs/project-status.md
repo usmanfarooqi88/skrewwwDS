@@ -1,6 +1,20 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3D textarea + pagination `/r` — SHIPPED pending CI; CE-3 IN PROGRESS)
+Last verified: **2026-09-15** (CE-3E Stable phosphor + Skrewww graph — SHIPPED pending CI; CE-3 IN PROGRESS)
+
+## 2026-09-15 — CE-3E Stable phosphor + Skrewww graph (SHIPPED)
+
+**Verdict: `avatar`, `breadcrumb`, `radio-group` distributed.**
+
+| Metric | Before | After |
+|--------|-------:|------:|
+| `/r` component manifests | 15 | **18** |
+
+Patterns: Stable Phosphor leaf; `@skrewww/link` registryDep; `@skrewww/radio` + validation-message multi-hop.
+
+Next: **CE-3F** after this commit’s remote CI is green.
+
+---
 
 ## 2026-09-15 — CE-3D Stable chain + link-utils (SHIPPED)
 

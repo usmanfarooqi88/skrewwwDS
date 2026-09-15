@@ -18,6 +18,9 @@ import {
   buildSwitchManifest,
   buildTextareaManifest,
   buildPaginationManifest,
+  buildAvatarManifest,
+  buildBreadcrumbManifest,
+  buildRadioGroupManifest,
   buildTextInputManifest,
   buildValidationMessageManifest,
   classifyFile,
@@ -229,6 +232,9 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildSwitchManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildTextareaManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildPaginationManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildAvatarManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildBreadcrumbManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildRadioGroupManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -441,6 +447,46 @@ describe("shadcn registry generator", () => {
     expect(manifest.dependencies).toEqual([]);
     expect(manifest.docs).toContain("next");
     expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+  });
+
+  it("transports Avatar with Phosphor npm dependency (Stable leaf)", () => {
+    const manifest = buildAvatarManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Avatar.tsx",
+      "components/ui/avatar.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+  });
+
+  it("transports Breadcrumb with Link registryDependency and Phosphor npm", () => {
+    const manifest = buildBreadcrumbManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/Breadcrumb.tsx",
+      "components/ui/breadcrumb.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/link", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/Link\.tsx/);
+  });
+
+  it("transports Radio Group with radio + validation-message registryDeps (no CSS duplication)", () => {
+    const manifest = buildRadioGroupManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/RadioGroup.tsx",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual([
+      "@skrewww/radio",
+      "@skrewww/validation-message",
+      "@skrewww/foundation",
+    ]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(manifest.files.some((file) => file.path.endsWith(".css"))).toBe(false);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

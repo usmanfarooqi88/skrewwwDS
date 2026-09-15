@@ -407,6 +407,12 @@ export function Example() {
       "semantic/action/danger",
       "semantic/text/danger",
     ],
+    dependencies: [],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts", "lib/use-controllable.ts"],
+    registryDependencies: ["@skrewww/radio", "@skrewww/validation-message", "@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/RadioGroup.tsx"],
     relatedComponents: [
       { label: "Radio — individual option control", href: "/components/radio" },
       { label: "Select — hidden long option lists", href: "/components/select" },
