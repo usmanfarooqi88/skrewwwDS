@@ -345,6 +345,10 @@ describe("project configuration", () => {
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("toggle-group.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("accordion.json");
     expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("tabs.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("search-field.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("credit-card-field.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("number-input.json");
+    expect(readRootFile("scripts/generate-shadcn-registry.ts")).toContain("file-upload.json");
     const validationMessage = getImplementedRegistryEntries().find(
       (entry) => entry.slug === "validation-message",
     );

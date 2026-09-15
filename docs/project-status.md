@@ -1,6 +1,81 @@
 # Project status
 
-Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G Higher-Complexity Planning ✅ COMPLETE, docs-only; CE-3H Safe Compound Batch ✅ SHIPPED — `/r` = foundation + 32; CE-3I = NEXT, NOT STARTED)
+Last verified: **2026-09-15** (CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE, docs-only; CE-3H ✅ SHIPPED; CE-3I Form/Composite Batch ✅ SHIPPED — `/r` = foundation + 36; CE-3J = NEXT, NOT STARTED)
+
+## 2026-09-15 — CE-3I Form/Composite Distribution Batch (SHIPPED)
+
+**Verdict: COMPLETE.** Shipped exactly the 4 canonical CE-3I slugs from
+`docs/distribution-expansion.md` — `search-field`, `credit-card-field`,
+`number-input`, `file-upload`. `phone-number-field` correctly excluded
+(verified: it imports `SelectControl` from `Select.tsx`, which transitively
+needs `Popover` — belongs in CE-3K).
+
+Baseline verified at `ddcb142` (main == origin/main, clean, CI success,
+repo PUBLIC, React 55, Stable/Beta 27/28, Vitest 1107/1107, `/r` =
+foundation + 32).
+
+Every slug's distribution metadata was reverified against real source
+imports. One real oversight from the initial pass: `search-field` imports
+`useControllableState` from `lib/use-controllable.ts` — present in this
+task's very first evidence-gathering grep, but left out of the registry
+entry when first written. Not caught by static review; caught by a real
+`shadcn add` + `next build` failure (`Module not found:
+'@/lib/use-controllable'`). Fixed and reverified. `number-input` needed
+`lib/cn.ts` as a purely **transitive** dependency — `NumberInput.tsx` never
+calls `cn()` itself, but the `TextInputControl.tsx` it bundles does,
+exactly the pattern CE-3H's Alert/Toast fix established.
+
+**File Upload — the required ATTENDED_ONLY proof:** ran the full installed-
+consumer path — real `shadcn add`, real `next build`, then (a new, small,
+generic smoke-harness extension) real `next start` + a real headless-
+Chromium session via Playwright — keyboard focus, real File API selection
+(`setInputFiles`), file removal, a genuine drag/drop sequence via a live
+`DataTransfer`/`DragEvent`, and the oversized-file rejection message, with
+zero browser console errors. All green. Two bugs surfaced and fixed along
+the way, **both in the test harness, not the product**: a missing
+`expectedSharedTargets: ["lib/cn.ts"]` entry (`credit-card-field` and
+`file-upload` each independently contribute `lib/cn.ts` from more than one
+manifest in their graph), and a first `browserAssert` draft that drove
+select→remove→reject on one field in sequence — investigation traced this
+to `clearNativeFileInput()`'s `Object.defineProperty` reset (real, correct,
+existing product behavior) not playing well with an immediate repeat
+`setInputFiles()` call on the same Playwright locator. The existing
+`e2e/file-upload.spec.ts` already avoids this exact combination by testing
+rejection and selection on separate named inputs — the harness was
+corrected to mirror that same structure rather than inventing a new
+scenario. No product code changed.
+
+**Consumer smoke harness extended** (small, generic, reusable — not
+File-Upload-hardcoded): `ComponentSmokeDescriptor` gained an optional
+`browserAssert` hook; when present, `main()` starts `next start` against
+the built consumer and opens a real headless Chromium page to run it. Every
+other descriptor is unaffected — the hook is opt-in.
+
+**Consumer validation:** `search-field` and `credit-card-field` each ran
+the full `shadcn add` → `next build` path (representative transport
+patterns; `number-input` shares `search-field`'s exact shape plus
+already-proven pieces, so it was not independently scaffolded, per the
+task's "do not scaffold redundant consumers" instruction). One transient
+DNS failure to `ui.shadcn.com` occurred mid-batch (the documented
+historical `ENOTFOUND` condition) — confirmed via `curl`/`nslookup`, not
+retried against the CLI, resolved on its own within about a minute (npm
+registry access was unaffected throughout); all 4 slugs were proven once
+connectivity returned.
+
+**Inventory delta:** `/r` foundation + 32 → foundation + **36**.
+React/Stable-Beta/docs/contracts counts unchanged (distribution-only).
+
+**Count-wording audit (Part 17):** checked all "32 manifests"/"foundation +
+N" phrasing across `docs/distribution-expansion.md` and `docs/project-status.md`
+— all instances already correctly separate foundation from the component
+count; no correction needed.
+
+**Validation:** lint clean, typecheck clean, Vitest **1111/1111** (1107
+baseline + 4 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs, `git diff --check`
+clean.
+
+**CE-3J — Overlay/navigation batch is next, NOT STARTED.**
 
 ## 2026-09-15 — CE-3H Safe Compound Distribution Batch (SHIPPED)
 
@@ -3317,7 +3392,7 @@ here instead.
 | **CE-2J Stepper Figma/MCP verification** | ✅ **COMPLETE** — **decision B, READY WITH NARROWER CONTRACT** (`orientation`/`Step.description` dropped; live-verified vs. `Navigation/Step Item` node `2024:2944`) |
 | **CE-2K Stepper implementation** | ✅ **SHIPPED** — Beta `0.1.0-beta`, compound `Stepper`+`Step`, Class A; `/r` deferred to CE-3 |
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
-| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G Higher-Complexity Planning ✅ COMPLETE (docs-only); CE-3H Safe Compound Batch ✅ SHIPPED (`/r` = foundation + 32); CE-3I = NEXT, NOT STARTED |
+| CE-3 Distribution Expansion | **IN PROGRESS** — CE-3A–F ✅ shipped; CE-3G ✅ COMPLETE (docs-only); CE-3H ✅ SHIPPED; CE-3I Form/Composite Batch ✅ SHIPPED (`/r` = foundation + 36); CE-3J = NEXT, NOT STARTED |
 | Reference App / Composition Validation | Later — not started |
 | PH-0 Pre-Guard Hardening | Later — not started |
 | Skrewww Guard | Later — NOT STARTED |

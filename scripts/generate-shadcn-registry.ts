@@ -40,6 +40,10 @@ import {
   buildToggleGroupManifest,
   buildAccordionManifest,
   buildTabsManifest,
+  buildSearchFieldManifest,
+  buildCreditCardFieldManifest,
+  buildNumberInputManifest,
+  buildFileUploadManifest,
 } from "../lib/shadcn-registry-generator";
 
 const OUT_DIR = join(process.cwd(), "public", "r");
@@ -80,6 +84,10 @@ const manifests = [
   ["toggle-group.json", buildToggleGroupManifest()],
   ["accordion.json", buildAccordionManifest()],
   ["tabs.json", buildTabsManifest()],
+  ["search-field.json", buildSearchFieldManifest()],
+  ["credit-card-field.json", buildCreditCardFieldManifest()],
+  ["number-input.json", buildNumberInputManifest()],
+  ["file-upload.json", buildFileUploadManifest()],
 ] as const;
 
 console.log("Generated shadcn registry manifests:");

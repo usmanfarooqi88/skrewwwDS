@@ -4,9 +4,10 @@
 > **CE-3D/E/F planning** · Verified 2026-09-15 · Baseline `a867076` · `/r` = foundation + **13**
 > **CE-3G higher-complexity planning** · Verified 2026-09-15 · Baseline `08bf6a6` · `/r` = foundation + **21**
 > **CE-3H safe compound batch** · Shipped 2026-09-15 · `/r` = foundation + **32**
+> **CE-3I form/composite batch** · Shipped 2026-09-15 · `/r` = foundation + **36**
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
-> shadcn transport architecture. Implementation batches CE-3D/E/F/H are
-> **SHIPPED** (see Status table). CE-3I onward are **DEFINED — NOT STARTED**
+> shadcn transport architecture. Implementation batches CE-3D/E/F/H/I are
+> **SHIPPED** (see Status table). CE-3J onward are **DEFINED — NOT STARTED**
 > below (see CE-3G section).
 
 ## Purpose
@@ -568,7 +569,8 @@ Canonical next attended tasks after CE-3F (pick one later):
 | CE-3F Selected proven Beta | ✅ SHIPPED — `slider`, `stepper`, `table` |
 | CE-3G Higher-Complexity Planning | ✅ COMPLETE (docs-only, see section below) |
 | CE-3H Safe compound batch | ✅ SHIPPED — 11 slugs, see section below |
-| CE-3 overall | **IN PROGRESS** — CE-3I = NEXT, NOT STARTED |
+| CE-3I Form/composite batch | ✅ SHIPPED — 4 slugs, see section below |
+| CE-3 overall | **IN PROGRESS** — CE-3J = NEXT, NOT STARTED |
 
 ---
 
@@ -1019,6 +1021,95 @@ byte-identical), `git diff --check` clean.
 - **Expected manifest delta:** 32 → 36
 - **Stop conditions:** do not include `phone-number-field` here — it pulls `Select`→`Popover` transitively, belongs in CE-3K
 - **Exit gate:** green CI before CE-3J
+
+#### CE-3I — SHIPPED (2026-09-15)
+
+**Verdict: COMPLETE.** All 4 planned slugs shipped exactly as scoped —
+`phone-number-field` correctly excluded (confirmed via real source: it
+imports `SelectControl` from `Select.tsx`, which transitively depends on
+`Popover`).
+
+**Registry metadata reverified against real source, not copied from the
+CE-3G plan unchecked:**
+
+- `search-field`: `@skrewww/form-field` registryDependency + already-mapped
+  `TextInputControl.tsx`/`text-input.module.css` internal files. **Missed
+  on the first pass:** `lib/use-controllable.ts` — present in the file's
+  own imports from the very first evidence-gathering grep of this task, but
+  omitted when the registry entry was written. Caught by a real
+  `shadcn add` + `next build` failure (`Module not found:
+  '@/lib/use-controllable'`), not by static review. Fixed.
+- `credit-card-field`: `@skrewww/validation-message` registryDependency +
+  its own zero-import `credit-card-field-format.ts` helper.
+- `number-input`: `@skrewww/form-field` registryDependency +
+  `TextInputControl.tsx`/`text-input.module.css` + `lib/cn.ts` as a
+  **transitive** dependency (NumberInput.tsx never calls `cn()` itself —
+  `TextInputControl.tsx`, which it bundles, does) + its own zero-import
+  `number-input-value.ts` helper.
+- `file-upload`: `@skrewww/form-field` registryDependency + its own
+  zero-import `file-upload-file-list.ts`/`file-upload-validation.ts`
+  helpers.
+
+**`cssTokens` populated** for all 4 (same dormant-check activation as
+CE-3H — `entry.files` was previously `undefined`), using the exact,
+test-verified sets `lib/component-registry.test.ts` reported.
+
+**Consumer validation (real, network-backed):** one transient DNS failure
+to `ui.shadcn.com` occurred mid-batch (`ENOTFOUND ui.shadcn.com`, the
+documented historical condition) — confirmed via `curl`/`nslookup`, not
+retried against the CLI, and resolved on its own within roughly a minute;
+npm registry access was unaffected throughout. All 4 slugs were
+successfully proven once connectivity returned:
+
+| Slug | Proof | Result |
+|------|-------|--------|
+| `search-field` | full `shadcn add` → `next build`, representative of the `form-field` + `TextInputControl` transport shape (also covers `number-input`, not independently scaffolded — same shape plus one already-proven pure-helper pattern) | ❌ (missing use-controllable) → fixed → ✅ all 13 stages green |
+| `credit-card-field` | full `shadcn add` → `next build`, representative of the `validation-message` + own-formatter shape | ❌ (harness `expectedSharedTargets` bug, not a manifest defect) → fixed → ✅ all 13 stages green |
+| `file-upload` | **REQUIRED per ATTENDED_ONLY**: full `shadcn add` → `next build` → `next start` → real headless-Chromium browser session → keyboard focus + dropzone focus-within → real File API selection (`setInputFiles`) → remove-file state transition → real drag/drop via a live `DataTransfer`/`DragEvent` sequence → oversized-file rejection message → zero console errors | ✅ all stages green after two harness-authoring fixes (below) — no component defect found |
+| `number-input` | not independently scaffolded — identical transport shape to `search-field` (already proven) plus `lib/use-controllable.ts` (already proven via `switch`/`tabs`) and a zero-import pure helper (already proven via `credit-card-field-format.ts`) | — |
+
+**Consumer smoke harness extended** (small, generic, reusable — not
+File-Upload-hardcoded): `ComponentSmokeDescriptor` gained an optional
+`browserAssert?: (ctx: { page, baseUrl }) => Promise<void>` field. When
+present, `main()` runs `next start` against the built consumer on a
+loopback port (`startNextServer()`, a new ~25-line helper) and opens a
+real headless Chromium page via `@playwright/test`'s `chromium.launch()`
+(already a repo devDependency, browsers already installed) to invoke it,
+asserting zero critical console errors as a baseline check on top of
+whatever the descriptor itself verifies. Every prior descriptor is
+unaffected (the field is optional; build-success remains their only
+proof).
+
+**Two harness-authoring bugs found and fixed while proving `file-upload`
+(neither is a component or distribution defect):**
+
+1. `expectedSharedTargets` was missing `lib/cn.ts` for `credit-card-field`
+   and `file-upload` — both independently contribute `lib/cn.ts` from more
+   than one manifest in their resolved graph (the component itself, plus
+   `validation-message`/`form-field`), exactly like `search-field`'s
+   already-correct descriptor.
+2. The first `file-upload` `browserAssert` drove a single field through
+   select → remove → **oversized-reject**, in that order. Investigation
+   traced the failure to `clearNativeFileInput()`
+   (`components/ui/internal/file-upload-file-list.ts`) using
+   `Object.defineProperty(input, "files", { value: … })` to reset the
+   native input after a rejection — real, existing, correct product
+   behavior, but incompatible with immediately reusing the same Playwright
+   `setInputFiles()` locator in the same test tick. `e2e/file-upload.spec.ts`
+   itself already avoids this exact combination by testing rejection and
+   normal selection on **separate** named inputs — the smoke harness now
+   mirrors that same structure (two `FileUpload` instances) rather than
+   inventing a new compound scenario. No product code changed.
+
+**Manifest count:** foundation + 32 → foundation + **36** (adds
+`search-field`, `credit-card-field`, `number-input`, `file-upload`).
+
+**Validation:** lint clean, typecheck clean, Vitest **1111/1111** (1107
+baseline + 4 new), build green (55 Agent contracts, 86 static pages),
+`generate:registry` deterministic across repeated runs (all 37 items —
+foundation + 36 — byte-identical), `git diff --check` clean.
+
+**CE-3J next — NOT STARTED.**
 
 ### CE-3J — Overlay/navigation batch
 

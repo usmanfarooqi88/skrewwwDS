@@ -380,6 +380,55 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:lib",
     target: "~/components/ui/internal/tab-keyboard.ts",
   },
+  // CE-3I — form/composite batch
+  "components/ui/SearchField.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/SearchField.tsx",
+  },
+  "components/ui/search-field.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/search-field.module.css",
+  },
+  "components/ui/CreditCardField.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/CreditCardField.tsx",
+  },
+  "components/ui/credit-card-field.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/credit-card-field.module.css",
+  },
+  "lib/credit-card-field-format.ts": {
+    type: "registry:lib",
+    target: "~/lib/credit-card-field-format.ts",
+  },
+  "components/ui/NumberInput.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/NumberInput.tsx",
+  },
+  "components/ui/number-input.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/number-input.module.css",
+  },
+  "lib/number-input-value.ts": {
+    type: "registry:lib",
+    target: "~/lib/number-input-value.ts",
+  },
+  "components/ui/FileUpload.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/FileUpload.tsx",
+  },
+  "components/ui/file-upload.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/file-upload.module.css",
+  },
+  "components/ui/internal/file-upload-file-list.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/file-upload-file-list.ts",
+  },
+  "components/ui/internal/file-upload-validation.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/file-upload-validation.ts",
+  },
 };
 
 export function classifyFile(relPath: string): { type: ShadcnFileType; target: string } {
@@ -668,6 +717,23 @@ export function buildAccordionManifest(): ShadcnRegistryItem {
 
 export function buildTabsManifest(): ShadcnRegistryItem {
   return buildComponentManifest("tabs");
+}
+
+// CE-3I — form/composite batch
+export function buildSearchFieldManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("search-field");
+}
+
+export function buildCreditCardFieldManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("credit-card-field");
+}
+
+export function buildNumberInputManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("number-input");
+}
+
+export function buildFileUploadManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("file-upload");
 }
 
 /**

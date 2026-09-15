@@ -33,12 +33,13 @@
  * registry, Tier D = real-browser interaction — both explicitly excluded
  * from the normal per-commit chain).
  */
-import { spawn } from "node:child_process";
+import { spawn, type ChildProcess } from "node:child_process";
 import { createHash } from "node:crypto";
 import { createServer, type Server } from "node:http";
 import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
+import { chromium, type Page as PlaywrightPage } from "@playwright/test";
 import {
   buildButtonManifest,
   buildCardManifest,
@@ -73,6 +74,10 @@ import {
   buildToggleGroupManifest,
   buildAccordionManifest,
   buildTabsManifest,
+  buildSearchFieldManifest,
+  buildCreditCardFieldManifest,
+  buildNumberInputManifest,
+  buildFileUploadManifest,
   type ShadcnRegistryItem,
 } from "../lib/shadcn-registry-generator";
 
@@ -116,6 +121,10 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   "toggle-group": buildToggleGroupManifest,
   accordion: buildAccordionManifest,
   tabs: buildTabsManifest,
+  "search-field": buildSearchFieldManifest,
+  "credit-card-field": buildCreditCardFieldManifest,
+  "number-input": buildNumberInputManifest,
+  "file-upload": buildFileUploadManifest,
 };
 
 /**
@@ -136,6 +145,15 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
  * per component so a first-of-its-kind interactive-prompt risk can be
  * hardened against without changing behavior for already-proven
  * components.
+ *
+ * browserAssert: optional installed-runtime browser verification (CE-3I) —
+ * when present, main() starts `next start` against the built consumer,
+ * opens a real headless Chromium page against it via Playwright, and
+ * invokes this callback with a live Page + the server's base URL. Generic
+ * and opt-in: every descriptor without it behaves exactly as before (build
+ * success is still the only proof). Use this for components whose real
+ * behavior (drag/drop, File API, keyboard interaction) cannot be proven by
+ * a static page-source regex alone.
  */
 type ComponentSmokeDescriptor = {
   criticalPaths: string[];
@@ -146,6 +164,7 @@ type ComponentSmokeDescriptor = {
   closeStdinOnAdd?: boolean;
   /** Additional @skrewww/* items to install after the primary (composed proofs). */
   extraAdds?: string[];
+  browserAssert?: (ctx: { page: PlaywrightPage; baseUrl: string }) => Promise<void>;
 };
 
 const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
@@ -589,6 +608,212 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     harnessAssertionLabel:
       "consumer page imports the Tabs compound family and renders a real tablist, exercising the inline-context + tab-keyboard.ts helper pattern",
   },
+  // CE-3I — form/composite batch: search-field represents the
+  // form-field-registryDep + already-mapped-TextInputControl transport
+  // shape (number-input shares this exact shape plus one already-proven
+  // pure-helper pattern from credit-card-field, so it is not independently
+  // scaffolded here — see docs/distribution-expansion.md's CE-3I section).
+  "search-field": {
+    criticalPaths: [
+      "components/ui/SearchField.tsx",
+      "components/ui/search-field.module.css",
+      "components/ui/TextInputControl.tsx",
+      "components/ui/text-input.module.css",
+      "components/ui/FormField.tsx",
+      "components/ui/form-field.module.css",
+      "components/ui/ValidationMessage.tsx",
+      "components/ui/validation-message.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { SearchField } from "@/components/ui/SearchField";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        "    <SearchField",
+        '      label="Smoke search"',
+        '      placeholder="Search…"',
+        "    />",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/SearchField"/.test(pageSource) && /Smoke search/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports SearchField and renders it, exercising the @skrewww/form-field registryDependency + already-mapped TextInputControl.tsx/text-input.module.css internal files (no Popover pulled in)",
+  },
+  // Represents the ValidationMessage-registryDep + own-format-helper shape
+  // (credit-card-field-format.ts has zero imports of its own, so no further
+  // transitive closure risk beyond what this proves).
+  "credit-card-field": {
+    criticalPaths: [
+      "components/ui/CreditCardField.tsx",
+      "components/ui/credit-card-field.module.css",
+      "components/ui/ValidationMessage.tsx",
+      "components/ui/validation-message.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+      "lib/credit-card-field-format.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    // lib/cn.ts is independently declared by both credit-card-field and its
+    // @skrewww/validation-message registryDependency.
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        'import { CreditCardField } from "@/components/ui/CreditCardField";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <CreditCardField label="Smoke card details" />',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/CreditCardField"/.test(pageSource) && /Smoke card details/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports CreditCardField and renders it, exercising the @skrewww/validation-message registryDependency + its own credit-card-field-format.ts helper",
+  },
+  // ATTENDED_ONLY per CE-3G: drag/drop + File API + real browser
+  // interaction cannot be proven by page-source regex alone. Reuses the
+  // exact selectors/behaviors from e2e/file-upload.spec.ts (the existing
+  // authoritative File Upload browser suite) rather than inventing new
+  // scenarios — native input[type=file], the "Selected files" list role,
+  // "Remove <name>" buttons, the oversized-file rejection message, and the
+  // DataTransfer/DragEvent drop sequence.
+  "file-upload": {
+    criticalPaths: [
+      "components/ui/FileUpload.tsx",
+      "components/ui/file-upload.module.css",
+      "components/ui/internal/file-upload-file-list.ts",
+      "components/ui/internal/file-upload-validation.ts",
+      "components/ui/FormField.tsx",
+      "components/ui/form-field.module.css",
+      "components/ui/ValidationMessage.tsx",
+      "components/ui/validation-message.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    // lib/cn.ts is independently declared by both file-upload and its
+    // @skrewww/form-field registryDependency.
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    // Two separate FileUpload instances — mirroring e2e/file-upload.spec.ts's
+    // own structure exactly (that suite never re-selects on the same input
+    // right after a rejection; it uses distinct named inputs per scenario).
+    // "smoke-reject" only ever proves the oversized-file rejection path;
+    // "smoke-select" proves select/remove/drag-drop on a field that is
+    // never driven into a rejected state. This is reuse of the existing
+    // authoritative flows, not an invented combined scenario.
+    renderHarness: () =>
+      [
+        'import { FileUpload } from "@/components/ui/FileUpload";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40, display: "flex", flexDirection: "column", gap: 24 }}>',
+        "      <FileUpload",
+        '        name="smoke-select"',
+        '        label="Smoke file upload"',
+        '        accept="image/png"',
+        "        multiple",
+        "      />",
+        "      <FileUpload",
+        '        name="smoke-reject"',
+        '        label="Smoke file upload (size-limited)"',
+        '        accept="image/png"',
+        "        maxSize={5000}",
+        "      />",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/FileUpload"/.test(pageSource) &&
+      /name="smoke-select"/.test(pageSource) &&
+      /name="smoke-reject"/.test(pageSource),
+    harnessAssertionLabel:
+      "consumer page imports FileUpload and renders two instances (select/remove/drag-drop + size-limited reject), exercising the @skrewww/form-field registryDependency + its own file-list/validation helpers",
+    browserAssert: async ({ page }) => {
+      const selectInput = page.locator('input[type="file"][name="smoke-select"]');
+      const rejectInput = page.locator('input[type="file"][name="smoke-reject"]');
+      const WAIT_MS = 5000;
+
+      // Keyboard-accessible file selection: native input is focusable and
+      // the dropzone shows a visible focus-within ring — same assertion as
+      // e2e/file-upload.spec.ts's "exposes keyboard focus" test.
+      await selectInput.focus();
+      const isFocused = await selectInput.evaluate((el) => el === document.activeElement);
+      if (!isFocused) throw new Error("Installed File Upload: native file input did not receive keyboard focus.");
+      await page
+        .locator('[class*="dropzone"]:focus-within')
+        .waitFor({ state: "visible", timeout: WAIT_MS })
+        .catch(() => {
+          throw new Error("Installed File Upload: dropzone has no visible focus-within state.");
+        });
+
+      // Real File API selection (setInputFiles is Playwright's real
+      // browser-level file-selection primitive, not a JSDOM simulation).
+      const selectedList = page.getByRole("list", { name: "Selected files" }).first();
+      await selectInput.setInputFiles({ name: "smoke.png", mimeType: "image/png", buffer: Buffer.from("smoke") });
+      await selectedList
+        .getByText("smoke.png")
+        .waitFor({ state: "visible", timeout: WAIT_MS })
+        .catch(() => {
+          throw new Error("Installed File Upload: selected file \"smoke.png\" did not appear in the Selected files list.");
+        });
+
+      // Existing state transition: remove control for a selected file.
+      await page.getByRole("button", { name: "Remove smoke.png" }).click();
+      await selectedList
+        .getByText("smoke.png")
+        .waitFor({ state: "detached", timeout: WAIT_MS })
+        .catch(() => {
+          throw new Error("Installed File Upload: \"smoke.png\" was not removed from the Selected files list.");
+        });
+
+      // Real browser drag/drop, dispatched via a live DataTransfer — same
+      // sequence as e2e/file-upload.spec.ts's "supports drag and drop
+      // replacement" test.
+      await page.evaluate(() => {
+        const uploadInput = document.querySelector('input[name="smoke-select"]') as HTMLInputElement | null;
+        const zone = uploadInput?.parentElement;
+        if (!uploadInput || !zone) throw new Error("Missing file upload dropzone in installed consumer page");
+        const transfer = new DataTransfer();
+        transfer.items.add(new File(["dropped"], "dropped.png", { type: "image/png" }));
+        zone.dispatchEvent(new DragEvent("dragenter", { bubbles: true, dataTransfer: transfer }));
+        zone.dispatchEvent(new DragEvent("dragover", { bubbles: true, dataTransfer: transfer }));
+        zone.dispatchEvent(new DragEvent("drop", { bubbles: true, dataTransfer: transfer }));
+      });
+      await selectedList
+        .getByText("dropped.png")
+        .waitFor({ state: "visible", timeout: WAIT_MS })
+        .catch(() => {
+          throw new Error("Installed File Upload: drag-and-drop file \"dropped.png\" did not appear in the Selected files list.");
+        });
+
+      // Existing state transition: oversized-file rejection message, on
+      // the dedicated size-limited field (never given an accepted file).
+      await rejectInput.setInputFiles({ name: "huge.png", mimeType: "image/png", buffer: Buffer.alloc(6000) });
+      await page
+        .getByText(/exceeds the/i)
+        .waitFor({ state: "visible", timeout: WAIT_MS })
+        .catch(() => {
+          throw new Error("Installed File Upload: oversized-file rejection message did not appear.");
+        });
+    },
+  },
   "spinner-divider-link": {
     criticalPaths: [
       "components/ui/Spinner.tsx",
@@ -782,7 +1007,12 @@ function startRegistryServer(rootDir: string): Promise<{ server: Server; baseUrl
   });
 }
 
-async function waitUntilReady(url: string, timeoutMs = 5000, intervalMs = 200): Promise<void> {
+async function waitUntilReady(
+  url: string,
+  timeoutMs = 5000,
+  intervalMs = 200,
+  label = "Local registry server",
+): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
@@ -793,11 +1023,44 @@ async function waitUntilReady(url: string, timeoutMs = 5000, intervalMs = 200): 
     }
     await new Promise((resolve) => setTimeout(resolve, intervalMs));
   }
-  throw new Error(`Local registry server never became ready at ${url} within ${timeoutMs}ms.`);
+  throw new Error(`${label} never became ready at ${url} within ${timeoutMs}ms.`);
 }
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Starts `next start` against an already-built consumer app on a
+ * pseudo-random high port (loopback only), waits for it to answer "/", and
+ * returns a stop() to SIGTERM it. Generic — knows nothing about which
+ * component is being tested; only used when a descriptor defines
+ * `browserAssert`. Kept deliberately separate from startRegistryServer
+ * (which serves static JSON in-process) since this spawns a real Next.js
+ * server as a child process.
+ */
+async function startNextServer(consumerDir: string): Promise<{ baseUrl: string; stop: () => Promise<void> }> {
+  const port = 4100 + Math.floor(Math.random() * 900);
+  const baseUrl = `http://127.0.0.1:${port}`;
+  const child: ChildProcess = spawn("npx", ["next", "start", "-p", String(port)], {
+    cwd: consumerDir,
+    stdio: ["ignore", "ignore", "inherit"],
+  });
+  const exited = new Promise<void>((resolve) => child.once("exit", () => resolve()));
+  try {
+    await waitUntilReady(baseUrl, 20000, 300, "Installed consumer's next start server");
+  } catch (cause) {
+    child.kill("SIGTERM");
+    await exited;
+    throw cause;
+  }
+  return {
+    baseUrl,
+    stop: async () => {
+      child.kill("SIGTERM");
+      await exited;
+    },
+  };
 }
 
 /**
@@ -1127,6 +1390,33 @@ async function main(): Promise<void> {
     log("\n[12/13] npm run build");
     await run("npm", ["run", "build"], { cwd: consumerDir });
     assert("next build succeeded", true);
+
+    if (descriptor.browserAssert) {
+      log("\n[12b/13] Installed-runtime browser verification (next start + headless Chromium)");
+      const { baseUrl, stop } = await startNextServer(consumerDir);
+      try {
+        const browser = await chromium.launch();
+        try {
+          const page = await browser.newPage();
+          const consoleErrors: string[] = [];
+          page.on("console", (message) => {
+            if (message.type() === "error") consoleErrors.push(message.text());
+          });
+          await page.goto(baseUrl, { waitUntil: "networkidle" });
+          await descriptor.browserAssert({ page, baseUrl });
+          const realErrors = consoleErrors.filter((entry) => !entry.includes("favicon"));
+          assert(
+            "no critical browser console errors on the installed consumer page",
+            realErrors.length === 0,
+            realErrors.length ? realErrors.join(" | ") : "none",
+          );
+        } finally {
+          await browser.close();
+        }
+      } finally {
+        await stop();
+      }
+    }
 
     log("\n[13/13] Foundation CSS activation proof (asset actually referenced by the built \"/\" route)");
     const stylesheetHrefs = findRootRouteStylesheetHrefs(consumerDir);

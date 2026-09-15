@@ -37,6 +37,10 @@ import {
   buildToggleGroupManifest,
   buildAccordionManifest,
   buildTabsManifest,
+  buildSearchFieldManifest,
+  buildCreditCardFieldManifest,
+  buildNumberInputManifest,
+  buildFileUploadManifest,
   classifyFile,
   extractFoundationCss,
   extractFoundationCssFromSource,
@@ -263,6 +267,10 @@ describe("shadcn registry generator", () => {
     expect(() => assertValidShadcnRegistryItem(buildToggleGroupManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildAccordionManifest())).not.toThrow();
     expect(() => assertValidShadcnRegistryItem(buildTabsManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildSearchFieldManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildCreditCardFieldManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildNumberInputManifest())).not.toThrow();
+    expect(() => assertValidShadcnRegistryItem(buildFileUploadManifest())).not.toThrow();
   });
 
   it("transports exactly Card.tsx + card.module.css + lib/cn.ts, nothing more", () => {
@@ -694,6 +702,65 @@ describe("shadcn registry generator", () => {
     ]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual([]);
+  });
+
+  // CE-3I — form/composite batch
+  it("transports Search Field with form-field registryDep + already-mapped TextInputControl (no Popover)", () => {
+    const manifest = buildSearchFieldManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/SearchField.tsx",
+      "components/ui/TextInputControl.tsx",
+      "components/ui/search-field.module.css",
+      "components/ui/text-input.module.css",
+      "lib/cn.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/Popover|Combobox|Select\.tsx/);
+  });
+
+  it("transports Credit Card Field with validation-message registryDep + its own format helper", () => {
+    const manifest = buildCreditCardFieldManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/CreditCardField.tsx",
+      "components/ui/credit-card-field.module.css",
+      "lib/cn.ts",
+      "lib/credit-card-field-format.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/validation-message", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/ValidationMessage\.tsx/);
+  });
+
+  it("transports Number Input with form-field registryDep, TextInputControl (transitive lib/cn.ts), and its own value helper", () => {
+    const manifest = buildNumberInputManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/NumberInput.tsx",
+      "components/ui/TextInputControl.tsx",
+      "components/ui/number-input.module.css",
+      "components/ui/text-input.module.css",
+      "lib/cn.ts",
+      "lib/number-input-value.ts",
+      "lib/use-controllable.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+  });
+
+  it("transports File Upload with form-field registryDep + its own file-list/validation helpers (no re-transported FormField)", () => {
+    const manifest = buildFileUploadManifest();
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/FileUpload.tsx",
+      "components/ui/file-upload.module.css",
+      "components/ui/internal/file-upload-file-list.ts",
+      "components/ui/internal/file-upload-validation.ts",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/form-field", "@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/FormField\.tsx/);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {
