@@ -1,95 +1,102 @@
 /**
- * `api/nonexistent-prop` — docs/architecture/guard-readiness-audit.md
- * §3.2 — **BLOCKED for G-1.** This file exists to record the exact
- * evidence for that decision visibly in the codebase, not to silently
- * omit the rule.
+ * `api/nonexistent-prop` — **FORMALLY DEFERRED from Guard v0.1**
+ * (G-1A governance refinement of the readiness audit's original 7-rule set).
  *
- * ---
+ * This file records implementation evidence. It does **not** register a rule
+ * and contains no evaluation logic. See `GUARD_RULE_CATALOG` — six approved
+ * v0.1 rules only.
  *
- * ## The blocker, with real evidence (not speculation)
+ * ---------------------------------------------------------------------------
+ * Intended semantics (readiness audit §3.2 vs G-1A clarification)
+ * ---------------------------------------------------------------------------
  *
- * The G-1 brief required verifying, BEFORE implementing this rule,
- * whether the canonical registry's `apiProps` field can safely serve as
- * a complete "valid prop" allow-list — i.e., whether a JSX attribute name
- * absent from `api.properties` can be safely treated as invented.
+ * The readiness audit named the rule as: literal JSX attribute absent from
+ * contract `api.properties` on a provenance-gated Skrewww component.
  *
- * It cannot. Confirmed directly against real component source and real
- * registry data, not assumed:
+ * That is semantic model **A — canonical Skrewww documented API**, not
+ * model **B — accepted by the consumer's current local TypeScript props
+ * type**. Those are not the same under shadcn local-copy distribution
+ * (consumers may edit installed source). G-1A keeps that distinction
+ * explicit and does not blur them.
  *
- * 1. `components/ui/Button.tsx`'s real TypeScript type is
- *    `ButtonProps = SharedButtonProps & Omit<ButtonHTMLAttributes<
- *    HTMLButtonElement>, keyof SharedButtonProps> & {...}` — Button
- *    structurally, genuinely accepts the *entire* native `<button>`
- *    attribute set (className, id, style, onClick and every other DOM
- *    event handler, tabIndex, type, form, etc.), not just its own
- *    documented custom props.
- * 2. Button's real `apiProps` array (`lib/component-registry.ts`) lists
- *    exactly ten props: variant, size, loading, fullWidth, leadingIcon,
- *    trailingIcon, href, target, disabled, aria-label. `disabled` and
- *    `aria-label` — two native/global attributes — happen to be
- *    individually documented because they're especially relevant to
- *    Button's own guidance. **className, onClick, id, style, tabIndex,
- *    type, children, and every other aria- or data- attribute variant
- *    are absent**, despite being real, valid, structurally-supported
- *    props.
- * 3. This is not Button-specific: `components/ui/Card.tsx` itself uses
- *    `className` in its own implementation (destructured and applied to
- *    the rendered element), but Card's real `apiProps`
- *    (as, elevation, title, children, headingLevel, footer) does not
- *    list it either. 43 of 116 files under `components/ui/` declare
- *    `className?: string` directly in their own prop types — a common,
- *    real, structurally-supported pattern the registry's `apiProps`
- *    field was never designed to exhaustively enumerate.
+ * ---------------------------------------------------------------------------
+ * Why `api.properties` alone cannot back an ERROR rule (G-1 evidence)
+ * ---------------------------------------------------------------------------
  *
- * There is no other canonical Skrewww-specific source that distinguishes
- * "legitimate native/inherited prop this component happens to forward"
- * from "invented custom prop" on a per-component basis.
+ * Confirmed against real source (not speculation):
  *
- * ## Why the two available workarounds are both explicitly forbidden
+ * 1. `ButtonProps = SharedButtonProps &
+ *    Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof SharedButtonProps>
+ *    & …` — Button accepts the full native button attribute set.
+ * 2. Button's registry `apiProps` lists a documented subset only. Legal
+ *    props such as `className`, `onClick`, `id`, `style`, `tabIndex`,
+ *    `type`, and most `aria-*` / `data-*` names are absent from
+ *    `api.properties` despite being structurally valid.
+ * 3. Systemic: many components declare / forward `className` without
+ *    listing it in `apiProps` (G-1 measured 43/116 `components/ui` files
+ *    with a direct `className?: string`).
  *
- * - **A hand-built allow-list of every standard HTML/React DOM
- *   attribute** (className, id, style, onClick and every other event
- *   handler, tabIndex, type, value, checked, placeholder, href, ...)
- *   would let the rule distinguish `onClick` (real) from `glowIntensity`
- *   (invented) — but this is exactly the "giant manual HTML-prop
- *   allow-list" the G-1 brief explicitly forbids building without the
- *   readiness audit's authorization, which §3.2 does not grant.
- * - **Full TypeScript type-checking** (resolving each component's real
- *   prop type via `ts.Program` + `ts.TypeChecker`, with real module
- *   resolution) would answer this correctly and precisely, but is
- *   meaningfully heavier infrastructure than G-0 built (G-0's parser is
- *   explicitly single-file, `noResolve: true`, no project-wide module
- *   resolution — see `docs/architecture/guard-foundation.md` §3) and was
- *   never proposed as in-scope for the locked v0.1 rule set.
+ * PH-0 already warned: `api.properties` is an allow-list of known-good
+ * *documented* names — **not** proof a name is invalid
+ * (`docs/architecture/pre-guard-hardening.md` §3).
  *
- * A narrower middle ground was considered and rejected: excluding only a
- * small, spec-derived set (`aria-*`/`data-*` wildcards, `key`/`ref`/
- * `children`, a short HTML Global Attributes list) and treating
- * everything else absent from `api.properties` as a violation. This
- * still fails the G-1 brief's own absolute requirement ("must not create
- * false positives for legal native/inherited props") — `className`
- * alone is proven, real, current, and would still be flagged, since it
- * is not itself a Global Attribute name recognized by that small set in
- * every relevant sense, and the same is true for `onClick` and other
- * per-element native attributes this repo's components genuinely accept
- * but never individually list.
+ * ---------------------------------------------------------------------------
+ * Why a TypeScript Program / Checker approach fails the G-1A gate (G-1A)
+ * ---------------------------------------------------------------------------
  *
- * ## Disposition
+ * Prototype (project `ts.Program` + `getTypeChecker()`, public APIs only,
+ * against real `Button` / `TextInput` / `Textarea` / `Table` / `Dialog`
+ * / `DrawerTrigger` source — temporary probe, not shipped):
  *
- * Per the G-1 brief's own explicit instruction ("If the canonical audit
- * does NOT provide a safe deterministic way to distinguish invalid
- * custom props from inherited native React props: STOP this rule and
- * report the blocker"): **BLOCKED, not implemented in G-1.** This makes
- * the overall G-1 verdict PARTIAL (6 of 7 locked rules implemented; this
- * one explicitly, evidentially blocked) rather than either a false
- * "complete" claim or an unsafe implementation that reintroduces exactly
- * the false-positive risk this entire Guard readiness chain exists to
- * prevent.
+ * 1. **Native overlap with `tsc`:** TypeScript already emits precise
+ *    `TS2322` excess-property diagnostics for
+ *    `<Button definitelyNotARealProp="x" />` when the component resolves.
+ *    A Guard rule that re-asks the checker for the same fact is a weaker
+ *    or equal duplicate of `npm run typecheck`, not independent Skrewww
+ *    governance value for v0.1.
+ * 2. **`data-*` false-positive vs G-1A VALID examples:** resolving
+ *    Button's call-signature props type via
+ *    `checker.getPropertyOfType(propsType, "data-testid")` returns
+ *    **missing**, and `tsc` itself rejects
+ *    `<Button data-testid="save" />` as not assignable to
+ *    `ButtonComponentProps` (intersection typing drops React's loose
+ *    `data-*` acceptance). The G-1A false-positive gate requires
+ *    `data-*` accepted — a type-mirror rule fails that gate against
+ *    *real* Button types in this repo.
+ * 3. **Project Program required:** correct answers need module
+ *    resolution + React types + component source. That is not the G-0
+ *    single-file `noResolve` model. Scoping "project mode only" still
+ *    leaves (1) and (2).
+ * 4. **Local type ≠ canonical API:** under shadcn local copies, the
+ *    checker validates the consumer's possibly-edited ButtonProps. That
+ *    answers model B, not the readiness audit's model A. Implementing
+ *    model B under the locked name `api/nonexistent-prop` would silently
+ *    change the rule's meaning.
+ * 5. **Manual DOM allow-list:** still rejected (G-1A Part 14 / G-1 brief).
  *
- * Recorded for a future phase (not decided or scoped here): resolving
- * this blocker would need either (a) the readiness audit's own approval
- * to build a bounded native-attribute allow-list, explicitly scoped and
- * risk-assessed, or (b) real type-checking infrastructure, added as a
- * deliberate, evidenced architecture decision — not invented in G-1.
+ * ---------------------------------------------------------------------------
+ * Disposition
+ * ---------------------------------------------------------------------------
+ *
+ * **DEFERRED from Guard v0.1** by implementation evidence (G-1A Outcome B).
+ *
+ * Revised locked v0.1 implementation set: **6 approved rules**.
+ * Original readiness-audit plan listed 7; G-1 shipped 6 with this rule
+ * BLOCKED; G-1A converts that block into an explicit post-v0.1 deferral.
+ *
+ * Future revisit requires one of:
+ * - a new canonical metadata surface that safely encodes
+ *   documented custom props **plus** inherited/native acceptance without
+ *   duplicating React DOM types by hand, with false-positive proof; or
+ * - a deliberate architecture decision to consume project-wide
+ *   TypeScript diagnostics as Skrewww-branded findings (model B), with
+ *   explicit acceptance that this duplicates `tsc` and tracks local
+ *   types — not approved for v0.1.
+ *
+ * Until then: no evaluation function, no catalog entry, no partial
+ * approximation.
  */
-export const API_NONEXISTENT_PROP_BLOCKED = true;
+export const API_NONEXISTENT_PROP_DEFERRED = true;
+
+/** @deprecated Use `API_NONEXISTENT_PROP_DEFERRED` — G-1 name retained for grep continuity. */
+export const API_NONEXISTENT_PROP_BLOCKED = API_NONEXISTENT_PROP_DEFERRED;

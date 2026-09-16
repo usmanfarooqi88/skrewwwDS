@@ -12,8 +12,8 @@ export { evaluateDistributionHosthostSchemaConsistency } from "@/lib/guard/rules
  * domain metadata only, matching the task's own explicit instruction:
  * "Do not add: marketing descriptions, configuration defaults,
  * suppression config, CLI formatter strings." `api/nonexistent-prop` is
- * deliberately absent — see `rules/api-nonexistent-prop.ts` for why it's
- * BLOCKED, not implemented, in G-1.
+ * deliberately absent — formally deferred from the revised v0.1 set
+ * (G-1A). See `rules/api-nonexistent-prop.ts`.
  */
 export const GUARD_RULE_CATALOG: readonly RuleCatalogEntry[] = [
   { id: "component/nonexistent-slug", severity: "error", domain: "public" },

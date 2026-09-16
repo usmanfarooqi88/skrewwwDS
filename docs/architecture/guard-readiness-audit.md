@@ -1136,3 +1136,21 @@ detail: `docs/architecture/guard-foundation.md` §16.
 - All 4 deferred rules remained deferred; none were implemented.
 - Zero violations against all 127 real `.tsx` files in `components/ui/`
   and `components/reference-app/`.
+
+## Addendum: G-1A — formal deferral of `api/nonexistent-prop` (governance)
+
+**Date:** 2026-09-17. **Outcome B.** Does not rewrite §3.2 / §5 historical
+text above; records that implementation evidence **refined** the original
+7-rule locked plan.
+
+| Item | Decision |
+|---|---|
+| `api/nonexistent-prop` | **DEFERRED post-v0.1** (was G-1 BLOCKED; G-1A closes the open question) |
+| Approved Guard v0.1 rules | **6** (catalog length) |
+| Type-aware `ts.Program` implementation | Not adopted for v0.1 — duplicates `tsc`, fails `data-*` VALID gate on real Button types, conflates local vs canonical API |
+| Manual HTML/React prop allow-list | Still rejected |
+| G-1 status | ✅ COMPLETE (revised 6-rule set) |
+| G-2 | READY for human approval — NOT STARTED |
+
+Evidence: `lib/guard/rules/api-nonexistent-prop.ts`,
+`docs/architecture/guard-foundation.md` §16.1.

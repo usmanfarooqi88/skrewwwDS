@@ -1,16 +1,40 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard G-1 (locked rule implementation) ✅ COMPLETE**; Guard G-2 (Diagnostics + CLI), G-3 (Pilot/Release Validation), CI integration, and public Guard release NOT STARTED, pending explicit human approval; Guard G-0, PH-0, Guard Readiness Audit, Reference App phase, and CE-3 remain ✅ COMPLETE)
+Last verified: **2026-09-17** (**Guard G-1 ✅ COMPLETE — revised 6-rule v0.1 set; `api/nonexistent-prop` formally deferred (G-1A)**; Guard G-2 (Diagnostics + CLI) READY / NOT STARTED pending human approval; G-3, CI integration, and public Guard release NOT STARTED; Guard G-0, PH-0, Guard Readiness Audit, Reference App phase, and CE-3 remain ✅ COMPLETE)
+
+## 2026-09-17 — Guard G-1A: `api/nonexistent-prop` formal deferral (COMPLETE)
+
+**Verdict: OUTCOME B — RULE FORMALLY DEFERRED FROM v0.1.**
+
+G-1 left `api/nonexistent-prop` BLOCKED. G-1A reassessed type-aware
+TypeScript Checker implementation against the false-positive gate and
+did **not** implement a weaker approximation.
+
+**Why not Path A:** project `ts.Program` checking duplicates existing
+`TS2322` diagnostics; real `Button` props types reject `data-testid`
+(fails the brief's VALID examples); full Program breaks the single-file
+v0.1 extraction model; local accepted types ≠ canonical `api.properties`
+(shadcn copies). Manual DOM allow-lists remain forbidden. Canonical
+`api.properties`-only ERROR remains unsafe (G-1 className/onClick false
+positives).
+
+**Governance:** original readiness-audit 7-rule locked plan → **6 approved
+v0.1 rules** + `api/nonexistent-prop` **deferred post-v0.1**. Evidence in
+`lib/guard/rules/api-nonexistent-prop.ts` and
+`docs/architecture/guard-foundation.md` §16.1.
+
+**G-1 final status:** ✅ COMPLETE (6/6 revised set). **G-2 readiness: PASS
+(pending human start approval). G-2 NOT STARTED.**
 
 ## 2026-09-17 — Guard G-1: Locked Rule Implementation (COMPLETE)
 
 **Verdict: COMPLETE.** Adds the `EVALUATE RULES` stage on top of G-0's
-`PARSE → EXTRACT FACTS`. Implements 6 of the 7 locked v0.1 rule IDs from
-`docs/architecture/guard-readiness-audit.md`'s locked implementation
-brief; `api/nonexistent-prop` is explicitly BLOCKED, not implemented (see
-below). Full record:
+`PARSE → EXTRACT FACTS`. Implements 6 of the 7 originally locked v0.1
+rule IDs from `docs/architecture/guard-readiness-audit.md`;
+`api/nonexistent-prop` was left BLOCKED in G-1 and **formally deferred in
+G-1A** (see section above). Full record:
 [docs/architecture/guard-foundation.md](architecture/guard-foundation.md)
-§16, addendum in
+§16, addenda in
 [docs/architecture/guard-readiness-audit.md](architecture/guard-readiness-audit.md).
 
 **Implemented (public domain):** `component/nonexistent-slug`,
@@ -19,14 +43,9 @@ below). Full record:
 `token/undeclared-css-var`, `distribution/hostrequirements-leak`,
 `distribution/hosthost-schema-consistency` (doubled-"host" spelling
 verified intentional against both source docs, kept verbatim).
-**Blocked:** `api/nonexistent-prop` — Button/Card's real `apiProps` data
-proved no safe, deterministic way exists to distinguish an invalid custom
-prop from a legal native/inherited React DOM prop (`className`, `onClick`,
-etc.) without either a forbidden giant HTML-prop allow-list or full type
-inference this phase does not build; documented in `lib/guard/rules/
-api-nonexistent-prop.ts` per this brief's own "STOP and report the
-blocker" instruction. All 4 deferred rule IDs confirmed absent
-(structurally, via a dedicated test, not just a docs claim).
+**Deferred post-v0.1 (G-1A):** `api/nonexistent-prop` — see G-1A section.
+All 4 readiness-audit deferred rule IDs confirmed absent (structurally,
+via a dedicated test, not just a docs claim).
 
 **Provenance safety carried forward and strengthened:** the false-positive
 protection remains import-path-based only, never JSX-tag-name-based.
@@ -4238,7 +4257,7 @@ here instead.
 | PH-0 Pre-Guard Hardening | ✅ **COMPLETE** — audit/planning only; source-of-truth map, false-positive risk matrix, 11 candidate rules, readiness matrix in `docs/architecture/pre-guard-hardening.md`; Guard Readiness Audit entry criteria all PASS |
 | Guard Readiness Audit | ✅ **COMPLETE** — verdict **CONDITIONAL GO**; 7-rule v0.1 set locked, false-positive matrix, locked implementation brief in `docs/architecture/guard-readiness-audit.md` |
 | Skrewww Guard v0.1 — G-0 (parser + fact extraction) | ✅ **COMPLETE** — `lib/guard/`, 35 tests, 14 adversarial fixtures, G-1 readiness gate PASS; full record in `docs/architecture/guard-foundation.md` |
-| Skrewww Guard v0.1 — G-1 (locked rule implementation) | ✅ **COMPLETE** — 6/7 locked rules implemented, `api/nonexistent-prop` BLOCKED (documented); 82 tests, 0 violations against 127 real repo files; full record in `docs/architecture/guard-foundation.md` §16 |
+| Skrewww Guard v0.1 — G-1 (locked rule implementation) | ✅ **COMPLETE** — revised **6-rule** v0.1 set; `api/nonexistent-prop` **deferred post-v0.1** (G-1A); full record in `docs/architecture/guard-foundation.md` §16 / §16.1 |
 | Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | **NEXT** — NOT STARTED, awaiting explicit human approval |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta

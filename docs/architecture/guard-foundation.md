@@ -451,43 +451,64 @@ explicit human approval to begin it (not granted by this document).
 `PARSE → EXTRACT FACTS`; still no `DIAGNOSTICS`/CLI/CI stage — that is
 G-2, not started).
 
-Built exactly the 7 locked rule IDs from
-`docs/architecture/guard-readiness-audit.md`'s locked v0.1 set:
+**G-1A (2026-09-17):** `api/nonexistent-prop` was **formally deferred from
+the revised Guard v0.1 set** after a type-aware feasibility pass. See
+§16.1. Catalog remains **6 approved ERROR rules**.
+
+Built against the readiness audit's original locked IDs; governance
+outcome after G-1A:
 
 | Rule ID | Domain | Status |
 |---|---|---|
-| `component/nonexistent-slug` | public | ✅ implemented |
-| `api/nonexistent-prop` | public | ⛔ BLOCKED — see `lib/guard/rules/api-nonexistent-prop.ts` |
-| `maturity/false-stable-claim` | public | ✅ implemented |
-| `distribution/false-installable-claim` | public | ✅ implemented |
-| `token/undeclared-css-var` | internal | ✅ implemented |
-| `distribution/hostrequirements-leak` | internal | ✅ implemented |
-| `distribution/hosthost-schema-consistency` | internal | ✅ implemented |
+| `component/nonexistent-slug` | public | ✅ approved v0.1 |
+| `api/nonexistent-prop` | public | ⛔ **DEFERRED post-v0.1** (G-1A) — `lib/guard/rules/api-nonexistent-prop.ts` |
+| `maturity/false-stable-claim` | public | ✅ approved v0.1 |
+| `distribution/false-installable-claim` | public | ✅ approved v0.1 |
+| `token/undeclared-css-var` | internal | ✅ approved v0.1 |
+| `distribution/hostrequirements-leak` | internal | ✅ approved v0.1 |
+| `distribution/hosthost-schema-consistency` | internal | ✅ approved v0.1 |
 
 **Spelling check performed as instructed:** `distribution/hosthost-
 schema-consistency`'s doubled "host" was verified against both `pre-
 guard-hardening.md` and this audit — it appears consistently, is not a
 typo, and was kept verbatim.
 
-**`api/nonexistent-prop` BLOCKED, not implemented:** proven via
-`Button.tsx`'s real type (`ButtonProps = SharedButtonProps &
-Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof SharedButtonProps>`)
-that native/inherited DOM props (`className`, `onClick`, `id`, `style`,
-`tabIndex`, `children`, etc.) are real and legally accepted but not
-exhaustively listed in any entry's `apiProps` — confirmed systemic (not
-Button-specific) via `Card.tsx` and a repo-wide scan (43/116 files
-declare `className?: string` directly). No safe, deterministic way to
-distinguish an invalid custom prop from a legal inherited one exists
-without either a forbidden giant HTML-prop allow-list or full type
-inference this phase does not build. Documented at length in
-`lib/guard/rules/api-nonexistent-prop.ts`; no rule logic exists for it,
-and it is absent from `GUARD_RULE_CATALOG`.
+**`api/nonexistent-prop` DEFERRED (not implemented):** see §16.1. No rule
+logic exists for it; absent from `GUARD_RULE_CATALOG` (length 6).
 
 **Deferred rules confirmed absent** (`distribution/missing-registry-
 dependency`, `token/hardcoded-primitive-where-provable`, `api/icon-only-
 button-missing-name`, `accessibility/table-role-grid-misuse`) —
 structurally proven by `lib/guard/evaluate.test.ts`'s own "no deferred
-rules were implemented" test, not just a docs claim.
+rules were implemented" test, not just a docs claim. `api/nonexistent-prop`
+is additionally asserted deferred (no `evaluate*` export).
+
+### 16.1 G-1A — `api/nonexistent-prop` formal deferral
+
+**Outcome B.** Implementation evidence refined the readiness audit's
+original 7-rule locked set to **6 approved v0.1 rules**.
+
+| Experiment | Result |
+|---|---|
+| Canonical `api.properties` allow-list as ERROR | **Reject** — false positives on legal inherited props (`className`, `onClick`, …); PH-0 already said this field is not proof of invalidity |
+| Manual React/DOM attribute allow-list | **Reject** — explicitly forbidden by G-1 / G-1A |
+| Project `ts.Program` + `TypeChecker` prop existence | **Reject for v0.1** — (1) duplicates precise `TS2322` already emitted by typecheck; (2) Button's real props type does **not** accept `data-testid` (`getPropertyOfType` missing; `tsc` rejects it), failing the G-1A VALID gate; (3) requires full project resolution, not G-0 single-file; (4) answers **local** accepted types (shadcn copies), not canonical Skrewww API |
+
+**Canonical vs local:** readiness audit wording targeted model A
+(canonical `api.properties`). Type-aware checking is model B (local TS).
+They must not be conflated under the same rule ID without an explicit
+architecture decision — not taken for v0.1.
+
+**Component prop-type patterns audited (representative):** Button
+(`ButtonHTMLAttributes` intersection), Text Input / Textarea (native
+control omit + label fields), Select (`SelectHTMLAttributes` omit),
+Table (`ComponentPropsWithoutRef<"table">`), Dialog root (custom
+`DialogProps`, non-DOM wrapper), DrawerTrigger (compound barrel export).
+
+Full rationale: `lib/guard/rules/api-nonexistent-prop.ts`.
+
+**Absolute stop:** G-2 remains NOT STARTED until human approval after this
+governance state is explicit (now: G-1 COMPLETE with 6-rule revised set).
 
 ### Architecture added
 

@@ -94,7 +94,7 @@ describe("rule catalog", () => {
     expect(GUARD_RULE_CATALOG.every((r) => r.severity === "error")).toBe(true);
   });
 
-  it("catalog matches exactly the 6 implemented rule IDs (api/nonexistent-prop is deliberately excluded — BLOCKED)", () => {
+  it("catalog matches exactly the 6 approved v0.1 rule IDs (api/nonexistent-prop formally deferred — G-1A)", () => {
     const ids = GUARD_RULE_CATALOG.map((r) => r.id).sort();
     expect(ids).toEqual(
       [
@@ -107,6 +107,16 @@ describe("rule catalog", () => {
       ].sort(),
     );
     expect(ids).not.toContain("api/nonexistent-prop");
+    expect(ids).toHaveLength(6);
+  });
+
+  it("api/nonexistent-prop has no evaluation export and is marked deferred", async () => {
+    const deferred = await import("@/lib/guard/rules/api-nonexistent-prop");
+    expect(deferred.API_NONEXISTENT_PROP_DEFERRED).toBe(true);
+    expect(deferred.API_NONEXISTENT_PROP_BLOCKED).toBe(true);
+    expect(
+      Object.keys(deferred).filter((key) => key.toLowerCase().includes("evaluate")),
+    ).toEqual([]);
   });
 
   it("public vs. internal domain split matches the readiness audit exactly", () => {
