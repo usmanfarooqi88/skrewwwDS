@@ -1,6 +1,68 @@
 # Project status
 
-Last verified: **2026-09-16** (**REFERENCE APP / COMPOSITION VALIDATION phase ✅ COMPLETE** — RA-0 through RA-6 all done; PH-0 entry gate evaluated READY, PH-0 itself NOT STARTED pending human approval; CE-3 remains ✅ COMPLETE)
+Last verified: **2026-09-16** (**PH-0 Pre-Guard Hardening ✅ COMPLETE** — audit/planning only, no enforcement engine built; Guard Readiness Audit entry criteria evaluated PASS, NOT STARTED pending human approval; Reference App phase and CE-3 remain ✅ COMPLETE)
+
+## 2026-09-16 — PH-0 Pre-Guard Hardening (COMPLETE)
+
+**Verdict: COMPLETE.** Audit-and-plan phase only — **no Guard engine, CLI,
+ESLint plugin, MCP server, or CI enforcement was built**, per PH-0's own
+explicit scope boundary. Produced one canonical deliverable:
+[docs/architecture/pre-guard-hardening.md](architecture/pre-guard-hardening.md).
+
+**Source-of-truth map:** 16 candidate facts (component existence, public
+props, maturity, installability, registry/npm dependencies, Shape/Surface,
+`tokensUsed`, accessibility/keyboard metadata, Figma verification, known
+limitations, Recipes, project context, Agent Skill rules) each traced to
+their real canonical source, with an explicit enforcement-safety verdict.
+
+**Key findings:**
+- **Public API allow-list (`api.properties`) is structurally protected** —
+  already enforced by 3 real test files; no violation found.
+- **Component identity has 5 real categories** (implemented / distributed /
+  internal helper / app composition / nonexistent) that must never
+  collapse — internal helpers (`TreeItem.tsx`, `use-data-table-sort.ts`,
+  etc.) are the highest false-positive risk for a naive existence check.
+- **`tokensUsed` has two genuinely different enforcement directions** —
+  under-declaration (a component's CSS references a token not listed) is a
+  **SAFE HARD RULE today**, already enforced by `lib/component-registry
+  .test.ts`'s cssTokens-accuracy test; over-declaration is **NOT READY**
+  (would false-positive on Avatar/Pagination/Data-Table-style intentional
+  Figma-verified narrowing).
+- **Shape/Surface applicability has no canonical metadata field at all** —
+  the one genuine **NOT READY** category; recorded as a schema-expansion
+  candidate for the Guard Readiness Audit, not built here.
+- **Accessibility rules have solid evidence but need real static JSX
+  analysis**, a materially larger undertaking than every other candidate
+  (all of which are metadata lookups or reused test logic) — correctly
+  excluded from the v0.1 candidate set.
+- **11 initial rule candidates audited**: 5 Ready (reuse existing, proven
+  test logic directly), 3 Ready-with-debt, 3 Not-ready — none HIGH false-
+  positive risk, none requiring live Figma or LLM judgment.
+- **Zero current-facing stale claims found** (README's component count is
+  derived, never hardcoded; "Known limitations" section fully re-verified
+  accurate; `shadcn-distribution.md`'s "nine components" is correctly
+  historical dated prose, left untouched).
+- **One known non-blocking test flake** (`Combobox.test.tsx` timing race,
+  recurred twice this session, always confirmed unrelated) and **one real
+  structural gap**: Playwright (`test:browser`) is not part of CI at all
+  (deliberate, documented pre-existing choice) — every "CI green" this
+  session verified deterministic/static facts only, never re-ran browser
+  proofs. Neither affects any of the 11 rule candidates.
+- **No hardening fixes were needed** — no stale docs, no broken
+  deterministic tests, no conflicting canonical metadata found.
+
+**PH-0 readiness matrix:** 7 categories READY, 4 READY WITH DEBT, 1 NOT
+READY (Shape/Surface only) — full matrix in the doc.
+
+**Guard Readiness Audit entry criteria: all 8 evaluated PASS.**
+
+**Evidence:** `git diff --check` clean; docs-only change (one new file),
+no code/tests/metadata touched, so no lint/typecheck/test/build re-run was
+required per PH-0's own gate policy.
+
+**Guard Readiness Audit is the canonical next roadmap item — NOT STARTED,
+awaiting explicit human approval**, per this task's absolute stop boundary.
+Skrewww Guard itself remains further out, also NOT STARTED.
 
 ## 2026-09-16 — RA-6 Final Validation + Reference App Phase Closure (COMPLETE)
 
@@ -3987,7 +4049,8 @@ here instead.
 | **CE-2 — Net-New Component Expansion** | ✅ **COMPLETE** |
 | CE-3 Distribution Expansion | ✅ **COMPLETE** — CE-3A–O done; 52/55 + `/r/registry.json` live on `30d2981`; next = Reference App NOT STARTED |
 | Reference App / Composition Validation | ✅ **COMPLETE** — RA-0–RA-6 ✅ (RA-4 follow-up ✅); DoD (§23) all PASS; PH-0 entry gate (§25) READY |
-| PH-0 Pre-Guard Hardening | **NEXT** — entry gate READY; NOT STARTED, awaiting explicit human approval |
+| PH-0 Pre-Guard Hardening | ✅ **COMPLETE** — audit/planning only; source-of-truth map, false-positive risk matrix, 11 candidate rules, readiness matrix in `docs/architecture/pre-guard-hardening.md`; Guard Readiness Audit entry criteria all PASS |
+| Guard Readiness Audit | **NEXT** — entry criteria PASS; NOT STARTED, awaiting explicit human approval |
 | Skrewww Guard | Later — NOT STARTED |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
