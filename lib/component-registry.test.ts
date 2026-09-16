@@ -2,13 +2,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { componentRegistry } from "@/lib/component-registry";
+import { extractCssVarRefs } from "@/lib/css-custom-properties";
 
 const root = process.cwd();
-
-function extractVarRefs(css: string): string[] {
-  const matches = css.matchAll(/var\(\s*(--[a-zA-Z0-9-]+)/g);
-  return Array.from(new Set(Array.from(matches, (m) => m[1])));
-}
 
 describe("component registry — cssTokens accuracy", () => {
   it("declares exactly the custom properties actually referenced via var(--...) in each entry's own CSS files", () => {
@@ -22,7 +18,7 @@ describe("component registry — cssTokens accuracy", () => {
       for (const relPath of cssFiles) {
         const absPath = join(root, relPath);
         if (!existsSync(absPath)) continue;
-        for (const token of extractVarRefs(readFileSync(absPath, "utf8"))) {
+        for (const token of extractCssVarRefs(readFileSync(absPath, "utf8"))) {
           found.add(token);
         }
       }
