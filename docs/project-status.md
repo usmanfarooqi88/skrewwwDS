@@ -14,7 +14,8 @@ model, package/`bin` surface) — see
 
 **Hardening in G-3:** outside-root path privacy (basename), help honesty
 (TypeScript / a11y / Figma non-claims). Release suite:
-`lib/guard/release-validation.test.ts`.
+`lib/guard/release-validation.test.ts`. Gates: Vitest **1287**, registry 53,
+Agent contracts 55.
 
 **Not done (by design):** npm publish, GitHub release, CI workflow edits,
 website promotion, new rules.
