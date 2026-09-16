@@ -1076,8 +1076,29 @@ discipline throughout §3–§5.
 
 ---
 
+## 37. G-0 status (2026-09-17)
+
+**Prerequisites 1–2 of §36's locked implementation brief are satisfied.**
+The parser/fact-extraction layer 4 of the 7 locked rules depend on — the
+single reason this audit's verdict was CONDITIONAL GO rather than a plain
+GO (§35) — has been built and proven against a 14-fixture adversarial set
+plus all 127 real `.tsx` files in `components/ui/` and `components/
+reference-app/` (zero parse failures). Full record, including the exact
+import-provenance mechanism, extraction capabilities, and a G-1 readiness
+checklist re-verified item-by-item against this section's own prerequisite
+list: [`docs/architecture/guard-foundation.md`](guard-foundation.md).
+
+**G-1 (locked rule implementation) remains NOT STARTED**, pending explicit
+human approval — this section records that its prerequisites are met, not
+that G-1 has begun.
+
+---
+
 ## See also
 
+- `docs/architecture/guard-foundation.md` — G-0's own implementation
+  record: parser approach, extraction capabilities, adversarial fixture
+  evidence, G-1 readiness checklist.
 - `docs/architecture/pre-guard-hardening.md` — the prior audit this
   document reverifies and, in several places, narrows or corrects; not
   duplicated here except where a specific claim changed.

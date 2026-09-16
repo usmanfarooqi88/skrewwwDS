@@ -1,6 +1,67 @@
 # Project status
 
-Last verified: **2026-09-16** (**Guard Readiness Audit ✅ COMPLETE — verdict CONDITIONAL GO**; Skrewww Guard implementation NOT STARTED, pending prerequisite work + explicit human approval; PH-0, Reference App phase, and CE-3 remain ✅ COMPLETE)
+Last verified: **2026-09-17** (**Guard G-0 (parser + fact extraction foundation) ✅ COMPLETE**; Guard G-1 (locked rule implementation) NOT STARTED, pending explicit human approval; PH-0, Guard Readiness Audit, Reference App phase, and CE-3 remain ✅ COMPLETE)
+
+## 2026-09-17 — Guard G-0: Parser / Fact Extraction Foundation (COMPLETE)
+
+**Verdict: COMPLETE.** Satisfies prerequisites 1–2 of the Guard Readiness
+Audit's locked implementation brief (`docs/architecture/
+guard-readiness-audit.md` §36) — build the fact-extraction layer, then
+prove it against an adversarial fixture set, **before** implementing any
+of the 7 locked v0.1 rules (not done here; G-1 remains a separate, later,
+unapproved phase). Full record:
+[docs/architecture/guard-foundation.md](architecture/guard-foundation.md).
+
+**Built, in `lib/guard/`:** a TypeScript-Compiler-API-based parser (zero
+new dependencies — `typescript` was already installed), structural import
+extraction (named/aliased/default/namespace), JSX element/attribute
+extraction (boolean-shorthand/static-string/dynamic/spread), the Skrewww
+import-provenance mechanism (the load-bearing false-positive protection —
+a component/prop check only ever fires on an import whose *module
+specifier* matches a known Skrewww path, never on name similarity alone),
+and a canonical component-fact loader with both internal (reads the
+registry directly) and consumer (proven against real generated Agent Kit
+artifacts on disk) modes.
+
+**Adversarial fixture evidence:** 14 fixtures (6 valid, 8 edge-case),
+covering every scenario the G-0 brief required — direct/aliased/barrel
+imports, wrapper components (proving `<MyButton fakeProp="x">` wrapping a
+real `<Button {...props}>` never conflates the two call sites), local
+name collisions (both a locally-declared same-name component and an
+import from a non-Skrewww local path), spread props (never expanded, name
+never claimed), dynamic prop values, malformed source (a real, typed
+parse error, no silent regex fallback), default/namespace imports, and a
+`<UI.Button />` member-expression case (represented, not resolved —
+confirmed unneeded for any real Skrewww import convention in this
+codebase). 35 new tests, all green, using targeted assertions rather than
+snapshots. Two real bugs were found and fixed — both in the test
+assertions themselves (a wrong assumed component status, a wrong
+assumption about direct-path import-kind resolution), not in the
+extraction code, which was correct both times.
+
+**Real-world proof beyond fixtures:** ran extraction against all 127 real
+`.tsx` files in `components/ui/` and `components/reference-app/` — zero
+parse failures, ~2.9ms/file.
+
+**One necessary, minimal-scope repo change:** excluded `lib/guard/
+__fixtures__/**` from `eslint.config.js` and `tsconfig.json`'s scan
+(one fixture is intentionally invalid syntax, proving the extractor's own
+error handling — including it in the project-wide lint/typecheck sweep
+would fail the build on content that's supposed to be broken).
+
+**G-1 readiness gate: PASS** — every criterion in the readiness audit's
+own prerequisite checklist re-verified item-by-item, all met.
+
+**Evidence:** lint clean, typecheck clean, Vitest **1193/1193** (1158
+baseline + 35 new), build green, `generate:registry`/
+`generate:agent-context` unchanged output (53 registry items + index = 54
+files, 55 agent contracts — both match baseline exactly), `git diff
+--check` clean.
+
+**No rules implemented, no CLI, no CI integration** — matches G-0's own
+absolute stop boundary exactly. **Guard G-1 (locked rule implementation)
+is the canonical next roadmap item — NOT STARTED**, pending explicit
+human approval.
 
 ## 2026-09-16 — Guard Readiness Audit (COMPLETE — CONDITIONAL GO)
 
@@ -4125,7 +4186,8 @@ here instead.
 | Reference App / Composition Validation | ✅ **COMPLETE** — RA-0–RA-6 ✅ (RA-4 follow-up ✅); DoD (§23) all PASS; PH-0 entry gate (§25) READY |
 | PH-0 Pre-Guard Hardening | ✅ **COMPLETE** — audit/planning only; source-of-truth map, false-positive risk matrix, 11 candidate rules, readiness matrix in `docs/architecture/pre-guard-hardening.md`; Guard Readiness Audit entry criteria all PASS |
 | Guard Readiness Audit | ✅ **COMPLETE** — verdict **CONDITIONAL GO**; 7-rule v0.1 set locked, false-positive matrix, locked implementation brief in `docs/architecture/guard-readiness-audit.md` |
-| Skrewww Guard | **NEXT** — CONDITIONAL GO; NOT STARTED, gated on locked prerequisites (build + fixture-test the extraction layer before any rule) + explicit human approval |
+| Skrewww Guard v0.1 — G-0 (parser + fact extraction) | ✅ **COMPLETE** — `lib/guard/`, 35 tests, 14 adversarial fixtures, G-1 readiness gate PASS; full record in `docs/architecture/guard-foundation.md` |
+| Skrewww Guard v0.1 — G-1 (locked rule implementation) | **NEXT** — G-1 readiness PASS; NOT STARTED, awaiting explicit human approval |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no

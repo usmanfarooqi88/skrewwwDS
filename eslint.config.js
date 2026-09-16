@@ -10,7 +10,19 @@ module.exports = [
   // stale .next-playwright build) with no ignore pattern of its own; without
   // this, a leftover worktree gets linted as if it were real source, both
   // duplicating warnings and pulling in generated build output as errors.
-  { ignores: [".next-playwright/**", ".claude/**"] },
+  {
+    ignores: [
+      ".next-playwright/**",
+      ".claude/**",
+      // Guard extraction-layer fixtures are deliberately isolated test
+      // inputs, not real application source — one (malformed-source.tsx)
+      // is intentionally invalid syntax, proving the extractor's own
+      // parse-error handling (lib/guard/facts.test.ts). Linting/
+      // typechecking them as project code would fail the build on
+      // content that's supposed to be broken.
+      "lib/guard/__fixtures__/**",
+    ],
+  },
   ...nextCoreWebVitals,
   {
     // Flat config drops the legacy nearest-.eslintrc rootDir auto-detection
