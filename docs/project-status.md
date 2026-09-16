@@ -1,6 +1,41 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard G-1 ✅ COMPLETE — revised 6-rule v0.1 set; `api/nonexistent-prop` formally deferred (G-1A)**; Guard G-2 (Diagnostics + CLI) READY / NOT STARTED pending human approval; G-3, CI integration, and public Guard release NOT STARTED; Guard G-0, PH-0, Guard Readiness Audit, Reference App phase, and CE-3 remain ✅ COMPLETE)
+Last verified: **2026-09-17** (**Guard G-2 ✅ COMPLETE — diagnostics + human formatter + local CLI**; G-1 ✅ COMPLETE — revised 6-rule v0.1 set; `api/nonexistent-prop` formally deferred (G-1A); G-3, CI integration, and public Guard release NOT STARTED; Guard G-0, PH-0, Guard Readiness Audit, Reference App phase, and CE-3 remain ✅ COMPLETE)
+
+## 2026-09-17 — Guard G-2: Diagnostics + CLI (COMPLETE)
+
+**Verdict: COMPLETE.** Adds `DIAGNOSTICS` + a minimal local developer CLI on
+top of G-1's evaluate stage. Does **not** change rule semantics, add rules,
+add CI, publish Guard, or start G-3.
+
+**Pipeline now:** `PARSE → EXTRACT FACTS → EVALUATE RULES → DIAGNOSE → FORMAT`.
+
+| Surface | Location |
+|---|---|
+| Diagnostic contract (§17) | `lib/guard/diagnostics.ts` |
+| Human formatter | `lib/guard/format.ts` |
+| Programmatic runner | `lib/guard/run.ts` (`runGuard`) |
+| CLI | `lib/guard/cli.ts` + `scripts/guard.ts` |
+| Invocation | `npm run guard -- [path]` |
+| Tool version | `lib/guard/version.ts` → `0.1.0-beta.1` |
+
+**Modes:** default **consumer** (source + optional `--claims` JSON data);
+`--internal` for this-repo registry/artifact rules only. Domains cannot be
+confused. Structured claims are DATA (`maturity` / `installability` JSON),
+not Guard configuration.
+
+**Exit codes:** `0` no ERROR findings; `1` ≥1 ERROR; `2` tool/parse/input
+failure (malformed source is exit 2, never a rule violation). `--json`
+deferred. Zero config. Zero suppressions. `api/nonexistent-prop` absent from
+catalog, help, diagnostics, and CLI.
+
+**Evidence:** focused Guard + CLI fixtures green; full quality gates recorded
+in `docs/architecture/guard-foundation.md` §17 (Vitest **1267**; registry 53;
+Agent contracts 55). Parallel `skills/` +
+`docs/community/` left untracked/untouched.
+
+**Absolute stop:** G-3 Pilot / Release Validation, CI integration, and
+public Guard release remain **NOT STARTED**.
 
 ## 2026-09-17 — Guard G-1A: `api/nonexistent-prop` formal deferral (COMPLETE)
 
@@ -23,8 +58,8 @@ v0.1 rules** + `api/nonexistent-prop` **deferred post-v0.1**. Evidence in
 `lib/guard/rules/api-nonexistent-prop.ts` and
 `docs/architecture/guard-foundation.md` §16.1.
 
-**G-1 final status:** ✅ COMPLETE (6/6 revised set). **G-2 readiness: PASS
-(pending human start approval). G-2 NOT STARTED.**
+**G-1 final status:** ✅ COMPLETE (6/6 revised set). **G-2:** ✅ COMPLETE
+(see section above). **G-3:** NOT STARTED.
 
 ## 2026-09-17 — Guard G-1: Locked Rule Implementation (COMPLETE)
 
@@ -66,11 +101,11 @@ agent contracts — both match baseline), `git diff --check` clean, zero new
 dependencies, zero violations against all 127 real repo source files,
 determinism proven across repeated runs.
 
-**No CLI, no `npm guard` script, no CI integration, no editor
-integration, no MCP, no LLM validation, no Shape/Surface/accessibility
-rules built** — matches G-1's own absolute stop boundary exactly. **Guard
-G-2 (Diagnostics + CLI) is the canonical next roadmap item — NOT
-STARTED**, pending explicit human approval.
+**G-1 shipped evaluate-only** (no CLI at that boundary). **G-2 later added**
+diagnostics + `npm run guard` (see G-2 section). CI integration, editor
+integration, MCP, LLM validation, and Shape/Surface/accessibility rules
+remain out of scope. **G-3 is the canonical next roadmap item — NOT
+STARTED.**
 
 ## 2026-09-17 — Guard G-0: Parser / Fact Extraction Foundation (COMPLETE)
 
@@ -4258,7 +4293,8 @@ here instead.
 | Guard Readiness Audit | ✅ **COMPLETE** — verdict **CONDITIONAL GO**; 7-rule v0.1 set locked, false-positive matrix, locked implementation brief in `docs/architecture/guard-readiness-audit.md` |
 | Skrewww Guard v0.1 — G-0 (parser + fact extraction) | ✅ **COMPLETE** — `lib/guard/`, 35 tests, 14 adversarial fixtures, G-1 readiness gate PASS; full record in `docs/architecture/guard-foundation.md` |
 | Skrewww Guard v0.1 — G-1 (locked rule implementation) | ✅ **COMPLETE** — revised **6-rule** v0.1 set; `api/nonexistent-prop` **deferred post-v0.1** (G-1A); full record in `docs/architecture/guard-foundation.md` §16 / §16.1 |
-| Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | **NEXT** — NOT STARTED, awaiting explicit human approval |
+| Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | ✅ **COMPLETE** — diagnostics, formatter, `npm run guard`, exit 0/1/2; G-3 / CI / public release NOT STARTED |
+| Skrewww Guard v0.1 — G-3 (Pilot / Release Validation) | **NEXT** — NOT STARTED, awaiting explicit human approval |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no

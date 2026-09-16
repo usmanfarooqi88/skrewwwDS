@@ -1150,7 +1150,31 @@ text above; records that implementation evidence **refined** the original
 | Type-aware `ts.Program` implementation | Not adopted for v0.1 — duplicates `tsc`, fails `data-*` VALID gate on real Button types, conflates local vs canonical API |
 | Manual HTML/React prop allow-list | Still rejected |
 | G-1 status | ✅ COMPLETE (revised 6-rule set) |
-| G-2 | READY for human approval — NOT STARTED |
+| G-2 | ✅ COMPLETE — see Addendum: G-2 below |
+| G-3 | NOT STARTED |
 
 Evidence: `lib/guard/rules/api-nonexistent-prop.ts`,
 `docs/architecture/guard-foundation.md` §16.1.
+
+## Addendum: G-2 — Diagnostics + CLI (COMPLETE)
+
+**Date:** 2026-09-17. Does not rewrite §17–§23 historical planning text;
+records that G-2 implemented those locked contracts.
+
+| Item | Decision / result |
+|---|---|
+| Diagnostic shape | Implemented per §17 (`lib/guard/diagnostics.ts`) |
+| Human formatter | `lib/guard/format.ts` — compact plain text + summary |
+| CLI | `npm run guard -- [path]` (`scripts/guard.ts` + `lib/guard/cli.ts`) |
+| Default path | Current working directory (§23) |
+| Modes | Consumer default; `--internal` for repo-only rules |
+| Structured claims | Optional `--claims` JSON **data** (`maturity` / `installability` only) |
+| Exit codes | 0 / 1 / 2 per §19; parse errors → exit 2 |
+| `--json` | Still deferred |
+| Config / suppressions | Still none |
+| Tool version | `0.1.0-beta.1` (`lib/guard/version.ts`) |
+| `api/nonexistent-prop` | Still deferred / absent |
+| CI / public release | Still NOT STARTED |
+| G-3 | READY for human approval — NOT STARTED |
+
+Full record: `docs/architecture/guard-foundation.md` §17.

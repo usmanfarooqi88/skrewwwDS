@@ -604,6 +604,100 @@ build` (includes `generate:registry` + `generate:agent-context` as
 prebuild steps — registry stayed at 53 items + `registry.json`, Agent
 contracts stayed at 55), `git diff --check` — all clean.
 
-**Absolute stop boundary honored: G-2 (Diagnostics + CLI), G-3 (Pilot /
-Release Validation), CI integration, and public Guard release are not
-started.** Human approval required before any of those begin.
+**Absolute stop boundary honored at G-1 ship: G-2 / G-3 / CI / public
+release were not started in that commit.** G-2 was approved and completed
+separately — see §17.
+
+---
+
+## 17. G-2 — Diagnostics + CLI (COMPLETE)
+
+**Phase:** G-2 ✅ COMPLETE (`DIAGNOSE` + human formatter + local CLI).
+**Does not start G-3, CI integration, or public release.**
+
+### Pipeline
+
+```
+PARSE → EXTRACT FACTS → EVALUATE RULES → DIAGNOSE → FORMAT
+```
+
+### Architecture
+
+| Module | Role |
+|---|---|
+| `lib/guard/diagnostics.ts` | `GuardDiagnostic` (§17 contract), `findingToDiagnostic`, deterministic sort |
+| `lib/guard/format.ts` | Human-readable formatter + summary (`formatGuardResult`) |
+| `lib/guard/run.ts` | `runGuard(...)` programmatic API — findings, execution errors, evaluated rule IDs, summary, exit code |
+| `lib/guard/cli.ts` | Arg parsing, help, exit-code wiring |
+| `lib/guard/discover.ts` | `.ts`/`.tsx` discovery; skips `node_modules`, `.next`, `dist`, `build`, `coverage`, … |
+| `lib/guard/claims-file.ts` | Narrow JSON structured-claims **data** loader (not config) |
+| `lib/guard/paths.ts` | Project-relative path normalization |
+| `lib/guard/version.ts` | `GUARD_TOOL_VERSION = "0.1.0-beta.1"` |
+| `scripts/guard.ts` | Thin entry → `npm run guard -- …` |
+
+Rule evaluators still emit machine `Finding`s only. Presentation
+(message / remediation) is exclusively the diagnostic adapter's job.
+
+### Diagnostic contract
+
+Required: `ruleId`, `severity` (`error` \| `warning` \| `info`), `message`,
+`subject`, `evidence.source`. Optional: `location` (`file`, 1-based
+`line`/`column`), `evidence.sourceGitSha`, `remediation`. No giant
+canonical payloads.
+
+v0.1 ships ERROR rules only; WARNING/INFO vocabulary is reserved.
+
+### Modes / domains
+
+- **Consumer (default):** `component/nonexistent-slug` on discovered
+  source; optional `--claims` for maturity/installability structured data.
+- **`--internal`:** `token/undeclared-css-var`,
+  `distribution/hostrequirements-leak`,
+  `distribution/hosthost-schema-consistency` against this repo's
+  registry/artifacts only.
+
+`--claims` + `--internal` is a usage error. Internal rules never run in
+consumer mode.
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| 0 | No ERROR findings |
+| 1 | One or more ERROR findings |
+| 2 | Tool/parse/input failure (missing path, unreadable file, malformed TS/TSX, invalid CLI/claims JSON) |
+
+Parse failures are **not** rule violations: reported as `tool/parse`,
+exit 2, and rules are not evaluated against that file.
+
+### Deferred / absent (unchanged)
+
+- `--json` CLI flag — deferred (use `runGuard()` for structured results)
+- Config / suppressions — none
+- `api/nonexistent-prop` — deferred; absent from catalog, help, diagnostics
+- CI workflows — untouched
+- Public npm publish / website promotion — not done
+
+### Invocation
+
+```
+npm run guard -- [path]                 # default path: cwd
+npm run guard -- --internal [path]
+npm run guard -- [path] --claims claims.json
+```
+
+Provenance remains conservative: unknown import paths → no finding.
+
+### Gates
+
+`npm run lint`, `npm run typecheck`, `npm test` (**1267** passed; 1240 G-1
+baseline + G-2 diagnostics/CLI tests), `npm run build`,
+`generate:registry` (53 items + index), `generate:agent-context` (55
+contracts), `git diff --check` — all clean. No new runtime dependencies.
+Performance sanity (local): fixtures ~210ms, `components/reference-app`
+~100ms, `components/ui` ~1s, `--internal` ~165ms.
+
+### Absolute stop
+
+**G-3 Pilot / Release Validation, CI integration, and public Guard
+release are NOT STARTED.** Human approval required before G-3.
