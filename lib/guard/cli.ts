@@ -30,8 +30,9 @@ export type ParsedCliArgs =
 export function printHelp(): string {
   return `Skrewww Guard ${GUARD_TOOL_VERSION}
 
-Validate source and structured claims against the canonical Skrewww registry
-(offline, local, zero-config).
+Offline, local checks for deterministic Skrewww canonical-contract violations
+(zero-config). Does not replace TypeScript, and does not validate accessibility,
+Figma/Shape/Surface, or visual parity.
 
 Usage:
   npm run guard -- [path]
@@ -59,10 +60,12 @@ v0.1 rules (${GUARD_RULE_CATALOG.length}):
 ${GUARD_RULE_CATALOG.map((e) => `  ${e.id} (${e.domain})`).join("\n")}
 
 Notes:
-  - api/nonexistent-prop is deferred (not in v0.1).
+  - TypeScript owns language/type correctness; Guard owns Skrewww contract facts.
+  - api/nonexistent-prop is deferred (not in v0.1) — Guard is not a prop-type checker.
   - Unknown import provenance never produces a finding.
   - --json output is deferred.
   - No configuration or suppression system.
+  - No accessibility / Figma parity rules in v0.1.
 `;
 }
 

@@ -1151,7 +1151,7 @@ text above; records that implementation evidence **refined** the original
 | Manual HTML/React prop allow-list | Still rejected |
 | G-1 status | ✅ COMPLETE (revised 6-rule set) |
 | G-2 | ✅ COMPLETE — see Addendum: G-2 below |
-| G-3 | NOT STARTED |
+| G-3 | ✅ COMPLETE — **CONDITIONAL RELEASE READY** (see Addendum: G-3) |
 
 Evidence: `lib/guard/rules/api-nonexistent-prop.ts`,
 `docs/architecture/guard-foundation.md` §16.1.
@@ -1175,6 +1175,25 @@ records that G-2 implemented those locked contracts.
 | Tool version | `0.1.0-beta.1` (`lib/guard/version.ts`) |
 | `api/nonexistent-prop` | Still deferred / absent |
 | CI / public release | Still NOT STARTED |
-| G-3 | READY for human approval — NOT STARTED |
+| G-3 | Completed — see Addendum: G-3 |
 
 Full record: `docs/architecture/guard-foundation.md` §17.
+
+## Addendum: G-3 — Pilot / Release Validation (COMPLETE)
+
+**Date:** 2026-09-17. Does not rewrite historical planning sections.
+
+| Item | Result |
+|---|---|
+| Release verdict | **CONDITIONAL RELEASE READY** |
+| Six-rule lock | PASS |
+| Internal dogfood | PASS (exit 0) |
+| Consumer FP stress | PASS (0 findings) |
+| Process exit 0/1/2 | PASS |
+| Privacy / offline / determinism | PASS |
+| External fact packaging | **Pre-release prerequisite** (blocker for public install) |
+| Package `bin` / publish surface | **Pre-release prerequisite** (`skrewww-docs` private, no bin) |
+| CI / npm publish / GitHub release | Still NOT DONE (correct) |
+| Next | GUARD PRE-RELEASE HARDENING — NOT STARTED |
+
+Full record: `docs/architecture/guard-foundation.md` §18.

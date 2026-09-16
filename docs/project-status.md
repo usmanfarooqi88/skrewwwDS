@@ -1,6 +1,25 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard G-2 ✅ COMPLETE — diagnostics + human formatter + local CLI**; G-1 ✅ COMPLETE — revised 6-rule v0.1 set; `api/nonexistent-prop` formally deferred (G-1A); G-3, CI integration, and public Guard release NOT STARTED; Guard G-0, PH-0, Guard Readiness Audit, Reference App phase, and CE-3 remain ✅ COMPLETE)
+Last verified: **2026-09-17** (**Guard G-3 ✅ COMPLETE — CONDITIONAL RELEASE READY**; G-2 ✅; G-1 ✅ six-rule set; `api/nonexistent-prop` deferred; Guard **NOT RELEASED**; Guard **NOT in CI**; CE-3 / Reference App / PH-0 / Readiness Audit / G-0 remain ✅)
+
+## 2026-09-17 — Guard G-3: Pilot / Release Validation (COMPLETE)
+
+**Verdict: COMPLETE. Release verdict: CONDITIONAL RELEASE READY.**
+
+Piloted Guard v0.1 against real repo + fixtures. Core engine is low-noise
+and correct for **in-repo** use. Public/external release is blocked on
+explicit pre-release prerequisites (fact packaging, consumer provenance
+model, package/`bin` surface) — see
+`docs/architecture/guard-foundation.md` §18.
+
+**Hardening in G-3:** outside-root path privacy (basename), help honesty
+(TypeScript / a11y / Figma non-claims). Release suite:
+`lib/guard/release-validation.test.ts`.
+
+**Not done (by design):** npm publish, GitHub release, CI workflow edits,
+website promotion, new rules.
+
+**Canonical next:** GUARD PRE-RELEASE HARDENING — NOT STARTED.
 
 ## 2026-09-17 — Guard G-2: Diagnostics + CLI (COMPLETE)
 
@@ -34,8 +53,8 @@ in `docs/architecture/guard-foundation.md` §17 (Vitest **1267**; registry 53;
 Agent contracts 55). Parallel `skills/` +
 `docs/community/` left untracked/untouched.
 
-**Absolute stop:** G-3 Pilot / Release Validation, CI integration, and
-public Guard release remain **NOT STARTED**.
+**Absolute stop at G-2 ship:** G-3 was not started in that commit. G-3
+completed separately (see G-3 section above).
 
 ## 2026-09-17 — Guard G-1A: `api/nonexistent-prop` formal deferral (COMPLETE)
 
@@ -4293,8 +4312,9 @@ here instead.
 | Guard Readiness Audit | ✅ **COMPLETE** — verdict **CONDITIONAL GO**; 7-rule v0.1 set locked, false-positive matrix, locked implementation brief in `docs/architecture/guard-readiness-audit.md` |
 | Skrewww Guard v0.1 — G-0 (parser + fact extraction) | ✅ **COMPLETE** — `lib/guard/`, 35 tests, 14 adversarial fixtures, G-1 readiness gate PASS; full record in `docs/architecture/guard-foundation.md` |
 | Skrewww Guard v0.1 — G-1 (locked rule implementation) | ✅ **COMPLETE** — revised **6-rule** v0.1 set; `api/nonexistent-prop` **deferred post-v0.1** (G-1A); full record in `docs/architecture/guard-foundation.md` §16 / §16.1 |
-| Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | ✅ **COMPLETE** — diagnostics, formatter, `npm run guard`, exit 0/1/2; G-3 / CI / public release NOT STARTED |
-| Skrewww Guard v0.1 — G-3 (Pilot / Release Validation) | **NEXT** — NOT STARTED, awaiting explicit human approval |
+| Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | ✅ **COMPLETE** — diagnostics, formatter, `npm run guard`, exit 0/1/2 |
+| Skrewww Guard v0.1 — G-3 (Pilot / Release Validation) | ✅ **COMPLETE** — **CONDITIONAL RELEASE READY**; public release prerequisites remain; Guard NOT RELEASED / NOT in CI |
+| Guard v0.1 release preparation / pre-release hardening | **NEXT** — NOT STARTED, awaiting explicit human approval |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no

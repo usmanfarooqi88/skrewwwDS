@@ -699,5 +699,115 @@ Performance sanity (local): fixtures ~210ms, `components/reference-app`
 
 ### Absolute stop
 
-**G-3 Pilot / Release Validation, CI integration, and public Guard
-release are NOT STARTED.** Human approval required before G-3.
+**At G-2 ship:** G-3 / CI / public release were not started. G-3 was
+approved and completed separately — see §18.
+
+---
+
+## 18. G-3 — Pilot / Release Validation (COMPLETE)
+
+**Phase:** G-3 ✅ COMPLETE.
+**Release verdict:** **CONDITIONAL RELEASE READY**
+**Guard remains NOT RELEASED. CI unchanged. No npm publish.**
+
+### What G-3 did
+
+Piloted the six-rule v0.1 engine against real repo code, adversarial
+fixtures, process-level CLI exits, privacy/offline/determinism gates, and
+packaging/fact-distribution honesty. Allowed hardening only (path privacy
+for outside-root paths; help honesty for TypeScript / a11y / Figma
+non-claims). No new rules. No CI. No publish.
+
+### Draft future public usage (architecture only — not announced)
+
+```
+npm run guard -- [path]
+npm run guard -- --internal [path]
+npm run guard -- [path] --claims claims.json
+```
+
+Guard checks deterministic Skrewww canonical-contract violations (six ERROR
+rules). It does **not** replace TypeScript, validate accessibility/WCAG,
+or check Figma/Shape/Surface/visual parity. Claims JSON is input **data**,
+not configuration. Exit codes: 0 / 1 / 2. Offline/local only.
+
+### Pilot matrix
+
+| Gate | Result |
+|---|---|
+| A Rule safety | PASS |
+| B False-positive rate | PASS (0 FP on Reference App, `components/ui`, adversarial fixtures) |
+| C False-negative scope honesty | PASS (documented accepted misses) |
+| D CLI UX | PASS |
+| E Exit behavior | PASS (process-spawn proven) |
+| F Diagnostic quality | PASS |
+| G Determinism | PASS |
+| H Privacy | PASS (G-3 outside-root basename hardening) |
+| I Offline | PASS |
+| J Performance | PASS (fixtures ~58ms, ref ~34ms, ui ~317ms, internal ~27ms) |
+| K Consumer fact availability | **PASS WITH DEBT** — in-repo only today |
+| L Packaging feasibility | **PASS WITH DEBT** — `skrewww-docs` private, no `bin` |
+| M Documentation accuracy | PASS |
+| N Test reliability | PASS (`lib/guard/release-validation.test.ts`) |
+
+### Release blockers (must fix before *public* release)
+
+1. **External canonical-fact packaging** — consumer mode + claims load
+   `loadInternalComponentFacts()` → in-repo `componentRegistry`. An
+   externally installed Guard would not automatically have those facts.
+2. **Provenance prefixes are internal conventions** (`@/components/ui`) —
+   true external consumers need an explicit, documented provenance model
+   (unknown today = no finding, correctly, but also means weak external coverage).
+3. **Package exposure** — repo is `private: true`, no `bin`, no Guard-focused
+   publish surface. `npm pack --dry-run` would ship the docs site, not a
+   Guard tool package.
+
+### Accepted debt (post-v0.1 / pre-release prep)
+
+- `--json` deferred
+- No `skrewww guard` bin yet
+- `api/nonexistent-prop` deferred
+- Known false-negatives: invalid props, spread-contained facts, wrapper
+  propagation, freeform maturity prose, unsupported import aliases,
+  Shape/Surface/a11y
+
+### Accepted false-negative scope (not blockers)
+
+Matches locked v0.1: no prop rule; unknown provenance → no finding; no
+prose scanning; no a11y/Figma rules.
+
+### Unknown behavior
+
+`RuleEvaluation` statuses `not-applicable` / `unknown` never become
+diagnostics. CLI does not invent WARNING noise for unknowns.
+
+### Parse isolation
+
+Directory with valid + invalid sources: valid files still evaluated;
+parse failures reported as `tool/parse`; overall exit **2** (not 1).
+
+### Packaging / bin decision
+
+**Do not add bin in G-3.** Outcome: packaging work required before public
+CLI (`B`/`C`). Local `npm run guard` is sufficient for in-repo pilot.
+
+### Proposed release sequence (planning only — not executed)
+
+1. Package/fact-bundle strategy for external mode
+2. Provenance model for consumer aliases
+3. Thin `bin` or separate package decision
+4. Public docs (after approval)
+5. Beta version confirm (`0.1.0-beta.1`)
+6. Publish only with human approval
+7. CI adoption later: observe → optional → required
+
+### CI-adoption recommendation (planning only)
+
+Do **not** add Guard to Skrewww CI yet. After a public/internal Beta
+period with zero unexplained FPs, consider observe-only, then optional,
+then required.
+
+### Absolute stop
+
+**GUARD PRE-RELEASE HARDENING / v0.1 RELEASE PREPARATION — NOT STARTED.**
+No publish. No CI workflow edits. No post-v0.1 rules.
