@@ -323,10 +323,14 @@ describe("G-3 packaging / external fact honesty", () => {
     // Honesty gate: loadInternalComponentFacts is wired into runGuard claims.
     // External install would require packaging those facts — recorded as
     // pre-release prerequisite, not silently assumed.
-    const source = readFileSync(join(ROOT, "lib/guard/run.ts"), "utf8");
-    expect(source).toContain("loadInternalComponentFacts");
-    expect(existsSync(join(ROOT, "lib/component-registry.ts"))).toBe(true);
-    expect(existsSync(join(ROOT, "public/agent/contracts/button.json"))).toBe(true);
+    const runSource = readFileSync(join(ROOT, "lib/guard/run.ts"), "utf8");
+    const factsSource = readFileSync(join(ROOT, "lib/guard/component-facts.ts"), "utf8");
+    expect(runSource).toContain("loadInternalComponentFacts");
+    expect(factsSource).toContain('from "@/lib/component-registry"');
+    expect(factsSource).toContain("isDistributedViaSkrewwwRegistry");
+    // Provenance also binds to the in-repo registry (not a shipped fact snapshot).
+    const provenance = readFileSync(join(ROOT, "lib/guard/provenance.ts"), "utf8");
+    expect(provenance).toContain('from "@/lib/component-registry"');
   });
 
   it("no network clients in Guard runtime modules", () => {
