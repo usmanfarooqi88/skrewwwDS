@@ -1,0 +1,14 @@
+{
+  "maturity": [
+    {
+      "componentSlug": "button",
+      "claimedStatus": "stable"
+    }
+  ],
+  "installability": [
+    {
+      "componentSlug": "button",
+      "claimedInstallable": true
+    }
+  ]
+}

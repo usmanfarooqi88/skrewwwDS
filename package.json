@@ -23,6 +23,7 @@
     "score:agent-eval": "tsx scripts/score-agent-eval.ts",
     "install:agent-skill": "tsx scripts/install-agent-skill.ts",
     "smoke:consumer": "tsx scripts/smoke-test-consumer.ts",
+    "guard": "tsx scripts/guard.ts",
     "verify:package": "node scripts/verify-package-metadata.mjs",
     "verify:node": "node scripts/verify-node-runtime.mjs",
     "verify:analytics": "NODE_OPTIONS=--conditions=react-server tsx scripts/verify-vercel-analytics.ts",

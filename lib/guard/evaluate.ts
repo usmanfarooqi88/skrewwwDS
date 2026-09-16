@@ -17,10 +17,9 @@ import type { RuleEvaluation } from "@/lib/guard/rule-types";
  * shared input object. Matches docs/architecture/guard-readiness-audit
  * .md §11's own consumer-input-model split.
  *
- * No diagnostics, no CLI, no severity-based exit behavior — every
- * function here returns `RuleEvaluation[]`, the same machine-readable
- * shape `lib/guard/rule-types.ts` defines. G-2 owns turning this into
- * human-facing output.
+ * No severity-based exit behavior here — every function returns
+ * `RuleEvaluation[]`. G-2 owns diagnostics, formatting, and exit codes
+ * (`lib/guard/diagnostics.ts`, `lib/guard/run.ts`, `lib/guard/cli.ts`).
  */
 
 /**

@@ -1,0 +1,16 @@
+{
+  "maturity": [
+    {
+      "componentSlug": "date-picker",
+      "claimedStatus": "stable",
+      "location": "claims/false-stable.json"
+    }
+  ],
+  "installability": [
+    {
+      "componentSlug": "banking-account-card",
+      "claimedInstallable": true,
+      "location": "claims/false-installable.json"
+    }
+  ]
+}
