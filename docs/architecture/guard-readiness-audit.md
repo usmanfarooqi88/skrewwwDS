@@ -1115,3 +1115,24 @@ that G-1 has begun.
   fresh this session (§2, row 9; §3.7).
 - `lib/agent-kit/evaluation-scorer.ts` / `evaluation-scorer.test.ts` — the
   closest existing precedent for Guard's own rule-evaluation shape.
+
+## Addendum: G-1 outcome (not a revision of the verdict above)
+
+Recorded after G-1 (locked rule implementation) shipped; the CONDITIONAL
+GO verdict and every disposition above are left as originally written —
+this addendum only records what actually happened against them. Full
+detail: `docs/architecture/guard-foundation.md` §16.
+
+- 6 of the 7 locked rules implemented as specified. `api/nonexistent-prop`
+  was **not** implemented — its "narrowed" disposition above did not, in
+  the end, yield a safe deterministic implementation once native/
+  inherited React DOM props were checked against real `apiProps` data
+  across the registry (43/116 entries use `className` without declaring
+  it), so it was BLOCKED per this document's own instruction to stop
+  rather than invent a manual allow-list. This is the one place G-1's
+  outcome differs from this audit's own expectation. Of the other 6
+  rules, `distribution/hosthost-schema-consistency`'s spelling was
+  confirmed intentional (not a typo) and kept verbatim.
+- All 4 deferred rules remained deferred; none were implemented.
+- Zero violations against all 127 real `.tsx` files in `components/ui/`
+  and `components/reference-app/`.

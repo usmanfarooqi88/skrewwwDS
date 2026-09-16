@@ -444,3 +444,145 @@ explicit human approval to begin it (not granted by this document).
 - `lib/agent-kit/contract-schema.ts` — `ComponentAgentContract`/
   `AgentContractIndexEntry`, the real generated shapes the consumer-mode
   loader is proven against.
+
+## 16. G-1 (locked rule implementation) — ✅ COMPLETE
+
+**Phase:** G-1 ✅ COMPLETE (`EVALUATE RULES` stage added on top of G-0's
+`PARSE → EXTRACT FACTS`; still no `DIAGNOSTICS`/CLI/CI stage — that is
+G-2, not started).
+
+Built exactly the 7 locked rule IDs from
+`docs/architecture/guard-readiness-audit.md`'s locked v0.1 set:
+
+| Rule ID | Domain | Status |
+|---|---|---|
+| `component/nonexistent-slug` | public | ✅ implemented |
+| `api/nonexistent-prop` | public | ⛔ BLOCKED — see `lib/guard/rules/api-nonexistent-prop.ts` |
+| `maturity/false-stable-claim` | public | ✅ implemented |
+| `distribution/false-installable-claim` | public | ✅ implemented |
+| `token/undeclared-css-var` | internal | ✅ implemented |
+| `distribution/hostrequirements-leak` | internal | ✅ implemented |
+| `distribution/hosthost-schema-consistency` | internal | ✅ implemented |
+
+**Spelling check performed as instructed:** `distribution/hosthost-
+schema-consistency`'s doubled "host" was verified against both `pre-
+guard-hardening.md` and this audit — it appears consistently, is not a
+typo, and was kept verbatim.
+
+**`api/nonexistent-prop` BLOCKED, not implemented:** proven via
+`Button.tsx`'s real type (`ButtonProps = SharedButtonProps &
+Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof SharedButtonProps>`)
+that native/inherited DOM props (`className`, `onClick`, `id`, `style`,
+`tabIndex`, `children`, etc.) are real and legally accepted but not
+exhaustively listed in any entry's `apiProps` — confirmed systemic (not
+Button-specific) via `Card.tsx` and a repo-wide scan (43/116 files
+declare `className?: string` directly). No safe, deterministic way to
+distinguish an invalid custom prop from a legal inherited one exists
+without either a forbidden giant HTML-prop allow-list or full type
+inference this phase does not build. Documented at length in
+`lib/guard/rules/api-nonexistent-prop.ts`; no rule logic exists for it,
+and it is absent from `GUARD_RULE_CATALOG`.
+
+**Deferred rules confirmed absent** (`distribution/missing-registry-
+dependency`, `token/hardcoded-primitive-where-provable`, `api/icon-only-
+button-missing-name`, `accessibility/table-role-grid-misuse`) —
+structurally proven by `lib/guard/evaluate.test.ts`'s own "no deferred
+rules were implemented" test, not just a docs claim.
+
+### Architecture added
+
+```
+PARSE → EXTRACT FACTS → EVALUATE RULES
+```
+
+- `lib/guard/rule-types.ts` — `RuleId`, `RuleSeverity` (`"error"` only —
+  no WARNING/INFO in this locked set), `RuleDomain` (`"public"` |
+  `"internal"`), `Finding`, `RuleEvaluation` (`violation` | `pass` |
+  `not-applicable` | `unknown` — "unknown is never a violation" carried
+  from G-0).
+- `lib/guard/rules/*.ts` — one file per implemented rule.
+- `lib/guard/rules/index.ts` — `GUARD_RULE_CATALOG`, 6 entries.
+- `lib/guard/evaluate.ts` — three entry points matching three genuinely
+  different input shapes, never forced through one: `evaluateSourceRules`
+  (per-file, source-based), `evaluateStructuredClaims` (explicit claim
+  objects — maturity/installability claims are never inferred from
+  freeform prose), `evaluateInternalRegistryRules` (this-repo-only, reads
+  `public/r/*.json` and `public/agent/contracts/*.json` via the new
+  `lib/guard/generated-artifacts.ts` loaders).
+- `lib/css-custom-properties.ts` — `extractCssVarRefs`, extracted (not
+  forked) from `lib/component-registry.test.ts`'s own private scanner so
+  the rule and the existing registry-accuracy test share one
+  deterministic implementation.
+- `lib/guard/structured-claims.ts` — `MaturityClaim`, `InstallabilityClaim`.
+
+### Provenance safety — compound-component fix
+
+G-0's `resolveInternalComponentSlug` assumed a barrel-imported name
+always equals some component's own file base name. Running the full
+rule pipeline against every real `.tsx` file in `components/ui/` and
+`components/reference-app/` (127 files, not just curated fixtures)
+proved this false: `import { DrawerTrigger } from "@/components/ui"` is
+a real, legitimate import in this repo's own
+`components/reference-app/RequestsDataView.tsx` — `DrawerTrigger` is one
+of nine names (`Drawer`, `DrawerBody`, `DrawerClose`,
+`DrawerDescription`, `DrawerFooter`, `DrawerHeader`, `DrawerTitle`,
+`DrawerTrigger`, plus `Drawer` itself) all re-exported from the *same*
+`Drawer.tsx` file — and was false-flagged as an invented component.
+
+Fixed by having `provenance.ts` parse the real barrel file
+(`components/ui/index.ts`) itself with G-0's own parser, building a
+genuine `exportedName -> fileBaseName` map from its actual
+`export { A, B, C } from "@/components/ui/X"` statements
+(`barrelReexportToFileBaseName`) — the real, canonical source of truth
+for which name comes from which file, not a naming guess. A new shared
+`resolveImportedFileBaseName` (used by both `resolveInternalComponentSlug`
+and the rule's internal-helper fallback check) applies this translation
+consistently. Regression-covered by
+`lib/guard/__fixtures__/g1/compound-component-barrel-import.tsx` and
+`component-nonexistent-slug.test.ts`'s corresponding case.
+
+This is the same "test against the real repo, not only curated
+fixtures" methodology that also caught three earlier provenance bugs
+during this phase (undistributed-but-implemented components needing a
+`reactExample`-based fallback; that fallback needing `entry.files`
+checked first, not replaced; internal helpers like `icons.tsx` needing a
+Category-C not-applicable path, not a violation) — all fixed the same
+way, all real-repo-proven, none present in the final `0 violations`
+state below.
+
+### Adversarial + release-critical evidence
+
+- Adversarial test matrix across all 6 implemented rules (component
+  identity, native/inherited props N/A since that rule is blocked,
+  maturity, installability, tokens, distribution) — 82 tests in
+  `lib/guard/`, all green.
+- Release-critical zero-findings fixture
+  (`lib/guard/__fixtures__/g1/zero-findings-realistic.tsx`) — aliased
+  import, wrapper component, spread props alongside explicit props,
+  aria-/data- attributes, dynamic prop values — produces zero violations
+  across every source rule, every internal-registry rule, and every
+  truthful structured claim. Verified non-vacuous by temporarily
+  injecting a fake nonexistent-component element and confirming the test
+  fails, then restoring the fixture.
+- Running the full pipeline against all 127 real `.tsx` files in
+  `components/ui/` and `components/reference-app/`: **0 violations**
+  (down from 113 across the bug-fixing sequence above).
+- Determinism: `evaluateSourceRules`/`evaluateInternalRegistryRules`/
+  `evaluateStructuredClaims` proven deep-equal across repeated runs, for
+  every G-0 + G-1 fixture and against the real repo.
+- No new dependency — TypeScript Compiler API only (already installed);
+  `package.json`/`package-lock.json` unchanged.
+- No CLI, no `npm guard` script, no CI integration, no editor
+  integration, no MCP, no LLM validation, no Shape/Surface/accessibility
+  rules — none built, none present in this diff.
+
+### G-1 gates run clean
+
+`npm run lint`, `npm run typecheck`, `npm test` (1240 passed), `npm run
+build` (includes `generate:registry` + `generate:agent-context` as
+prebuild steps — registry stayed at 53 items + `registry.json`, Agent
+contracts stayed at 55), `git diff --check` — all clean.
+
+**Absolute stop boundary honored: G-2 (Diagnostics + CLI), G-3 (Pilot /
+Release Validation), CI integration, and public Guard release are not
+started.** Human approval required before any of those begin.

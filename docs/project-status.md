@@ -1,6 +1,57 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard G-0 (parser + fact extraction foundation) ✅ COMPLETE**; Guard G-1 (locked rule implementation) NOT STARTED, pending explicit human approval; PH-0, Guard Readiness Audit, Reference App phase, and CE-3 remain ✅ COMPLETE)
+Last verified: **2026-09-17** (**Guard G-1 (locked rule implementation) ✅ COMPLETE**; Guard G-2 (Diagnostics + CLI), G-3 (Pilot/Release Validation), CI integration, and public Guard release NOT STARTED, pending explicit human approval; Guard G-0, PH-0, Guard Readiness Audit, Reference App phase, and CE-3 remain ✅ COMPLETE)
+
+## 2026-09-17 — Guard G-1: Locked Rule Implementation (COMPLETE)
+
+**Verdict: COMPLETE.** Adds the `EVALUATE RULES` stage on top of G-0's
+`PARSE → EXTRACT FACTS`. Implements 6 of the 7 locked v0.1 rule IDs from
+`docs/architecture/guard-readiness-audit.md`'s locked implementation
+brief; `api/nonexistent-prop` is explicitly BLOCKED, not implemented (see
+below). Full record:
+[docs/architecture/guard-foundation.md](architecture/guard-foundation.md)
+§16, addendum in
+[docs/architecture/guard-readiness-audit.md](architecture/guard-readiness-audit.md).
+
+**Implemented (public domain):** `component/nonexistent-slug`,
+`maturity/false-stable-claim`, `distribution/false-installable-claim`.
+**Implemented (internal domain, this-repo-only):**
+`token/undeclared-css-var`, `distribution/hostrequirements-leak`,
+`distribution/hosthost-schema-consistency` (doubled-"host" spelling
+verified intentional against both source docs, kept verbatim).
+**Blocked:** `api/nonexistent-prop` — Button/Card's real `apiProps` data
+proved no safe, deterministic way exists to distinguish an invalid custom
+prop from a legal native/inherited React DOM prop (`className`, `onClick`,
+etc.) without either a forbidden giant HTML-prop allow-list or full type
+inference this phase does not build; documented in `lib/guard/rules/
+api-nonexistent-prop.ts` per this brief's own "STOP and report the
+blocker" instruction. All 4 deferred rule IDs confirmed absent
+(structurally, via a dedicated test, not just a docs claim).
+
+**Provenance safety carried forward and strengthened:** the false-positive
+protection remains import-path-based only, never JSX-tag-name-based.
+Running the full rule pipeline against all 127 real `.tsx` files in
+`components/ui/` and `components/reference-app/` (not only curated
+fixtures) found and fixed 4 real provenance bugs before reaching 0
+violations — most notably a compound-component bug where barrel-imported
+sub-exports (`DrawerTrigger`, `DrawerContent`, etc., all really exported
+from `Drawer.tsx`) were false-flagged as invented components; fixed by
+parsing the real barrel file (`components/ui/index.ts`) itself to build a
+genuine exported-name → file mapping, rather than assuming a barrel name
+always equals a file's own base name.
+
+**Evidence:** lint clean, typecheck clean, Vitest **1240/1240** (1193
+baseline + 47 new), build green, `generate:registry`/
+`generate:agent-context` unchanged output (53 registry items + index, 55
+agent contracts — both match baseline), `git diff --check` clean, zero new
+dependencies, zero violations against all 127 real repo source files,
+determinism proven across repeated runs.
+
+**No CLI, no `npm guard` script, no CI integration, no editor
+integration, no MCP, no LLM validation, no Shape/Surface/accessibility
+rules built** — matches G-1's own absolute stop boundary exactly. **Guard
+G-2 (Diagnostics + CLI) is the canonical next roadmap item — NOT
+STARTED**, pending explicit human approval.
 
 ## 2026-09-17 — Guard G-0: Parser / Fact Extraction Foundation (COMPLETE)
 
@@ -4187,7 +4238,8 @@ here instead.
 | PH-0 Pre-Guard Hardening | ✅ **COMPLETE** — audit/planning only; source-of-truth map, false-positive risk matrix, 11 candidate rules, readiness matrix in `docs/architecture/pre-guard-hardening.md`; Guard Readiness Audit entry criteria all PASS |
 | Guard Readiness Audit | ✅ **COMPLETE** — verdict **CONDITIONAL GO**; 7-rule v0.1 set locked, false-positive matrix, locked implementation brief in `docs/architecture/guard-readiness-audit.md` |
 | Skrewww Guard v0.1 — G-0 (parser + fact extraction) | ✅ **COMPLETE** — `lib/guard/`, 35 tests, 14 adversarial fixtures, G-1 readiness gate PASS; full record in `docs/architecture/guard-foundation.md` |
-| Skrewww Guard v0.1 — G-1 (locked rule implementation) | **NEXT** — G-1 readiness PASS; NOT STARTED, awaiting explicit human approval |
+| Skrewww Guard v0.1 — G-1 (locked rule implementation) | ✅ **COMPLETE** — 6/7 locked rules implemented, `api/nonexistent-prop` BLOCKED (documented); 82 tests, 0 violations against 127 real repo files; full record in `docs/architecture/guard-foundation.md` §16 |
+| Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | **NEXT** — NOT STARTED, awaiting explicit human approval |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no
