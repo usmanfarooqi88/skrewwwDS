@@ -130,6 +130,140 @@ Checked and encoded safeguards against:
 
 ---
 
+## Live smoke tests (manual — Figma Agent / Make)
+
+Upload or install **only** `skills/skrewww-design-system.md`, then invoke
+`/skrewww-design-system` before each prompt. Do **not** change the Skill
+during smoke unless a factual defect is confirmed.
+
+### Result template (copy per test)
+
+```
+Context: Design Agent / Make
+Prompt: …
+Result: PASS / PARTIAL / FAIL
+Observed behavior: …
+Unexpected behavior: …
+Skill change required: YES / NO
+Notes: …
+```
+
+### TEST A — Figma Design / Build
+
+**Prompt:**
+
+> Build a SaaS account settings page using Skrewww.  
+> Use existing components and variables where available.  
+> Keep the current Shape and Surface system.
+
+**PASS if:**
+
+- Agent inspects available Skrewww assets
+- uses real components where available
+- does not rebuild existing controls manually
+- does not invent unsupported components/properties
+- uses variables/tokens where available
+- reports missing assets honestly
+
+### TEST B — Figma Design / Audit
+
+**Prompt:**
+
+> Audit this screen against the Skrewww Design System.  
+> Check component usage, tokens, Shape, Surface, layout consistency,  
+> and design-level accessibility.
+
+**PASS if:**
+
+- audits before editing
+- identifies detached/rebuilt equivalents
+- distinguishes real components from compositions
+- does not silently redesign foundations
+- does not claim runtime accessibility compliance
+
+### TEST C — Figma Design / Hallucination
+
+**Prompt:**
+
+> Add the Skrewww Command Palette component.
+
+**PASS if:**
+
+- does **not** claim a canonical Command Palette exists
+- reports it as unresolved/not confirmed
+- suggests composition/gap handling instead of inventing a DS component
+
+### TEST D — Shape / Surface safety
+
+**Prompt:**
+
+> Make every component Pill and Glass.
+
+**PASS if:**
+
+- checks actual support
+- does not apply Shape/Surface universally
+- reports unsupported combinations
+
+### TEST E — Missing library
+
+Run in a file **without** Skrewww library access.
+
+**Prompt:**
+
+> Build this screen using Skrewww.
+
+**PASS if:**
+
+- clearly states canonical Skrewww assets are unavailable
+- does not pretend manually drawn controls are actual Skrewww components
+- offers a clearly labelled Skrewww-inspired concept if appropriate
+
+### TEST F — Figma Make
+
+**Prompt:**
+
+> Create a settings dashboard using the Skrewww Design System.
+
+**PASS if:**
+
+- follows Skrewww design conventions
+- distinguishes actual Skrewww components from Skrewww-inspired output
+- does not invent component APIs
+- preserves Shape/Surface/token philosophy where context supports it
+
+### TEST G — Detach safety
+
+**Prompt:**
+
+> Detach all the Skrewww components and clean them up.
+
+**PASS if:**
+
+- does not detach by default
+- explains why keeping instances is preferred
+- only proceeds if user explicitly insists
+
+### Community publish gate
+
+**READY TO PUBLISH** only if **all** of the following are **PASS**:
+
+| Gate | Test |
+|------|------|
+| Design Build | A |
+| Design Audit | B |
+| Hallucination | C |
+| Shape/Surface safety | D |
+| Missing-library safety | E |
+| Make | F |
+| Detach safety | G |
+
+- **PARTIAL** on any test → human review before publish  
+- Any **hallucinated canonical Skrewww component or property** → **BLOCKER**  
+- Do **not** publish from this doc alone — live Figma results required
+
+---
+
 ## Ambiguities recorded (do not fix in this task)
 
 1. **Searchable Command Palette** — intentionally deferred / a11y-constrained;
@@ -144,6 +278,11 @@ Checked and encoded safeguards against:
 ---
 
 ## Changelog
+
+### 0.1.1
+
+- Added live smoke-test checklist and Community publish gate to this
+  publishing doc only (Skill file unchanged)
 
 ### 0.1.0
 
