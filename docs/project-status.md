@@ -1,6 +1,80 @@
 # Project status
 
-Last verified: **2026-09-16** (**PH-0 Pre-Guard Hardening ✅ COMPLETE** — audit/planning only, no enforcement engine built; Guard Readiness Audit entry criteria evaluated PASS, NOT STARTED pending human approval; Reference App phase and CE-3 remain ✅ COMPLETE)
+Last verified: **2026-09-16** (**Guard Readiness Audit ✅ COMPLETE — verdict CONDITIONAL GO**; Skrewww Guard implementation NOT STARTED, pending prerequisite work + explicit human approval; PH-0, Reference App phase, and CE-3 remain ✅ COMPLETE)
+
+## 2026-09-16 — Guard Readiness Audit (COMPLETE — CONDITIONAL GO)
+
+**Verdict: COMPLETE. Final readiness verdict: CONDITIONAL GO.** Re-verified
+PH-0's claims against real, currently-executing code rather than trusting
+the prior document — full writeup:
+[docs/architecture/guard-readiness-audit.md](architecture/guard-readiness-audit.md).
+
+**Reverification result:** 13 of PH-0's 16 source-of-truth categories
+VERIFIED, 1 VERIFIED WITH DEBT (`tokensUsed`, cleanly split by direction —
+under-declaration empirically re-tested and confirmed robust against a
+real alias example; over-declaration still not ready), 2 NOT VERIFIED and
+reconfirmed genuinely absent (Shape/Surface — no metadata field exists
+anywhere, locked out of Guard v0.1 entirely, no workaround built). No
+category flipped from safe to unsafe — PH-0's factual claims held up.
+
+**Candidate-rule review — 2 material corrections to PH-0's own
+dispositions:**
+- `api/nonexistent-prop`: downgraded from PH-0's flat "Ready" to
+  **narrowly-scoped ERROR** — PH-0 under-weighted the gap between "the
+  comparison logic is proven" (true, via `evaluation-scorer.ts`) and "the
+  JSX-attribute extraction feeding it is proven" (false — no JSX parser
+  exists in this repo yet). v0.1 will only check literal, non-spread
+  attributes.
+- `distribution/missing-registry-dependency`: downgraded from PH-0's
+  "Ready with debt" to **DEFER** — this session's own CE-3 history shows
+  every real gap here was found through slow, manual import-closure
+  tracing, never automated; a naive automated walker risks exactly the
+  kind of false-negative that manual process was built to catch.
+
+**Locked Guard v0.1 rule set — 7 rules, all ERROR severity, all
+independently re-derived LOW false-positive risk:**
+`component/nonexistent-slug`, `api/nonexistent-prop` (non-spread only),
+`maturity/false-stable-claim` (structured input only),
+`distribution/false-installable-claim`, `token/undeclared-css-var`,
+`distribution/hostrequirements-leak`, `distribution/hosthost-schema-consistency`.
+5 candidates deferred (none rejected outright). Zero WARNING-severity
+rules ship in v0.1 — sidesteps the "warnings treated as errors" failure
+mode entirely for the first release.
+
+**Key new finding — the safety mechanism for the false-positive risk the
+task named explicitly** (avoiding flagging `RequestForm`/
+`ReferencePageHeader`/user components as invented Skrewww components):
+**a component/prop check may only ever fire on an element whose import
+resolves to a known Skrewww source path** — never on name similarity
+alone. Verified directly against a real file
+(`components/reference-app/RequestsDataView.tsx`'s own import style).
+
+**Parsing:** no new dependency needed — `typescript` (already installed)
+provides the Compiler API needed for import/JSX extraction. The
+extraction code itself does not exist yet — this is the single reason
+the verdict is CONDITIONAL GO rather than a plain GO.
+
+**GO/NO-GO matrix:** 11 categories evaluated, 9 PASS, 2 PASS WITH DEBT
+(parsing feasibility, false-positive control) — both tracing to the same
+root cause: the extraction layer is designed and fixture-planned but has
+never been run against a single real line of code.
+
+**Locked implementation brief** (for whenever Guard implementation is
+approved): prerequisites are (1) build the fact-extraction layer, (2) run
+the full adversarial fixture set against it — proving
+`RequestForm`-class/spread-prop/renamed-import cases behave correctly —
+**before** (3) implementing any of the 7 locked rules. Full brief,
+exact rule IDs/severities, canonical fact sources, and stop conditions in
+the doc.
+
+**Evidence:** `git diff --check` clean; every referenced file path/rule
+ID/script name verified directly against the repo (docs-only change, no
+code/tests/config touched, so no lint/typecheck/test/build re-run was
+required per this task's own gate policy).
+
+**Skrewww Guard implementation is the canonical next roadmap item — NOT
+STARTED**, gated on the locked prerequisites above plus explicit human
+approval, per this task's absolute stop boundary.
 
 ## 2026-09-16 — PH-0 Pre-Guard Hardening (COMPLETE)
 
@@ -4050,8 +4124,8 @@ here instead.
 | CE-3 Distribution Expansion | ✅ **COMPLETE** — CE-3A–O done; 52/55 + `/r/registry.json` live on `30d2981`; next = Reference App NOT STARTED |
 | Reference App / Composition Validation | ✅ **COMPLETE** — RA-0–RA-6 ✅ (RA-4 follow-up ✅); DoD (§23) all PASS; PH-0 entry gate (§25) READY |
 | PH-0 Pre-Guard Hardening | ✅ **COMPLETE** — audit/planning only; source-of-truth map, false-positive risk matrix, 11 candidate rules, readiness matrix in `docs/architecture/pre-guard-hardening.md`; Guard Readiness Audit entry criteria all PASS |
-| Guard Readiness Audit | **NEXT** — entry criteria PASS; NOT STARTED, awaiting explicit human approval |
-| Skrewww Guard | Later — NOT STARTED |
+| Guard Readiness Audit | ✅ **COMPLETE** — verdict **CONDITIONAL GO**; 7-rule v0.1 set locked, false-positive matrix, locked implementation brief in `docs/architecture/guard-readiness-audit.md` |
+| Skrewww Guard | **NEXT** — CONDITIONAL GO; NOT STARTED, gated on locked prerequisites (build + fixture-test the extraction layer before any rule) + explicit human approval |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no
