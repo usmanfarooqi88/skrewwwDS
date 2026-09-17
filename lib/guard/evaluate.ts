@@ -1,4 +1,5 @@
 import { evaluateComponentNonexistentSlug } from "@/lib/guard/rules/component-nonexistent-slug";
+import type { EvaluateComponentNonexistentSlugOptions } from "@/lib/guard/rules/component-nonexistent-slug";
 import { evaluateMaturityFalseStableClaim } from "@/lib/guard/rules/maturity-false-stable-claim";
 import { evaluateDistributionFalseInstallableClaim } from "@/lib/guard/rules/distribution-false-installable-claim";
 import { evaluateTokenUndeclaredCssVar } from "@/lib/guard/rules/token-undeclared-css-var";
@@ -28,8 +29,11 @@ import type { RuleEvaluation } from "@/lib/guard/rule-types";
  * here too, but is BLOCKED for G-1 — see
  * `rules/api-nonexistent-prop.ts`.)
  */
-export function evaluateSourceRules(facts: ExtractedSourceFacts): RuleEvaluation[] {
-  return [...evaluateComponentNonexistentSlug(facts)];
+export function evaluateSourceRules(
+  facts: ExtractedSourceFacts,
+  options?: EvaluateComponentNonexistentSlugOptions,
+): RuleEvaluation[] {
+  return [...evaluateComponentNonexistentSlug(facts, options)];
 }
 
 /**
