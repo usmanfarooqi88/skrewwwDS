@@ -13,7 +13,8 @@ import {
 import { getComponentHref } from "@/lib/routes";
 import { getIndustryIndexing, getMetadataRobots } from "@/lib/indexing-policy";
 import { industryPageJsonLd } from "@/lib/structured-data";
-import { absoluteUrl, siteConfig } from "@/lib/site-config";
+import { absoluteUrl } from "@/lib/site-config";
+import { brandedDocumentTitle } from "@/lib/registry-seo";
 
 export function generateStaticParams() {
   return Object.values(industrySlugMap).map((industrySlug) => ({ industrySlug }));
@@ -26,14 +27,17 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const params = await props.params;
   const industry = getIndustryNameFromSlug(params.industrySlug);
-  if (!industry) return { title: "Industry not found — Skrewww" };
+  if (!industry) {
+    return { title: { absolute: brandedDocumentTitle("Industry not found") } };
+  }
 
   const content = industryPageContent[industry];
-  const title = `${content.title} components — ${siteConfig.name}`;
+  const pageTitle = `${content.title} components`;
+  const title = brandedDocumentTitle(pageTitle);
   const url = absoluteUrl(getIndustryPageHref(industry));
 
   return {
-    title,
+    title: pageTitle,
     description: content.summary,
     alternates: { canonical: url },
     robots: getMetadataRobots(getIndustryIndexing(industry)),

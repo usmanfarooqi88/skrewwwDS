@@ -3,15 +3,17 @@ import type { Metadata } from "next";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { getSortedChangelogEntries, type ChangelogItemType } from "@/content/changelog";
-import { absoluteUrl, siteConfig } from "@/lib/site-config";
+import { absoluteUrl } from "@/lib/site-config";
+import { brandedDocumentTitle } from "@/lib/registry-seo";
 
-const title = `Changelog — ${siteConfig.name}`;
+const pageTitle = "Changelog";
+const title = brandedDocumentTitle(pageTitle);
 const description =
   "What's new, improved, and fixed in Skrewww — the design system's public release history.";
 const url = absoluteUrl("/changelog");
 
 export const metadata: Metadata = {
-  title,
+  title: pageTitle,
   description,
   alternates: { canonical: url },
   openGraph: { title, description, url, type: "website" },

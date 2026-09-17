@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { allComponents, getCategoryCounts } from "@/lib/data";
 import { getImplementedComponentCount } from "@/lib/component-registry";
 import { getCategoryPageHref } from "@/lib/category-content";
@@ -8,6 +9,13 @@ import { Card } from "@/components/ui/Card";
 import { TokenPillRow } from "@/components/TokenPill";
 import { HomeHeroCtas } from "@/components/HomeHeroCtas";
 import { cn } from "@/lib/cn";
+
+export const metadata: Metadata = {
+  // Homepage owns the default document title and its self-canonical.
+  // Root layout no longer sets a sitewide canonical (that forced hubs to
+  // inherit https://skrewww.com incorrectly).
+  alternates: { canonical: siteConfig.origin },
+};
 
 const layers = [
   {

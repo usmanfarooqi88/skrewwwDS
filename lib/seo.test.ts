@@ -125,7 +125,11 @@ describe("SEO infrastructure", () => {
     for (const entry of implemented) {
       expect(entry.summary.trim().length).toBeGreaterThan(0);
       const metadata = getComponentPageMetadata(entry.slug);
-      expect(metadata.title).toContain(entry.name);
+      // Short page title — root template appends the brand once at render.
+      expect(metadata.title).toBe(entry.name);
+      expect(metadata.title).not.toMatch(/Skrewww Design System — Skrewww/);
+      expect(metadata.openGraph?.title).toBe(`${entry.name} — ${siteConfig.name}`);
+      expect(metadata.openGraph?.title).not.toMatch(/Skrewww Design System — Skrewww/);
       expect(metadata.alternates?.canonical).toBe(getComponentCanonicalUrl(entry.slug));
     }
   });

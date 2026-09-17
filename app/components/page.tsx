@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { allComponents } from "@/lib/data";
 import { categories } from "@/lib/types";
 import { getCategoryPageHref } from "@/lib/category-content";
@@ -6,6 +7,28 @@ import type { CategoryName } from "@/lib/category-content";
 import { INDUSTRIES_INDEX_HREF } from "@/lib/industry-content";
 import { getImplementedRegistryEntries } from "@/lib/component-registry";
 import { REDIRECTED_COMPONENT_SLUGS, getComponentHref } from "@/lib/routes";
+import { absoluteUrl, getDefaultSocialImageUrl, siteConfig } from "@/lib/site-config";
+import { brandedDocumentTitle } from "@/lib/registry-seo";
+
+const pageTitle = "Components";
+const title = brandedDocumentTitle(pageTitle);
+const description =
+  "Browse the Skrewww React component library — documented design-system primitives for actions, forms, navigation, feedback, overlays, and data display.";
+const url = absoluteUrl("/components");
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description,
+  alternates: { canonical: url },
+  openGraph: {
+    title,
+    description,
+    url,
+    type: "website",
+    siteName: siteConfig.name,
+    images: [{ url: getDefaultSocialImageUrl() }],
+  },
+};
 
 export default function ComponentsIndexPage() {
   const implementedCount = getImplementedRegistryEntries().length;

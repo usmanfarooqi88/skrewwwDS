@@ -1,11 +1,27 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { industries, industryPageContent, getIndustryPageHref } from "@/lib/industry-content";
 import { getImplementedRegistryEntries } from "@/lib/component-registry";
+import { absoluteUrl, siteConfig } from "@/lib/site-config";
+import { brandedDocumentTitle } from "@/lib/registry-seo";
 
-export const metadata = {
-  title: "Industries — Skrewww Design System",
-  description:
-    "Layer 4 Industry Systems — components that compose Layer 2 primitives into industry-domain surfaces, grouped by industry.",
+const pageTitle = "Industries";
+const title = brandedDocumentTitle(pageTitle);
+const description =
+  "Layer 4 Industry Systems — components that compose Layer 2 primitives into industry-domain surfaces, grouped by industry.";
+const url = absoluteUrl("/components/industries");
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description,
+  alternates: { canonical: url },
+  openGraph: {
+    title,
+    description,
+    url,
+    type: "website",
+    siteName: siteConfig.name,
+  },
 };
 
 export default function IndustriesIndexPage() {

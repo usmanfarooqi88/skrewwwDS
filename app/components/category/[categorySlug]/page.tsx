@@ -13,7 +13,8 @@ import type { CategoryName } from "@/lib/category-content";
 import { getComponentHref } from "@/lib/routes";
 import { getCategoryIndexing, getMetadataRobots } from "@/lib/indexing-policy";
 import { categoryPageJsonLd } from "@/lib/structured-data";
-import { absoluteUrl, siteConfig } from "@/lib/site-config";
+import { absoluteUrl } from "@/lib/site-config";
+import { brandedDocumentTitle } from "@/lib/registry-seo";
 
 export function generateStaticParams() {
   return Object.values(categorySlugMap).map((categorySlug) => ({ categorySlug }));
@@ -26,14 +27,17 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const params = await props.params;
   const category = getCategoryNameFromSlug(params.categorySlug);
-  if (!category) return { title: "Category not found — Skrewww" };
+  if (!category) {
+    return { title: { absolute: brandedDocumentTitle("Category not found") } };
+  }
 
   const content = categoryPageContent[category];
-  const title = `${content.title} components — ${siteConfig.name}`;
+  const pageTitle = `${content.title} components`;
+  const title = brandedDocumentTitle(pageTitle);
   const url = absoluteUrl(getCategoryPageHref(category));
 
   return {
-    title,
+    title: pageTitle,
     description: content.summary,
     alternates: { canonical: url },
     robots: getMetadataRobots(getCategoryIndexing(category)),

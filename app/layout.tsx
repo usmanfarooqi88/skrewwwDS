@@ -40,12 +40,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.origin),
   title: {
     default: siteConfig.name,
-    template: `%s — ${siteConfig.shortName}`,
+    // Child pages pass a short page name; this appends the brand once.
+    // Pages that already build a complete branded title must use
+    // `title: { absolute: ... }` (Foundations, Agent Kit, Guard).
+    template: `%s — ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  alternates: {
-    canonical: siteConfig.origin,
-  },
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,
