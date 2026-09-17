@@ -1,6 +1,10 @@
-# Guard distribution (pre-release hardening)
+# Guard distribution
 
-**Status:** Pre-release package candidate. Guard is **NOT published**.
+**Status:** v0.1 Beta release preparation complete. Guard is **NOT published**
+until explicit human approval (`Publish Guard Beta`).
+
+Canonical Beta release notes / checklist:
+[`docs/releases/guard-v0.1.0-beta.1.md`](../releases/guard-v0.1.0-beta.1.md)
 
 ## Public vs internal
 
@@ -30,6 +34,7 @@ Supported (public package):
 
 - Resolved import whose target file contains `/** @skrewww-component <slug> */`
 - Marker is injected into **registry-transported** owned `.ts`/`.tsx` payloads by `lib/shadcn-registry-generator.ts` (repo disk sources unchanged)
+- Pre-marker installs may need reinstall/update
 
 Unknown / no finding:
 
@@ -41,13 +46,16 @@ Unknown / no finding:
 
 - Name: `@skrewww/guard`
 - Bin: `skrewww-guard`
-- Location: `packages/guard/` (standalone directory; no workspace monorepo migration)
-- Runtime: bundled ESM `dist/cli.js` + `typescript` dependency
-- License: MIT (inherits repo LICENSE)
 - Version: `0.1.0-beta.1`
+- License: MIT
+- Location: `packages/guard/` (standalone; no workspace monorepo migration)
+- Runtime: bundled ESM `dist/cli.js` + `typescript` dependency
+- `publishConfig`: `{ "access": "public", "tag": "beta" }`
+- Proposed publish (NOT EXECUTED): `cd packages/guard && npm publish --access public --tag beta`
+- Proposed git tag (NOT CREATED): `guard-v0.1.0-beta.1`
 
 ## Isolated proof
 
-Local tarball install outside the repo tree succeeds for help / valid / invalid /
-claims / parse / corrupt-facts / moved-copy (see `packages/guard/package.test.ts`
-and pre-release pilot notes in `guard-foundation.md`).
+Local tarball install outside the repo tree succeeds for help / valid /
+invalid / claims / parse / missing / moved-copy (see
+`packages/guard/package.test.ts` and Beta release notes).

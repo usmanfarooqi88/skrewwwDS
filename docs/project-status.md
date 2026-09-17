@@ -1,6 +1,25 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard Pre-Release Hardening ✅ — RELEASE READY**; portable facts + origin-marker provenance + `@skrewww/guard` package candidate; G-0–G-3 ✅; Guard **NOT PUBLISHED**; Guard **NOT in CI**)
+Last verified: **2026-09-17** (**Guard v0.1 Beta Release Preparation ✅ — READY FOR HUMAN RELEASE APPROVAL**; Pre-Release Hardening ✅ RELEASE READY; G-0–G-3 ✅; Guard **NOT RELEASED** / **NOT PUBLISHED**; Guard **NOT in CI**)
+
+## 2026-09-17 — Guard v0.1 Beta Release Preparation (COMPLETE)
+
+**Verdict: COMPLETE. Human release gate: READY FOR HUMAN RELEASE APPROVAL.**
+
+Prepared `@skrewww/guard@0.1.0-beta.1` for publication review:
+
+- Package metadata, README, MIT license, `skrewww-guard` bin
+- `publishConfig.access=public`, `publishConfig.tag=beta`
+- Fresh facts + package build + pack (5 files, ~75.5 KB tarball)
+- Isolated outside-repo install smoke (exits 0/1/2)
+- Release notes + checklist: `docs/releases/guard-v0.1.0-beta.1.md`
+- npm name `@skrewww/guard` currently 404 (available / unpublished)
+- npm `@skrewww` scope ownership / auth: **HUMAN CHECK PENDING**
+
+**Absolute stop:** no `npm publish`, no git tag, no GitHub Release, no website
+announcement, no CI Guard gate.
+
+**Canonical next:** HUMAN APPROVAL → GUARD v0.1 BETA RELEASE — **NOT EXECUTED**
 
 ## 2026-09-17 — Guard Pre-Release Hardening (COMPLETE)
 
@@ -4333,8 +4352,9 @@ here instead.
 | Skrewww Guard v0.1 — G-1 (locked rule implementation) | ✅ **COMPLETE** — revised **6-rule** v0.1 set; `api/nonexistent-prop` **deferred post-v0.1** (G-1A); full record in `docs/architecture/guard-foundation.md` §16 / §16.1 |
 | Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | ✅ **COMPLETE** — diagnostics, formatter, `npm run guard`, exit 0/1/2 |
 | Skrewww Guard v0.1 — G-3 (Pilot / Release Validation) | ✅ **COMPLETE** — CONDITIONAL RELEASE READY at G-3 ship; blockers closed in Pre-Release Hardening |
-| Guard Pre-Release Hardening (facts + provenance + package) | ✅ **COMPLETE** — **RELEASE READY**; `@skrewww/guard` candidate; NOT PUBLISHED / NOT in CI |
-| Guard v0.1 Beta release preparation | **NEXT** — NOT STARTED, awaiting explicit human approval |
+| Guard Pre-Release Hardening (facts + provenance + package) | ✅ **COMPLETE** — RELEASE READY technical baseline |
+| Guard v0.1 Beta Release Preparation | ✅ **COMPLETE** — **READY FOR HUMAN RELEASE APPROVAL**; NOT PUBLISHED |
+| HUMAN APPROVAL → Guard v0.1 Beta Release | **NEXT** — NOT EXECUTED |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no

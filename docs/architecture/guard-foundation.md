@@ -834,3 +834,18 @@ Canonical distribution record: [`guard-distribution.md`](guard-distribution.md).
 ### Absolute stop
 
 No npm publish, no GitHub release, no CI Guard integration, no website announcement.
+
+---
+
+## 20. Beta Release Preparation (COMPLETE)
+
+**Human release gate: READY FOR HUMAN RELEASE APPROVAL.**
+Guard remains **NOT RELEASED / NOT PUBLISHED**.
+
+Canonical notes + checklist: [`docs/releases/guard-v0.1.0-beta.1.md`](../releases/guard-v0.1.0-beta.1.md).
+Distribution: [`guard-distribution.md`](guard-distribution.md).
+
+Proposed (not executed): `cd packages/guard && npm publish --access public --tag beta`
+Proposed git tag (not created): `guard-v0.1.0-beta.1`
+
+Absolute stop: no publish, tag, GitHub Release, website announcement, or CI Guard gate without explicit human approval.
