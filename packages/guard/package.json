@@ -1,7 +1,7 @@
 {
   "name": "@skrewww/guard",
   "version": "0.1.0-beta.1",
-  "description": "Skrewww Guard — offline local checks for Skrewww canonical-contract violations (Beta release candidate; not published from this phase).",
+  "description": "Offline local CLI that validates selected Skrewww canonical-contract claims (Beta).",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -22,15 +22,21 @@
   "keywords": [
     "skrewww",
     "guard",
-    "design-system"
+    "design-system",
+    "cli"
   ],
+  "homepage": "https://skrewww.com",
+  "bugs": {
+    "url": "https://github.com/usmanfarooqi88/skrewwwDS/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/usmanfarooqi88/skrewwwDS.git",
+    "url": "git+https://github.com/usmanfarooqi88/skrewwwDS.git",
     "directory": "packages/guard"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "tag": "beta"
   },
   "private": false
 }

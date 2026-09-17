@@ -35,8 +35,10 @@ const REMEDIATION_BY_RULE: Record<
   Exclude<RuleId, "api/nonexistent-prop">,
   (finding: Finding) => string
 > = {
-  "component/nonexistent-slug": () =>
-    "Use a canonical Skrewww component slug, or remove the Skrewww-path import claim.",
+  "component/nonexistent-slug": (finding) =>
+    finding.canonicalEvidence.includes("packaged consumer facts")
+      ? "Use a canonical Skrewww component slug in the origin marker, or remove the @skrewww-component marker from non-Skrewww source."
+      : "Use a canonical Skrewww component slug, or remove the Skrewww-path import claim.",
   "maturity/false-stable-claim": (finding) =>
     `Correct the structured maturity metadata for "${finding.subject.id}" to match its canonical status, or promote the component first.`,
   "distribution/false-installable-claim": (finding) =>

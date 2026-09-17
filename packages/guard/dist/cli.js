@@ -6789,7 +6789,7 @@ function sanitizePathInMessage(message, projectRoot) {
 
 // lib/guard/diagnostics.ts
 var REMEDIATION_BY_RULE = {
-  "component/nonexistent-slug": () => "Use a canonical Skrewww component slug, or remove the Skrewww-path import claim.",
+  "component/nonexistent-slug": (finding) => finding.canonicalEvidence.includes("packaged consumer facts") ? "Use a canonical Skrewww component slug in the origin marker, or remove the @skrewww-component marker from non-Skrewww source." : "Use a canonical Skrewww component slug, or remove the Skrewww-path import claim.",
   "maturity/false-stable-claim": (finding) => `Correct the structured maturity metadata for "${finding.subject.id}" to match its canonical status, or promote the component first.`,
   "distribution/false-installable-claim": (finding) => `Do not claim "${finding.subject.id}" is installable via the Skrewww registry until it is distributed.`,
   "token/undeclared-css-var": (finding) => `Declare ${finding.subject.id} in the component's canonical cssTokens metadata.`,

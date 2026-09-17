@@ -1,52 +1,65 @@
-# @skrewww/guard (Beta release candidate)
+# @skrewww/guard
 
-**Status:** Beta package candidate — **not published** by this repository phase.
+**Skrewww Guard Beta `0.1.0-beta.1`**
 
-Offline, local CLI that checks deterministic Skrewww **canonical-contract**
-violations. It does **not** replace TypeScript, and does **not** validate
-accessibility, Figma parity, Shape/Surface, or visual quality.
+Offline, local CLI for deterministic validation of selected Skrewww
+**canonical-contract** claims.
 
-## Public consumer rules (3)
+Guard does **not** replace TypeScript. It does **not** validate accessibility,
+WCAG, Shape, Surface, Figma parity, visual quality, or arbitrary design-system
+correctness. Prop inventiveness (`api/nonexistent-prop`) is deferred.
+
+## Install
+
+```bash
+npm install --save-dev @skrewww/guard
+```
+
+## Usage
+
+```bash
+npx skrewww-guard .
+npx skrewww-guard path/to/file.tsx
+npx skrewww-guard path --claims claims.json
+```
+
+Or via the local binary after install: `skrewww-guard`.
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| 0 | no ERROR findings |
+| 1 | one or more Guard ERROR findings |
+| 2 | tool / parse / input / facts failure |
+
+## Public consumer rules (exactly 3)
 
 1. `component/nonexistent-slug`
 2. `maturity/false-stable-claim`
 3. `distribution/false-installable-claim`
 
-The Guard engine also contains 3 **internal Skrewww-repo** rules; those are
-**not** included in this public package.
+The Guard **engine** also implements 3 Skrewww-repo **internal** invariants
+(`token/undeclared-css-var`, `distribution/hostrequirements-leak`,
+`distribution/hosthost-schema-consistency`). Those are **not** part of this
+public consumer CLI.
 
-## Install (when published)
+## Provenance
 
-```bash
-npm install -D @skrewww/guard
-```
+Guard only treats files carrying a generated `@skrewww-component <slug>`
+origin marker (injected into Skrewww registry install payloads) as
+Skrewww-origin.
 
-This phase only validates packing/install via local tarball — do not assume
-registry availability.
+- **Meaning:** originated from a Skrewww registry installation
+- **Not:** still byte-identical to canonical Skrewww (local edits are OK)
+- Installs created **before** markers shipped may be unrecognized until
+  components are reinstalled/updated
+- Unmarked local components (even named `Button` under `components/ui`) →
+  **unknown → no ERROR**
 
-## Usage
+Import path or component name alone never establishes a claim.
 
-```bash
-skrewww-guard [path]
-skrewww-guard [path] --claims claims.json
-```
-
-Exit codes: `0` no errors · `1` rule errors · `2` tool/parse/facts failure.
-
-## Provenance (v0.1)
-
-Only source files carrying an `@skrewww-component <slug>` origin marker
-(injected into Skrewww registry install payloads) establish a Skrewww claim.
-Import path or component **name alone never does**.
-
-Marker meaning: **originated from a Skrewww registry installation** — not
-“still byte-identical to canonical Skrewww.”
-
-Unknown provenance → no finding.
-
-## Structured claims
-
-`--claims` accepts JSON **data** (not configuration):
+## Structured claims (data, not config)
 
 ```json
 {
@@ -55,13 +68,11 @@ Unknown provenance → no finding.
 }
 ```
 
+Zero-config happy path. No `.guardrc`, severity overrides, or suppressions.
+
 ## Privacy / offline
 
-- Runs locally
-- No network, Figma, GitHub, or LLM calls
-- No source upload / telemetry
+- Runs locally after install
+- No source upload, no telemetry
+- No LLM, Figma, or GitHub required for validation
 - Diagnostics use project-relative paths; no source dumps
-
-## Zero-config
-
-No `.guardrc` / severity overrides / suppressions.
