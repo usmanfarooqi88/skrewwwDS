@@ -47,6 +47,14 @@ jobs:
       - name: Build (includes registry + Agent Kit generation)
         run: npm run build
 
+      # INTERNAL repo Guard only (not @skrewww/guard@beta). Must run after
+      # build so public/r + public/agent/contracts exist; otherwise two
+      # distribution rules vacuous-pass on a clean checkout. Observe-only:
+      # continue-on-error keeps the required verify job green.
+      - name: Guard (internal, observe-only)
+        continue-on-error: true
+        run: npm run guard -- --internal .
+
       - name: Verify generated artifacts are not tracked
         # A contributor accidentally committing public/r or public/agent would
         # make this dirty; generated output must stay gitignored.

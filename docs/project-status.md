@@ -1,6 +1,19 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard Website / Docs Announcement ✅**; Guard v0.1.0-beta.1 **PUBLISHED** on npm `beta`; Guard **NOT in CI**; Social NOT published)
+Last verified: **2026-09-17** (**Guard CI-1 observe-only ✅ wired**; Guard Website/Docs ✅; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**; Social NOT published)
+
+## 2026-09-17 — Guard CI-1 (observe-only)
+
+**Verdict: WIRED.** Internal Guard runs in GitHub Actions after Build, with
+`continue-on-error: true`. Does **not** block the required verify job.
+Branch protection unchanged. CI-2 / CI-3 **NOT STARTED**.
+
+- Workflow: `.github/workflows/ci.yml`
+- Command: `npm run guard -- --internal .`
+- Placement: after Build (post `generate:registry` + `generate:agent-context`), before artifact hygiene
+- Evidence to collect: Guard exit status, rule IDs on failure, FP vs true violation, wall-clock duration, artifact presence, exit-2/tool failures, consecutive clean runs (~10–20 meaningful runs as human guidance only)
+
+**Canonical next:** Collect CI-1 evidence → later human decision on CI-2 (non-required) / CI-3 (required). Social announcement still separate.
 
 ## 2026-09-17 — Guard Website / Docs Announcement (COMPLETE)
 
@@ -24,7 +37,7 @@ Last verified: **2026-09-17** (**Guard Website / Docs Announcement ✅**; Guard 
 - Dist-tags: `beta` (and `latest` also points at `0.1.0-beta.1` — first-version npm behavior)
 - Git tag: `guard-v0.1.0-beta.1`
 - Release notes: `docs/releases/guard-v0.1.0-beta.1.md`
-- CI Guard gate: **NOT STARTED** (release ≠ required repo gate)
+- CI Guard: **CI-1 observe-only wired** (not required; CI-2/CI-3 NOT STARTED)
 
 ## 2026-09-17 — Guard v0.1 Beta Release Preparation (COMPLETE)
 
@@ -4372,10 +4385,12 @@ here instead.
 | Skrewww Guard v0.1 — G-3 (Pilot / Release Validation) | ✅ **COMPLETE** — CONDITIONAL RELEASE READY at G-3 ship; blockers closed in Pre-Release Hardening |
 | Guard Pre-Release Hardening (facts + provenance + package) | ✅ **COMPLETE** — RELEASE READY technical baseline |
 | Guard v0.1 Beta Release Preparation | ✅ **COMPLETE** |
-| Guard v0.1 Beta Release (`0.1.0-beta.1`) | ✅ **PUBLISHED** — npm `@skrewww/guard@beta`; CI Guard gate NOT STARTED |
+| Guard v0.1 Beta Release (`0.1.0-beta.1`) | ✅ **PUBLISHED** — npm `@skrewww/guard@beta` |
 | Guard Website / Docs Announcement | ✅ **COMPLETE** — `/guard` + changelog; social NOT published |
-| Guard Social Announcement | **NEXT** — after `/guard` live (drafts in `docs/releases/guard-v0.1.0-beta.1-social.md`) |
-| Guard CI Adoption | NOT STARTED — observe → optional → required (evidence only) |
+| Guard Social Announcement | AFTER `/guard` live (drafts in `docs/releases/guard-v0.1.0-beta.1-social.md`) |
+| Guard CI-1 (observe-only) | ✅ **WIRED** — after Build; `continue-on-error: true`; not required |
+| Guard CI-2 (non-required enforcement) | **NOT STARTED** |
+| Guard CI-3 (required gate) | **NOT STARTED** |
 | Post-v0.1 Rules | NOT STARTED — re-audit deferred candidates; no auto-reopen of `api/nonexistent-prop` |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
