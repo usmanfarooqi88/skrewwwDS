@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { AGENT_KIT_PRODUCT_VERSION } from "@/lib/agent-kit/beta-version";
+import { getPublicAgentContractCount } from "@/lib/agent-kit/contract-compiler";
 
 const title = `Agent Kit (Beta) — ${siteConfig.name}`;
 const description =
@@ -50,6 +51,8 @@ function Section({
 }
 
 export default function AgentKitPage() {
+  const contractCount = getPublicAgentContractCount();
+
   return (
     <div className="mx-auto max-w-3xl px-8 py-16">
       <div className="flex items-center gap-2">
@@ -88,7 +91,7 @@ export default function AgentKitPage() {
       <Section id="included" title="What's in Beta">
         <ul className="list-disc space-y-1.5 pl-5">
           <li>
-            <strong>47 component contracts</strong> — machine-readable API, tokens, guidance, and
+            <strong>{contractCount} component contracts</strong> — machine-readable API, tokens, guidance, and
             accessibility notes for every implemented component, at{" "}
             <Code>/agent/contracts/&lt;slug&gt;.json</Code>.
           </li>

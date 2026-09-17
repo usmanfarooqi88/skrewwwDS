@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { allComponents, getCategoryCounts } from "@/lib/data";
-import { getImplementedComponentCount } from "@/lib/component-registry";
+import { getImplementedMaturityCounts } from "@/lib/component-registry";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
 import { siteConfig } from "@/lib/site-config";
@@ -60,15 +60,15 @@ const eyebrowClass =
 export default function HomePage() {
   const counts = getCategoryCounts();
   const totalComponents = allComponents.length;
-  const implementedCount = getImplementedComponentCount();
+  const { implemented, stable, beta } = getImplementedMaturityCounts();
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10 sm:px-8 sm:py-16">
       <div className="mb-10 sm:mb-16">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-ink-200 px-3 py-1 font-mono text-xs text-ink-500">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-          {siteConfig.designSystemVersion} — {implementedCount} React components
-          (27 Stable · 20 Beta)
+          {siteConfig.designSystemVersion} — {implemented} React components
+          ({stable} Stable · {beta} Beta)
         </div>
         <h1 className="text-4xl font-semibold tracking-tight text-ink-900 sm:text-5xl">
           One foundation.

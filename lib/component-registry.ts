@@ -1118,3 +1118,36 @@ export function getImplementedRegistryEntries(): ComponentRegistryEntry[] {
 export function getImplementedComponentCount(): number {
   return getImplementedRegistryEntries().length;
 }
+
+/** Maturity tallies for implemented React components — derived from the registry. */
+export function getImplementedMaturityCounts(): {
+  implemented: number;
+  stable: number;
+  beta: number;
+} {
+  const entries = getImplementedRegistryEntries();
+  let stable = 0;
+  let beta = 0;
+  for (const entry of entries) {
+    if (entry.status === "stable") stable += 1;
+    else if (entry.status === "beta") beta += 1;
+  }
+  return { implemented: entries.length, stable, beta };
+}
+
+/** Newest trustworthy content date for a registry entry (ISO YYYY-MM-DD). */
+export function getRegistryEntryContentDate(entry: ComponentRegistryEntry): string {
+  return entry.reactLastUpdated >= entry.documentationLastUpdated
+    ? entry.reactLastUpdated
+    : entry.documentationLastUpdated;
+}
+
+/** Max content date across entries; undefined when the list is empty. */
+export function getMaxRegistryContentDate(
+  entries: readonly ComponentRegistryEntry[],
+): string | undefined {
+  if (entries.length === 0) return undefined;
+  return entries
+    .map(getRegistryEntryContentDate)
+    .reduce((latest, date) => (date > latest ? date : latest));
+}

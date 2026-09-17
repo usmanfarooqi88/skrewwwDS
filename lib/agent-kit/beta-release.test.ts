@@ -22,11 +22,11 @@ describe("AK-6 — Agent Kit is discoverable in public docs surfaces", () => {
     expect(existsSync(join(root, "app", "agent-kit", "page.tsx"))).toBe(true);
   });
 
-  it("is linked from the sitemap", () => {
+  it("is linked from the sitemap as a human landing page (not its machine index)", () => {
     const entries = buildSitemapEntries();
     const urls = entries.map((entry) => entry.url);
     expect(urls).toContain(absoluteUrl("/agent-kit"));
-    expect(urls).toContain(absoluteUrl("/agent/index.json"));
+    expect(urls).not.toContain(absoluteUrl("/agent/index.json"));
   });
 
   it("is discoverable from llms.txt without dumping every contract", () => {

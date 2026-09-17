@@ -1,5 +1,10 @@
 import type { MetadataRoute } from "next";
-import { getRegistryEntry } from "@/lib/component-registry";
+import {
+  componentRegistry,
+  getMaxRegistryContentDate,
+  getRegistryEntry,
+  getRegistryEntryContentDate,
+} from "@/lib/component-registry";
 import {
   categoryPageContent,
   getCategoryPageHref,
@@ -9,119 +14,149 @@ import {
   industries,
   getIndustryPageHref,
   INDUSTRIES_INDEX_HREF,
+  type IndustryName,
 } from "@/lib/industry-content";
 import {
-  getComponentIndexing,
   getCategoryIndexing,
   getIndustryIndexing,
   getIndexableComponentSlugs,
 } from "@/lib/indexing-policy";
 import { getComponentHref } from "@/lib/routes";
-import { absoluteUrl, siteConfig } from "@/lib/site-config";
-import { getSortedChangelogEntries } from "@/content/changelog";
+import { absoluteUrl } from "@/lib/site-config";
+import {
+  changelogEntries,
+  getSortedChangelogEntries,
+} from "@/content/changelog";
+
+/**
+ * Sitemap lastModified strategy (Technical SEO Batch 2):
+ *
+ * Prefer a trustworthy route-level content date. Never emit build time,
+ * request time, or a blanket siteConfig.lastUpdated on unrelated pages.
+ * When no trustworthy date exists for a route family, omit lastModified.
+ *
+ * | Route family              | Source                                      |
+ * |---------------------------|---------------------------------------------|
+ * | Homepage                  | max react/docs date across registry         |
+ * | Components hub            | max react/docs date across registry         |
+ * | Component detail          | entry reactLastUpdated / documentationLastUpdated |
+ * | Category hubs             | max content date of components in category  |
+ * | Industries hub            | max content date of industry components     |
+ * | Industry detail           | max content date of that industry's comps   |
+ * | Foundations               | omitted (no route-level update date)        |
+ * | Changelog                 | newest changelog entry date                 |
+ * | Agent Kit                 | changelog entry `2026-09-agent-kit-beta`    |
+ * | Guard                     | changelog entry `2026-09-guard-beta`        |
+ */
+
+function changelogEntryDate(id: string): string | undefined {
+  return changelogEntries.find((entry) => entry.id === id)?.date;
+}
+
+function sitemapEntry(
+  path: string,
+  options: {
+    lastModified?: string;
+    changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+    priority: number;
+  },
+): MetadataRoute.Sitemap[number] {
+  const entry: MetadataRoute.Sitemap[number] = {
+    url: absoluteUrl(path),
+    changeFrequency: options.changeFrequency,
+    priority: options.priority,
+  };
+  if (options.lastModified) {
+    entry.lastModified = options.lastModified;
+  }
+  return entry;
+}
+
+function componentsInCategory(category: CategoryName) {
+  return componentRegistry.filter((entry) => entry.category === category);
+}
+
+function componentsInIndustry(industry: IndustryName) {
+  return componentRegistry.filter((entry) => entry.industry === industry);
+}
 
 export function buildSitemapEntries(): MetadataRoute.Sitemap {
+  const catalogDate = getMaxRegistryContentDate(componentRegistry);
+  const newestChangelog = getSortedChangelogEntries()[0]?.date;
+  const agentKitDate = changelogEntryDate("2026-09-agent-kit-beta");
+  const guardDate = changelogEntryDate("2026-09-guard-beta");
+  const industryCatalogDate = getMaxRegistryContentDate(
+    componentRegistry.filter((entry) => entry.industry != null),
+  );
+
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: absoluteUrl("/"),
-      lastModified: siteConfig.lastUpdated,
+    sitemapEntry("/", {
+      lastModified: catalogDate,
       changeFrequency: "weekly",
       priority: 1,
-    },
-    {
-      url: absoluteUrl("/components"),
-      lastModified: siteConfig.lastUpdated,
+    }),
+    sitemapEntry("/components", {
+      lastModified: catalogDate,
       changeFrequency: "weekly",
       priority: 0.9,
-    },
-    {
-      url: absoluteUrl(INDUSTRIES_INDEX_HREF),
-      lastModified: siteConfig.lastUpdated,
+    }),
+    sitemapEntry(INDUSTRIES_INDEX_HREF, {
+      lastModified: industryCatalogDate,
       changeFrequency: "weekly",
       priority: 0.85,
-    },
-    {
-      url: absoluteUrl("/foundations"),
-      lastModified: siteConfig.documentationPublished,
+    }),
+    // Foundations: no trustworthy route-level update date — omit lastModified.
+    sitemapEntry("/foundations", {
       changeFrequency: "monthly",
       priority: 0.8,
-    },
-    {
-      url: absoluteUrl("/agent-kit"),
-      lastModified: siteConfig.lastUpdated,
+    }),
+    sitemapEntry("/agent-kit", {
+      lastModified: agentKitDate,
       changeFrequency: "monthly",
       priority: 0.75,
-    },
-    {
-      url: absoluteUrl("/guard"),
-      lastModified: siteConfig.lastUpdated,
+    }),
+    sitemapEntry("/guard", {
+      lastModified: guardDate,
       changeFrequency: "monthly",
       priority: 0.75,
-    },
-    {
-      url: absoluteUrl("/changelog"),
-      lastModified: getSortedChangelogEntries()[0]?.date ?? siteConfig.documentationPublished,
+    }),
+    sitemapEntry("/changelog", {
+      lastModified: newestChangelog,
       changeFrequency: "monthly",
       priority: 0.7,
-    },
-    {
-      url: absoluteUrl("/registry.json"),
-      lastModified: siteConfig.lastUpdated,
-      changeFrequency: "weekly",
-      priority: 0.5,
-    },
-    {
-      url: absoluteUrl("/agent/index.json"),
-      lastModified: siteConfig.lastUpdated,
-      changeFrequency: "weekly",
-      priority: 0.5,
-    },
-    {
-      url: absoluteUrl("/llms.txt"),
-      lastModified: siteConfig.lastUpdated,
-      changeFrequency: "weekly",
-      priority: 0.4,
-    },
-    {
-      url: absoluteUrl("/llms-full.txt"),
-      lastModified: siteConfig.lastUpdated,
-      changeFrequency: "weekly",
-      priority: 0.35,
-    },
+    }),
   ];
 
   const categoryPages: MetadataRoute.Sitemap = (
     Object.keys(categoryPageContent) as CategoryName[]
   )
     .filter((category) => getCategoryIndexing(category) === "index")
-    .map((category) => ({
-      url: absoluteUrl(getCategoryPageHref(category)),
-      lastModified: siteConfig.lastUpdated,
-      changeFrequency: "weekly" as const,
-      priority: 0.75,
-    }));
+    .map((category) =>
+      sitemapEntry(getCategoryPageHref(category), {
+        lastModified: getMaxRegistryContentDate(componentsInCategory(category)),
+        changeFrequency: "weekly",
+        priority: 0.75,
+      }),
+    );
 
   const industryPages: MetadataRoute.Sitemap = industries
     .filter((industry) => getIndustryIndexing(industry) === "index")
-    .map((industry) => ({
-      url: absoluteUrl(getIndustryPageHref(industry)),
-      lastModified: siteConfig.lastUpdated,
-      changeFrequency: "weekly" as const,
-      priority: 0.75,
-    }));
+    .map((industry) =>
+      sitemapEntry(getIndustryPageHref(industry), {
+        lastModified: getMaxRegistryContentDate(componentsInIndustry(industry)),
+        changeFrequency: "weekly",
+        priority: 0.75,
+      }),
+    );
 
   const componentPages: MetadataRoute.Sitemap = getIndexableComponentSlugs().map(
     (slug) => {
       const registry = getRegistryEntry(slug);
-      return {
-        url: absoluteUrl(getComponentHref(slug)),
-        lastModified:
-          registry?.reactLastUpdated ??
-          registry?.documentationLastUpdated ??
-          siteConfig.documentationPublished,
-        changeFrequency: "weekly" as const,
+      return sitemapEntry(getComponentHref(slug), {
+        lastModified: registry ? getRegistryEntryContentDate(registry) : undefined,
+        changeFrequency: "weekly",
         priority: registry?.hasImplementation ? 0.85 : 0.7,
-      };
+      });
     },
   );
 

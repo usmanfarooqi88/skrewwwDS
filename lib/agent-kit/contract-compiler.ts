@@ -211,3 +211,20 @@ export function compileAllContracts(options: ContractCompilerOptions): CompileAl
 
   return { contracts, index: buildIndex(contracts, options) };
 }
+
+/**
+ * Public component-contract inventory size — same population as
+ * `compileAllContracts` / `/agent/index.json` `totalComponents`.
+ *
+ * Counts registry entries that join to a ComponentDoc without running a full
+ * contract compile (avoids SSR cost and generated-file circularity).
+ */
+export function getPublicAgentContractCount(): number {
+  let count = 0;
+  for (const entry of componentRegistry) {
+    if (allComponents.some((doc) => doc.slug === entry.slug)) {
+      count += 1;
+    }
+  }
+  return count;
+}
