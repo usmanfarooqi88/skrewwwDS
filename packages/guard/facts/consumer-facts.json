@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 1,
+  "guardToolVersion": "0.1.0-beta.1",
+  "source": "lib/component-registry.ts + isDistributedViaSkrewwwRegistry",
+  "components": [
+    {
+      "slug": "accordion",
+      "displayName": "Accordion",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "alert",
+      "displayName": "Alert",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "avatar",
+      "displayName": "Avatar",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "badge",
+      "displayName": "Badge",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "banking-account-card",
+      "displayName": "Banking Account Card",
+      "status": "beta",
+      "installable": false
+    },
+    {
+      "slug": "banking-balance-summary",
+      "displayName": "Banking Balance Summary",
+      "status": "beta",
+      "installable": false
+    },
+    {
+      "slug": "banking-transaction-row",
+      "displayName": "Banking Transaction Row",
+      "status": "beta",
+      "installable": false
+    },
+    {
+      "slug": "bar-chart",
+      "displayName": "Bar Chart",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "breadcrumb",
+      "displayName": "Breadcrumb",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "button",
+      "displayName": "Button",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "button-group",
+      "displayName": "Button Group",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "calendar-day",
+      "displayName": "Calendar Day",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "calendar-grid",
+      "displayName": "Calendar Grid",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "card",
+      "displayName": "Card",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "checkbox",
+      "displayName": "Checkbox",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "combobox",
+      "displayName": "Combobox",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "credit-card-field",
+      "displayName": "Credit Card Field",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "data-table",
+      "displayName": "Data Table",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "date-picker",
+      "displayName": "Date Picker",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "dialog",
+      "displayName": "Dialog",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "divider",
+      "displayName": "Divider",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "drawer",
+      "displayName": "Drawer",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "empty-state",
+      "displayName": "Empty State",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "file-upload",
+      "displayName": "File Upload",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "form-field",
+      "displayName": "Form Field",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "line-chart",
+      "displayName": "Line Chart",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "link",
+      "displayName": "Link",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "list-item",
+      "displayName": "List Item",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "menu",
+      "displayName": "Menu",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "number-input",
+      "displayName": "Number Input",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "pagination",
+      "displayName": "Pagination",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "phone-number-field",
+      "displayName": "Phone Number Field",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "popover",
+      "displayName": "Popover",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "progress-bar",
+      "displayName": "Progress Bar",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "radio",
+      "displayName": "Radio",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "radio-group",
+      "displayName": "Radio Group",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "search-field",
+      "displayName": "Search Field",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "select",
+      "displayName": "Select",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "skeleton",
+      "displayName": "Skeleton",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "slider",
+      "displayName": "Slider",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "spinner",
+      "displayName": "Spinner",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "split-button",
+      "displayName": "Split Button",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "stepper",
+      "displayName": "Stepper",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "switch",
+      "displayName": "Switch",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "table",
+      "displayName": "Table",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "tabs",
+      "displayName": "Tabs",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "tag",
+      "displayName": "Tag",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "text-input",
+      "displayName": "Text Input",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "textarea",
+      "displayName": "Textarea",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "timeline",
+      "displayName": "Timeline",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "toast",
+      "displayName": "Toast",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "toggle-group",
+      "displayName": "Toggle Group",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "tooltip",
+      "displayName": "Tooltip",
+      "status": "stable",
+      "installable": true
+    },
+    {
+      "slug": "tree-view",
+      "displayName": "Tree View",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "validation-message",
+      "displayName": "Validation Message",
+      "status": "stable",
+      "installable": true
+    }
+  ]
+}

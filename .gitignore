@@ -23,6 +23,8 @@ evals/agent-kit/generated/
 # Production
 build/
 dist/
+!packages/guard/dist/
+!packages/guard/dist/**
 
 # TypeScript
 *.tsbuildinfo
@@ -59,3 +61,4 @@ coverage/
 
 # Personal Claude Code workflow file — not repo policy
 CLAUDE.md
+packages/guard/*.tgz
