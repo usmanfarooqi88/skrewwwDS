@@ -30,6 +30,10 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { componentRegistry } from "@/lib/component-registry";
+import {
+  isTypeScriptSourcePath,
+  withSkrewwwComponentMarker,
+} from "@/lib/guard/provenance-marker";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -865,9 +869,17 @@ function buildComponentManifest(slug: string): ShadcnRegistryItem {
 
   const files: ShadcnRegistryFile[] = transportedPaths.map((relPath) => {
     const { type, target } = classifyFile(relPath);
+    let content = readSourceFile(relPath);
+    // Origin provenance for Guard: owned TS/TSX files carry a machine-
+    // readable marker in the *transported* install payload only (repo
+    // source on disk is unchanged). Meaning: originated from Skrewww
+    // registry install — not byte-identical forever.
+    if (ownedFiles.includes(relPath) && isTypeScriptSourcePath(relPath)) {
+      content = withSkrewwwComponentMarker(content, entry.slug);
+    }
     return {
       path: relPath,
-      content: readSourceFile(relPath),
+      content,
       type,
       target,
     };

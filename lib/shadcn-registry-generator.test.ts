@@ -142,10 +142,17 @@ describe("shadcn registry generator", () => {
     expect(new Set(actualPaths).size).toBe(actualPaths.length);
   });
 
-  it("copies file content byte-for-byte from the real canonical source", () => {
+  it("copies file content from the real canonical source (owned TS/TSX get an origin marker prefix)", () => {
     const manifest = buildButtonManifest();
+    const entry = buttonEntry();
+    const owned = new Set(entry.files ?? []);
     for (const file of manifest.files) {
-      expect(file.content).toBe(readRepoFile(file.path));
+      const disk = readRepoFile(file.path);
+      if (owned.has(file.path) && (file.path.endsWith(".tsx") || file.path.endsWith(".ts"))) {
+        expect(file.content).toBe(`/** @skrewww-component button */\n${disk}`);
+      } else {
+        expect(file.content).toBe(disk);
+      }
     }
   });
 
@@ -1072,7 +1079,7 @@ describe("shadcn registry generator", () => {
       /LineChart\.tsx|line-chart\.module\.css|banking-|BankingAccount|BankingBalance|BankingTransaction/,
     );
     const tsx = manifest.files.find((file) => file.path === "components/ui/BarChart.tsx")!;
-    expect(tsx.content).toMatch(/^["']use client["']/);
+    expect(tsx.content).toMatch(/^\/\*\* @skrewww-component bar-chart \*\/\n["']use client["']/);
     expect(tsx.content).toMatch(/from ["']recharts["']/);
   });
 
@@ -1096,7 +1103,7 @@ describe("shadcn registry generator", () => {
       /BarChart\.tsx|bar-chart\.module\.css|banking-|BankingAccount|BankingBalance|BankingTransaction/,
     );
     const tsx = manifest.files.find((file) => file.path === "components/ui/LineChart.tsx")!;
-    expect(tsx.content).toMatch(/^["']use client["']/);
+    expect(tsx.content).toMatch(/^\/\*\* @skrewww-component line-chart \*\/\n["']use client["']/);
     expect(tsx.content).toMatch(/from ["']recharts["']/);
   });
 
