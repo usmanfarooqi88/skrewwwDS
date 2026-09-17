@@ -811,3 +811,26 @@ then required.
 
 **GUARD PRE-RELEASE HARDENING / v0.1 RELEASE PREPARATION — NOT STARTED.**
 No publish. No CI workflow edits. No post-v0.1 rules.
+
+---
+
+## 19. Pre-Release Hardening — portable facts + package (COMPLETE)
+
+**Release verdict: RELEASE READY.** Guard remains **NOT PUBLISHED**.
+
+Canonical distribution record: [`guard-distribution.md`](guard-distribution.md).
+
+### Closed blockers
+
+1. Portable consumer facts (`lib/guard/generated/consumer-facts.json`, 55 components)
+2. Origin-marker provenance for public package (`@skrewww-component` in registry transport)
+3. `@skrewww/guard` package candidate with `skrewww-guard` bin; isolated tarball proven
+
+### Surfaces
+
+- Public package: 3 consumer rules, packaged facts, marker provenance, no `--internal`
+- Repo CLI: consumer + `--internal` unchanged
+
+### Absolute stop
+
+No npm publish, no GitHub release, no CI Guard integration, no website announcement.

@@ -1,6 +1,24 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard G-3 ✅ COMPLETE — CONDITIONAL RELEASE READY**; G-2 ✅; G-1 ✅ six-rule set; `api/nonexistent-prop` deferred; Guard **NOT RELEASED**; Guard **NOT in CI**; CE-3 / Reference App / PH-0 / Readiness Audit / G-0 remain ✅)
+Last verified: **2026-09-17** (**Guard Pre-Release Hardening ✅ — RELEASE READY**; portable facts + origin-marker provenance + `@skrewww/guard` package candidate; G-0–G-3 ✅; Guard **NOT PUBLISHED**; Guard **NOT in CI**)
+
+## 2026-09-17 — Guard Pre-Release Hardening (COMPLETE)
+
+**Verdict: COMPLETE. Release verdict: RELEASE READY.**
+
+Closed the three G-3 public-release blockers:
+
+1. **Portable facts** — `lib/guard/generated/consumer-facts.json` (55 components)
+2. **Consumer provenance** — `@skrewww-component` marker in registry transport; public package never uses path/name heuristics
+3. **Package/bin** — `packages/guard` → `@skrewww/guard` / `skrewww-guard` (local tarball proven outside repo)
+
+Public package exposes **3** consumer rules only. Repo keeps `--internal` for 3 internal rules. Engine catalog still **6**.
+
+See `docs/architecture/guard-distribution.md` and foundation §19.
+
+**Absolute stop:** no npm publish, no GitHub release, no CI Guard gate, no website announcement.
+
+**Canonical next:** GUARD v0.1 BETA RELEASE PREPARATION — NOT STARTED.
 
 ## 2026-09-17 — Guard G-3: Pilot / Release Validation (COMPLETE)
 
@@ -14,13 +32,13 @@ model, package/`bin` surface) — see
 
 **Hardening in G-3:** outside-root path privacy (basename), help honesty
 (TypeScript / a11y / Figma non-claims). Release suite:
-`lib/guard/release-validation.test.ts`. Gates: Vitest **1287**, registry 53,
+`lib/guard/release-validation.test.ts`. Gates: Vitest **1287** at G-3; Pre-Release Hardening Vitest **1299**, registry 53,
 Agent contracts 55.
 
-**Not done (by design):** npm publish, GitHub release, CI workflow edits,
+**Not done (by design in G-3):** npm publish, GitHub release, CI workflow edits,
 website promotion, new rules.
 
-**Canonical next:** GUARD PRE-RELEASE HARDENING — NOT STARTED.
+**Follow-up:** Pre-Release Hardening completed separately — see section above.
 
 ## 2026-09-17 — Guard G-2: Diagnostics + CLI (COMPLETE)
 
@@ -4314,8 +4332,9 @@ here instead.
 | Skrewww Guard v0.1 — G-0 (parser + fact extraction) | ✅ **COMPLETE** — `lib/guard/`, 35 tests, 14 adversarial fixtures, G-1 readiness gate PASS; full record in `docs/architecture/guard-foundation.md` |
 | Skrewww Guard v0.1 — G-1 (locked rule implementation) | ✅ **COMPLETE** — revised **6-rule** v0.1 set; `api/nonexistent-prop` **deferred post-v0.1** (G-1A); full record in `docs/architecture/guard-foundation.md` §16 / §16.1 |
 | Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | ✅ **COMPLETE** — diagnostics, formatter, `npm run guard`, exit 0/1/2 |
-| Skrewww Guard v0.1 — G-3 (Pilot / Release Validation) | ✅ **COMPLETE** — **CONDITIONAL RELEASE READY**; public release prerequisites remain; Guard NOT RELEASED / NOT in CI |
-| Guard v0.1 release preparation / pre-release hardening | **NEXT** — NOT STARTED, awaiting explicit human approval |
+| Skrewww Guard v0.1 — G-3 (Pilot / Release Validation) | ✅ **COMPLETE** — CONDITIONAL RELEASE READY at G-3 ship; blockers closed in Pre-Release Hardening |
+| Guard Pre-Release Hardening (facts + provenance + package) | ✅ **COMPLETE** — **RELEASE READY**; `@skrewww/guard` candidate; NOT PUBLISHED / NOT in CI |
+| Guard v0.1 Beta release preparation | **NEXT** — NOT STARTED, awaiting explicit human approval |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no

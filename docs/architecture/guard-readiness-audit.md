@@ -1194,6 +1194,22 @@ Full record: `docs/architecture/guard-foundation.md` §17.
 | External fact packaging | **Pre-release prerequisite** (blocker for public install) |
 | Package `bin` / publish surface | **Pre-release prerequisite** (`skrewww-docs` private, no bin) |
 | CI / npm publish / GitHub release | Still NOT DONE (correct) |
-| Next | GUARD PRE-RELEASE HARDENING — NOT STARTED |
+| Next | Pre-Release Hardening — completed; see Addendum below |
 
 Full record: `docs/architecture/guard-foundation.md` §18.
+
+## Addendum: Pre-Release Hardening (COMPLETE)
+
+**Date:** 2026-09-17. Release verdict upgraded to **RELEASE READY**.
+
+| Item | Result |
+|---|---|
+| Portable consumer facts | PASS — `lib/guard/generated/consumer-facts.json` |
+| Origin-marker provenance | PASS — registry transport marker; public package path/name-safe |
+| Package `@skrewww/guard` | PASS — `skrewww-guard` bin; isolated tarball proven |
+| Public vs internal split | PASS — 3 public / 3 internal |
+| License | PASS — MIT |
+| npm publish / CI Guard / website | Still NOT DONE (correct absolute stop) |
+| Next | GUARD v0.1 BETA RELEASE PREPARATION — NOT STARTED |
+
+Full record: `docs/architecture/guard-distribution.md`, foundation §19.
