@@ -1,10 +1,22 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard v0.1 Beta Release Preparation ✅ — READY FOR HUMAN RELEASE APPROVAL**; Pre-Release Hardening ✅ RELEASE READY; G-0–G-3 ✅; Guard **NOT RELEASED** / **NOT PUBLISHED**; Guard **NOT in CI**)
+Last verified: **2026-09-17** (**Guard v0.1.0-beta.1 PUBLISHED** on npm `beta`; G-0–G-3 ✅; Pre-Release Hardening ✅; Beta prep ✅; Guard **NOT in CI**)
+
+## 2026-09-17 — Guard v0.1 Beta Release (PUBLISHED)
+
+**Verdict: COMPLETE. `@skrewww/guard@0.1.0-beta.1` is live on npm.**
+
+- Package: https://www.npmjs.com/package/@skrewww/guard
+- Install: `npm install --save-dev @skrewww/guard@beta`
+- Bin: `skrewww-guard`
+- Dist-tags: `beta` (and `latest` also points at `0.1.0-beta.1` — first-version npm behavior)
+- Git tag: `guard-v0.1.0-beta.1`
+- Release notes: `docs/releases/guard-v0.1.0-beta.1.md`
+- CI Guard gate: **NOT STARTED** (release ≠ required repo gate)
 
 ## 2026-09-17 — Guard v0.1 Beta Release Preparation (COMPLETE)
 
-**Verdict: COMPLETE. Human release gate: READY FOR HUMAN RELEASE APPROVAL.**
+**Verdict: COMPLETE. Human release gate was READY; publish approved and executed.**
 
 Prepared `@skrewww/guard@0.1.0-beta.1` for publication review:
 
@@ -13,14 +25,8 @@ Prepared `@skrewww/guard@0.1.0-beta.1` for publication review:
 - Fresh facts + package build + pack (5 files, ~75.5 KB tarball)
 - Isolated outside-repo install smoke (exits 0/1/2)
 - Release notes + checklist: `docs/releases/guard-v0.1.0-beta.1.md`
-- npm name `@skrewww/guard` currently 404 (available / unpublished)
-- npm `@skrewww` scope ownership / auth: **HUMAN CHECK PENDING**
 
-**Absolute stop:** no `npm publish`, no git tag, no GitHub Release, no website
-announcement, no CI Guard gate.
-
-**Canonical next:** HUMAN APPROVAL → GUARD v0.1 BETA RELEASE — **NOT EXECUTED**
-
+Publish executed after explicit **Publish Guard Beta** approval.
 ## 2026-09-17 — Guard Pre-Release Hardening (COMPLETE)
 
 **Verdict: COMPLETE. Release verdict: RELEASE READY.**
@@ -4353,8 +4359,8 @@ here instead.
 | Skrewww Guard v0.1 — G-2 (Diagnostics + CLI) | ✅ **COMPLETE** — diagnostics, formatter, `npm run guard`, exit 0/1/2 |
 | Skrewww Guard v0.1 — G-3 (Pilot / Release Validation) | ✅ **COMPLETE** — CONDITIONAL RELEASE READY at G-3 ship; blockers closed in Pre-Release Hardening |
 | Guard Pre-Release Hardening (facts + provenance + package) | ✅ **COMPLETE** — RELEASE READY technical baseline |
-| Guard v0.1 Beta Release Preparation | ✅ **COMPLETE** — **READY FOR HUMAN RELEASE APPROVAL**; NOT PUBLISHED |
-| HUMAN APPROVAL → Guard v0.1 Beta Release | **NEXT** — NOT EXECUTED |
+| Guard v0.1 Beta Release Preparation | ✅ **COMPLETE** |
+| Guard v0.1 Beta Release (`0.1.0-beta.1`) | ✅ **PUBLISHED** — npm `@skrewww/guard@beta`; CI Guard gate NOT STARTED |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no

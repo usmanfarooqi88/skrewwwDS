@@ -1,7 +1,7 @@
 # Guard distribution
 
-**Status:** v0.1 Beta release preparation complete. Guard is **NOT published**
-until explicit human approval (`Publish Guard Beta`).
+**Status:** **PUBLISHED** — `@skrewww/guard@0.1.0-beta.1` on npm (`beta`).
+CI Guard enforcement remains a separate later decision.
 
 Canonical Beta release notes / checklist:
 [`docs/releases/guard-v0.1.0-beta.1.md`](../releases/guard-v0.1.0-beta.1.md)
@@ -51,11 +51,12 @@ Unknown / no finding:
 - Location: `packages/guard/` (standalone; no workspace monorepo migration)
 - Runtime: bundled ESM `dist/cli.js` + `typescript` dependency
 - `publishConfig`: `{ "access": "public", "tag": "beta" }`
-- Proposed publish (NOT EXECUTED): `cd packages/guard && npm publish --access public --tag beta`
-- Proposed git tag (NOT CREATED): `guard-v0.1.0-beta.1`
+- Published: `npm publish --access public --tag beta` (first version also set `latest` → `0.1.0-beta.1`)
+- Prefer install: `npm install --save-dev @skrewww/guard@beta`
+- Git tag: `guard-v0.1.0-beta.1`
 
 ## Isolated proof
 
-Local tarball install outside the repo tree succeeds for help / valid /
-invalid / claims / parse / missing / moved-copy (see
-`packages/guard/package.test.ts` and Beta release notes).
+Local tarball + registry (`@beta`) install outside the repo tree succeeds for
+help / valid / invalid / claims / parse (see `packages/guard/package.test.ts`
+and Beta release notes).

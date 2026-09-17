@@ -12,8 +12,11 @@ correctness. Prop inventiveness (`api/nonexistent-prop`) is deferred.
 ## Install
 
 ```bash
-npm install --save-dev @skrewww/guard
+npm install --save-dev @skrewww/guard@beta
 ```
+
+Prefer the `beta` dist-tag until a stable release. (`latest` currently also
+points at `0.1.0-beta.1` because this was the first published version.)
 
 ## Usage
 

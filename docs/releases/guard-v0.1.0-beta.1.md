@@ -1,7 +1,6 @@
-# Skrewww Guard v0.1.0-beta.1 — Beta release notes (draft)
+# Skrewww Guard v0.1.0-beta.1 — Beta release notes
 
-**Status:** release preparation complete · package **NOT PUBLISHED** until
-explicit human approval (`Publish Guard Beta`).
+**Status:** **PUBLISHED** on npm (`beta` dist-tag). GitHub Release / git tag as recorded below.
 
 ## Package
 
@@ -41,14 +40,18 @@ explicit human approval (`Publish Guard Beta`).
 - Pre-marker registry installs may need reinstall/update for recognition
 - Does not replace TypeScript
 
-## Proposed publish command (NOT EXECUTED)
+## Publish record
+
+Executed:
 
 ```bash
 cd packages/guard
 npm publish --access public --tag beta
 ```
 
-(`publishConfig.access` / `publishConfig.tag` are already set to `public` / `beta`.)
+- npm: https://www.npmjs.com/package/@skrewww/guard
+- Install: `npm install --save-dev @skrewww/guard@beta`
+- Note: first package publish also set npm `latest` → `0.1.0-beta.1` (registry behavior for first version; cannot remove `latest` while it is the only version). Prefer the `beta` tag until a stable release.
 
 ## Human checklist
 
@@ -65,8 +68,10 @@ npm publish --access public --tag beta
 - [x] Exact publish command drafted (not run)
 - [x] npm `beta` dist-tag planned
 - [x] npm package name `@skrewww/guard` currently unpublished (registry 404)
-- [ ] npm `@skrewww` scope ownership / publish auth / 2FA (HUMAN)
-- [ ] Explicit human message: **Publish Guard Beta**
+- [x] npm `@skrewww` scope ownership / publish auth / 2FA
+- [x] Explicit human message: **Publish Guard Beta**
+- [x] `npm publish --access public --tag beta` executed
+- [x] Registry install smoke (`@skrewww/guard@beta`)
 
 ## CI adoption
 

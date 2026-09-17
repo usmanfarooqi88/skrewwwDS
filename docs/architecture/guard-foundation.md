@@ -837,15 +837,12 @@ No npm publish, no GitHub release, no CI Guard integration, no website announcem
 
 ---
 
-## 20. Beta Release Preparation (COMPLETE)
+## 20. Beta Release Preparation (COMPLETE) → published
 
-**Human release gate: READY FOR HUMAN RELEASE APPROVAL.**
-Guard remains **NOT RELEASED / NOT PUBLISHED**.
+**Published:** `@skrewww/guard@0.1.0-beta.1` (`npm` dist-tag `beta`).
 
-Canonical notes + checklist: [`docs/releases/guard-v0.1.0-beta.1.md`](../releases/guard-v0.1.0-beta.1.md).
+Canonical notes: [`docs/releases/guard-v0.1.0-beta.1.md`](../releases/guard-v0.1.0-beta.1.md).
 Distribution: [`guard-distribution.md`](guard-distribution.md).
 
-Proposed (not executed): `cd packages/guard && npm publish --access public --tag beta`
-Proposed git tag (not created): `guard-v0.1.0-beta.1`
-
-Absolute stop: no publish, tag, GitHub Release, website announcement, or CI Guard gate without explicit human approval.
+Git tag: `guard-v0.1.0-beta.1`
+CI Guard gate: not started (manual → optional → required later).
