@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "skrewww-guard": "./dist/cli.js"
+    "skrewww-guard": "dist/cli.js"
   },
   "files": [
     "dist",
