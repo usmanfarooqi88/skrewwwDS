@@ -2,6 +2,8 @@
 
 **Skrewww Guard Beta `0.1.0-beta.1`**
 
+Docs: [skrewww.com/guard](https://skrewww.com/guard) · Changelog: [skrewww.com/changelog](https://skrewww.com/changelog)
+
 Offline, local CLI for deterministic validation of selected Skrewww
 **canonical-contract** claims.
 

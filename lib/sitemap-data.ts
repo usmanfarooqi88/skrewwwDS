@@ -53,6 +53,12 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
       priority: 0.75,
     },
     {
+      url: absoluteUrl("/guard"),
+      lastModified: siteConfig.lastUpdated,
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+    {
       url: absoluteUrl("/changelog"),
       lastModified: getSortedChangelogEntries()[0]?.date ?? siteConfig.documentationPublished,
       changeFrequency: "monthly",

@@ -7,15 +7,17 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("SidebarNav release-status badges", () => {
-  it("shows a NEW badge on the Agent Kit entry", () => {
+  it("shows a NEW badge on the Guard entry", () => {
     render(<SidebarNav />);
-    const link = screen.getByRole("link", { name: /^Agent Kit/ });
+    const link = screen.getByRole("link", { name: /^Guard/ });
     expect(within(link).getByText("New")).toBeInTheDocument();
   });
 
   it("does not badge unrelated top-level nav entries", () => {
     render(<SidebarNav />);
     expect(screen.getByRole("link", { name: "Foundations" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Agent Kit" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Changelog" })).toBeInTheDocument();
+    expect(within(screen.getByRole("link", { name: "Agent Kit" })).queryByText("New")).toBeNull();
   });
 });

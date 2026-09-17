@@ -1,6 +1,18 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard v0.1.0-beta.1 PUBLISHED** on npm `beta`; G-0–G-3 ✅; Pre-Release Hardening ✅; Beta prep ✅; Guard **NOT in CI**)
+Last verified: **2026-09-17** (**Guard Website / Docs Announcement ✅**; Guard v0.1.0-beta.1 **PUBLISHED** on npm `beta`; Guard **NOT in CI**; Social NOT published)
+
+## 2026-09-17 — Guard Website / Docs Announcement (COMPLETE)
+
+**Verdict: COMPLETE.** Public docs surface for Guard Beta. No CI changes. Social not posted.
+
+- Docs page: `/guard` — install `@skrewww/guard@beta`, 3 public rules, limitations, provenance, privacy
+- Changelog entry: `2026-09-guard-beta`
+- Nav: Guard with temporary NEW badge
+- Sitemap + llms.txt discoverability
+- Social drafts ready (NOT published): `docs/releases/guard-v0.1.0-beta.1-social.md`
+
+**Canonical next:** Guard Social Announcement (after `/guard` live on skrewww.com) → CI adoption (observe-only first) → Post-v0.1 rules (re-audit only; do not auto-reopen `api/nonexistent-prop`).
 
 ## 2026-09-17 — Guard v0.1 Beta Release (PUBLISHED)
 
@@ -4361,6 +4373,10 @@ here instead.
 | Guard Pre-Release Hardening (facts + provenance + package) | ✅ **COMPLETE** — RELEASE READY technical baseline |
 | Guard v0.1 Beta Release Preparation | ✅ **COMPLETE** |
 | Guard v0.1 Beta Release (`0.1.0-beta.1`) | ✅ **PUBLISHED** — npm `@skrewww/guard@beta`; CI Guard gate NOT STARTED |
+| Guard Website / Docs Announcement | ✅ **COMPLETE** — `/guard` + changelog; social NOT published |
+| Guard Social Announcement | **NEXT** — after `/guard` live (drafts in `docs/releases/guard-v0.1.0-beta.1-social.md`) |
+| Guard CI Adoption | NOT STARTED — observe → optional → required (evidence only) |
+| Post-v0.1 Rules | NOT STARTED — re-audit deferred candidates; no auto-reopen of `api/nonexistent-prop` |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no

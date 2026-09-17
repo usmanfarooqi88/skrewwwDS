@@ -58,8 +58,8 @@ describe("isSidebarNavLinkActive", () => {
 });
 
 describe("primaryNavLinks release-status badges", () => {
-  it("only badges Agent Kit as 'new'", () => {
+  it("only badges Guard as 'new'", () => {
     const badged = primaryNavLinks.filter((link) => link.badge);
-    expect(badged).toEqual([{ label: "Agent Kit", href: "/agent-kit", badge: "new" }]);
+    expect(badged).toEqual([{ label: "Guard", href: "/guard", badge: "new" }]);
   });
 });

@@ -117,9 +117,16 @@ export default function AgentKitPage() {
           <li>No custom Skrewww MCP server. Where MCP-based discovery is useful, it goes through
             the shadcn CLI&rsquo;s own <Code>mcp</Code> subcommand against the same{" "}
             <Code>@skrewww</Code> registry — see &ldquo;Distribution&rdquo; below.</li>
-          <li>No Skrewww CLI — there is no <Code>npx skrewww</Code> command.</li>
-          <li>No enforcement/compliance product (&ldquo;Skrewww Guard&rdquo;) — Agent Kit guides
-            generation, it does not gate merges or block CI.</li>
+          <li>No Skrewww CLI — there is no <Code>npx skrewww</Code> command (Guard is a separate
+            package: <Code>@skrewww/guard</Code>).</li>
+          <li>
+            Agent Kit guides generation; it does not gate merges or block CI. For offline claim
+            validation, see{" "}
+            <a className="underline" href={absoluteUrl("/guard")}>
+              Guard (Beta)
+            </a>
+            .
+          </li>
           <li>No semantic search, embeddings, or vector retrieval — contracts are small,
             static, and enumerable; a fetch is enough.</li>
           <li>No guarantee every implemented component is installable via the registry — see
@@ -302,7 +309,14 @@ export default function AgentKitPage() {
             doesn&rsquo;t yet publish; item-level view/add already work.</li>
           <li>Project context is deliberately conservative and frequently returns
             &ldquo;unknown&rdquo; rather than guessing.</li>
-          <li>No custom Skrewww MCP server and no enforcement/Guard product exist yet.</li>
+          <li>No custom Skrewww MCP server exists yet.</li>
+          <li>
+            Guard is a separate Beta product — see{" "}
+            <a className="underline" href={absoluteUrl("/guard")}>
+              /guard
+            </a>
+            .
+          </li>
           <li>Recipes are a small, 4-item pilot set, not a complete pattern library.</li>
           <li>Beta component APIs remain Beta — subject to change.</li>
           <li>Agent Kit does not replace checking a contract with trusting model memory; an
@@ -339,8 +353,7 @@ export default function AgentKitPage() {
         <p className="mt-3 font-medium text-ink-700">Not yet public/supported:</p>
         <ul className="list-disc space-y-1 pl-5 font-mono text-[13px]">
           <li>a custom MCP server</li>
-          <li>Skrewww Guard</li>
-          <li>a Skrewww CLI</li>
+          <li>a Skrewww CLI (<Code>npx skrewww</Code>)</li>
           <li>/r/registry.json (list/search index)</li>
         </ul>
       </Section>

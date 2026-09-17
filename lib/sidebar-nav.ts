@@ -33,7 +33,8 @@ export type PrimaryNavLink = {
 
 export const primaryNavLinks: PrimaryNavLink[] = [
   { label: "Foundations", href: "/foundations", match: "foundations" },
-  { label: "Agent Kit", href: "/agent-kit", badge: "new" },
+  { label: "Agent Kit", href: "/agent-kit" },
+  { label: "Guard", href: "/guard", badge: "new" },
   { label: "Changelog", href: "/changelog" },
 ];
 

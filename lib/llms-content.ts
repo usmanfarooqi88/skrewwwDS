@@ -108,6 +108,12 @@ export function buildLlmsTxt(): string {
     `- Canonical Agent Skill (plain Markdown): ${absoluteUrl("/agent/skill/SKILL.md")}`,
     "- Read the relevant contract before using a Skrewww component in generated code — do not rely on memorized APIs. No custom Skrewww MCP server exists; shadcn's own MCP tooling works against the @skrewww registry.",
     "",
+    "## Guard (Beta) — offline local validation",
+    `- Overview and install: ${absoluteUrl("/guard")}`,
+    "- npm: @skrewww/guard@beta (bin: skrewww-guard)",
+    "- Public consumer rules (exactly 3): component/nonexistent-slug, maturity/false-stable-claim, distribution/false-installable-claim",
+    "- Does not replace TypeScript, accessibility, Figma parity, Shape/Surface, or visual QA. Offline after install; no source upload.",
+    "",
     "## Component categories",
     ...(Object.keys(categoryPageContent) as CategoryName[]).map(
       (category) =>

@@ -35,6 +35,32 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-09-guard-beta",
+    date: "2026-09-17",
+    displayDate: "September 2026",
+    title: "Skrewww Guard (Beta)",
+    summary:
+      "Public Beta of an offline local CLI that validates selected Skrewww canonical-contract claims. Install with @skrewww/guard@beta. Guard is Beta — not a TypeScript, accessibility, Figma, or visual checker. Details on the Guard page.",
+    items: [
+      {
+        type: "new",
+        text: "Public package @skrewww/guard with the skrewww-guard CLI — offline, local, zero-config validation after install.",
+      },
+      {
+        type: "new",
+        text: "Three public consumer rules: nonexistent component slug, false Stable maturity claims, and false installable-via-registry claims.",
+      },
+      {
+        type: "new",
+        text: "Provenance-aware checks via @skrewww-component origin markers from Skrewww registry installs (unmarked local files stay unknown — no false errors).",
+      },
+      {
+        type: "improved",
+        text: "Docs surface at /guard with install, rule list, limitations, and links to npm and the GitHub release.",
+      },
+    ],
+  },
+  {
     id: "2026-09-open-source-launch",
     date: "2026-09-13",
     displayDate: "September 2026",
