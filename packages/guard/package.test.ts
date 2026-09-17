@@ -20,7 +20,7 @@ describe("Guard package candidate", () => {
     expect(pkg.name).toBe("@skrewww/guard");
     expect(pkg.version).toBe("0.1.0-beta.1");
     expect(pkg.license).toBe("MIT");
-    expect(pkg.bin["skrewww-guard"]).toBe("./dist/cli.js");
+    expect(pkg.bin["skrewww-guard"]).toBe("dist/cli.js");
     expect(pkg.files).toEqual(["dist", "facts", "README.md", "LICENSE"]);
     expect(pkg.dependencies.typescript).toBeTruthy();
     expect(pkg.files).not.toContain("src");
