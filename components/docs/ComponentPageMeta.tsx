@@ -210,34 +210,60 @@ export function DocumentationOnlyStatusPanel({ slug }: { slug: string }) {
 
 export function ComponentRelatedLinks({ slug }: { slug: string }) {
   const entry = getRegistryEntry(slug);
-  if (!entry?.hasImplementation) return null;
+  const doc = getComponentBySlug(slug);
 
-  const groups = [
-    { title: "Related components", links: entry.relatedComponents },
-    { title: "Related tokens", links: entry.relatedTokens },
-    { title: "Related concepts", links: entry.relatedConcepts },
-  ].filter((group) => group.links.length > 0);
+  // Implemented components use registry related* groups. Docs-only pages
+  // (no live React preview) may declare relatedLinks on the ComponentDoc.
+  if (entry?.hasImplementation) {
+    const groups = [
+      { title: "Related components", links: entry.relatedComponents },
+      { title: "Related tokens", links: entry.relatedTokens },
+      { title: "Related concepts", links: entry.relatedConcepts },
+    ].filter((group) => group.links.length > 0);
 
-  if (groups.length === 0) return null;
+    if (groups.length === 0) return null;
+
+    return (
+      <section aria-label="Related documentation" className="space-y-4">
+        {groups.map((group) => (
+          <div key={group.title} className="rounded-lg border border-ink-200 p-4">
+            <h2 className="font-mono text-[11px] font-medium uppercase tracking-wide text-ink-400">
+              {group.title}
+            </h2>
+            <ul className="mt-2 space-y-1.5 text-sm">
+              {group.links.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} variant="default" size="sm">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    );
+  }
+
+  const docsOnlyLinks = doc?.relatedLinks ?? [];
+  if (docsOnlyLinks.length === 0) return null;
 
   return (
     <section aria-label="Related documentation" className="space-y-4">
-      {groups.map((group) => (
-        <div key={group.title} className="rounded-lg border border-ink-200 p-4">
-          <h2 className="font-mono text-[11px] font-medium uppercase tracking-wide text-ink-400">
-            {group.title}
-          </h2>
-          <ul className="mt-2 space-y-1.5 text-sm">
-            {group.links.map((link) => (
-              <li key={link.label}>
-                <Link href={link.href} variant="default" size="sm">
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <div className="rounded-lg border border-ink-200 p-4">
+        <h2 className="font-mono text-[11px] font-medium uppercase tracking-wide text-ink-400">
+          Related components
+        </h2>
+        <ul className="mt-2 space-y-1.5 text-sm">
+          {docsOnlyLinks.map((link) => (
+            <li key={link.label}>
+              <Link href={link.href} variant="default" size="sm">
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

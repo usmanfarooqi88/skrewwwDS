@@ -924,6 +924,7 @@ export function Example() {
     relatedComponents: [
       { label: "Text Input — general single-line entry", href: "/components/text-input" },
       { label: "Form Field — label and validation placement", href: "/components/form-field" },
+      { label: "Combobox — select from a filterable option list", href: "/components/combobox" },
     ],
     relatedTokens: [
       { label: "component/radius/control", href: "/foundations" },
@@ -937,12 +938,18 @@ export function Example() {
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
-    anatomy: "SearchField = FormField + search input + MagnifyingGlass icon + optional clear button.",
-    keyboardBehavior: "Native search input behavior. Escape clears when enabled. Clear button is a separate focusable control.",
+    anatomy:
+      "SearchField = FormField + native <input type=\"search\"> + MagnifyingGlass icon + optional clear button (accessible name \"Clear search\").",
+    keyboardBehavior:
+      "Native search input behavior. Escape clears when showClear is enabled and the field has a value. Clear button is a separate focusable control.",
     comparisons: [
       {
         title: "Search Field vs Text Input with a leading icon",
         body: "Search Field is the documented Figma component for search/filter use cases. It adds search semantics, the approved icon, and optional clear behavior without duplicating TextInput implementation.",
+      },
+      {
+        title: "Search Field vs Combobox",
+        body: "Search Field captures a free-form search query string with native search semantics — it is not a constrained option-selection model and does not present selectable suggestions. Combobox connects an editable input to a list of predefined options so users can filter and commit one option value. Use Combobox when selecting from available options; use Search Field when the query itself is the value.",
       },
     ],
     apiProps: [
@@ -1053,6 +1060,10 @@ export function Example() {
       {
         title: "Does it detect Visa/Mastercard?",
         body: "No. Figma uses a generic Icon/CreditCard deliberately — network logos are not reproduced.",
+      },
+      {
+        title: "What validation does Credit Card Field perform?",
+        body: "Consumers can supply an error string to show invalid chrome and message text. Skrewww does not run Luhn checks or card-network validation. This remains a UI/input pattern for card details — not a payment processor.",
       },
     ],
     apiProps: [

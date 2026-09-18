@@ -131,15 +131,34 @@ export const contentDataComponents: ComponentDoc[] = [
     name: "Tree Item",
     category: "Content & Data",
     variants: "State (Default/Hover/Selected) — 3 variants",
-    purpose: "Tree Item is a single row in a hierarchical Tree View — file explorers, nested category browsers, org charts.",
-    whenToUse: "Content with genuine hierarchical depth where indentation communicates structure.",
-    whenNotToUse: "Flat, non-nested lists — use List Item.",
-    accessibility: "role=\"treeitem\" within a parent role=\"tree\", with aria-expanded, aria-level, aria-setsize, aria-posinset. Full keyboard navigation required.",
-    commonMistakes: "Building indentation as a fixed per-component property instead of a real per-instance spacer value.",
-    tokensUsed: ["semantic/surface/elevated", "semantic/action/primary", "semantic/icon/muted", "component/radius/control"],
+    purpose:
+      "Tree Item describes the individual hierarchical row in a Tree View — file explorers, nested category browsers, org charts. It is the Figma row pattern; public React composition and interaction live on Tree View.",
+    whenToUse:
+      "Content with genuine hierarchical depth where indentation communicates structure. For React, compose Tree View — expanded and selected state are owned there, not by a standalone Tree Item export.",
+    whenNotToUse: "Flat, non-nested lists — use List Item instead of a hierarchical Tree Item row.",
+    accessibility:
+      "role=\"treeitem\" within a parent role=\"tree\", with aria-expanded, aria-level, aria-setsize, aria-posinset. Full keyboard navigation is provided by Tree View’s composition.",
+    commonMistakes:
+      "Building indentation as a fixed per-component property instead of a real per-instance spacer value. Treating this docs page as a public standalone React TreeItem API.",
+    tokensUsed: [
+      "semantic/surface/elevated",
+      "semantic/action/primary",
+      "semantic/icon/muted",
+      "component/radius/control",
+    ],
     properties: "State as variants. Label (text). Show chevron (boolean).",
     knownLimitation:
-      "Implemented in React as an internal row composed by Tree View (components/ui/internal/TreeItem.tsx) — see /components/tree-view for the canonical, publicly documented, implemented pattern. This entry remains Figma-facing prose about the underlying Content/Tree Item component set.",
+      "There is no public standalone React TreeItem export. Rows are an internal implementation detail of Tree View (components/ui/internal/TreeItem.tsx). Use Tree View for the canonical, publicly documented React pattern. This page remains Figma-facing prose about the Content/Tree Item component set.",
+    relatedLinks: [
+      {
+        label: "Tree View — public React hierarchical composition",
+        href: "/components/tree-view",
+      },
+      {
+        label: "List Item — flat, non-nested row alternative",
+        href: "/components/list-item",
+      },
+    ],
   },
   {
     slug: "tree-view",

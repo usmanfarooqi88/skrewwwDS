@@ -1,3 +1,8 @@
+export type ComponentDocRelatedLink = {
+  label: string;
+  href: string;
+};
+
 export type ComponentDoc = {
   slug: string;
   name: string;
@@ -18,6 +23,13 @@ export type ComponentDoc = {
   tokensUsed: string[];
   properties?: string;
   knownLimitation?: string;
+  /**
+   * Docs-only / Figma-facing related links when there is no implemented
+   * registry entry (or when Related components should still render without
+   * a live preview). Implemented components continue to use registry
+   * `relatedComponents` instead.
+   */
+  relatedLinks?: ComponentDocRelatedLink[];
 };
 
 export const categories = [

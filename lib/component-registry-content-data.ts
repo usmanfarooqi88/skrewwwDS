@@ -878,6 +878,10 @@ export function Example() {
     files: ["components/ui/TreeView.tsx", "components/ui/tree-view.module.css"],
     relatedComponents: [
       { label: "List Item — flat, non-nested row alternative", href: "/components/list-item" },
+      {
+        label: "Tree Item — Figma hierarchical row pattern (docs only)",
+        href: "/components/tree-item",
+      },
       { label: "Menu — the item-hover token Tree Item reuses", href: "/components/menu" },
     ],
     relatedTokens: [

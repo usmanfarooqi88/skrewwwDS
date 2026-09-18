@@ -136,8 +136,10 @@ export const formsComponents: ComponentDoc[] = [
     variants: "State × Size — 12 variants",
     purpose: "A text input specialized for search — always includes a leading search icon and an optional clear button once text is entered.",
     whenToUse: "Any search/filter input, whether inline in a toolbar or as a page-level search bar.",
-    whenNotToUse: "General free-text entry unrelated to searching/filtering — use Text Input.",
-    accessibility: "The clear button needs an aria-label of \"Clear search\" or equivalent, since it's icon-only.",
+    whenNotToUse:
+      "General free-text entry unrelated to searching/filtering — use Text Input. Selecting from a predefined option list — use Combobox.",
+    accessibility:
+      "Uses a native <input type=\"search\">. The icon-only clear control ships with accessible name \"Clear search\". Escape clears the field when showClear is enabled and a value is present.",
     commonMistakes: "Leaving the clear button visible when the field is empty.",
     tokensUsed: ["component/radius/control", "semantic/border/default", "semantic/icon/muted"],
     properties: "State × Size as variants. Value (text). Show clear icon (boolean).",
@@ -231,9 +233,9 @@ export const formsComponents: ComponentDoc[] = [
     category: "Forms",
     variants: "State (Default/Focused/Error/Disabled) — 4 variants",
     purpose:
-      "Credit Card Field is a compound UI control for card number, expiry, and CVC in one visually unified shell. It is a visual/input pattern only — not a payment processor, tokenizer, or PCI vault.",
+      "Credit Card Field is a compound credit card input field pattern for card number, expiry, and CVC in one visually unified shell. It is a payment form card details pattern only — not a payment processor, tokenizer, or PCI vault.",
     whenToUse:
-      "When documenting or prototyping the joined card-details pattern. For production card capture, prefer a payment provider’s hosted/tokenized fields.",
+      "When documenting or prototyping a payment form’s joined card-details input. For production card capture, prefer a payment provider’s hosted/tokenized fields.",
     whenNotToUse:
       "When using Stripe Elements / Adyen / similar hosted card elements. Do not treat this React control as sufficient for PCI-sensitive production capture.",
     accessibility:

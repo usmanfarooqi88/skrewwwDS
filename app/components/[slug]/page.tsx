@@ -137,11 +137,9 @@ export default async function ComponentDetailPage(props: { params: Promise<{ slu
 
         <ComponentApiSection slug={canonicalSlug} />
 
-        {showLive ? (
-          <div className="pt-2">
-            <ComponentRelatedLinks slug={canonicalSlug} />
-          </div>
-        ) : null}
+        <div className="pt-2">
+          <ComponentRelatedLinks slug={canonicalSlug} />
+        </div>
       </div>
 
       <footer className="mt-10 border-t border-ink-200 pt-4">
