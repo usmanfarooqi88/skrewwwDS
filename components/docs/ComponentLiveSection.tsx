@@ -1,122 +1,257 @@
 "use client";
 
-import { CalendarDayPreview } from "@/components/previews/CalendarDayPreview";
-import { CalendarGridPreview } from "@/components/previews/CalendarGridPreview";
-import { DatePickerPreview } from "@/components/previews/DatePickerPreview";
-import { EmptyStatePreview } from "@/components/previews/EmptyStatePreview";
-import { ListItemPreview } from "@/components/previews/ListItemPreview";
-import { AccordionPreview } from "@/components/previews/AccordionPreview";
-import { AvatarPreview } from "@/components/previews/AvatarPreview";
-import { DividerPreview } from "@/components/previews/DividerPreview";
-import { TagPreview } from "@/components/previews/TagPreview";
-import { AlertPreview } from "@/components/previews/AlertPreview";
-import { BadgePreview } from "@/components/previews/BadgePreview";
-import { ButtonPreview } from "@/components/previews/ButtonPreview";
-import { ButtonGroupPreview } from "@/components/previews/ButtonGroupPreview";
-import { ToggleGroupPreview } from "@/components/previews/ToggleGroupPreview";
-import { SplitButtonPreview } from "@/components/previews/SplitButtonPreview";
-import { CardPreview } from "@/components/previews/CardPreview";
-import { DialogPreview } from "@/components/previews/DialogPreview";
-import { DrawerPreview } from "@/components/previews/DrawerPreview";
-import { PopoverPreview } from "@/components/previews/PopoverPreview";
-import { CheckboxPreview } from "@/components/previews/CheckboxPreview";
-import { FormFieldPreview } from "@/components/previews/FormFieldPreview";
-import { LinkPreview } from "@/components/previews/LinkPreview";
-import { BreadcrumbPreview } from "@/components/previews/BreadcrumbPreview";
-import { TabsPreview } from "@/components/previews/TabsPreview";
-import { PaginationPreview } from "@/components/previews/PaginationPreview";
-import { StepperPreview } from "@/components/previews/StepperPreview";
-import { RadioPreview } from "@/components/previews/RadioPreview";
-import { SwitchPreview } from "@/components/previews/SwitchPreview";
-import { SliderPreview } from "@/components/previews/SliderPreview";
-import { TextInputPreview } from "@/components/previews/TextInputPreview";
-import { ValidationMessagePreview } from "@/components/previews/ValidationMessagePreview";
-import { ProgressBarPreview } from "@/components/previews/ProgressBarPreview";
-import { SkeletonPreview } from "@/components/previews/SkeletonPreview";
-import { SpinnerPreview } from "@/components/previews/SpinnerPreview";
-import { ToastPreview } from "@/components/previews/ToastPreview";
-import { TooltipPreview } from "@/components/previews/TooltipPreview";
-import { SearchFieldPreview } from "@/components/previews/SearchFieldPreview";
-import { CreditCardFieldPreview } from "@/components/previews/CreditCardFieldPreview";
-import { PhoneNumberFieldPreview } from "@/components/previews/PhoneNumberFieldPreview";
-import { NumberInputPreview } from "@/components/previews/NumberInputPreview";
-import { MenuPreview } from "@/components/previews/MenuPreview";
-import { ComboboxPreview } from "@/components/previews/ComboboxPreview";
-import { FileUploadPreview } from "@/components/previews/FileUploadPreview";
-import { TablePreview } from "@/components/previews/TablePreview";
-import { DataTablePreview } from "@/components/previews/DataTablePreview";
-import { SelectPreview } from "@/components/previews/SelectPreview";
-import { TextareaPreview } from "@/components/previews/TextareaPreview";
-import { TreeViewPreview } from "@/components/previews/TreeViewPreview";
-import { BarChartPreview } from "@/components/previews/BarChartPreview";
-import { LineChartPreview } from "@/components/previews/LineChartPreview";
-import { TimelinePreview } from "@/components/previews/TimelinePreview";
-import { BankingTransactionRowPreview } from "@/components/previews/BankingTransactionRowPreview";
-import { BankingAccountCardPreview } from "@/components/previews/BankingAccountCardPreview";
-import { BankingBalanceSummaryPreview } from "@/components/previews/BankingBalanceSummaryPreview";
+import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from "react";
 
-import type { ComponentType } from "react";
+/**
+ * Per-slug preview loaders — each entry is an explicit dynamic `import()`.
+ * Component-detail pages must not eagerly pull every preview (charts, tables,
+ * calendars, overlays, banking compositions, etc.) into one shared client graph.
+ *
+ * Named preview exports are remapped to `default` for `React.lazy`.
+ */
+export const previewLoaders = {
+  "calendar-day": () =>
+    import("@/components/previews/CalendarDayPreview").then((m) => ({
+      default: m.CalendarDayPreview,
+    })),
+  "calendar-grid": () =>
+    import("@/components/previews/CalendarGridPreview").then((m) => ({
+      default: m.CalendarGridPreview,
+    })),
+  "date-picker": () =>
+    import("@/components/previews/DatePickerPreview").then((m) => ({
+      default: m.DatePickerPreview,
+    })),
+  "empty-state": () =>
+    import("@/components/previews/EmptyStatePreview").then((m) => ({
+      default: m.EmptyStatePreview,
+    })),
+  "list-item": () =>
+    import("@/components/previews/ListItemPreview").then((m) => ({
+      default: m.ListItemPreview,
+    })),
+  table: () =>
+    import("@/components/previews/TablePreview").then((m) => ({
+      default: m.TablePreview,
+    })),
+  "data-table": () =>
+    import("@/components/previews/DataTablePreview").then((m) => ({
+      default: m.DataTablePreview,
+    })),
+  "tree-view": () =>
+    import("@/components/previews/TreeViewPreview").then((m) => ({
+      default: m.TreeViewPreview,
+    })),
+  "bar-chart": () =>
+    import("@/components/previews/BarChartPreview").then((m) => ({
+      default: m.BarChartPreview,
+    })),
+  "line-chart": () =>
+    import("@/components/previews/LineChartPreview").then((m) => ({
+      default: m.LineChartPreview,
+    })),
+  timeline: () =>
+    import("@/components/previews/TimelinePreview").then((m) => ({
+      default: m.TimelinePreview,
+    })),
+  accordion: () =>
+    import("@/components/previews/AccordionPreview").then((m) => ({
+      default: m.AccordionPreview,
+    })),
+  avatar: () =>
+    import("@/components/previews/AvatarPreview").then((m) => ({
+      default: m.AvatarPreview,
+    })),
+  divider: () =>
+    import("@/components/previews/DividerPreview").then((m) => ({
+      default: m.DividerPreview,
+    })),
+  tag: () =>
+    import("@/components/previews/TagPreview").then((m) => ({
+      default: m.TagPreview,
+    })),
+  button: () =>
+    import("@/components/previews/ButtonPreview").then((m) => ({
+      default: m.ButtonPreview,
+    })),
+  "button-group": () =>
+    import("@/components/previews/ButtonGroupPreview").then((m) => ({
+      default: m.ButtonGroupPreview,
+    })),
+  "toggle-group": () =>
+    import("@/components/previews/ToggleGroupPreview").then((m) => ({
+      default: m.ToggleGroupPreview,
+    })),
+  "split-button": () =>
+    import("@/components/previews/SplitButtonPreview").then((m) => ({
+      default: m.SplitButtonPreview,
+    })),
+  card: () =>
+    import("@/components/previews/CardPreview").then((m) => ({
+      default: m.CardPreview,
+    })),
+  dialog: () =>
+    import("@/components/previews/DialogPreview").then((m) => ({
+      default: m.DialogPreview,
+    })),
+  drawer: () =>
+    import("@/components/previews/DrawerPreview").then((m) => ({
+      default: m.DrawerPreview,
+    })),
+  popover: () =>
+    import("@/components/previews/PopoverPreview").then((m) => ({
+      default: m.PopoverPreview,
+    })),
+  "text-input": () =>
+    import("@/components/previews/TextInputPreview").then((m) => ({
+      default: m.TextInputPreview,
+    })),
+  textarea: () =>
+    import("@/components/previews/TextareaPreview").then((m) => ({
+      default: m.TextareaPreview,
+    })),
+  select: () =>
+    import("@/components/previews/SelectPreview").then((m) => ({
+      default: m.SelectPreview,
+    })),
+  combobox: () =>
+    import("@/components/previews/ComboboxPreview").then((m) => ({
+      default: m.ComboboxPreview,
+    })),
+  "file-upload": () =>
+    import("@/components/previews/FileUploadPreview").then((m) => ({
+      default: m.FileUploadPreview,
+    })),
+  "search-field": () =>
+    import("@/components/previews/SearchFieldPreview").then((m) => ({
+      default: m.SearchFieldPreview,
+    })),
+  "credit-card-field": () =>
+    import("@/components/previews/CreditCardFieldPreview").then((m) => ({
+      default: m.CreditCardFieldPreview,
+    })),
+  "phone-number-field": () =>
+    import("@/components/previews/PhoneNumberFieldPreview").then((m) => ({
+      default: m.PhoneNumberFieldPreview,
+    })),
+  "number-input": () =>
+    import("@/components/previews/NumberInputPreview").then((m) => ({
+      default: m.NumberInputPreview,
+    })),
+  "form-field": () =>
+    import("@/components/previews/FormFieldPreview").then((m) => ({
+      default: m.FormFieldPreview,
+    })),
+  "validation-message": () =>
+    import("@/components/previews/ValidationMessagePreview").then((m) => ({
+      default: m.ValidationMessagePreview,
+    })),
+  checkbox: () =>
+    import("@/components/previews/CheckboxPreview").then((m) => ({
+      default: m.CheckboxPreview,
+    })),
+  radio: () =>
+    import("@/components/previews/RadioPreview").then((m) => ({
+      default: m.RadioPreview,
+    })),
+  "radio-group": () =>
+    import("@/components/previews/RadioPreview").then((m) => ({
+      default: m.RadioPreview,
+    })),
+  switch: () =>
+    import("@/components/previews/SwitchPreview").then((m) => ({
+      default: m.SwitchPreview,
+    })),
+  slider: () =>
+    import("@/components/previews/SliderPreview").then((m) => ({
+      default: m.SliderPreview,
+    })),
+  link: () =>
+    import("@/components/previews/LinkPreview").then((m) => ({
+      default: m.LinkPreview,
+    })),
+  menu: () =>
+    import("@/components/previews/MenuPreview").then((m) => ({
+      default: m.MenuPreview,
+    })),
+  breadcrumb: () =>
+    import("@/components/previews/BreadcrumbPreview").then((m) => ({
+      default: m.BreadcrumbPreview,
+    })),
+  tabs: () =>
+    import("@/components/previews/TabsPreview").then((m) => ({
+      default: m.TabsPreview,
+    })),
+  pagination: () =>
+    import("@/components/previews/PaginationPreview").then((m) => ({
+      default: m.PaginationPreview,
+    })),
+  stepper: () =>
+    import("@/components/previews/StepperPreview").then((m) => ({
+      default: m.StepperPreview,
+    })),
+  alert: () =>
+    import("@/components/previews/AlertPreview").then((m) => ({
+      default: m.AlertPreview,
+    })),
+  badge: () =>
+    import("@/components/previews/BadgePreview").then((m) => ({
+      default: m.BadgePreview,
+    })),
+  toast: () =>
+    import("@/components/previews/ToastPreview").then((m) => ({
+      default: m.ToastPreview,
+    })),
+  tooltip: () =>
+    import("@/components/previews/TooltipPreview").then((m) => ({
+      default: m.TooltipPreview,
+    })),
+  skeleton: () =>
+    import("@/components/previews/SkeletonPreview").then((m) => ({
+      default: m.SkeletonPreview,
+    })),
+  "progress-bar": () =>
+    import("@/components/previews/ProgressBarPreview").then((m) => ({
+      default: m.ProgressBarPreview,
+    })),
+  spinner: () =>
+    import("@/components/previews/SpinnerPreview").then((m) => ({
+      default: m.SpinnerPreview,
+    })),
+  "banking-transaction-row": () =>
+    import("@/components/previews/BankingTransactionRowPreview").then((m) => ({
+      default: m.BankingTransactionRowPreview,
+    })),
+  "banking-account-card": () =>
+    import("@/components/previews/BankingAccountCardPreview").then((m) => ({
+      default: m.BankingAccountCardPreview,
+    })),
+  "banking-balance-summary": () =>
+    import("@/components/previews/BankingBalanceSummaryPreview").then((m) => ({
+      default: m.BankingBalanceSummaryPreview,
+    })),
+} as const satisfies Record<string, () => Promise<{ default: ComponentType }>>;
 
-const previewMap: Record<string, ComponentType> = {
-  "calendar-day": CalendarDayPreview,
-  "calendar-grid": CalendarGridPreview,
-  "date-picker": DatePickerPreview,
-  "empty-state": EmptyStatePreview,
-  "list-item": ListItemPreview,
-  table: TablePreview,
-  "data-table": DataTablePreview,
-  "tree-view": TreeViewPreview,
-  "bar-chart": BarChartPreview,
-  "line-chart": LineChartPreview,
-  timeline: TimelinePreview,
-  accordion: AccordionPreview,
-  avatar: AvatarPreview,
-  divider: DividerPreview,
-  tag: TagPreview,
-  button: ButtonPreview,
-  "button-group": ButtonGroupPreview,
-  "toggle-group": ToggleGroupPreview,
-  "split-button": SplitButtonPreview,
-  card: CardPreview,
-  dialog: DialogPreview,
-  drawer: DrawerPreview,
-  popover: PopoverPreview,
-  "text-input": TextInputPreview,
-  textarea: TextareaPreview,
-  select: SelectPreview,
-  combobox: ComboboxPreview,
-  "file-upload": FileUploadPreview,
-  "search-field": SearchFieldPreview,
-  "credit-card-field": CreditCardFieldPreview,
-  "phone-number-field": PhoneNumberFieldPreview,
-  "number-input": NumberInputPreview,
-  "form-field": FormFieldPreview,
-  "validation-message": ValidationMessagePreview,
-  checkbox: CheckboxPreview,
-  radio: RadioPreview,
-  "radio-group": RadioPreview,
-  switch: SwitchPreview,
-  slider: SliderPreview,
-  link: LinkPreview,
-  menu: MenuPreview,
-  breadcrumb: BreadcrumbPreview,
-  tabs: TabsPreview,
-  pagination: PaginationPreview,
-  stepper: StepperPreview,
-  alert: AlertPreview,
-  badge: BadgePreview,
-  toast: ToastPreview,
-  tooltip: TooltipPreview,
-  skeleton: SkeletonPreview,
-  "progress-bar": ProgressBarPreview,
-  spinner: SpinnerPreview,
-  "banking-transaction-row": BankingTransactionRowPreview,
-  "banking-account-card": BankingAccountCardPreview,
-  "banking-balance-summary": BankingBalanceSummaryPreview,
-};
+export type PreviewSlug = keyof typeof previewLoaders;
+
+export const previewSlugs = Object.keys(previewLoaders) as PreviewSlug[];
+
+/**
+ * Module-level `lazy()` wrappers — one per slug. `import()` runs only when
+ * that slug's lazy component is first rendered (not for sibling slugs).
+ */
+const lazyPreviews = Object.fromEntries(
+  (Object.entries(previewLoaders) as Array<[PreviewSlug, (typeof previewLoaders)[PreviewSlug]]>).map(
+    ([slug, loader]) => [slug, lazy(loader)],
+  ),
+) as Record<PreviewSlug, LazyExoticComponent<ComponentType>>;
 
 export function ComponentLiveSection({ slug }: { slug: string }) {
-  const Preview = previewMap[slug];
+  const Preview = lazyPreviews[slug as PreviewSlug];
   if (!Preview) return null;
-  return <Preview />;
+  return (
+    <Suspense fallback={null}>
+      <Preview />
+    </Suspense>
+  );
 }
