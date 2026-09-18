@@ -236,9 +236,15 @@ export type PreviewSlug = keyof typeof previewLoaders;
 
 export const previewSlugs = Object.keys(previewLoaders) as PreviewSlug[];
 
+/** True when `slug` has an explicit live-preview loader (not docs-only / unknown). */
+export function hasLivePreviewLoader(slug: string): slug is PreviewSlug {
+  return Object.prototype.hasOwnProperty.call(previewLoaders, slug);
+}
+
 /**
  * Module-level `lazy()` wrappers — one per slug. `import()` runs only when
  * that slug's lazy component is first rendered (not for sibling slugs).
+ * Equivalent to per-slug `next/dynamic` without a variable import path.
  */
 const lazyPreviews = Object.fromEntries(
   (Object.entries(previewLoaders) as Array<[PreviewSlug, (typeof previewLoaders)[PreviewSlug]]>).map(
@@ -246,11 +252,24 @@ const lazyPreviews = Object.fromEntries(
   ),
 ) as Record<PreviewSlug, LazyExoticComponent<ComponentType>>;
 
-export function ComponentLiveSection({ slug }: { slug: string }) {
-  const Preview = lazyPreviews[slug as PreviewSlug];
-  if (!Preview) return null;
+/**
+ * Reserves approximate preview-card space while the slug chunk loads —
+ * same border/radius language as `ComponentPreview` / Card, no spinner.
+ */
+function PreviewLoadingFallback() {
   return (
-    <Suspense fallback={null}>
+    <div
+      className="min-h-[14rem] rounded-lg border border-ink-200 bg-white"
+      aria-hidden="true"
+    />
+  );
+}
+
+export function ComponentLiveSection({ slug }: { slug: string }) {
+  if (!hasLivePreviewLoader(slug)) return null;
+  const Preview = lazyPreviews[slug];
+  return (
+    <Suspense fallback={<PreviewLoadingFallback />}>
       <Preview />
     </Suspense>
   );

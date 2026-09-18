@@ -1,18 +1,27 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { getImplementedRegistryEntries } from "@/lib/component-registry";
+import {
+  hasLivePreviewLoader,
+  previewLoaders,
+  previewSlugs,
+} from "@/components/docs/ComponentLiveSection";
+import {
+  getImplementedRegistryEntries,
+  getRegistryEntry,
+  hasLiveImplementation,
+} from "@/lib/component-registry";
+import { getComponentBySlug } from "@/lib/data";
 
 const root = process.cwd();
 const liveSectionPath = join(root, "components", "docs", "ComponentLiveSection.tsx");
 const liveSectionSource = readFileSync(liveSectionPath, "utf8");
 
-/** Slug keys declared on previewLoaders (source parse; avoids loading next/dynamic). */
+/** Slug keys declared on previewLoaders (source parse for architecture guards). */
 function parsePreviewSlugs(source: string): string[] {
   const block = source.match(/export const previewLoaders = \{([\s\S]*?)\n\} as const/);
   expect(block, "previewLoaders object").toBeTruthy();
   const slugs: string[] = [];
-  // Only top-level loader keys: `slug: () =>` or `"slug": () =>`
   const re = /^\s*(?:([A-Za-z][A-Za-z0-9_-]*)|"([^"]+)")\s*:\s*\(\)\s*=>/gm;
   let match: RegExpExecArray | null;
   while ((match = re.exec(block![1]))) {
@@ -22,7 +31,7 @@ function parsePreviewSlugs(source: string): string[] {
 }
 
 describe("Performance Batch 1 — ComponentLiveSection per-slug isolation", () => {
-  const previewSlugs = parsePreviewSlugs(liveSectionSource);
+  const parsedSlugs = parsePreviewSlugs(liveSectionSource);
 
   it("does not statically import preview modules (only dynamic import() loaders)", () => {
     expect(liveSectionSource).toMatch(/\blazy\b/);
@@ -32,23 +41,13 @@ describe("Performance Batch 1 — ComponentLiveSection per-slug isolation", () =
     expect(liveSectionSource).not.toMatch(
       /^import\s+\{[^}]+\}\s+from\s+"@\/components\/previews\//m,
     );
+    // Guard against overly-broad variable import contexts.
+    expect(liveSectionSource).not.toMatch(/import\(`@\/components\/previews\/\$\{/);
   });
 
   it("registers an explicit dynamic import() for every preview slug, including heavy ones", () => {
-    expect(previewSlugs.length).toBeGreaterThan(40);
-    expect(previewSlugs).toContain("button");
-    expect(previewSlugs).toContain("checkbox");
-    expect(previewSlugs).toContain("radio");
-    expect(previewSlugs).toContain("radio-group");
-    expect(previewSlugs).toContain("textarea");
-
-    for (const slug of previewSlugs) {
-      expect(liveSectionSource).toMatch(
-        new RegExp(
-          `(?:${slug}|"${slug.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}")\\s*:\\s*\\(\\)\\s*=>`,
-        ),
-      );
-    }
+    expect(parsedSlugs.length).toBeGreaterThan(40);
+    expect(parsedSlugs).toEqual(expect.arrayContaining(["button", "checkbox", "radio", "radio-group", "textarea"]));
 
     for (const heavy of [
       "DataTablePreview",
@@ -60,19 +59,15 @@ describe("Performance Batch 1 — ComponentLiveSection per-slug isolation", () =
       "TreeViewPreview",
       "BankingBalanceSummaryPreview",
     ]) {
-      expect(liveSectionSource).toContain(
-        `import("@/components/previews/${heavy}")`,
-      );
+      expect(liveSectionSource).toContain(`import("@/components/previews/${heavy}")`);
     }
   });
 
   it("covers every implemented registry entry with hasPreview", () => {
     for (const entry of getImplementedRegistryEntries()) {
       if (!entry.hasPreview) continue;
-      expect(
-        previewSlugs,
-        `missing preview loader for implemented previewable slug: ${entry.slug}`,
-      ).toContain(entry.slug);
+      expect(previewSlugs).toContain(entry.slug);
+      expect(hasLivePreviewLoader(entry.slug)).toBe(true);
     }
   });
 
@@ -92,14 +87,28 @@ describe("Performance Batch 1 — ComponentLiveSection per-slug isolation", () =
       );
       expect(sourceMatch?.[1], `loader path for ${slug}`).toBeTruthy();
       expect(previewFiles.has(`${sourceMatch![1]}.tsx`)).toBe(true);
+      expect(typeof previewLoaders[slug]).toBe("function");
     }
   });
 
-  it("lazily constructs previews via React.lazy loaders (not static imports)", () => {
-    expect(liveSectionSource).toContain("lazyPreviews");
-    expect(liveSectionSource).toContain("<Suspense");
-    expect(liveSectionSource).toMatch(/\blazy\(/);
-    // Must not use next/dynamic module-level registration of every preview.
-    expect(liveSectionSource).not.toContain('import dynamic from "next/dynamic"');
+  it("resolves live slugs and safely skips docs-only / unknown slugs", () => {
+    expect(hasLivePreviewLoader("button")).toBe(true);
+    expect(hasLivePreviewLoader("checkbox")).toBe(true);
+    expect(hasLivePreviewLoader("data-table")).toBe(true);
+    expect(hasLiveImplementation("button")).toBe(true);
+
+    // Docs-only Figma-facing entry — no live preview loader.
+    expect(getComponentBySlug("tree-item")).toBeDefined();
+    expect(getRegistryEntry("tree-item")).toBeUndefined();
+    expect(hasLivePreviewLoader("tree-item")).toBe(false);
+    expect(hasLiveImplementation("tree-item")).toBe(false);
+
+    expect(hasLivePreviewLoader("not-a-real-component")).toBe(false);
+  });
+
+  it("reserves preview space while loading (no null Suspense fallback)", () => {
+    expect(liveSectionSource).toContain("PreviewLoadingFallback");
+    expect(liveSectionSource).toContain("min-h-[14rem]");
+    expect(liveSectionSource).not.toMatch(/fallback=\{null\}/);
   });
 });
