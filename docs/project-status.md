@@ -1,6 +1,73 @@
 # Project status
 
-Last verified: **2026-09-17** (**Guard CI-1 observe-only ✅ wired**; Guard Website/Docs ✅; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**; Social NOT published)
+Last verified: **2026-09-22** (**CH-1 Chart Foundation Hardening ✅ COMPLETE**; CH-2 Core Cartesian Charts **NOT STARTED**; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-22 — CH-1 Chart Foundation Hardening (COMPLETE)
+
+**Verdict: COMPLETE.** Hardened the existing `BarChart` / `LineChart` before any
+new chart family. **No new chart family, no Guard rule, no banking distribution
+change.** Audit basis: CH-0 (read-only chart audit, same day).
+
+**Fixed**
+- **Accessibility (defect).** Recharts 3 enables an `accessibilityLayer` by
+  default, which put `tabindex="0"` + `role="application"` on the chart `<svg>`
+  *inside* the `aria-hidden` visual — a keyboard tab stop hidden from assistive
+  tech. Static-visualization model kept: `role="img"` + required `label` +
+  visually-hidden data table; no interactive keyboard model was added.
+  Recharts' `tabindex="-1"` layer groups remain (not tab stops).
+- **Token delivery (defect).** `--bar-chart-*` / `--line-chart-*` lived only in
+  `styles/tokens.css`' component tier, which the shadcn Foundation transport does
+  not include, so a consumer received chart code pointing at undefined variables
+  (SVG `fill` → black, `stroke` → `none`). The five consumed color aliases now
+  live in `bar-chart.module.css` / `line-chart.module.css` (component-owned,
+  `:where(.root)` so a consumer `className` can override) and were removed from
+  `tokens.css` (no duplicated truth). Approved appearance unchanged.
+- **`sparkline` drift.** Added to registry `apiProps` (so the generated Agent
+  contract and index now carry it) and to the Line Chart docs content.
+- **Shared foundation.** New internal `components/ui/internal/ChartFrame.tsx`
+  (accessible wrapper, hidden table, `ResponsiveContainer`, forces
+  `accessibilityLayer={false}`) and `chart-data.ts` (`ChartDatum`, `ChartTable`).
+  `BarChartDatum` / `LineChartDatum` remain public aliases; public props unchanged.
+  Hidden-table rows are keyed by index (duplicate labels no longer collide). The
+  table shape already allows several value columns; **no public `series` prop** —
+  CH-2 owns multi-series API.
+- **Registry.** Both charts: `internalDependencies` + `cssTokens`
+  (`--semantic-*` referenced by their CSS), `FILE_DESTINATIONS` rows for the two
+  internal files.
+
+**Proof**
+- New tests: `ChartFrame.test.tsx`, `lib/chart-token-delivery.test.ts` (resolves
+  chart variables through the *transported* manifests + Foundation to concrete
+  colors), `lib/chart-api-alignment.test.ts` (source props ↔ registry ↔ compiled
+  contract), plus chart-level a11y / duplicate-label / sparkline tests. Each new
+  guard was mutation-checked (fails without its fix).
+- Real-browser consumer proof: a fresh Next project containing only the
+  transported files (Foundation wired as in the smoke harness) rendered brand
+  fill/stroke/marker colors from delivered tokens, and a real Tab press skipped
+  all three charts. The official `npm run smoke:consumer -- bar-chart|line-chart`
+  now asserts delivered colors and tab stops but **could not complete in the
+  authoring sandbox** (its `shadcn add` step needs `ui.shadcn.com`, which was
+  unreachable); rerun it where that host is reachable.
+
+**Recorded, not fixed (separate follow-ups)**
+1. **Cross-cutting token delivery.** Re-scan of the regenerated manifests: charts
+   are clean, but 33 of 52 distributed manifests still reference fallback-less
+   `var(--…)` custom properties defined in neither the manifest nor the
+   Foundation (component-tier tokens in `styles/tokens.css`). Needs its own
+   architecture decision and consumer proof; **not** migrated here.
+2. **Barrel import pulls chart code into `/reference/data`.**
+   `RequestsDataView.tsx` imports from the `@/components/ui` barrel; CH-0 found
+   chart chunks referenced by that route although it renders no chart. Unmeasured;
+   the shared frame does not add new barrel exposure.
+3. `--line-chart-stroke-width` / `--line-chart-dot-radius` remain in `tokens.css`
+   but are unconsumed (components hard-code 2 / 3 px).
+4. `cssTokens` cannot see variables consumed inline from TSX (the scanner reads
+   only `.css`); the chart-owned variables are therefore proven by the new
+   delivery test instead. Guard token semantics unchanged.
+5. Still open from CH-0: no empty/loading/error chart states, no density policy,
+   no tooltip/legend, Figma has example frames only (live Figma unverified).
+
+**Canonical next:** CH-2 — Core Cartesian Charts (**NOT STARTED**).
 
 ## 2026-09-17 — Guard CI-1 (observe-only)
 
