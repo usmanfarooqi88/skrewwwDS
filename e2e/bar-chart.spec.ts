@@ -1,5 +1,11 @@
-import type { Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { expect, expectColorClose, hexToRgba, resolvedRgba, test } from "./fixtures";
+
+function parseRgb(value: string) {
+  const match = value.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (!match) throw new Error(`Unparseable computed color: ${value}`);
+  return { r: Number(match[1]), g: Number(match[2]), b: Number(match[3]), a: 1 };
+}
 
 const xAxisTickSelector = "text.recharts-cartesian-axis-tick-value";
 
@@ -50,6 +56,28 @@ async function expectReadableXAxis(chart: Locator, expectedLabels: string[]) {
     );
   }
   expect(geometry.documentWidth).toBe(geometry.viewportWidth);
+}
+
+async function expectTabTraversalNeverEntersChart(page: Page, chartName: string) {
+  const chart = page.getByRole("img", { name: chartName });
+  await expect(chart.locator("svg")).toBeVisible();
+  await expect(chart.locator('[tabindex]:not([tabindex="-1"]), [role="application"]')).toHaveCount(0);
+
+  // Real keyboard traversal: Tab through the page and confirm focus never lands inside the chart.
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  const enteredChart = await page.evaluate(async (name) => {
+    const root = document.querySelector(`[role="img"][aria-label="${name}"]`);
+    return root ? "ready" : "missing";
+  }, chartName);
+  expect(enteredChart).toBe("ready");
+  for (let step = 0; step < 80; step += 1) {
+    await page.keyboard.press("Tab");
+    const inside = await page.evaluate((name) => {
+      const root = document.querySelector(`[role="img"][aria-label="${name}"]`);
+      return Boolean(root && document.activeElement && root.contains(document.activeElement));
+    }, chartName);
+    expect(inside, `Tab step ${step + 1} landed inside the chart`).toBe(false);
+  }
 }
 
 test.describe("Bar Chart browser behavior", () => {
@@ -109,5 +137,20 @@ test.describe("Bar Chart browser behavior", () => {
     await expect(page.locator(".recharts-yAxis")).toHaveCount(0);
     await expect(page.locator(".recharts-legend-wrapper")).toHaveCount(0);
     await expect(page.locator(".recharts-tooltip-wrapper")).toHaveCount(0);
+  });
+
+  test("keeps the chart out of the keyboard tab order", async ({ page }) => {
+    await expectTabTraversalNeverEntersChart(page, "Monthly signups");
+  });
+
+  test("resolves bar fill and axis text from delivered chart tokens (not the undefined-variable fallback)", async ({
+    page,
+  }) => {
+    const bar = page.locator(".recharts-bar-rectangle path").first();
+    await expect(bar).toBeVisible();
+    const fill = await bar.evaluate((el) => getComputedStyle(el).fill);
+    // Undefined var() in an SVG fill attribute computes to black; the approved fill is the brand action color.
+    expect(fill).not.toBe("rgb(0, 0, 0)");
+    expectColorClose(parseRgb(fill), hexToRgba("#6C4CF2"));
   });
 });

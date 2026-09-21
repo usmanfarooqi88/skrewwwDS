@@ -1065,11 +1065,15 @@ describe("shadcn registry generator", () => {
     expect(manifest.files.map((file) => file.path).sort()).toEqual([
       "components/ui/BarChart.tsx",
       "components/ui/bar-chart.module.css",
+      "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/chart-data.ts",
       "lib/cn.ts",
     ]);
     expect(manifest.files.map((file) => file.target).sort()).toEqual([
       "~/components/ui/BarChart.tsx",
       "~/components/ui/bar-chart.module.css",
+      "~/components/ui/internal/ChartFrame.tsx",
+      "~/components/ui/internal/chart-data.ts",
       "~/lib/cn.ts",
     ]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
@@ -1081,6 +1085,9 @@ describe("shadcn registry generator", () => {
     const tsx = manifest.files.find((file) => file.path === "components/ui/BarChart.tsx")!;
     expect(tsx.content).toMatch(/^\/\*\* @skrewww-component bar-chart \*\/\n["']use client["']/);
     expect(tsx.content).toMatch(/from ["']recharts["']/);
+    const frame = manifest.files.find((file) => file.path === "components/ui/internal/ChartFrame.tsx")!;
+    expect(frame.content).toMatch(/from ["']recharts["']/);
+    expect(frame.content).not.toMatch(/@skrewww-component/); // internal dependency, not an owned payload
   });
 
   it("transports Line Chart with recharts npm dependency, foundation-only registryDeps, and no bar/banking leakage", () => {
@@ -1088,11 +1095,15 @@ describe("shadcn registry generator", () => {
     expect(manifest.name).toBe("line-chart");
     expect(manifest.files.map((file) => file.path).sort()).toEqual([
       "components/ui/LineChart.tsx",
+      "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/chart-data.ts",
       "components/ui/line-chart.module.css",
       "lib/cn.ts",
     ]);
     expect(manifest.files.map((file) => file.target).sort()).toEqual([
       "~/components/ui/LineChart.tsx",
+      "~/components/ui/internal/ChartFrame.tsx",
+      "~/components/ui/internal/chart-data.ts",
       "~/components/ui/line-chart.module.css",
       "~/lib/cn.ts",
     ]);
@@ -1105,6 +1116,8 @@ describe("shadcn registry generator", () => {
     const tsx = manifest.files.find((file) => file.path === "components/ui/LineChart.tsx")!;
     expect(tsx.content).toMatch(/^\/\*\* @skrewww-component line-chart \*\/\n["']use client["']/);
     expect(tsx.content).toMatch(/from ["']recharts["']/);
+    const frame = manifest.files.find((file) => file.path === "components/ui/internal/ChartFrame.tsx")!;
+    expect(frame.content).not.toMatch(/@skrewww-component/);
   });
 
   it("rejects a registry item with an empty target as invalid", () => {

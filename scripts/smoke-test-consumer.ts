@@ -2028,6 +2028,8 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     criticalPaths: [
       "components/ui/BarChart.tsx",
       "components/ui/bar-chart.module.css",
+      "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/chart-data.ts",
       "lib/cn.ts",
       "styles/skrewww-foundation.css",
     ],
@@ -2073,6 +2075,38 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       const barCount = await bars.count();
       if (barCount !== 6) {
         throw new Error(`Installed Bar Chart: expected 6 bar paths, found ${barCount}.`);
+      }
+
+      // CH-1: chart colors must resolve from variables actually delivered to this consumer
+      // (Foundation + the chart's own CSS module). An undefined var() in an SVG presentation
+      // attribute silently computes to black (fill) or `none` (stroke), which geometry/data
+      // assertions alone cannot see.
+      const resolveColor = (cssValue: string) =>
+        page.evaluate((value) => {
+          const probe = document.createElement("span");
+          probe.style.color = value;
+          document.body.appendChild(probe);
+          const color = getComputedStyle(probe).color;
+          probe.remove();
+          return color;
+        }, cssValue);
+      const barFill = await bars.first().evaluate((el) => getComputedStyle(el).fill);
+      const expectedBarFill = await resolveColor("var(--semantic-action-primary)");
+      if (barFill !== expectedBarFill || barFill === "rgb(0, 0, 0)" || barFill === "none") {
+        throw new Error(
+          `Installed Bar Chart: bar fill "${barFill}" did not resolve to delivered --semantic-action-primary "${expectedBarFill}".`,
+        );
+      }
+      const tickFill = await chart.locator("text.recharts-cartesian-axis-tick-value").first().evaluate((el) => getComputedStyle(el).fill);
+      const expectedTickFill = await resolveColor("var(--semantic-text-secondary)");
+      if (tickFill !== expectedTickFill) {
+        throw new Error(
+          `Installed Bar Chart: axis text fill "${tickFill}" did not resolve to delivered --semantic-text-secondary "${expectedTickFill}".`,
+        );
+      }
+      const barStops = await chart.locator('[tabindex]:not([tabindex="-1"]), [role="application"]').count();
+      if (barStops !== 0) {
+        throw new Error(`Installed Bar Chart: ${barStops} tabbable/role=application node(s) inside the chart.`);
       }
 
       const heights = await bars.evaluateAll((paths) =>
@@ -2131,6 +2165,8 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     criticalPaths: [
       "components/ui/LineChart.tsx",
       "components/ui/line-chart.module.css",
+      "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/chart-data.ts",
       "lib/cn.ts",
       "styles/skrewww-foundation.css",
     ],
@@ -2180,6 +2216,41 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       await dots.first().waitFor({ state: "attached", timeout: WAIT_MS });
       if ((await dots.count()) !== 6) {
         throw new Error(`Installed Line Chart: expected 6 point markers, found ${await dots.count()}.`);
+      }
+
+      // CH-1: chart colors must resolve from variables actually delivered to this consumer
+      // (Foundation + the chart's own CSS module). An undefined var() in an SVG presentation
+      // attribute silently computes to black (fill) or `none` (stroke), which geometry/data
+      // assertions alone cannot see.
+      const resolveColor = (cssValue: string) =>
+        page.evaluate((value) => {
+          const probe = document.createElement("span");
+          probe.style.color = value;
+          document.body.appendChild(probe);
+          const color = getComputedStyle(probe).color;
+          probe.remove();
+          return color;
+        }, cssValue);
+      const lineStroke = await curve.first().evaluate((el) => getComputedStyle(el).stroke);
+      const expectedStroke = await resolveColor("var(--semantic-action-primary)");
+      if (lineStroke !== expectedStroke || lineStroke === "none") {
+        throw new Error(
+          `Installed Line Chart: line stroke "${lineStroke}" did not resolve to delivered --semantic-action-primary "${expectedStroke}".`,
+        );
+      }
+      const dotStyle = await dots.first().evaluate((el) => {
+        const style = getComputedStyle(el);
+        return { fill: style.fill, stroke: style.stroke };
+      });
+      const expectedDotFill = await resolveColor("var(--semantic-surface-default)");
+      if (dotStyle.stroke !== expectedStroke || dotStyle.fill !== expectedDotFill) {
+        throw new Error(
+          `Installed Line Chart: marker colors (fill "${dotStyle.fill}", stroke "${dotStyle.stroke}") did not resolve to delivered tokens (fill "${expectedDotFill}", stroke "${expectedStroke}").`,
+        );
+      }
+      const lineStops = await chart.locator('[tabindex]:not([tabindex="-1"]), [role="application"]').count();
+      if (lineStops !== 0) {
+        throw new Error(`Installed Line Chart: ${lineStops} tabbable/role=application node(s) inside the chart.`);
       }
 
       const cys = await dots.evaluateAll((els) => els.map((d) => Number(d.getAttribute("cy"))));

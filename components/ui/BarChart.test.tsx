@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { BarChart } from "@/components/ui/BarChart";
 
 const sampleData = [
@@ -72,5 +72,31 @@ describe("BarChart", () => {
     expect(container.querySelectorAll(".recharts-cartesian-grid")).toHaveLength(0);
     expect(container.querySelectorAll(".recharts-legend-wrapper")).toHaveLength(0);
     expect(container.querySelectorAll(".recharts-tooltip-wrapper")).toHaveLength(0);
+  });
+
+  it("has no tabbable stop or role=application inside the aria-hidden visual (tabindex=-1 Recharts layer groups are not tab stops)", () => {
+    const { container } = render(<BarChart data={sampleData} label="Monthly signups" />);
+    const hiddenVisual = container.querySelector('[aria-hidden="true"]');
+    expect(hiddenVisual).not.toBeNull();
+    expect(hiddenVisual?.querySelector("svg")).not.toBeNull();
+    expect(
+      hiddenVisual?.querySelectorAll(
+        '[tabindex]:not([tabindex="-1"]), [role="application"], a[href], button, input, select, textarea, [contenteditable]',
+      ),
+    ).toHaveLength(0);
+  });
+
+  it("keeps one bar and one table row per datum when labels repeat, without a React duplicate-key warning", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const repeated = [
+      { label: "Q1", value: 10 },
+      { label: "Q1", value: 20 },
+      { label: "Q2", value: 30 },
+    ];
+    const { container } = render(<BarChart data={repeated} label="Quarterly" />);
+    expect(container.querySelectorAll(".recharts-bar-rectangle path")).toHaveLength(3);
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(3);
+    expect(error.mock.calls.filter((call) => String(call[0]).includes("same key"))).toEqual([]);
+    error.mockRestore();
   });
 });

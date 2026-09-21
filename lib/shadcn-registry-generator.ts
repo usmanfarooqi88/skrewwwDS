@@ -734,6 +734,15 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:ui",
     target: "~/components/ui/line-chart.module.css",
   },
+  // CH-1 — shared static-chart shell + data types (internal, not public API)
+  "components/ui/internal/ChartFrame.tsx": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/ChartFrame.tsx",
+  },
+  "components/ui/internal/chart-data.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/chart-data.ts",
+  },
 };
 
 export function classifyFile(relPath: string): { type: ShadcnFileType; target: string } {

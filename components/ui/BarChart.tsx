@@ -1,14 +1,12 @@
 "use client";
 
-import { useId } from "react";
-import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis } from "recharts";
+import { Bar, BarChart as RechartsBarChart, XAxis } from "recharts";
 import { cn } from "@/lib/cn";
+import { ChartFrame } from "@/components/ui/internal/ChartFrame";
+import { singleSeriesChartTable, type ChartDatum } from "@/components/ui/internal/chart-data";
 import styles from "@/components/ui/bar-chart.module.css";
 
-export type BarChartDatum = {
-  label: string;
-  value: number;
-};
+export type BarChartDatum = ChartDatum;
 
 export type BarChartProps = {
   /** Single-series data — v1 does not support multiple series. */
@@ -27,51 +25,34 @@ export type BarChartProps = {
  * or tooltip — static and single-series for v1 (see registry openQuestions
  * for what's deliberately deferred, not missing by oversight).
  *
- * Uses recharts's ResponsiveContainer so the chart genuinely fills its
- * parent's width, matching how a real consumer embeds it in a
- * variable-width dashboard/card. The jsdom test environment has no
- * ResizeObserver by default and never computes real layout — see the
- * ResizeObserver polyfill in vitest.setup.ts, which is the correct fix for
- * that limitation, not a reason to constrain real-world sizing.
+ * The accessible wrapper, hidden data table, and ResponsiveContainer live in
+ * the shared `ChartFrame` (internal). Chart colors are the component-owned
+ * `--bar-chart-*` custom properties declared in bar-chart.module.css, so they
+ * ship with the component instead of relying on the docs-site token sheet.
+ *
+ * The jsdom test environment has no ResizeObserver by default and never
+ * computes real layout — see the ResizeObserver polyfill in vitest.setup.ts,
+ * which is the correct fix for that limitation, not a reason to constrain
+ * real-world sizing.
  */
 export function BarChart({ data, label, height = 240, className }: BarChartProps) {
-  const tableId = useId();
-
   return (
-    <div className={cn(styles.root, className)}>
-      <div role="img" aria-label={label} aria-describedby={tableId}>
-        <div aria-hidden="true">
-          <ResponsiveContainer width="100%" height={height}>
-            <RechartsBarChart data={data}>
-              <XAxis
-                dataKey="label"
-                interval={0}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "var(--bar-chart-axis-text)", fontSize: 12 }}
-              />
-              <Bar dataKey="value" fill="var(--bar-chart-fill)" isAnimationActive={false} />
-            </RechartsBarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-      <table id={tableId} className="sr-only">
-        <caption>{label}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Label</th>
-            <th scope="col">Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((datum) => (
-            <tr key={datum.label}>
-              <th scope="row">{datum.label}</th>
-              <td>{datum.value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <ChartFrame
+      label={label}
+      height={height}
+      table={singleSeriesChartTable(data)}
+      className={cn(styles.root, className)}
+    >
+      <RechartsBarChart data={data}>
+        <XAxis
+          dataKey="label"
+          interval={0}
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: "var(--bar-chart-axis-text)", fontSize: 12 }}
+        />
+        <Bar dataKey="value" fill="var(--bar-chart-fill)" isAnimationActive={false} />
+      </RechartsBarChart>
+    </ChartFrame>
   );
 }

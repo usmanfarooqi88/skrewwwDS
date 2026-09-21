@@ -2,3 +2,15 @@
   display: block;
   width: 100%;
 }
+
+/*
+ * Component-owned chart tokens (CH-1). Declared here — not in styles/tokens.css —
+ * so they are transported with the component: the shadcn Foundation carries only
+ * primitive/semantic/shape/surface tokens, and these aliases would otherwise be
+ * undefined for a consumer (black bars). :where() keeps specificity at zero so a
+ * consumer's `className` can override them.
+ */
+:where(.root) {
+  --bar-chart-fill: var(--semantic-action-primary);
+  --bar-chart-axis-text: var(--semantic-text-secondary);
+}

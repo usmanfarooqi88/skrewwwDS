@@ -999,8 +999,8 @@ export function Example() {
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/content-data.ts",
-    documentationLastUpdated: "2026-07-18",
-    reactLastUpdated: "2026-07-18",
+    documentationLastUpdated: "2026-09-22",
+    reactLastUpdated: "2026-09-22",
     figmaReference:
       "Content & Data / \"Bar Chart (example)\" (Content/Charts section, node 2058:2568), frame node 2058:2532 — 6 bars (Jan-Jun), single semantic/action/primary fill, real proportional heights (58/95/76/128/108/140 out of a 160px plot area), semantic/text/secondary month labels. No Y-axis, gridlines, legend, or tooltip in the Figma reference. Node IDs confirmed via direct Figma inspection 2026-07-18.",
     figmaSourceUrl: CHARTS_FIGMA_FILE_URL,
@@ -1029,7 +1029,7 @@ export function Example() {
     anatomy:
       "A recharts BarChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent, not a fixed pixel box), one Bar per datum filled with semantic/action/primary, and an XAxis rendering only text labels (axisLine and tickLine both disabled) in semantic/text/secondary. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table — so the underlying data is genuinely available to assistive tech, not just implied by bar heights.",
     announcementBehavior:
-      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden so assistive tech doesn't attempt to read partial axis text out of context.",
+      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden so assistive tech doesn't attempt to read partial axis text out of context. The chart is a static visualization with no keyboard tab stop; the visually-hidden table is the assistive-technology fallback.",
     comparisons: [
       {
         title: "Why ResponsiveContainer instead of fixed pixel dimensions?",
@@ -1065,10 +1065,14 @@ export function Example() {
 }`,
     dependencies: ["recharts"],
     hostRequirements: ["react", "react-dom"],
-    internalDependencies: ["lib/cn.ts"],
+    internalDependencies: ["lib/cn.ts", "components/ui/internal/ChartFrame.tsx", "components/ui/internal/chart-data.ts"],
     registryDependencies: ["@skrewww/foundation"],
     coreDependencies: ["tokens"],
     files: ["components/ui/BarChart.tsx", "components/ui/bar-chart.module.css"],
+    cssTokens: [
+      "--semantic-action-primary",
+      "--semantic-text-secondary",
+    ],
   },
   {
     slug: "line-chart",
@@ -1083,8 +1087,8 @@ export function Example() {
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/content-data.ts",
-    documentationLastUpdated: "2026-07-18",
-    reactLastUpdated: "2026-07-18",
+    documentationLastUpdated: "2026-09-22",
+    reactLastUpdated: "2026-09-22",
     figmaReference:
       "Content & Data / \"Line Chart (example)\" (Content/Charts section, node 2058:2568), frame node 2058:2559 — single 2px semantic/action/primary stroke, 7 data points as 6px hollow-ring markers (fill: semantic/surface/default, stroke: semantic/action/primary, 2px). No axis labels, gridlines, or legend in the Figma reference. Node IDs confirmed via direct Figma inspection 2026-07-18.",
     figmaSourceUrl: CHARTS_FIGMA_FILE_URL,
@@ -1108,9 +1112,9 @@ export function Example() {
     hasPreview: true,
     indexing: "index",
     anatomy:
-      "A recharts LineChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent, not a fixed pixel box), a single Line stroked in semantic/action/primary at 2px, with a 3px-radius hollow-ring dot per point (semantic/surface/default fill, semantic/action/primary stroke). Curve type is \"linear\" (straight segments between points) — confirmed by reading the actual vector path data for node 2058:2560 via the Figma Plugin API: every segment is a straight \"L\" (lineto) command, with no curve commands at all. No XAxis or YAxis rendered at all, matching the Figma reference exactly. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table.",
+      "A recharts LineChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent, not a fixed pixel box), a single Line stroked in semantic/action/primary at 2px, with a 3px-radius hollow-ring dot per point (semantic/surface/default fill, semantic/action/primary stroke). Curve type is \"linear\" (straight segments between points) — confirmed by reading the actual vector path data for node 2058:2560 via the Figma Plugin API: every segment is a straight \"L\" (lineto) command, with no curve commands at all. No XAxis or YAxis rendered at all, matching the Figma reference exactly. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table. An optional `sparkline` mode (used by Banking Account Card) suppresses the point markers and thins the stroke to 1.5px for inline/card use.",
     announcementBehavior:
-      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden.",
+      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden. The chart is a static visualization with no keyboard tab stop; the visually-hidden table is the assistive-technology fallback.",
     comparisons: [
       {
         title: "Why is there no axis at all, not even X-axis labels?",
@@ -1133,6 +1137,7 @@ export function Example() {
       { name: "data", type: "{ label: string; value: number }[]", description: "Single-series data. Multi-series is deferred." },
       { name: "label", type: "string", description: "Accessible name for the chart — also used as the hidden data table's caption." },
       { name: "height", type: "number", default: "240", description: "Fixed pixel height. Width is fluid (ResponsiveContainer), filling the parent." },
+      { name: "sparkline", type: "boolean", default: "false", description: "Compact inline rendering: hides the point markers and uses a 1.5px stroke instead of 2px. Data and accessibility (role=\"img\" + hidden data table) are unchanged." },
     ],
     reactExample: `import { LineChart } from "@/components/ui";
 
@@ -1150,10 +1155,14 @@ export function Example() {
 }`,
     dependencies: ["recharts"],
     hostRequirements: ["react", "react-dom"],
-    internalDependencies: ["lib/cn.ts"],
+    internalDependencies: ["lib/cn.ts", "components/ui/internal/ChartFrame.tsx", "components/ui/internal/chart-data.ts"],
     registryDependencies: ["@skrewww/foundation"],
     coreDependencies: ["tokens"],
     files: ["components/ui/LineChart.tsx", "components/ui/line-chart.module.css"],
+    cssTokens: [
+      "--semantic-action-primary",
+      "--semantic-surface-default",
+    ],
   },
   {
     slug: "timeline",

@@ -678,14 +678,18 @@
      semantic/text/secondary month labels; Line Chart (example) uses a 2px
      semantic/action/primary stroke with 6px hollow-ring markers
      (semantic/surface/default fill, semantic/action/primary stroke). Both
-     are single-series, static (no tooltip/legend) for v1. ── */
-  --bar-chart-fill: var(--semantic-action-primary);
-  --bar-chart-axis-text: var(--semantic-text-secondary);
-  --line-chart-stroke: var(--semantic-action-primary);
+     are single-series, static (no tooltip/legend) for v1.
+
+     CH-1: the chart COLOR aliases (--bar-chart-fill, --bar-chart-axis-text,
+     --line-chart-stroke, --line-chart-dot-fill, --line-chart-dot-stroke) now
+     live in components/ui/bar-chart.module.css and line-chart.module.css.
+     They were removed from this file because component-tier tokens below the
+     Foundation boundary are not part of the shadcn Foundation transport, so a
+     distributed chart referenced variables its consumer never received.
+     Only the two geometry values below remain here; the components currently
+     hard-code 2px / 3px and do not consume them (recorded chart debt). ── */
   --line-chart-stroke-width: 2px;
   --line-chart-dot-radius: 3px;
-  --line-chart-dot-fill: var(--semantic-surface-default);
-  --line-chart-dot-stroke: var(--semantic-action-primary);
 
   /* ── Timeline geometry [TEMPORARY] — "Content/Timeline Item" Figma-facing
      prose confirmed (State: Default outlined ring / Highlighted larger
