@@ -50,6 +50,10 @@ export const previewLoaders = {
     import("@/components/previews/LineChartPreview").then((m) => ({
       default: m.LineChartPreview,
     })),
+  "area-chart": () =>
+    import("@/components/previews/AreaChartPreview").then((m) => ({
+      default: m.AreaChartPreview,
+    })),
   timeline: () =>
     import("@/components/previews/TimelinePreview").then((m) => ({
       default: m.TimelinePreview,

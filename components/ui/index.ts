@@ -44,8 +44,18 @@ export { DataTableSortHeader } from "@/components/ui/DataTableSortHeader";
 export type { DataTableSortHeaderProps } from "@/components/ui/DataTableSortHeader";
 export { TreeView } from "@/components/ui/TreeView";
 export type { TreeNode, TreeViewProps } from "@/components/ui/TreeView";
+export { AreaChart } from "@/components/ui/AreaChart";
+export type { AreaChartDatum, AreaChartProps } from "@/components/ui/AreaChart";
 export { BarChart } from "@/components/ui/BarChart";
-export type { BarChartDatum, BarChartProps } from "@/components/ui/BarChart";
+export type {
+  BarChartDatum,
+  BarChartProps,
+  ChartLabelFormat,
+  ChartRow,
+  ChartSeries,
+  ChartSeriesColor,
+  ChartValueFormat,
+} from "@/components/ui/BarChart";
 export { LineChart } from "@/components/ui/LineChart";
 export type { LineChartDatum, LineChartProps } from "@/components/ui/LineChart";
 export { Timeline } from "@/components/ui/Timeline";

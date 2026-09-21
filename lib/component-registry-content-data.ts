@@ -991,7 +991,7 @@ export function Example() {
     name: "Bar Chart",
     category: "Content & Data",
     summary:
-      "Bar Chart is a single-series, static bar chart built on recharts — real proportional bar heights, month labels below, no Y-axis/gridlines/legend/tooltip.",
+      "Bar Chart compares categories with vertical or horizontal bars — a single series by default, or several series grouped, stacked, or stacked to 100%. Static and non-tabbable, with the data also exposed as a hidden table.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -1008,46 +1008,69 @@ export function Example() {
     documentationUrl: getComponentDocumentationUrl("bar-chart"),
     supportedVariants: ["default"],
     supportedSizes: [],
-    tokensUsed: ["semantic/action/primary", "semantic/text/secondary"],
+    tokensUsed: ["semantic/action/primary", "semantic/text/primary", "semantic/text/secondary", "semantic/border/default", "semantic/border/strong", "semantic/surface/default", "semantic/surface/subtle", "color/warning/700", "color/success/700"],
     relatedComponents: [
-      { label: "Line Chart — trend data over the same single-series shape", href: "/components/line-chart" },
+      { label: "Line Chart — trend data over the same row shape", href: "/components/line-chart" },
+      { label: "Area Chart — filled trend and cumulative data over the same row shape", href: "/components/area-chart" },
     ],
     relatedTokens: [
       { label: "semantic/action/primary", href: "/foundations" },
       { label: "semantic/text/secondary", href: "/foundations" },
+      { label: "semantic/border/default", href: "/foundations" },
     ],
     relatedConcepts: [],
     openQuestions: [
-      "Multi-series support is deferred — not shown in the Figma reference and not built here; v1 is single-series only.",
-      "Interactivity (hover tooltips, legend interactivity) is deferred — v1 is deliberately static, per the approved v1 scope.",
-      "A Y-axis and gridlines beyond the existing X-axis month labels are deferred — not shown in the Figma reference.",
-      "Bar corner radius/spacing beyond fill color and the X-axis label treatment is this implementation's own decision, not something Figma specified.",
+      "Figma covers only the single-series Bar Chart (example) (bars + category labels) example. Multiple series, the value axis, grid, legend and tooltip have no Figma reference — they use current Skrewww tokens conservatively and need a design decision before parity can be claimed.",
+      "Horizontal orientation, stacking modes, the value axis, grid and tooltip likewise have no Figma reference; bar corner radius and spacing are this implementation's own decisions.",
+      "The categorical series palette (four slots: brand action, primary text, amber, green) is a CH-2 implementation choice checked for >= 3:1 contrast on the default white surface, not a Figma-verified palette. Slots carry no status meaning; positive/negative colors are a separate, unresolved design decision.",
+      "An interactive legend (series toggling) is deferred: it needs a hidden-series state plus keyboard and announcement design. The legend is a non-interactive key.",
+      "The tooltip is pointer/touch-only supplementary information; every value is also in the hidden table. A keyboard-operable chart (focusable points, arrow-key navigation) is deferred.",
+      "Dense data and long category labels have no policy yet: category labels always render (no tick skipping, rotation, truncation, scrolling or aggregation), so many points or long labels can collide or clip. A density and label-length policy is an open decision.",
+      "The horizontal category axis has a fixed width; long labels are not truncated or wrapped and can clip.",
     ],
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
     anatomy:
-      "A recharts BarChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent, not a fixed pixel box), one Bar per datum filled with semantic/action/primary, and an XAxis rendering only text labels (axisLine and tickLine both disabled) in semantic/text/secondary. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table — so the underlying data is genuinely available to assistive tech, not just implied by bar heights.",
+      "A recharts BarChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent). Each series is a Bar in its series color; slot 1 is semantic/action/primary, matching the Figma example. Category labels render on the category axis in semantic/text/secondary (axis and tick lines disabled); a value axis, grid, legend and tooltip are opt-in. orientation=\"horizontal\" runs the category axis vertically; stacking=\"stacked\" or \"percent\" stacks series into one bar per category. A visually-hidden (`sr-only`) data table — one column per series, missing values read \"No data\" — is rendered alongside, and the chart visual (plot, legend, tooltip) is aria-hidden inside a role=\"img\" wrapper with aria-label + aria-describedby pointing at the table.",
     announcementBehavior:
-      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden so assistive tech doesn't attempt to read partial axis text out of context. The chart is a static visualization with no keyboard tab stop; the visually-hidden table is the assistive-technology fallback.",
+      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table with one column per series, so series are identified by name, never by color alone. The visual, including the legend and tooltip, is aria-hidden so assistive tech doesn't attempt to read partial axis text out of context. The chart is a static visualization with no keyboard tab stop; the tooltip is pointer/touch-only supplementary information and every value is also in the table.",
     comparisons: [
       {
         title: "Why ResponsiveContainer instead of fixed pixel dimensions?",
-        body: "A real consumer embeds this in a variable-width dashboard/card, so the chart should genuinely fill its parent — fixed dimensions were an earlier draft, justified partly by a jsdom/ResizeObserver test limitation that has a standard fix (a ResizeObserver polyfill in vitest.setup.ts) rather than a reason to constrain real-world sizing. Height stays a fixed prop (default 240) since chart height is typically design-determined, not fluid.",
+        body: "A real consumer embeds this in a variable-width dashboard/card, so the chart should genuinely fill its parent. Height stays a fixed pixel value; width is fluid.",
       },
       {
-        title: "Why is there no Y-axis?",
-        body: "Figma's own \"Bar Chart (example)\" frame has no Y-axis, gridlines, legend, or tooltip — only bars and X-axis month labels. This component matches that reference exactly rather than inferring additional chrome Figma didn't show.",
+        title: "Why is there no Y-axis, grid, legend or tooltip by default?",
+        body: "Figma's own \"Bar Chart (example)\" frame shows only bars and category labels, so the default output matches it exactly. Richer chrome is opt-in (showValueAxis, showGrid, legend, tooltip) and has no Figma reference.",
       },
       {
         title: "How is the underlying data exposed to screen readers?",
-        body: "A visually-hidden (sr-only) table with the same label/value pairs, linked to the chart via aria-describedby. Bar heights alone convey nothing to assistive tech, so this is a real accessibility mechanism, not optional polish.",
+        body: "A visually-hidden (sr-only) table with a column per series, linked to the chart via aria-describedby. Bar lengths and colors alone convey nothing to assistive tech, so this is a real accessibility mechanism, not optional polish.",
+      },
+      {
+        title: "Why is there no HorizontalBarChart, StackedBarChart or PercentStackedBarChart?",
+        body: "They are modes of one component: orientation=\"horizontal\" and stacking=\"stacked\" | \"percent\". Do not invent separate components or a `type`/`variant` prop.",
+      },
+      {
+        title: "Stacked or percent?",
+        body: "stacked shows absolute totals per category; percent scales every category to 100% to compare composition. In percent mode the value axis reads as a share, while the tooltip and table still show the raw values.",
       },
     ],
     apiProps: [
-      { name: "data", type: "{ label: string; value: number }[]", description: "Single-series data. Multi-series is deferred." },
+      { name: "data", type: "({ label: string } & { [seriesKey: string]: string | number | null })[]", description: "One row per category: { label, value } for a single series, or { label, [series.key]: number | null } when `series` is given. null means no data (a gap or no bar). Duplicate labels are allowed." },
       { name: "label", type: "string", description: "Accessible name for the chart — also used as the hidden data table's caption." },
       { name: "height", type: "number", default: "240", description: "Fixed pixel height. Width is fluid (ResponsiveContainer), filling the parent." },
+      { name: "series", type: "{ key: string; label: string; color?: \"series-1\" | \"series-2\" | \"series-3\" | \"series-4\"; format?: ChartValueFormat }[]", description: "Series definitions: { key, label, color?, format? }. `key` is the row property holding the value (unique, never \"label\"); `color` is a slot \"series-1\"…\"series-4\" (default: by position, wrapping after four). Omit for a single series read from each row's `value`." },
+      { name: "orientation", type: "\"vertical\" | \"horizontal\"", default: "\"vertical\"", description: "\"vertical\" draws columns; \"horizontal\" draws bars growing left to right with the category labels on the left." },
+      { name: "stacking", type: "\"none\" | \"stacked\" | \"percent\"", default: "\"none\"", description: "\"none\" groups series side by side; \"stacked\" stacks them into one bar per category; \"percent\" stacks to 100% of each category." },
+      { name: "legend", type: "boolean", description: "Show a legend. Defaults to true when there is more than one series. It is a non-interactive key (no series toggling)." },
+      { name: "tooltip", type: "boolean", description: "Show a hover/touch tooltip listing the category and each series' value. Defaults to false. Supplementary only: every value is also in the hidden table." },
+      { name: "showCategoryAxis", type: "boolean", description: "Show the category axis labels. Defaults to true." },
+      { name: "showValueAxis", type: "boolean", description: "Show the value-axis ticks. Defaults to false." },
+      { name: "showGrid", type: "boolean", description: "Show grid lines. Defaults to false." },
+      { name: "valueFormat", type: "ChartValueFormat", description: "How values are formatted on value-axis ticks, in the tooltip, and in the hidden table: a function (value: number) => string, or { kind: \"number\" | \"compact\" | \"percent\" | \"currency\", ... }. Default: the raw number. A series' own `format` overrides it." },
+      { name: "labelFormat", type: "ChartLabelFormat", description: "How category labels are formatted on the axis, in the tooltip, and in the hidden table: a function (label: string) => string, or { kind: \"date\", granularity: \"day\" | \"month\" | \"year\" } for normalized ISO date labels (UTC). Default: the label as given." },
     ],
     reactExample: `import { BarChart } from "@/components/ui";
 
@@ -1060,18 +1083,57 @@ const monthlySignups = [
   { label: "Jun", value: 140 },
 ];
 
+const quarterly = [
+  { label: "Q1", revenue: 120, orders: 80 },
+  { label: "Q2", revenue: 150, orders: 95 },
+  { label: "Q3", revenue: 135, orders: 110 },
+];
+
 export function Example() {
   return <BarChart data={monthlySignups} label="Monthly signups" />;
+}
+
+export function MultiSeriesExample() {
+  return (
+    <BarChart
+      data={quarterly}
+      label="Revenue and orders by quarter"
+      series={[
+        { key: "revenue", label: "Revenue" },
+        { key: "orders", label: "Orders" },
+      ]}
+      stacking="stacked"
+      showValueAxis
+      showGrid
+      tooltip
+    />
+  );
 }`,
     dependencies: ["recharts"],
     hostRequirements: ["react", "react-dom"],
-    internalDependencies: ["lib/cn.ts", "components/ui/internal/ChartFrame.tsx", "components/ui/internal/chart-data.ts"],
+    internalDependencies: ["lib/cn.ts", "components/ui/internal/ChartFrame.tsx", "components/ui/internal/ChartLegend.tsx", "components/ui/internal/ChartTooltip.tsx", "components/ui/internal/cartesian-parts.tsx", "components/ui/internal/chart-data.ts", "components/ui/internal/chart-format.ts", "components/ui/internal/chart.module.css"],
     registryDependencies: ["@skrewww/foundation"],
     coreDependencies: ["tokens"],
-    files: ["components/ui/BarChart.tsx", "components/ui/bar-chart.module.css"],
+    files: ["components/ui/BarChart.tsx"],
     cssTokens: [
+      "--chart-axis-text",
+      "--chart-tooltip-border",
+      "--chart-tooltip-radius",
+      "--chart-tooltip-shadow",
+      "--chart-tooltip-surface",
+      "--chart-tooltip-text",
+      "--chart-tooltip-text-muted",
+      "--primitive-color-success-700",
+      "--primitive-color-warning-700",
       "--semantic-action-primary",
+      "--semantic-border-default",
+      "--semantic-border-strong",
+      "--semantic-surface-default",
+      "--semantic-surface-subtle",
+      "--semantic-text-primary",
       "--semantic-text-secondary",
+      "--shape-radius-control",
+      "--surface-shadow-raised",
     ],
   },
   {
@@ -1079,7 +1141,7 @@ export function Example() {
     name: "Line Chart",
     category: "Content & Data",
     summary:
-      "Line Chart is a single-series, static line chart built on recharts — a single stroked path with hollow-ring point markers, no axes/gridlines/legend/tooltip.",
+      "Line Chart shows a trend across ordered categories — a single series by default, or several series as separate lines. Static and non-tabbable, with an optional sparkline mode and the data also exposed as a hidden table.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -1096,48 +1158,68 @@ export function Example() {
     documentationUrl: getComponentDocumentationUrl("line-chart"),
     supportedVariants: ["default"],
     supportedSizes: [],
-    tokensUsed: ["semantic/action/primary", "semantic/surface/default"],
+    tokensUsed: ["semantic/action/primary", "semantic/text/primary", "semantic/text/secondary", "semantic/border/default", "semantic/border/strong", "semantic/surface/default", "semantic/surface/subtle", "color/warning/700", "color/success/700"],
     relatedComponents: [
-      { label: "Bar Chart — categorical data over the same single-series shape", href: "/components/bar-chart" },
+      { label: "Bar Chart — categorical comparison over the same row shape", href: "/components/bar-chart" },
+      { label: "Area Chart — filled trend and cumulative data over the same row shape", href: "/components/area-chart" },
     ],
-    relatedTokens: [{ label: "semantic/action/primary", href: "/foundations" }],
+    relatedTokens: [
+      { label: "semantic/action/primary", href: "/foundations" },
+      { label: "semantic/text/secondary", href: "/foundations" },
+      { label: "semantic/border/default", href: "/foundations" },
+    ],
     relatedConcepts: [],
     openQuestions: [
-      "Multi-series support is deferred — not shown in the Figma reference and not built here; v1 is single-series only.",
-      "Interactivity (hover tooltips, legend interactivity) is deferred — v1 is deliberately static, per the approved v1 scope.",
-      "Axis labels and gridlines are deferred — the Figma reference has none at all for Line Chart.",
-      "Fixed chart height (width is fluid) is this implementation's own decision, not something Figma specified.",
+      "Figma covers only the single-series Line Chart (example) (a single stroke with hollow-ring markers and no axes) example. Multiple series, the value axis, grid, legend and tooltip have no Figma reference — they use current Skrewww tokens conservatively and need a design decision before parity can be claimed.",
+      "Point markers, axes and the sparkline treatment beyond the example are this implementation's own decisions; fixed chart height (width is fluid) is likewise not something Figma specified.",
+      "The categorical series palette (four slots: brand action, primary text, amber, green) is a CH-2 implementation choice checked for >= 3:1 contrast on the default white surface, not a Figma-verified palette. Slots carry no status meaning; positive/negative colors are a separate, unresolved design decision.",
+      "An interactive legend (series toggling) is deferred: it needs a hidden-series state plus keyboard and announcement design. The legend is a non-interactive key.",
+      "The tooltip is pointer/touch-only supplementary information; every value is also in the hidden table. A keyboard-operable chart (focusable points, arrow-key navigation) is deferred.",
+      "Dense data and long category labels have no policy yet: category labels always render (no tick skipping, rotation, truncation, scrolling or aggregation), so many points or long labels can collide or clip. A density and label-length policy is an open decision.",
     ],
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
     anatomy:
-      "A recharts LineChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent, not a fixed pixel box), a single Line stroked in semantic/action/primary at 2px, with a 3px-radius hollow-ring dot per point (semantic/surface/default fill, semantic/action/primary stroke). Curve type is \"linear\" (straight segments between points) — confirmed by reading the actual vector path data for node 2058:2560 via the Figma Plugin API: every segment is a straight \"L\" (lineto) command, with no curve commands at all. No XAxis or YAxis rendered at all, matching the Figma reference exactly. A visually-hidden (`sr-only`) data table with the same label/value pairs is rendered alongside, and the chart's own SVG is aria-hidden with role=\"img\" + aria-label + aria-describedby pointing at the table. An optional `sparkline` mode (used by Banking Account Card) suppresses the point markers and thins the stroke to 1.5px for inline/card use.",
+      "A recharts LineChart inside ResponsiveContainer (fluid width, fixed height — genuinely fills its parent). Each series is one Line stroked in its series color at 2px, with a 3px-radius hollow-ring dot per point (semantic/surface/default fill, series-colored stroke); slot 1 is semantic/action/primary, matching the Figma example. Curve type is \"linear\" (straight segments) — confirmed by reading the actual vector path data for node 2058:2560 via the Figma Plugin API: every segment is a straight \"L\" (lineto) command. With no extra props no axes, grid, legend or tooltip render, matching the Figma reference; category/value axes, grid, legend and tooltip are opt-in. A missing value (null) leaves a gap. An optional `sparkline` mode (used by Banking Account Card) suppresses markers and thins the stroke to 1.5px and hides all chrome for inline/card use. A visually-hidden (`sr-only`) data table — one column per series — is rendered alongside, and the visual is aria-hidden inside a role=\"img\" wrapper with aria-label + aria-describedby pointing at the table.",
     announcementBehavior:
-      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table containing the exact label/value pairs. The chart's own SVG is aria-hidden. The chart is a static visualization with no keyboard tab stop; the visually-hidden table is the assistive-technology fallback.",
+      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table with one column per series, so series are identified by name, never by color alone. The visual, including the legend and tooltip, is aria-hidden. The chart is a static visualization with no keyboard tab stop; the tooltip is pointer/touch-only supplementary information and every value is also in the table.",
     comparisons: [
       {
-        title: "Why is there no axis at all, not even X-axis labels?",
-        body: "Figma's own \"Line Chart (example)\" frame has no axis labels at all — unlike Bar Chart, which does show month labels. This component matches that reference exactly rather than adding chrome Figma didn't show.",
+        title: "Why is there no axis at all by default?",
+        body: "Figma's own \"Line Chart (example)\" frame has no axis labels, so the default output matches it exactly. showCategoryAxis, showValueAxis, showGrid, legend and tooltip are opt-in and have no Figma reference.",
       },
       {
         title: "Why \"linear\" curve type, not a smoothed curve?",
-        body: "Verified, not guessed: the actual vector path data for the Figma \"Line\" node (2058:2560), read directly via the Figma Plugin API, is \"M 0 140 L 43.3 93.3 L 86.7 110.8 L 130 43.75 ...\" — every segment is a straight lineto (\"L\") command. An earlier draft used \"monotone\" (a smoothed curve) as an unverified default; that was corrected to \"linear\" once the real path data was checked.",
-      },
-      {
-        title: "Why ResponsiveContainer instead of fixed pixel dimensions?",
-        body: "A real consumer embeds this in a variable-width dashboard/card, so the chart should genuinely fill its parent — fixed dimensions were an earlier draft, justified partly by a jsdom/ResizeObserver test limitation that has a standard fix (a ResizeObserver polyfill in vitest.setup.ts) rather than a reason to constrain real-world sizing.",
+        body: "Verified, not guessed: the actual vector path data for the Figma \"Line\" node (2058:2560), read directly via the Figma Plugin API, contains only straight lineto (\"L\") commands. A smoothed curve would be a regression from the real design.",
       },
       {
         title: "How is the underlying data exposed to screen readers?",
-        body: "A visually-hidden (sr-only) table with the same label/value pairs, linked to the chart via aria-describedby — the same mechanism Bar Chart uses.",
+        body: "A visually-hidden (sr-only) table with a column per series, linked to the chart via aria-describedby — the same mechanism every Cartesian chart uses.",
+      },
+      {
+        title: "What is sparkline mode for?",
+        body: "A compact inline trend (for example a balance-history line inside a card): no markers, a thinner stroke, and no axes, grid, legend or tooltip even if requested. Use `height` to size it.",
+      },
+      {
+        title: "How do I show several series?",
+        body: "Pass `series` and rows shaped { label, [series.key]: number | null }. Do not add a `type` or `variant` prop to switch to an area chart — Area Chart is its own component.",
       },
     ],
     apiProps: [
-      { name: "data", type: "{ label: string; value: number }[]", description: "Single-series data. Multi-series is deferred." },
+      { name: "data", type: "({ label: string } & { [seriesKey: string]: string | number | null })[]", description: "One row per category: { label, value } for a single series, or { label, [series.key]: number | null } when `series` is given. null means no data (a gap or no bar). Duplicate labels are allowed." },
       { name: "label", type: "string", description: "Accessible name for the chart — also used as the hidden data table's caption." },
       { name: "height", type: "number", default: "240", description: "Fixed pixel height. Width is fluid (ResponsiveContainer), filling the parent." },
-      { name: "sparkline", type: "boolean", default: "false", description: "Compact inline rendering: hides the point markers and uses a 1.5px stroke instead of 2px. Data and accessibility (role=\"img\" + hidden data table) are unchanged." },
+      { name: "series", type: "{ key: string; label: string; color?: \"series-1\" | \"series-2\" | \"series-3\" | \"series-4\"; format?: ChartValueFormat }[]", description: "Series definitions: { key, label, color?, format? }. `key` is the row property holding the value (unique, never \"label\"); `color` is a slot \"series-1\"…\"series-4\" (default: by position, wrapping after four). Omit for a single series read from each row's `value`." },
+      { name: "sparkline", type: "boolean", default: "false", description: "Compact inline rendering: hides the point markers, uses a 1.5px stroke instead of 2px, and hides every axis, grid line, legend and tooltip. Data and accessibility (role=\"img\" + hidden data table) are unchanged." },
+      { name: "markers", type: "boolean", default: "true", description: "Draw a hollow-ring marker on each point. Always false in sparkline mode." },
+      { name: "legend", type: "boolean", description: "Show a legend. Defaults to true when there is more than one series. It is a non-interactive key (no series toggling)." },
+      { name: "tooltip", type: "boolean", description: "Show a hover/touch tooltip listing the category and each series' value. Defaults to false. Supplementary only: every value is also in the hidden table." },
+      { name: "showCategoryAxis", type: "boolean", description: "Show the category axis labels. Defaults to false (the Figma reference has no axis)." },
+      { name: "showValueAxis", type: "boolean", description: "Show the value-axis ticks. Defaults to false." },
+      { name: "showGrid", type: "boolean", description: "Show grid lines. Defaults to false." },
+      { name: "valueFormat", type: "ChartValueFormat", description: "How values are formatted on value-axis ticks, in the tooltip, and in the hidden table: a function (value: number) => string, or { kind: \"number\" | \"compact\" | \"percent\" | \"currency\", ... }. Default: the raw number. A series' own `format` overrides it." },
+      { name: "labelFormat", type: "ChartLabelFormat", description: "How category labels are formatted on the axis, in the tooltip, and in the hidden table: a function (label: string) => string, or { kind: \"date\", granularity: \"day\" | \"month\" | \"year\" } for normalized ISO date labels (UTC). Default: the label as given." },
     ],
     reactExample: `import { LineChart } from "@/components/ui";
 
@@ -1150,18 +1232,200 @@ const monthlySignups = [
   { label: "Jun", value: 140 },
 ];
 
+const trend = [
+  { label: "Jan", revenue: 120, orders: 80 },
+  { label: "Feb", revenue: 150, orders: 95 },
+  { label: "Mar", revenue: 135, orders: 110 },
+  { label: "Apr", revenue: 170, orders: 120 },
+];
+
 export function Example() {
   return <LineChart data={monthlySignups} label="Monthly signups" />;
+}
+
+export function MultiSeriesExample() {
+  return (
+    <LineChart
+      data={trend}
+      label="Revenue and orders"
+      series={[
+        { key: "revenue", label: "Revenue", format: { kind: "currency", currency: "USD", maximumFractionDigits: 0 } },
+        { key: "orders", label: "Orders" },
+      ]}
+      showCategoryAxis
+      showValueAxis
+      showGrid
+      tooltip
+    />
+  );
 }`,
     dependencies: ["recharts"],
     hostRequirements: ["react", "react-dom"],
-    internalDependencies: ["lib/cn.ts", "components/ui/internal/ChartFrame.tsx", "components/ui/internal/chart-data.ts"],
+    internalDependencies: ["lib/cn.ts", "components/ui/internal/ChartFrame.tsx", "components/ui/internal/ChartLegend.tsx", "components/ui/internal/ChartTooltip.tsx", "components/ui/internal/cartesian-parts.tsx", "components/ui/internal/chart-data.ts", "components/ui/internal/chart-format.ts", "components/ui/internal/chart.module.css"],
     registryDependencies: ["@skrewww/foundation"],
     coreDependencies: ["tokens"],
-    files: ["components/ui/LineChart.tsx", "components/ui/line-chart.module.css"],
+    files: ["components/ui/LineChart.tsx"],
     cssTokens: [
+      "--chart-axis-text",
+      "--chart-tooltip-border",
+      "--chart-tooltip-radius",
+      "--chart-tooltip-shadow",
+      "--chart-tooltip-surface",
+      "--chart-tooltip-text",
+      "--chart-tooltip-text-muted",
+      "--primitive-color-success-700",
+      "--primitive-color-warning-700",
       "--semantic-action-primary",
+      "--semantic-border-default",
+      "--semantic-border-strong",
       "--semantic-surface-default",
+      "--semantic-surface-subtle",
+      "--semantic-text-primary",
+      "--semantic-text-secondary",
+      "--shape-radius-control",
+      "--surface-shadow-raised",
+    ],
+  },
+  {
+    slug: "area-chart",
+    name: "Area Chart",
+    category: "Content & Data",
+    summary:
+      "Area Chart shows magnitude over ordered categories with a filled area under each line — a single series by default, or several series overlapped, stacked, or stacked to 100%. Static and non-tabbable, with the data also exposed as a hidden table.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-09-22",
+    reactLastUpdated: "2026-09-22",
+    documentationUrl: getComponentDocumentationUrl("area-chart"),
+    supportedVariants: ["default"],
+    supportedSizes: [],
+    tokensUsed: ["semantic/action/primary", "semantic/text/primary", "semantic/text/secondary", "semantic/border/default", "semantic/border/strong", "semantic/surface/default", "semantic/surface/subtle", "color/warning/700", "color/success/700"],
+    relatedComponents: [
+      { label: "Line Chart — trend without the fill, the same row shape", href: "/components/line-chart" },
+      { label: "Bar Chart — categorical comparison over the same row shape", href: "/components/bar-chart" },
+    ],
+    relatedTokens: [
+      { label: "semantic/action/primary", href: "/foundations" },
+      { label: "semantic/text/secondary", href: "/foundations" },
+      { label: "semantic/border/default", href: "/foundations" },
+    ],
+    relatedConcepts: [],
+    openQuestions: [
+      "There is no Figma reference for Area Chart: nothing here is Figma-verified and no Figma parity is claimed. Fill opacity (0.2), stroke width (2px) and the default category axis are conservative implementation choices using current Skrewww tokens, and need a design decision.",
+      "The categorical series palette (four slots: brand action, primary text, amber, green) is a CH-2 implementation choice checked for >= 3:1 contrast on the default white surface, not a Figma-verified palette. Slots carry no status meaning; positive/negative colors are a separate, unresolved design decision.",
+      "An interactive legend (series toggling) is deferred: it needs a hidden-series state plus keyboard and announcement design. The legend is a non-interactive key.",
+      "The tooltip is pointer/touch-only supplementary information; every value is also in the hidden table. A keyboard-operable chart (focusable points, arrow-key navigation) is deferred.",
+      "Dense data and long category labels have no policy yet: category labels always render (no tick skipping, rotation, truncation, scrolling or aggregation), so many points or long labels can collide or clip. A density and label-length policy is an open decision.",
+      "Stacked area with negative values is not designed; use non-negative data for stacked and percent modes.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "A recharts AreaChart inside ResponsiveContainer (fluid width, fixed height). Each series is an Area: a 2px linear stroke over a translucent fill (opacity 0.2) in its series color; slot 1 is semantic/action/primary. Category labels render on the category axis in semantic/text/secondary; a value axis, grid, legend and tooltip are opt-in. stacking=\"none\" overlaps series, \"stacked\" stacks them, and \"percent\" stacks to 100% of each category. A missing value (null) leaves a gap. A visually-hidden (`sr-only`) data table — one column per series — is rendered alongside, and the visual is aria-hidden inside a role=\"img\" wrapper with aria-label + aria-describedby pointing at the table.",
+    announcementBehavior:
+      "The chart container exposes role=\"img\" with an accessible name (the required `label` prop) and aria-describedby pointing at a visually-hidden table with one column per series, so series are identified by name, never by color alone. The visual, including the legend and tooltip, is aria-hidden. The chart is a static visualization with no keyboard tab stop; the tooltip is pointer/touch-only supplementary information and every value is also in the table.",
+    comparisons: [
+      {
+        title: "Area Chart or Line Chart?",
+        body: "Use Area Chart when magnitude or accumulation matters (the fill reads as volume, and stacked/percent modes show composition over time). Use Line Chart when only the shape of change matters, especially with several overlapping series.",
+      },
+      {
+        title: "Why is there no separate StackedAreaChart?",
+        body: "Stacking is a mode: stacking=\"stacked\" or \"percent\". Do not invent a `stacked` boolean, a `type` prop, or a separate component.",
+      },
+      {
+        title: "How is the underlying data exposed to screen readers?",
+        body: "A visually-hidden (sr-only) table with a column per series, linked to the chart via aria-describedby — the same mechanism every Cartesian chart uses. Fill and color alone convey nothing to assistive tech.",
+      },
+      {
+        title: "Why do overlapped series use translucent fills?",
+        body: "So a series drawn behind another stays visible. With many series, overlapping fills get hard to read; prefer stacking or Line Chart.",
+      },
+    ],
+    apiProps: [
+      { name: "data", type: "({ label: string } & { [seriesKey: string]: string | number | null })[]", description: "One row per category: { label, value } for a single series, or { label, [series.key]: number | null } when `series` is given. null means no data (a gap or no bar). Duplicate labels are allowed." },
+      { name: "label", type: "string", description: "Accessible name for the chart — also used as the hidden data table's caption." },
+      { name: "height", type: "number", default: "240", description: "Fixed pixel height. Width is fluid (ResponsiveContainer), filling the parent." },
+      { name: "series", type: "{ key: string; label: string; color?: \"series-1\" | \"series-2\" | \"series-3\" | \"series-4\"; format?: ChartValueFormat }[]", description: "Series definitions: { key, label, color?, format? }. `key` is the row property holding the value (unique, never \"label\"); `color` is a slot \"series-1\"…\"series-4\" (default: by position, wrapping after four). Omit for a single series read from each row's `value`." },
+      { name: "stacking", type: "\"none\" | \"stacked\" | \"percent\"", default: "\"none\"", description: "\"none\" overlaps series; \"stacked\" stacks them; \"percent\" stacks to 100% of each category." },
+      { name: "legend", type: "boolean", description: "Show a legend. Defaults to true when there is more than one series. It is a non-interactive key (no series toggling)." },
+      { name: "tooltip", type: "boolean", description: "Show a hover/touch tooltip listing the category and each series' value. Defaults to false. Supplementary only: every value is also in the hidden table." },
+      { name: "showCategoryAxis", type: "boolean", description: "Show the category axis labels. Defaults to true." },
+      { name: "showValueAxis", type: "boolean", description: "Show the value-axis ticks. Defaults to false." },
+      { name: "showGrid", type: "boolean", description: "Show grid lines. Defaults to false." },
+      { name: "valueFormat", type: "ChartValueFormat", description: "How values are formatted on value-axis ticks, in the tooltip, and in the hidden table: a function (value: number) => string, or { kind: \"number\" | \"compact\" | \"percent\" | \"currency\", ... }. Default: the raw number. A series' own `format` overrides it." },
+      { name: "labelFormat", type: "ChartLabelFormat", description: "How category labels are formatted on the axis, in the tooltip, and in the hidden table: a function (label: string) => string, or { kind: \"date\", granularity: \"day\" | \"month\" | \"year\" } for normalized ISO date labels (UTC). Default: the label as given." },
+    ],
+    reactExample: `import { AreaChart } from "@/components/ui";
+
+const monthlyUsers = [
+  { label: "Jan", value: 120 },
+  { label: "Feb", value: 180 },
+  { label: "Mar", value: 150 },
+  { label: "Apr", value: 240 },
+  { label: "May", value: 210 },
+  { label: "Jun", value: 300 },
+];
+
+const traffic = [
+  { label: "Mon", web: 320, mobile: 210 },
+  { label: "Tue", web: 360, mobile: 240 },
+  { label: "Wed", web: 300, mobile: 280 },
+  { label: "Thu", web: 410, mobile: 260 },
+];
+
+export function Example() {
+  return <AreaChart data={monthlyUsers} label="Monthly active users" />;
+}
+
+export function MultiSeriesExample() {
+  return (
+    <AreaChart
+      data={traffic}
+      label="Traffic by platform"
+      series={[
+        { key: "web", label: "Web" },
+        { key: "mobile", label: "Mobile" },
+      ]}
+      stacking="stacked"
+      showValueAxis
+      showGrid
+      tooltip
+      valueFormat={{ kind: "compact" }}
+    />
+  );
+}`,
+    dependencies: ["recharts"],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts", "components/ui/internal/ChartFrame.tsx", "components/ui/internal/ChartLegend.tsx", "components/ui/internal/ChartTooltip.tsx", "components/ui/internal/cartesian-parts.tsx", "components/ui/internal/chart-data.ts", "components/ui/internal/chart-format.ts", "components/ui/internal/chart.module.css"],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/AreaChart.tsx"],
+    cssTokens: [
+      "--chart-axis-text",
+      "--chart-tooltip-border",
+      "--chart-tooltip-radius",
+      "--chart-tooltip-shadow",
+      "--chart-tooltip-surface",
+      "--chart-tooltip-text",
+      "--chart-tooltip-text-muted",
+      "--primitive-color-success-700",
+      "--primitive-color-warning-700",
+      "--semantic-action-primary",
+      "--semantic-border-default",
+      "--semantic-border-strong",
+      "--semantic-surface-default",
+      "--semantic-surface-subtle",
+      "--semantic-text-primary",
+      "--semantic-text-secondary",
+      "--shape-radius-control",
+      "--surface-shadow-raised",
     ],
   },
   {

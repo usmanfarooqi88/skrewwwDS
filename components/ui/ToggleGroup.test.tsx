@@ -15,7 +15,7 @@ describe("ToggleGroup discovery and registry", () => {
     expect(entry?.version).toBe("0.1.0-beta");
     expect(entry?.hasImplementation).toBe(true);
     expect(entry?.figmaAvailability).toBe("unavailable");
-    expect(getImplementedComponentCount()).toBe(55);
+    expect(getImplementedComponentCount()).toBe(56);
   });
 
   it("exports ToggleGroup publicly and does not export SegmentedControl", () => {

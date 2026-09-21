@@ -57,6 +57,7 @@ import {
   buildDataTableManifest,
   buildBarChartManifest,
   buildLineChartManifest,
+  buildAreaChartManifest,
   buildDistributedRegistryItems,
   buildRegistryIndex,
   projectRegistryIndexItem,
@@ -1064,23 +1065,31 @@ describe("shadcn registry generator", () => {
     expect(manifest.name).toBe("bar-chart");
     expect(manifest.files.map((file) => file.path).sort()).toEqual([
       "components/ui/BarChart.tsx",
-      "components/ui/bar-chart.module.css",
       "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/ChartLegend.tsx",
+      "components/ui/internal/ChartTooltip.tsx",
+      "components/ui/internal/cartesian-parts.tsx",
       "components/ui/internal/chart-data.ts",
+      "components/ui/internal/chart-format.ts",
+      "components/ui/internal/chart.module.css",
       "lib/cn.ts",
     ]);
     expect(manifest.files.map((file) => file.target).sort()).toEqual([
       "~/components/ui/BarChart.tsx",
-      "~/components/ui/bar-chart.module.css",
       "~/components/ui/internal/ChartFrame.tsx",
+      "~/components/ui/internal/ChartLegend.tsx",
+      "~/components/ui/internal/ChartTooltip.tsx",
+      "~/components/ui/internal/cartesian-parts.tsx",
       "~/components/ui/internal/chart-data.ts",
+      "~/components/ui/internal/chart-format.ts",
+      "~/components/ui/internal/chart.module.css",
       "~/lib/cn.ts",
     ]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual(["recharts"]);
     expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
     expect(JSON.stringify(manifest)).not.toMatch(
-      /LineChart\.tsx|line-chart\.module\.css|banking-|BankingAccount|BankingBalance|BankingTransaction/,
+      /LineChart\.tsx|AreaChart\.tsx|banking-|BankingAccount|BankingBalance|BankingTransaction/,
     );
     const tsx = manifest.files.find((file) => file.path === "components/ui/BarChart.tsx")!;
     expect(tsx.content).toMatch(/^\/\*\* @skrewww-component bar-chart \*\/\n["']use client["']/);
@@ -1096,28 +1105,63 @@ describe("shadcn registry generator", () => {
     expect(manifest.files.map((file) => file.path).sort()).toEqual([
       "components/ui/LineChart.tsx",
       "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/ChartLegend.tsx",
+      "components/ui/internal/ChartTooltip.tsx",
+      "components/ui/internal/cartesian-parts.tsx",
       "components/ui/internal/chart-data.ts",
-      "components/ui/line-chart.module.css",
+      "components/ui/internal/chart-format.ts",
+      "components/ui/internal/chart.module.css",
       "lib/cn.ts",
     ]);
     expect(manifest.files.map((file) => file.target).sort()).toEqual([
       "~/components/ui/LineChart.tsx",
       "~/components/ui/internal/ChartFrame.tsx",
+      "~/components/ui/internal/ChartLegend.tsx",
+      "~/components/ui/internal/ChartTooltip.tsx",
+      "~/components/ui/internal/cartesian-parts.tsx",
       "~/components/ui/internal/chart-data.ts",
-      "~/components/ui/line-chart.module.css",
+      "~/components/ui/internal/chart-format.ts",
+      "~/components/ui/internal/chart.module.css",
       "~/lib/cn.ts",
     ]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual(["recharts"]);
     expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
     expect(JSON.stringify(manifest)).not.toMatch(
-      /BarChart\.tsx|bar-chart\.module\.css|banking-|BankingAccount|BankingBalance|BankingTransaction/,
+      /BarChart\.tsx|AreaChart\.tsx|banking-|BankingAccount|BankingBalance|BankingTransaction/,
     );
     const tsx = manifest.files.find((file) => file.path === "components/ui/LineChart.tsx")!;
     expect(tsx.content).toMatch(/^\/\*\* @skrewww-component line-chart \*\/\n["']use client["']/);
     expect(tsx.content).toMatch(/from ["']recharts["']/);
     const frame = manifest.files.find((file) => file.path === "components/ui/internal/ChartFrame.tsx")!;
     expect(frame.content).not.toMatch(/@skrewww-component/);
+  });
+
+  it("transports Area Chart independently with recharts, the shared chart foundation, foundation-only registryDeps, and no sibling/banking leakage", () => {
+    const manifest = buildAreaChartManifest();
+    expect(manifest.name).toBe("area-chart");
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/AreaChart.tsx",
+      "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/ChartLegend.tsx",
+      "components/ui/internal/ChartTooltip.tsx",
+      "components/ui/internal/cartesian-parts.tsx",
+      "components/ui/internal/chart-data.ts",
+      "components/ui/internal/chart-format.ts",
+      "components/ui/internal/chart.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    expect(manifest.dependencies).toEqual(["recharts"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+    expect(JSON.stringify(manifest)).not.toMatch(
+      /BarChart\.tsx|LineChart\.tsx|banking-|BankingAccount|BankingBalance|BankingTransaction/,
+    );
+    const tsx = manifest.files.find((file) => file.path === "components/ui/AreaChart.tsx")!;
+    expect(tsx.content).toMatch(/^\/\*\* @skrewww-component area-chart \*\/\n["']use client["']/);
+    for (const internal of manifest.files.filter((file) => file.path.includes("/internal/"))) {
+      expect(internal.content).not.toMatch(/@skrewww-component/);
+    }
   });
 
   it("rejects a registry item with an empty target as invalid", () => {
@@ -1140,8 +1184,8 @@ describe("shadcn registry generator", () => {
   it("derives the registry index from the same distributed collection used for item manifests", () => {
     const items = buildDistributedRegistryItems();
     const index = buildRegistryIndex(items);
-    expect(items).toHaveLength(53);
-    expect(index.items).toHaveLength(53);
+    expect(items).toHaveLength(54);
+    expect(index.items).toHaveLength(54);
     expect(items.map((item) => item.name)).toEqual(index.items.map((item) => item.name));
     expect(items[0]?.name).toBe("foundation");
     expect(index.name).toBe(SKREWWW_SHADCN_REGISTRY_NAME);

@@ -22,6 +22,7 @@ import { componentRegistry } from "@/lib/component-registry";
 const CHARTS = [
   { slug: "bar-chart", file: "components/ui/BarChart.tsx", propsType: "BarChartProps" },
   { slug: "line-chart", file: "components/ui/LineChart.tsx", propsType: "LineChartProps" },
+  { slug: "area-chart", file: "components/ui/AreaChart.tsx", propsType: "AreaChartProps" },
 ] as const;
 
 function declaredProps(file: string, propsType: string): string[] {

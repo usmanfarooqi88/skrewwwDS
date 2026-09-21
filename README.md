@@ -79,7 +79,7 @@ Beta — overview, getting started, and known limitations:
 |----------|------------|
 | Actions | Button, Button Group, Link, Split Button, Toggle Group |
 | Containers & Overlays | Accordion, Card, Dialog, Drawer, Popover |
-| Content & Data | Avatar, Banking Account Card, Banking Balance Summary, Banking Transaction Row, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
+| Content & Data | Area Chart, Avatar, Banking Account Card, Banking Balance Summary, Banking Transaction Row, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
 | Forms | Checkbox, Combobox, Credit Card Field, Date Picker, File Upload, Form Field, Number Input, Phone Number Field, Radio, Radio Group, Search Field, Select, Slider, Switch, Text Input, Textarea, Validation Message |
 | Feedback | Alert, Badge, Progress Bar, Skeleton, Spinner, Toast, Tooltip |
 | Navigation | Breadcrumb, Menu, Pagination, Stepper, Tabs |
@@ -235,7 +235,7 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 - **Table** — Flat-only and Rounded-only for Stable-v1; Caption/Footer visuals still pending
 - **Data Table** — narrow MVP scope (sorting via a composed Table + external Pagination); no dedicated Figma component set yet
 - **Tree View** — single-select only; multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are deferred
-- **Bar Chart, Line Chart** — single-series and static only; no multi-series, hover tooltips/legend interactivity, or additional axes/gridlines
+- **Area Chart, Bar Chart, Line Chart** — static Cartesian charts (multi-series; optional axes, grid, legend and tooltip): the legend is a non-interactive key (no series toggling), the tooltip is pointer/touch-only, there is no keyboard chart interaction and no dense-data or long-label policy; Area Chart has no Figma reference
 - **Advanced overlays** beyond Dialog, Drawer, Popover, Menu — largely deferred
 - **Full Style System rollout** — Shape/Surface personalities partially wired
 - Temporary tokens are marked in `styles/tokens.css` where Figma values are unresolved

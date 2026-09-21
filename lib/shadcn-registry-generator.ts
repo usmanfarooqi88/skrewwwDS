@@ -717,31 +717,47 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:lib",
     target: "~/lib/use-data-table-sort.ts",
   },
-  // CE-3M — charts batch
+  // CE-3M — charts batch (family CSS modules were folded into the shared chart.module.css in CH-2)
   "components/ui/BarChart.tsx": {
     type: "registry:ui",
     target: "~/components/ui/BarChart.tsx",
-  },
-  "components/ui/bar-chart.module.css": {
-    type: "registry:ui",
-    target: "~/components/ui/bar-chart.module.css",
   },
   "components/ui/LineChart.tsx": {
     type: "registry:ui",
     target: "~/components/ui/LineChart.tsx",
   },
-  "components/ui/line-chart.module.css": {
+  "components/ui/AreaChart.tsx": {
     type: "registry:ui",
-    target: "~/components/ui/line-chart.module.css",
+    target: "~/components/ui/AreaChart.tsx",
   },
-  // CH-1 — shared static-chart shell + data types (internal, not public API)
+  // CH-1/CH-2 — shared Cartesian chart foundation (internal, not public API)
   "components/ui/internal/ChartFrame.tsx": {
-    type: "registry:lib",
+    type: "registry:ui",
     target: "~/components/ui/internal/ChartFrame.tsx",
+  },
+  "components/ui/internal/ChartLegend.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/ChartLegend.tsx",
+  },
+  "components/ui/internal/ChartTooltip.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/ChartTooltip.tsx",
+  },
+  "components/ui/internal/cartesian-parts.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/cartesian-parts.tsx",
+  },
+  "components/ui/internal/chart.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/internal/chart.module.css",
   },
   "components/ui/internal/chart-data.ts": {
     type: "registry:lib",
     target: "~/components/ui/internal/chart-data.ts",
+  },
+  "components/ui/internal/chart-format.ts": {
+    type: "registry:lib",
+    target: "~/components/ui/internal/chart-format.ts",
   },
 };
 
@@ -1126,6 +1142,10 @@ export function buildLineChartManifest(): ShadcnRegistryItem {
   return buildComponentManifest("line-chart");
 }
 
+export function buildAreaChartManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("area-chart");
+}
+
 /**
  * Single ordered collection of every installable `@skrewww/*` registry
  * item currently generated. Order is deliberate and deterministic:
@@ -1189,6 +1209,7 @@ export function buildDistributedRegistryItems(): ShadcnRegistryItem[] {
     buildDataTableManifest(),
     buildBarChartManifest(),
     buildLineChartManifest(),
+    buildAreaChartManifest(),
   ];
 }
 

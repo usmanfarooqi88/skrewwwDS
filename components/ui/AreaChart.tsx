@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart as RechartsBarChart } from "recharts";
+import { Area, AreaChart as RechartsAreaChart } from "recharts";
 import { ChartFrame } from "@/components/ui/internal/ChartFrame";
 import { cartesianParts } from "@/components/ui/internal/cartesian-parts";
 import {
@@ -17,12 +17,12 @@ import type { ChartLabelFormat, ChartValueFormat } from "@/components/ui/interna
 export type { ChartRow, ChartSeries, ChartSeriesColor } from "@/components/ui/internal/chart-data";
 export type { ChartLabelFormat, ChartValueFormat } from "@/components/ui/internal/chart-format";
 
-export type BarChartDatum = ChartDatum;
+export type AreaChartDatum = ChartDatum;
 
-export type BarChartProps = {
+export type AreaChartProps = {
   /**
    * One row per category: `{ label, value }` for a single series, or `{ label, [series.key]: number | null }`
-   * with `series` for several. `null` means "no data" and draws no bar.
+   * with `series` for several. `null` means "no data" and leaves a gap in the area.
    */
   data: ChartRow[];
   /** Accessible name for the chart — also used as the hidden data table's caption. */
@@ -31,9 +31,7 @@ export type BarChartProps = {
   height?: number;
   /** Series definitions. Omit for a single series read from each row's `value`. */
   series?: ChartSeries[];
-  /** "vertical" draws columns (default); "horizontal" draws bars growing left to right. */
-  orientation?: "vertical" | "horizontal";
-  /** "none" groups series side by side (default); "stacked" stacks them; "percent" stacks to 100% of each category. */
+  /** "none" overlaps series (default); "stacked" stacks them; "percent" stacks to 100% of each category. */
   stacking?: "none" | "stacked" | "percent";
   /** Show a legend. Defaults to true when there is more than one series. */
   legend?: boolean;
@@ -52,24 +50,22 @@ export type BarChartProps = {
   className?: string;
 };
 
+/** Fill opacity under each series line. A CH-2 implementation choice with no Figma reference. */
+const AREA_FILL_OPACITY = 0.2;
+
 /**
- * Built against Figma's "Bar Chart (example)" (Content/Charts): a single
- * semantic/action/primary fill, real proportional bar heights, category labels
- * below in semantic/text/secondary. With no extra props the output is that
- * static single-series chart — no value axis, grid, legend or tooltip. Multi-series,
- * horizontal, stacked and 100% stacked modes, the value axis, grid, legend and
- * tooltip are CH-2 additions with no Figma reference (see registry openQuestions).
- *
- * The accessible wrapper, hidden data table, legend and ResponsiveContainer live
- * in the shared `ChartFrame`; axes, grid and tooltip come from `cartesianParts`.
- * Colors are the frame-owned `--chart-series-*` custom properties.
+ * Area chart (CH-2): each series is a 2px linear stroke over a translucent fill in
+ * its series color. There is no Figma reference for this family — everything here
+ * uses current Skrewww tokens conservatively and is flagged in the registry
+ * openQuestions. Built on the same shared `ChartFrame` and `cartesianParts` as the
+ * other Cartesian charts, so accessibility (role="img" + hidden data table, no tab
+ * stop) is identical.
  */
-export function BarChart({
+export function AreaChart({
   data,
   label,
   height = 240,
   series,
-  orientation = "vertical",
   stacking = "none",
   legend,
   tooltip = false,
@@ -79,7 +75,7 @@ export function BarChart({
   valueFormat,
   labelFormat,
   className,
-}: BarChartProps) {
+}: AreaChartProps) {
   const resolved = resolveChartSeries(series);
   const plotData = toPlotData(data, resolved);
   const showLegend = legend ?? resolved.length > 1;
@@ -92,13 +88,9 @@ export function BarChart({
       legend={showLegend ? resolved.map((entry) => ({ label: entry.label, colorVar: entry.colorVar, marker: "square" as const })) : undefined}
       className={className}
     >
-      <RechartsBarChart
-        data={plotData}
-        layout={orientation === "horizontal" ? "vertical" : "horizontal"}
-        stackOffset={stacking === "percent" ? "expand" : stacking === "stacked" ? "sign" : "none"}
-      >
+      <RechartsAreaChart data={plotData} stackOffset={stacking === "percent" ? "expand" : "none"}>
         {cartesianParts({
-          layout: orientation === "horizontal" ? "vertical" : "horizontal",
+          layout: "horizontal",
           series: resolved,
           showCategoryAxis,
           showValueAxis,
@@ -108,18 +100,24 @@ export function BarChart({
           percent: stacking === "percent",
           valueFormat,
           labelFormat,
-          cursor: "band",
+          cursor: "line",
         })}
         {resolved.map((entry) => (
-          <Bar
+          <Area
             key={entry.key}
+            type="linear"
             dataKey={entry.key}
+            stroke={entry.colorVar}
+            strokeWidth={2}
             fill={entry.colorVar}
+            fillOpacity={AREA_FILL_OPACITY}
             stackId={stacking === "none" ? undefined : "stack"}
+            dot={false}
+            activeDot={false}
             isAnimationActive={false}
           />
         ))}
-      </RechartsBarChart>
+      </RechartsAreaChart>
     </ChartFrame>
   );
 }

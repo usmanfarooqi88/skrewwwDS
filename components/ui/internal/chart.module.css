@@ -1,0 +1,116 @@
+.root {
+  display: block;
+  width: 100%;
+}
+
+/*
+ * Component-owned chart tokens (CH-1/CH-2). Declared here — not in styles/tokens.css —
+ * so they are transported with every chart: the shadcn Foundation carries only
+ * primitive/semantic/shape/surface tokens, so chart-specific aliases would otherwise
+ * be undefined for a consumer. :where() keeps specificity at zero so a consumer's
+ * `className` can override them.
+ *
+ * Series colors are CATEGORICAL identity slots, not status colors: no slot means
+ * "good", "warning" or "success". Slots 1-2 use the brand action and primary text
+ * colors; slots 3-4 alias existing amber/green primitives purely for hue separation
+ * (each is >= 3:1 against the default white surface). The final categorical palette
+ * is an open design decision — see the chart registry openQuestions.
+ */
+:where(.root) {
+  --chart-series-1: var(--semantic-action-primary);
+  --chart-series-2: var(--semantic-text-primary);
+  --chart-series-3: var(--primitive-color-warning-700);
+  --chart-series-4: var(--primitive-color-success-700);
+  --chart-axis-text: var(--semantic-text-secondary);
+  --chart-grid: var(--semantic-border-default);
+  --chart-baseline: var(--semantic-border-strong);
+  --chart-marker-fill: var(--semantic-surface-default);
+  --chart-cursor: var(--semantic-surface-subtle);
+  --chart-tooltip-surface: var(--semantic-surface-default);
+  --chart-tooltip-border: var(--semantic-border-default);
+  --chart-tooltip-text: var(--semantic-text-primary);
+  --chart-tooltip-text-muted: var(--semantic-text-secondary);
+  --chart-tooltip-shadow: var(--surface-shadow-raised);
+  --chart-tooltip-radius: var(--shape-radius-control);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--chart-axis-text);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.marker {
+  flex: none;
+  display: inline-block;
+}
+
+.markerSquare {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.markerLine {
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.tooltip {
+  min-width: 120px;
+  max-width: 240px;
+  padding: 8px 10px;
+  border: 1px solid var(--chart-tooltip-border);
+  border-radius: var(--chart-tooltip-radius);
+  background: var(--chart-tooltip-surface);
+  box-shadow: var(--chart-tooltip-shadow);
+  color: var(--chart-tooltip-text);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+
+.tooltipTitle {
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: var(--chart-tooltip-text);
+}
+
+.tooltipList {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tooltipName {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--chart-tooltip-text-muted);
+}
+
+.tooltipValue {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}

@@ -80,6 +80,8 @@ async function expectTabTraversalNeverEntersChart(page: Page, chartName: string)
   }
 }
 
+const MAIN = "Monthly signups";
+
 test.describe("Bar Chart browser behavior", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/components/bar-chart");
@@ -98,7 +100,7 @@ test.describe("Bar Chart browser behavior", () => {
   });
 
   test("renders one bar per month with real proportional heights", async ({ page }) => {
-    const bars = page.locator(".recharts-bar-rectangle path");
+    const bars = page.getByRole("img", { name: MAIN }).locator(".recharts-bar-rectangle path");
     await expect(bars).toHaveCount(6);
 
     const heights = await bars.evaluateAll((paths) =>
@@ -127,16 +129,18 @@ test.describe("Bar Chart browser behavior", () => {
   });
 
   test("exposes the underlying data via a visually-hidden table", async ({ page }) => {
-    const table = page.locator("table.sr-only");
+    const table = page.getByRole("table", { name: MAIN });
     await expect(table).toHaveCount(1);
     await expect(table.getByRole("row", { name: /Jan/ })).toHaveText(/58/);
     await expect(table.getByRole("row", { name: /Jun/ })).toHaveText(/140/);
   });
 
   test("renders no y-axis, legend, or tooltip", async ({ page }) => {
-    await expect(page.locator(".recharts-yAxis")).toHaveCount(0);
-    await expect(page.locator(".recharts-legend-wrapper")).toHaveCount(0);
-    await expect(page.locator(".recharts-tooltip-wrapper")).toHaveCount(0);
+    const chart = page.getByRole("img", { name: MAIN });
+    await expect(chart.locator(".recharts-yAxis")).toHaveCount(0);
+    await expect(chart.locator(".recharts-cartesian-grid")).toHaveCount(0);
+    await expect(chart.locator(".recharts-tooltip-wrapper")).toHaveCount(0);
+    await expect(chart.locator("ul")).toHaveCount(0);
   });
 
   test("keeps the chart out of the keyboard tab order", async ({ page }) => {
@@ -146,11 +150,113 @@ test.describe("Bar Chart browser behavior", () => {
   test("resolves bar fill and axis text from delivered chart tokens (not the undefined-variable fallback)", async ({
     page,
   }) => {
-    const bar = page.locator(".recharts-bar-rectangle path").first();
+    const bar = page.getByRole("img", { name: MAIN }).locator(".recharts-bar-rectangle path").first();
     await expect(bar).toBeVisible();
     const fill = await bar.evaluate((el) => getComputedStyle(el).fill);
     // Undefined var() in an SVG fill attribute computes to black; the approved fill is the brand action color.
     expect(fill).not.toBe("rgb(0, 0, 0)");
     expectColorClose(parseRgb(fill), hexToRgba("#6C4CF2"));
+  });
+
+  test("keeps every chart on the page out of the keyboard tab order", async ({ page }) => {
+    await expect(page.getByRole("img")).not.toHaveCount(0);
+    await expect(page.locator('[role="img"] [tabindex]:not([tabindex="-1"]), [role="img"] [role="application"]')).toHaveCount(0);
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    for (let step = 0; step < 120; step += 1) {
+      await page.keyboard.press("Tab");
+      const insideChart = await page.evaluate(() => Boolean(document.activeElement?.closest('[role="img"]')));
+      expect(insideChart, `Tab step ${step + 1} landed inside a chart`).toBe(false);
+    }
+  });
+
+  test("groups two series side by side with a legend and one table column per series", async ({ page }) => {
+    const chart = page.getByRole("img", { name: "Revenue and orders by quarter, grouped" });
+    await expect(chart.locator(".recharts-bar-rectangle path")).toHaveCount(8);
+    await expect(chart.locator("ul > li")).toHaveText(["Revenue", "Orders"]);
+    const table = page.getByRole("table", { name: "Revenue and orders by quarter, grouped" });
+    await expect(table.getByRole("columnheader")).toHaveText(["Label", "Revenue", "Orders"]);
+  });
+
+  test("resolves each series color from delivered chart tokens", async ({ page }) => {
+    const chart = page.getByRole("img", { name: "Revenue and orders by quarter, grouped" });
+    await expect(chart.locator(".recharts-bar-rectangle path").first()).toBeVisible();
+    const colors = await chart.evaluate((root) => {
+      const resolve = (value: string) => {
+        const probe = document.createElement("span");
+        probe.style.color = value;
+        root.appendChild(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      };
+      const groups = Array.from(root.querySelectorAll(".recharts-bar"));
+      return {
+        first: getComputedStyle(groups[0].querySelector("path")!).fill,
+        second: getComputedStyle(groups[1].querySelector("path")!).fill,
+        expectedFirst: resolve("var(--semantic-action-primary)"),
+        expectedSecond: resolve("var(--semantic-text-primary)"),
+      };
+    });
+    expect(colors.first).toBe(colors.expectedFirst);
+    expect(colors.second).toBe(colors.expectedSecond);
+    expect(colors.first).not.toBe(colors.second);
+  });
+
+  test("stacks series into one bar per category and scales 100% stacks to a share axis", async ({ page }) => {
+    const stacked = page.getByRole("img", { name: "Revenue and orders by quarter, stacked" });
+    await expect(stacked.locator(".recharts-bar-rectangle path")).toHaveCount(8);
+    const xs = await stacked.locator(".recharts-bar-rectangle path").evaluateAll((paths) =>
+      Array.from(new Set(paths.map((path) => (path.getAttribute("d") ?? "").match(/M\s*(-?[\d.]+),/)?.[1]))),
+    );
+    expect(xs).toHaveLength(4);
+    const percent = page.getByRole("img", { name: "Revenue and orders by quarter, share" });
+    const ticks = await percent.locator(".recharts-yAxis-tick-labels text.recharts-cartesian-axis-tick-value").allTextContents();
+    expect(ticks.length).toBeGreaterThan(1);
+    ticks.forEach((tick) => expect(tick).toMatch(/%$/));
+    expect(ticks).toContain("100%");
+  });
+
+  test("draws horizontal bars that grow along x with category labels on the y axis", async ({ page }) => {
+    const chart = page.getByRole("img", { name: "Sessions by channel" });
+    await expect(chart.locator(".recharts-bar-rectangle path")).toHaveCount(4);
+    await expect(chart.locator(".recharts-yAxis-tick-labels text.recharts-cartesian-axis-tick-value")).toHaveText(["Search", "Direct", "Referral", "Social"]);
+    const widths = await chart.locator(".recharts-bar-rectangle path").evaluateAll((paths) =>
+      paths.map((path) => Math.abs(Number((path.getAttribute("d") ?? "").match(/h\s*(-?[\d.]+)/)?.[1]))),
+    );
+    expect(widths[0]).toBeGreaterThan(widths[3]); // Search (420) is longer than Social (120)
+  });
+
+  test("shows a formatted tooltip listing every series on hover, without moving keyboard focus", async ({ page }) => {
+    const chart = page.getByRole("img", { name: "Revenue and orders by quarter, grouped" });
+    await chart.locator(".recharts-bar-rectangle path").first().hover();
+    const tooltip = chart.locator(".recharts-tooltip-wrapper");
+    await expect(tooltip).toContainText("Q1");
+    await expect(tooltip).toContainText("Revenue");
+    await expect(tooltip).toContainText("120K");
+    await expect(tooltip).toContainText("Orders");
+    await expect(tooltip).toContainText("80");
+    await expect(chart.locator('[tabindex]:not([tabindex="-1"])')).toHaveCount(0);
+  });
+
+  test("stays inside the viewport at 375px with several series and a legend", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.reload();
+    for (const name of [
+      "Revenue and orders by quarter, grouped",
+      "Revenue and orders by quarter, stacked",
+      "Revenue and orders by quarter, share",
+      "Sessions by channel",
+    ]) {
+      await expect(page.getByRole("img", { name }).locator(".recharts-bar-rectangle path").first()).toBeVisible();
+    }
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBe(0);
+    const legendEscapes = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('[role="img"] ul > li')).filter((item) => {
+        const rect = item.getBoundingClientRect();
+        return rect.right > document.documentElement.clientWidth + 0.5;
+      }).length,
+    );
+    expect(legendEscapes).toBe(0);
   });
 });

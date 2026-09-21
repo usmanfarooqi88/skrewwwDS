@@ -16,6 +16,12 @@
       "installable": true
     },
     {
+      "slug": "area-chart",
+      "displayName": "Area Chart",
+      "status": "beta",
+      "installable": true
+    },
+    {
       "slug": "avatar",
       "displayName": "Avatar",
       "status": "stable",

@@ -102,6 +102,7 @@ import {
   buildPhoneNumberFieldManifest,
   buildTreeViewManifest,
   buildDataTableManifest,
+  buildAreaChartManifest,
   buildBarChartManifest,
   buildLineChartManifest,
   type ShadcnRegistryItem,
@@ -167,6 +168,7 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   "data-table": buildDataTableManifest,
   "bar-chart": buildBarChartManifest,
   "line-chart": buildLineChartManifest,
+  "area-chart": buildAreaChartManifest,
 };
 
 /**
@@ -208,6 +210,108 @@ type ComponentSmokeDescriptor = {
   extraAdds?: string[];
   browserAssert?: (ctx: { page: PlaywrightPage; baseUrl: string }) => Promise<void>;
 };
+
+/**
+ * CH-2: multi-series proof for the Cartesian charts. Renders four series and checks, in
+ * the real installed consumer, that the legend, hidden-table headers, all four series
+ * color slots, and the tooltip tokens resolve from variables actually delivered to the
+ * consumer (Foundation + the shared chart stylesheet), and that no chart node is
+ * tabbable. Undefined variables in SVG attributes compute silently to black / none, so
+ * geometry and data assertions alone cannot see them.
+ */
+const MULTI_SERIES_LABEL = "Traffic by channel";
+const MULTI_SERIES_SOURCE = [
+  "const multiData = [",
+  '  { label: "Mon", web: 320, mobile: 210, email: 90, direct: 150 },',
+  '  { label: "Tue", web: 360, mobile: 240, email: 110, direct: 170 },',
+  '  { label: "Wed", web: 300, mobile: 280, email: 95, direct: 160 },',
+  '  { label: "Thu", web: 410, mobile: 260, email: 130, direct: 190 },',
+  "];",
+  "const multiSeries = [",
+  '  { key: "web", label: "Web" },',
+  '  { key: "mobile", label: "Mobile" },',
+  '  { key: "email", label: "Email" },',
+  '  { key: "direct", label: "Direct" },',
+  "];",
+];
+
+async function assertConsumerMultiSeries(
+  page: PlaywrightPage,
+  family: string,
+  marks: { groupSelector?: string; elementSelector: string; prop: "fill" | "stroke" },
+): Promise<void> {
+  const WAIT_MS = 8000;
+  const chart = page.getByRole("img", { name: MULTI_SERIES_LABEL });
+  await chart.waitFor({ state: "visible", timeout: WAIT_MS });
+  await chart.locator(marks.elementSelector).first().waitFor({ state: "attached", timeout: WAIT_MS });
+
+  const legend = await chart.locator("ul > li").allTextContents();
+  if (legend.join("|") !== "Web|Mobile|Email|Direct") {
+    throw new Error(`Installed ${family}: expected legend Web|Mobile|Email|Direct, got "${legend.join("|")}".`);
+  }
+  const headers = await page.getByRole("table", { name: MULTI_SERIES_LABEL }).getByRole("columnheader").allTextContents();
+  if (headers.join("|") !== "Label|Web|Mobile|Email|Direct") {
+    throw new Error(`Installed ${family}: expected table headers Label|Web|Mobile|Email|Direct, got "${headers.join("|")}".`);
+  }
+
+  const resolveColor = (cssValue: string) =>
+    page.evaluate((value) => {
+      const probe = document.createElement("span");
+      probe.style.color = value;
+      document.body.appendChild(probe);
+      const color = getComputedStyle(probe).color;
+      probe.remove();
+      return color;
+    }, cssValue);
+  const expected = [
+    await resolveColor("var(--semantic-action-primary)"),
+    await resolveColor("var(--semantic-text-primary)"),
+    await resolveColor("var(--primitive-color-warning-700)"),
+    await resolveColor("var(--primitive-color-success-700)"),
+  ];
+  const actual = await chart.evaluate((root, cfg) => {
+    const nodes = cfg.groupSelector
+      ? Array.from(root.querySelectorAll(cfg.groupSelector)).map((group) => group.querySelector(cfg.elementSelector) as Element)
+      : Array.from(root.querySelectorAll(cfg.elementSelector));
+    return nodes.map((node) => {
+      const style = getComputedStyle(node);
+      return cfg.prop === "fill" ? style.fill : style.stroke;
+    });
+  }, marks);
+  if (actual.length !== 4 || actual.some((color, index) => color !== expected[index])) {
+    throw new Error(
+      `Installed ${family}: series colors [${actual.join(", ")}] did not resolve to delivered slots [${expected.join(", ")}].`,
+    );
+  }
+  if (new Set(actual).size !== 4) {
+    throw new Error(`Installed ${family}: the four series colors are not all distinct (${actual.join(", ")}).`);
+  }
+
+  const stops = await chart.locator('[tabindex]:not([tabindex="-1"]), [role="application"]').count();
+  if (stops !== 0) throw new Error(`Installed ${family}: ${stops} tabbable/role=application node(s) inside the multi-series chart.`);
+
+  await chart.locator("svg.recharts-surface").hover({ position: { x: 200, y: 100 } });
+  const tooltip = chart.locator(".recharts-tooltip-wrapper > div").first();
+  await tooltip.waitFor({ state: "visible", timeout: WAIT_MS });
+  const tooltipText = await tooltip.textContent();
+  if (!tooltipText || !/Web/.test(tooltipText) || !/Direct/.test(tooltipText)) {
+    throw new Error(`Installed ${family}: tooltip did not list the series ("${tooltipText}").`);
+  }
+  const tooltipStyle = await tooltip.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { background: style.backgroundColor, border: style.borderTopColor, shadow: style.boxShadow, radius: style.borderTopLeftRadius };
+  });
+  const expectedSurface = await resolveColor("var(--semantic-surface-default)");
+  const expectedBorder = await resolveColor("var(--semantic-border-default)");
+  if (tooltipStyle.background !== expectedSurface || tooltipStyle.border !== expectedBorder) {
+    throw new Error(
+      `Installed ${family}: tooltip colors (bg "${tooltipStyle.background}", border "${tooltipStyle.border}") did not resolve to delivered tokens (bg "${expectedSurface}", border "${expectedBorder}").`,
+    );
+  }
+  if (tooltipStyle.shadow === "none" || tooltipStyle.radius === "0px") {
+    throw new Error(`Installed ${family}: tooltip shadow/radius tokens did not resolve (shadow "${tooltipStyle.shadow}", radius "${tooltipStyle.radius}").`);
+  }
+}
 
 const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
   button: {
@@ -2027,9 +2131,13 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
   "bar-chart": {
     criticalPaths: [
       "components/ui/BarChart.tsx",
-      "components/ui/bar-chart.module.css",
       "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/ChartLegend.tsx",
+      "components/ui/internal/ChartTooltip.tsx",
+      "components/ui/internal/cartesian-parts.tsx",
       "components/ui/internal/chart-data.ts",
+      "components/ui/internal/chart-format.ts",
+      "components/ui/internal/chart.module.css",
       "lib/cn.ts",
       "styles/skrewww-foundation.css",
     ],
@@ -2040,6 +2148,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         "",
         'import { BarChart } from "@/components/ui/BarChart";',
         "",
+        ...MULTI_SERIES_SOURCE,
         "const data = [",
         '  { label: "Jan", value: 58 },',
         '  { label: "Feb", value: 72 },',
@@ -2054,6 +2163,9 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         '    <div style={{ padding: 40 }}>',
         '      <div id="chart-fixture" style={{ width: 600 }}>',
         '        <BarChart data={data} label="Monthly signups" height={320} />',
+        "      </div>",
+        '      <div id="multi-fixture" style={{ width: 600 }}>',
+        `        <BarChart data={multiData} series={multiSeries} label="${MULTI_SERIES_LABEL}" height={240} tooltip />`,
         "      </div>",
         "    </div>",
         "  );",
@@ -2127,7 +2239,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         );
       }
 
-      const table = page.locator("table.sr-only");
+      const table = page.getByRole("table", { name: "Monthly signups" });
       if ((await table.count()) !== 1) throw new Error("Installed Bar Chart: expected one visually-hidden data table.");
       const jan = await table.getByRole("row", { name: /Jan/ }).textContent();
       const jun = await table.getByRole("row", { name: /Jun/ }).textContent();
@@ -2159,14 +2271,24 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
           `Installed Bar Chart: expected SVG to shrink after narrowing the fixture (before=${beforeWidth}, after=${afterWidth}).`,
         );
       }
+
+      await assertConsumerMultiSeries(page, "Bar Chart", {
+        groupSelector: ".recharts-bar",
+        elementSelector: ".recharts-bar-rectangle path",
+        prop: "fill",
+      });
     },
   },
   "line-chart": {
     criticalPaths: [
       "components/ui/LineChart.tsx",
-      "components/ui/line-chart.module.css",
       "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/ChartLegend.tsx",
+      "components/ui/internal/ChartTooltip.tsx",
+      "components/ui/internal/cartesian-parts.tsx",
       "components/ui/internal/chart-data.ts",
+      "components/ui/internal/chart-format.ts",
+      "components/ui/internal/chart.module.css",
       "lib/cn.ts",
       "styles/skrewww-foundation.css",
     ],
@@ -2177,6 +2299,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         "",
         'import { LineChart } from "@/components/ui/LineChart";',
         "",
+        ...MULTI_SERIES_SOURCE,
         "const data = [",
         '  { label: "Jan", value: 58 },',
         '  { label: "Feb", value: 72 },',
@@ -2191,6 +2314,9 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         '    <div style={{ padding: 40 }}>',
         '      <div id="chart-fixture" style={{ width: 600 }}>',
         '        <LineChart data={data} label="Monthly signups trend" height={320} />',
+        "      </div>",
+        '      <div id="multi-fixture" style={{ width: 600 }}>',
+        `        <LineChart data={multiData} series={multiSeries} label="${MULTI_SERIES_LABEL}" height={240} tooltip showCategoryAxis showValueAxis showGrid />`,
         "      </div>",
         "    </div>",
         "  );",
@@ -2258,7 +2384,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         throw new Error(`Installed Line Chart: proportional point positions wrong (cys=[${cys.join(", ")}]).`);
       }
 
-      const table = page.locator("table.sr-only");
+      const table = page.getByRole("table", { name: "Monthly signups trend" });
       if ((await table.count()) !== 1) throw new Error("Installed Line Chart: expected one visually-hidden data table.");
       const jan = await table.getByRole("row", { name: /Jan/ }).textContent();
       const jun = await table.getByRole("row", { name: /Jun/ }).textContent();
@@ -2296,6 +2422,116 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
           `Installed Line Chart: expected SVG to shrink after narrowing the fixture (before=${beforeWidth}, after=${afterWidth}).`,
         );
       }
+
+      await assertConsumerMultiSeries(page, "Line Chart", { elementSelector: ".recharts-line-curve", prop: "stroke" });
+    },
+  },
+  // CH-2 — Area Chart. No Figma reference; proves independent install + delivered tokens.
+  "area-chart": {
+    criticalPaths: [
+      "components/ui/AreaChart.tsx",
+      "components/ui/internal/ChartFrame.tsx",
+      "components/ui/internal/ChartLegend.tsx",
+      "components/ui/internal/ChartTooltip.tsx",
+      "components/ui/internal/cartesian-parts.tsx",
+      "components/ui/internal/chart-data.ts",
+      "components/ui/internal/chart-format.ts",
+      "components/ui/internal/chart.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { AreaChart } from "@/components/ui/AreaChart";',
+        "",
+        ...MULTI_SERIES_SOURCE,
+        "const data = [",
+        '  { label: "Jan", value: 58 },',
+        '  { label: "Feb", value: 72 },',
+        '  { label: "Mar", value: 91 },',
+        '  { label: "Apr", value: 84 },',
+        '  { label: "May", value: 110 },',
+        '  { label: "Jun", value: 140 },',
+        "];",
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <div id="chart-fixture" style={{ width: 600 }}>',
+        '        <AreaChart data={data} label="Monthly active users" height={320} />',
+        "      </div>",
+        '      <div id="multi-fixture" style={{ width: 600 }}>',
+        `        <AreaChart data={multiData} series={multiSeries} label="${MULTI_SERIES_LABEL}" height={240} tooltip stacking="stacked" showValueAxis showGrid />`,
+        "      </div>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/AreaChart"/.test(pageSource) && /Monthly active users/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports AreaChart and renders single- and multi-series data",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 8000;
+      const chart = page.getByRole("img", { name: "Monthly active users" });
+      await chart.waitFor({ state: "visible", timeout: WAIT_MS });
+      const svg = chart.locator("svg").first();
+      await svg.waitFor({ state: "visible", timeout: WAIT_MS });
+      await chart.locator(".recharts-area-curve").first().waitFor({ state: "attached", timeout: WAIT_MS });
+      if ((await chart.locator(".recharts-area-area").count()) !== 1) {
+        throw new Error("Installed Area Chart: expected one area fill.");
+      }
+
+      const resolveColor = (cssValue: string) =>
+        page.evaluate((value) => {
+          const probe = document.createElement("span");
+          probe.style.color = value;
+          document.body.appendChild(probe);
+          const color = getComputedStyle(probe).color;
+          probe.remove();
+          return color;
+        }, cssValue);
+      const stroke = await chart.locator(".recharts-area-curve").first().evaluate((el) => getComputedStyle(el).stroke);
+      const expectedStroke = await resolveColor("var(--semantic-action-primary)");
+      if (stroke !== expectedStroke || stroke === "none") {
+        throw new Error(`Installed Area Chart: stroke "${stroke}" did not resolve to delivered --semantic-action-primary "${expectedStroke}".`);
+      }
+      const fill = await chart.locator(".recharts-area-area").first().evaluate((el) => getComputedStyle(el).fill);
+      if (fill !== expectedStroke) {
+        throw new Error(`Installed Area Chart: fill "${fill}" did not resolve to the series color "${expectedStroke}".`);
+      }
+
+      const table = page.getByRole("table", { name: "Monthly active users" });
+      if ((await table.count()) !== 1) throw new Error("Installed Area Chart: expected one visually-hidden data table.");
+      const jan = await table.getByRole("row", { name: /Jan/ }).textContent();
+      const jun = await table.getByRole("row", { name: /Jun/ }).textContent();
+      if (!jan?.includes("58") || !jun?.includes("140")) {
+        throw new Error(`Installed Area Chart: hidden table data mismatch (jan="${jan}", jun="${jun}").`);
+      }
+
+      const beforeWidth = await svg.evaluate((el) => el.getBoundingClientRect().width);
+      await page.locator("#chart-fixture").evaluate((el) => {
+        (el as HTMLElement).style.width = "360px";
+        window.dispatchEvent(new Event("resize"));
+      });
+      await page.waitForFunction(
+        (previous) => {
+          const node = document.querySelector("#chart-fixture svg");
+          if (!node) return false;
+          return Math.abs(node.getBoundingClientRect().width - previous) > 40;
+        },
+        beforeWidth,
+        { timeout: WAIT_MS },
+      );
+      const afterWidth = await svg.evaluate((el) => el.getBoundingClientRect().width);
+      if (!(afterWidth > 0 && afterWidth < beforeWidth) || !(await chart.isVisible())) {
+        throw new Error(`Installed Area Chart: expected SVG to shrink after narrowing (before=${beforeWidth}, after=${afterWidth}).`);
+      }
+
+      await assertConsumerMultiSeries(page, "Area Chart", { elementSelector: ".recharts-area-curve", prop: "stroke" });
     },
   },
   "spinner-divider-link": {

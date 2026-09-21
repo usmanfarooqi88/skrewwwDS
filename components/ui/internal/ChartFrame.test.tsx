@@ -119,4 +119,46 @@ describe("ChartFrame", () => {
     expect(screen.getByRole("img", { name: "Monthly signups" })).toBeInTheDocument();
     expect(within(screen.getByRole("table")).getAllByRole("row")).toHaveLength(1);
   });
+
+  it("renders a non-interactive legend inside the aria-hidden visual: names and markers, no controls, wrapping list", () => {
+    const { container } = render(
+      <ChartFrame
+        label="Revenue vs orders"
+        height={160}
+        table={singleSeriesChartTable(data)}
+        legend={[
+          { label: "Revenue", colorVar: "var(--chart-series-1)", marker: "square" },
+          { label: "Orders", colorVar: "var(--chart-series-2)", marker: "line" },
+        ]}
+      >
+        <RechartsBarChart data={data}>
+          <Bar dataKey="value" isAnimationActive={false} />
+        </RechartsBarChart>
+      </ChartFrame>,
+    );
+    const visual = container.querySelector('[aria-hidden="true"]') as HTMLElement;
+    const items = visual.querySelectorAll("ul > li");
+    expect(Array.from(items).map((item) => item.textContent)).toEqual(["Revenue", "Orders"]);
+    expect(visual.querySelectorAll("button, a, input, select, textarea, [tabindex]:not([tabindex='-1'])")).toHaveLength(0);
+    expect(screen.queryByRole("list")).toBeNull(); // hidden from the accessibility tree; table headers carry series names
+  });
+
+  it("omits the legend when none is provided", () => {
+    const { container } = renderFrame();
+    expect(container.querySelector("ul")).toBeNull();
+  });
+
+  it("reads a null table cell as No data so a missing value is never an ambiguous empty cell", () => {
+    renderFrame({
+      table: {
+        categoryHeader: "Month",
+        valueHeaders: ["Income", "Expenses"],
+        rows: [{ category: "Jan", values: [10, null] }],
+      },
+    });
+    expect(within(screen.getByRole("row", { name: /Jan/ })).getAllByRole("cell").map((cell) => cell.textContent)).toEqual([
+      "10",
+      "No data",
+    ]);
+  });
 });
