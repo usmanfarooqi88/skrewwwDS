@@ -23,14 +23,20 @@ so and use the right skill.
 
 ## 1. Bootstrap — read live context, minimally
 
-Do this before any substantial task. Skip what a tiny task does not need.
+Do this before any substantial task.
 
-1. Project instructions: `AGENTS.md` (and `CLAUDE.md` if present locally).
-2. `docs/project-status.md` — read the top "Last verified" line and the newest
+1. `git status --short` and `git branch --show-current` (§11). Always first, for
+   any task that could edit files.
+2. Project instructions: read `AGENTS.md` unless the environment already
+   supplied it. `CLAUDE.md` is a personal, gitignored file; read it if present.
+3. `docs/project-status.md` — read the top "Last verified" line and the newest
    entries only. It is the source for current phase, blockers, and counts.
-3. The canonical files for the task (§3). Search first; do not read the repo.
-4. `git status --short` and `git branch --show-current` (§11).
+4. The canonical files for the task (§3). Search first; do not read the repo.
 5. Then act.
+
+**Scale to the task.** Tiny docs/copy tasks (a typo, a wording fix) need only
+step 1 plus the target file: load minimal context and use lightweight
+validation (§10). Substantial engineering tasks follow every step.
 
 Never state a count, phase, version, SHA, or CI status from memory. Read it or
 run the command in this session and say so. Docs and standing instruction files
@@ -159,6 +165,10 @@ Never guess missing Figma behavior. Never invent React behavior to fit an
 ambiguous visual. Never invent node IDs, variable IDs, or parity claims.
 If a human design decision is needed, STOP and report it.
 
+A Figma tool that is present but disconnected or unavailable (no bridge, no
+open file, not authenticated) means Figma evidence is **UNKNOWN**, not PASS and
+not "no mismatch". Report it as unknown and name what would resolve it.
+
 Figma is read-only by default (`AGENTS.md`). Claude Code must not claim to have
 edited Figma unless it has an explicitly requested, authorized Figma write.
 When a shared technical fix should later be mirrored in Figma Free/Pro, **flag
@@ -177,8 +187,11 @@ that follow-up to the human**; do not perform or imply it.
   (private helpers, never independently installable), `registryDependencies`,
   `dependencies` (real third-party npm packages only), `hostRequirements`,
   `coreDependencies`, `cssTokens`.
-- The generator is `lib/shadcn-registry-generator.ts` (pure) driven by
-  `scripts/generate-shadcn-registry.ts`. Every transported file needs an
+- The generator logic is `lib/shadcn-registry-generator.ts` (pure), driven by
+  `scripts/generate-shadcn-registry.ts`. The command is
+  **`npm run generate:registry`**. That script file name is not the npm script;
+  never invent `npm run generate:shadcn-registry`. If unsure of a command, read
+  the `package.json` scripts. Every transported file needs an
   explicit `FILE_DESTINATIONS` row (no defaults; missing rows throw), a
   `buildXManifest` wrapper, and an entry in `buildDistributedRegistryItems()`.
   Read the generator for the current procedure.
@@ -212,6 +225,10 @@ Never hand-edit generated output, and never patch it to make a test pass.
   hand-edit; regenerate via the scripts.
 - The loop is always: **edit canonical source → run the generator → verify the
   output/tests.** Do not stage or force-add ignored outputs.
+- Generator commands: `npm run generate:registry` (`public/r`),
+  `npm run generate:agent-context` (`public/agent`),
+  `npm run generate:guard-facts` (committed Guard facts). `npm run build` runs
+  the first two.
 - Check `.gitignore` and `npm run` scripts for the current generated set; do not
   rely on this list being complete.
 
@@ -317,7 +334,9 @@ Rules:
   decision changed. When a roadmap phase completes, update `docs/project-status.md`
   per its existing convention. Volatile counts belong there, not in standing
   files or this skill. No documentation churn for trivial edits.
-- **Release:** green implementation is not release permission. npm publish,
+- **Release:** for substantial release work, read the relevant notes and
+  checklists under `docs/releases/` first (choose the file at task time; do not
+  assume one). Green implementation is not release permission. npm publish,
   GitHub Release, website announcement, and Figma Pro / Free Community / Gumroad
   republish each require explicit human approval for that action. When a React or
   shared change materially affects the paid Figma Pro system, **flag the

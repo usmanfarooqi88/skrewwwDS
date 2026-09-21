@@ -29,6 +29,23 @@ The installed file is a copy. Edit the canonical file, then re-copy. This mirror
 the existing `skrewww-ui` convention (canonical source in the repo, ignored
 adapter under `.claude/skills/`).
 
+The same command syncs a fresh clone, and re-running it refreshes an existing
+install. There is no installer script, symlink, or `package.json` entry yet.
+
+### Drift check
+
+Run after pulling, or after editing the canonical file. It prints `STALE` when
+the installed copy differs from the reviewed source (or is missing):
+
+```bash
+cmp -s skills/skrewww-react/SKILL.md \
+  .claude/skills/skrewww-react/SKILL.md \
+  || echo "STALE"
+```
+
+If it prints `STALE`, re-run the install command above. Start a new Claude Code
+session afterwards: a session can keep serving a copy it loaded earlier.
+
 ## How to use it
 
 Claude Code loads it automatically when a task matches its `description`, or you
