@@ -6,25 +6,8 @@ import { useRouter } from "next/navigation";
 import { RequestFiltersForm } from "@/components/reference-app/RequestFiltersForm";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { DataTableSortHeader } from "@/components/ui/DataTableSortHeader";
 import {
-  DataTableSortHeader,
-  EmptyState,
-  Menu,
-  MenuContent,
-  MenuItem,
-  MenuTrigger,
-  Pagination,
-  SearchField,
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableScrollArea,
-  Tag,
-  buildPaginationItems,
   Drawer,
   DrawerBody,
   DrawerClose,
@@ -33,7 +16,30 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui";
+} from "@/components/ui/Drawer";
+import { EmptyState } from "@/components/ui/EmptyState";
+import {
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+} from "@/components/ui/Menu";
+import {
+  Pagination,
+  buildPaginationItems,
+} from "@/components/ui/Pagination";
+import { SearchField } from "@/components/ui/SearchField";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableScrollArea,
+} from "@/components/ui/Table";
+import { Tag } from "@/components/ui/Tag";
 import {
   getReferenceOwnerById,
   REFERENCE_OWNERS,
