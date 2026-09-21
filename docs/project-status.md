@@ -1,6 +1,90 @@
 # Project status
 
-Last verified: **2026-09-22** (**CH-1 Chart Foundation Hardening ✅ COMPLETE**; CH-2 Core Cartesian Charts **NOT STARTED**; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-22** (**CH-2 Core Cartesian Charts ✅ COMPLETE**; CH-3 Chart Card / Dashboard Compositions **NOT STARTED**; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-22 — CH-2 Core Cartesian Charts (COMPLETE)
+
+**Verdict: COMPLETE.** Built the core Cartesian layer on the CH-1 foundation:
+`LineChart` and `BarChart` extended, new `AreaChart` (Beta `0.1.0-beta`,
+installable, **no Figma reference**). **No non-Cartesian family, no chart card /
+dashboard composition, no Guard rule, no unrelated token migration.**
+
+**Architecture.** One shared, internal foundation (never a public generic `Chart`):
+`ChartFrame` (accessible shell + legend slot) · `cartesian-parts` (axes, grid,
+baseline, tooltip) · `ChartTooltip` · `ChartLegend` · `chart-data` (typed rows +
+series) · `chart-format` · `chart.module.css` (chart-owned tokens). Families stay
+explicit and typed; each declares its props inline so the source ↔ registry ↔
+Agent-contract alignment test guards drift.
+
+- **Data:** rows `{ label, [series.key]: number | null }`; the original
+  `{ label, value }` single-series shape still works unchanged. `null` = no data
+  (gap / no bar, read as "No data" in the table). Duplicate labels are safe.
+- **Series:** `{ key, label, color?, format? }`. `key` is unique and never
+  `"label"` (throws). Color slots `series-1…4` by position (wrapping). No
+  per-series stack/axis/hidden state — deferred.
+- **Line:** multi-series, `markers`, `sparkline` (strictly compact: hides all
+  chrome), gaps for null. **Area:** overlap / `stacking="stacked"` / `"percent"`.
+  **Bar:** `orientation` vertical|horizontal × `stacking` none|stacked|percent —
+  one component, no `HorizontalBarChart` / `StackedBarChart`.
+- **Axes / grid / baseline / tooltip / legend:** opt-in (`showCategoryAxis`,
+  `showValueAxis`, `showGrid`, `tooltip`, `legend`; legend defaults on for several
+  series). Defaults keep the existing static Figma-example look. A zero baseline is
+  drawn only when a value is negative. The legend is a **non-interactive key**; the
+  tooltip is pointer/touch-only and everything in it is also in the hidden table.
+- **Formatting:** `valueFormat` (function or `number|compact|percent|currency`) and
+  `labelFormat` (function or normalized-ISO `date` at day/month/year, UTC). Fixed
+  `en-US` default so server and client agree; no i18n framework.
+- **Tokens:** four categorical series slots (brand action, primary text, amber,
+  green) plus axis/grid/baseline/marker/cursor/tooltip tokens, all declared in the
+  chart-owned `chart.module.css` (ships with each chart; removes the CH-1 family
+  modules and their aliases). Contrast ≥ 3:1 on the default surface is enforced by
+  a test. Slots carry **no status meaning**; the final palette is an open design
+  decision. Positive/negative colors remain a separate decision.
+- **Accessibility (CH-1 model preserved):** `role="img"` + required `label`, hidden
+  table with one column per series (series identified by name, never color alone),
+  visual/legend/tooltip `aria-hidden`, no tab stop (real Tab traversal asserted).
+- **Scatter: DEFERRED to CH-2B.** Its data is numeric x/y points with no category,
+  so it needs a different data, hidden-table, legend and tooltip contract; forcing
+  it into the category-row model would distort CH-2.
+
+**Distribution / Agent.** `area-chart` is installable (54 manifests + index, 56
+contracts; registry entry, `internalDependencies`, `cssTokens`, docs content,
+preview, README). Bar/Line/Area contracts list exactly their source props, carry
+anti-invention guidance (no `type`/`variant`/`stacked` props, no Pie/Scatter/etc.),
+and Area reports `figma.verified: false`. Guard consumer facts updated for the new
+installable component; the published-beta Guard package artifacts
+(`packages/guard/dist`, packaged facts) were **intentionally not rebuilt** — that
+belongs to the next Guard release.
+
+**Proof.** 147 test files / 1430 Vitest tests pass; new tests were
+mutation-checked. Official `npm run smoke:consumer` passes for `bar-chart`,
+`line-chart` and `area-chart` (real shadcn install, npm delta `[recharts]`, `next
+build`, headless-browser assertions that all four series colors and the tooltip
+tokens resolve from delivered variables and no chart node is tabbable). 73
+Playwright tests pass (charts at 375px and desktop, Reference App, banking).
+
+**Performance.** Measured per route against the CH-1 build. CH-2 initially widened
+the known `/reference/data` barrel leak (+24.8 KB gzip); `RequestsDataView.tsx`
+was the only Reference App barrel importer, so its single import block now uses
+direct per-file imports. `/reference/data` is now **−127.8 KB gzip / −434.7 KB raw
+vs CH-1 with zero chart-code chunks** (the CH-0/CH-1 leak is resolved for that
+route). Every other route grew only ~+0.9–1.0 KB gzip (registry/docs data for the
+new entry, no chart code). Chart code loads only where a preview or consumer uses it.
+
+**Recorded, not fixed (separate follow-ups)**
+1. **Cross-cutting token delivery** (unchanged from CH-1): 33 of 52 previously
+   distributed manifests still reference fallback-less component-tier variables not
+   delivered by the Foundation. Charts are clean. Needs its own architecture task.
+2. Guard package artifacts are behind the registry (see above) until the next Guard release.
+3. Open chart design decisions: categorical palette, positive/negative colors,
+   dense-data and long-label policy (no tick skipping / rotation / truncation /
+   scrolling / aggregation), horizontal category-axis width, interactive legend
+   (hidden-series state + keyboard/announcement design), keyboard-operable charts,
+   Figma chart component sets (Area Chart has none; live Figma still unverified).
+4. Still unbuilt: empty / loading / error chart states (a ChartCard concern), the
+   two unconsumed `--line-chart-*` geometry tokens in `tokens.css`, dual axis.
+
+**Canonical next:** CH-3 — Chart Card / Dashboard Compositions (**NOT STARTED**).
 
 ## 2026-09-22 — CH-1 Chart Foundation Hardening (COMPLETE)
 
