@@ -1,6 +1,6 @@
 "use client";
 
-import { List } from "@phosphor-icons/react";
+import { GithubLogo, InstagramLogo, LinkedinLogo, List } from "@phosphor-icons/react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -15,7 +15,13 @@ import {
 } from "@/components/ui/Drawer";
 import { HeaderNavLink } from "@/components/HeaderNavLink";
 import { ResourcesMenu } from "@/components/ResourcesMenu";
-import { getActiveGlobalNavArea, globalNavItems, isResourcesPath, resourceLinks } from "@/lib/global-nav";
+import {
+  getActiveGlobalNavArea,
+  globalNavItems,
+  isResourcesPath,
+  resourceLinks,
+  socialLinks,
+} from "@/lib/global-nav";
 
 /**
  * The NAV-1 global header — the site's only top-level nav shell. Renders
@@ -52,6 +58,7 @@ export function GlobalHeader() {
             </HeaderNavLink>
           ))}
           <ResourcesMenu isActive={resourcesActive} />
+          <DesktopSocialLinks />
         </nav>
 
         <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
@@ -78,6 +85,38 @@ export function GlobalHeader() {
         </Drawer>
       </div>
     </header>
+  );
+}
+
+const socialIcons = {
+  GitHub: GithubLogo,
+  Instagram: InstagramLogo,
+  LinkedIn: LinkedinLogo,
+} as const;
+
+function DesktopSocialLinks() {
+  return (
+    <div
+      role="group"
+      aria-label="Social links"
+      className="flex items-center gap-0.5 border-l border-ink-200 pl-3"
+    >
+      {socialLinks.map((link) => {
+        const Icon = socialIcons[link.label];
+        return (
+          <a
+            key={link.label}
+            href={link.href}
+            aria-label={link.label}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-500 transition-colors hover:bg-ink-50 hover:text-ink-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          >
+            <Icon size={18} weight="regular" aria-hidden="true" />
+          </a>
+        );
+      })}
+    </div>
   );
 }
 

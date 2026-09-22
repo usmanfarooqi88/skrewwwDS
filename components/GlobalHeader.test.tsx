@@ -13,14 +13,36 @@ describe("GlobalHeader", () => {
     mockPathname = "/";
   });
 
-  it("renders the locked desktop IA: Logo | Docs | Components | Charts | Agent Kit | Resources", () => {
+  it("renders the locked desktop IA followed by canonical social shortcuts", () => {
     render(<GlobalHeader />);
     expect(screen.getByRole("link", { name: "Skrewww home" })).toHaveAttribute("href", "/");
 
     const nav = screen.getByRole("navigation", { name: "Global" });
-    const links = within(nav).getAllByRole("link");
-    expect(links.map((link) => link.textContent)).toEqual(["Docs", "Components", "Charts", "Agent Kit"]);
+    const primaryLinks = ["Docs", "Components", "Charts", "Agent Kit"].map((name) =>
+      within(nav).getByRole("link", { name }),
+    );
+    expect(primaryLinks.map((link) => link.textContent)).toEqual([
+      "Docs",
+      "Components",
+      "Charts",
+      "Agent Kit",
+    ]);
     expect(within(nav).getByRole("button", { name: "Resources" })).toBeInTheDocument();
+
+    const socialGroup = within(nav).getByRole("group", { name: "Social links" });
+    const expected = {
+      GitHub: "https://github.com/usmanfarooqi88/skrewwwDS",
+      Instagram: "https://www.instagram.com/skrewww/",
+      LinkedIn: "https://www.linkedin.com/company/skrewww-ds/",
+    };
+    for (const [label, href] of Object.entries(expected)) {
+      expect(within(socialGroup).getByRole("link", { name: label })).toHaveAttribute("href", href);
+      expect(within(socialGroup).getByRole("link", { name: label })).toHaveAttribute("target", "_blank");
+      expect(within(socialGroup).getByRole("link", { name: label })).toHaveAttribute(
+        "rel",
+        expect.stringContaining("noopener noreferrer"),
+      );
+    }
   });
 
   it.each([

@@ -36,6 +36,8 @@ export const siteConfig = {
   /** Next.js serves /opengraph-image automatically — keep absolute URL helper aligned. */
   defaultSocialImagePath: "/opengraph-image",
   repositoryUrl: "https://github.com/usmanfarooqi88/skrewwwDS",
+  instagramUrl: "https://www.instagram.com/skrewww/",
+  linkedinUrl: "https://www.linkedin.com/company/skrewww-ds/",
   figmaUrl: undefined as string | undefined,
   /** The real, public Figma Community file — same destination as the homepage hero's "Get free Figma file" CTA. */
   figmaFreeFileUrl:

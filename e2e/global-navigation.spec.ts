@@ -52,6 +52,37 @@ test.describe("global navigation", () => {
     await expect(nav.getByRole("button", { name: "Resources" })).toBeFocused();
   });
 
+  test("desktop social shortcuts are canonical, external, and placed after Resources", async ({ page }) => {
+    await page.goto("/components");
+    const nav = page.getByRole("navigation", { name: "Global" });
+    const resources = nav.getByRole("button", { name: "Resources" });
+    const socialGroup = nav.getByRole("group", { name: "Social links" });
+    const expected = {
+      GitHub: "https://github.com/usmanfarooqi88/skrewwwDS",
+      Instagram: "https://www.instagram.com/skrewww/",
+      LinkedIn: "https://www.linkedin.com/company/skrewww-ds/",
+    };
+
+    for (const [label, href] of Object.entries(expected)) {
+      const link = socialGroup.getByRole("link", { name: label });
+      await expect(link).toHaveAttribute("href", href);
+      await expect(link).toHaveAttribute("target", "_blank");
+      await expect(link).toHaveAttribute("rel", /noopener.*noreferrer/);
+    }
+
+    const [resourcesBox, socialBox, navBox] = await Promise.all([
+      resources.boundingBox(),
+      socialGroup.boundingBox(),
+      nav.boundingBox(),
+    ]);
+    expect(resourcesBox).not.toBeNull();
+    expect(socialBox).not.toBeNull();
+    expect(navBox).not.toBeNull();
+    expect(socialBox!.x).toBeGreaterThan(resourcesBox!.x + resourcesBox!.width);
+    expect(socialBox!.x + socialBox!.width).toBeCloseTo(navBox!.x + navBox!.width, 0);
+    await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
+  });
+
   test("Docs and Charts hubs expose only real destinations and logical breadcrumbs", async ({ page }) => {
     await page.goto("/docs");
     await expect(page.getByRole("heading", { level: 1, name: "Docs" })).toBeVisible();
@@ -110,6 +141,7 @@ test.describe("mobile global navigation", () => {
 test.describe("global navigation responsive boundaries", () => {
   for (const viewport of [
     { name: "narrow desktop", width: 900, height: 800 },
+    { name: "desktop", width: 1280, height: 800 },
     { name: "wide desktop", width: 1440, height: 900 },
   ]) {
     test(`${viewport.name} keeps chrome aligned and exposes the skip link`, async ({ page }) => {
@@ -129,6 +161,13 @@ test.describe("global navigation responsive boundaries", () => {
       await expect(skipLink).toBeFocused();
       await skipLink.press("Enter");
       await expect(page.getByRole("main")).toBeFocused();
+
+      const socialGroup = page.getByRole("group", { name: "Social links" });
+      if (viewport.width >= 1024) {
+        await expect(socialGroup).toBeVisible();
+      } else {
+        await expect(socialGroup).toBeHidden();
+      }
     });
   }
 });

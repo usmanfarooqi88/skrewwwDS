@@ -103,3 +103,9 @@ export const resourceLinks: ResourceLink[] = [
   { label: "Figma Free", href: siteConfig.figmaFreeFileUrl, external: true },
   { label: "Figma Pro", href: siteConfig.gumroadProUrl, external: true },
 ];
+
+export const socialLinks = [
+  { label: "GitHub", href: siteConfig.repositoryUrl },
+  { label: "Instagram", href: siteConfig.instagramUrl },
+  { label: "LinkedIn", href: siteConfig.linkedinUrl },
+] as const;
