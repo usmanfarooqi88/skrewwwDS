@@ -668,7 +668,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         const nodes = Array.from(document.querySelectorAll("span"));
         const label = nodes.find((node) => (node.textContent || "").trim() === "Smoke active");
         if (!label) throw new Error("Badge label not found");
-        let root = label;
+        let root: Element | null = label;
         while (root && root !== document.body) {
           if (root.className && String(root.className).includes("badge")) break;
           root = root.parentElement;
