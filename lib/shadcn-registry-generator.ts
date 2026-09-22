@@ -808,6 +808,37 @@ function must(index: number, label: string): number {
  * markers. No token value is retyped; every byte returned is a verbatim
  * substring of the two inputs. Pure function of its two string arguments
  * — see extractFoundationCss() for the real-file-reading wrapper.
+ *
+ * OSS-1B — the component tier is transported too. It used to stop at
+ * `/* ── Form control geometry`, shipping the universal tokens and the
+ * Shape/Surface mode blocks but not the component-tier defaults those
+ * components actually render from. That produced a real consumer defect:
+ * 35 of 55 distributed components referenced 315 tokens no consumer ever
+ * received (installed Badge computed `padding: 0px`, `border-radius: 0px`,
+ * a transparent background and a black border).
+ *
+ * The boundary was never a deliberate two-tier design — it was already
+ * inconsistent. The Shape/Surface blocks below the cut *do* transport
+ * component-specific tokens (`--pagination-page-radius`, `--menu-surface`,
+ * `--menu-border`, `--menu-elevation`, `--menu-backdrop-filter`,
+ * `--menu-item-hover-surface`, `--feedback-{info,success,warning,error}-surface`,
+ * `--file-upload-dragging-surface`, `--component-list-item-supporting-text`),
+ * so consumers were already receiving those twelve tokens' *overrides*
+ * while their *defaults* were withheld.
+ *
+ * Keeping the tier inside this same `:root` block, in its original source
+ * order ahead of the mode blocks, is what makes this safe: the emitted
+ * cascade is byte-for-byte the cascade `styles/tokens.css` already has, so
+ * an ancestor-level `[data-skrewww-shape]` / `[data-skrewww-surface]`
+ * override still beats the default exactly as it does in this repo (both
+ * selectors have equal specificity and the site sets both attributes on
+ * `<html>`, so order — not specificity — decides). Per-component token
+ * delivery was evaluated and rejected: it would place defaults *after* the
+ * mode blocks for the twelve tokens above, and would need per-component
+ * DOM-nesting judgement for the fifteen tokens consumed by a file other
+ * than their name-owner (`--popover-*` by Select/Date Picker,
+ * `--calendar-day-*` by Calendar Period Cell). Cost of carrying the whole
+ * tier: +25KB raw / +5.7KB gzip on a stylesheet the consumer imports once.
  */
 export function extractFoundationCssFromSource(tokensCss: string, foundationUtilCss: string): string {
   const rootOpenIdx = must(tokensCss.indexOf(":root {"), ":root {");
@@ -834,7 +865,18 @@ export function extractFoundationCssFromSource(tokensCss: string, foundationUtil
     );
   }
 
-  const rootBody = tokensCss.slice(rootOpenIdx + ":root {".length, firstComponentBlockIdx).trimEnd();
+  const universalBody = tokensCss
+    .slice(rootOpenIdx + ":root {".length, firstComponentBlockIdx)
+    .trimEnd();
+  // The component tier is the remainder of the same `:root` block, so it
+  // carries that block's closing brace — dropped here because this function
+  // emits its own. Everything else stays a verbatim substring, in order.
+  const componentTierBody = tokensCss
+    .slice(firstComponentBlockIdx, shapeModesIdx)
+    .trimEnd()
+    .replace(/\}$/, "")
+    .trimEnd();
+  const rootBody = `${universalBody}\n\n${componentTierBody}`;
   const shapeModes = tokensCss.slice(shapeModesIdx, surfaceModesIdx).trim();
   const surfaceModes = tokensCss.slice(surfaceModesIdx).trim();
 
@@ -873,7 +915,7 @@ export function buildFoundationManifest(): ShadcnRegistryItem {
     type: "registry:file",
     title: "Skrewww Foundation",
     description:
-      "Universal Primitive/Semantic/Brand/Shape/Surface token tier plus the shared .sr-only accessibility utility. Installed once; every other @skrewww/* component depends on it.",
+      "Universal Primitive/Semantic/Brand tokens, component-tier defaults required by distributed components, Shape/Surface mode overrides, and the shared .sr-only accessibility utility. Installed once; every other @skrewww/* component depends on it.",
     author: "Skrewww",
     dependencies: [],
     registryDependencies: [],

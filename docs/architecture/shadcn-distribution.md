@@ -497,3 +497,71 @@ but the allowlist is shrink-only — fixing a component without removing it
 from the list fails the test, and a regression in any of the 20 clean
 components fails it too. Deleting that allowlist entirely is OSS-1B's exit
 criterion.
+
+## Distributed token delivery hardening — 2026-09-22 (OSS-1B)
+
+**Verdict: Option B accepted.** Expanding the Foundation transport to carry
+the component tier of `styles/tokens.css` closed the 315-token gap without
+relocating declarations into 35 component CSS modules.
+
+### Final Foundation extraction rule
+
+`extractFoundationCssFromSource()` now ships, in this exact source order:
+
+1. Universal Primitive / Semantic / Brand tokens (everything in `:root`
+   above `/* ── Form control geometry`)
+2. Component-tier defaults (from that comment through the end of the same
+   `:root` block — the closing `}` is dropped because the function emits
+   its own)
+3. Shape mode blocks (`/* ── Shape modes ── */` …)
+4. Surface mode blocks (`/* ── Surface modes ── */` …)
+5. `styles/foundation.css` utilities (`.sr-only`, …)
+
+Source of truth remains `styles/tokens.css` (+ `styles/foundation.css` for
+utilities). Generation is deterministic: every declaration is a verbatim
+substring; there is no hand-retyped parallel token truth.
+
+### Why mode overrides remain safe
+
+Shape and Surface attributes are applied to `<html>` in both this repo and
+typical consumers. Mode selectors (`[data-skrewww-shape="…"]`,
+`[data-skrewww-surface="…"]`) therefore target the same element as
+`:root` and have equal specificity — **source order decides**. Keeping
+component-tier defaults *inside* the emitted `:root` block, still *ahead*
+of the mode blocks, preserves the cascade `tokens.css` already has:
+defaults first, mode overrides last. Computed-style proof:
+`scripts/oss1b-foundation-cascade-proof.ts` (Badge/Alert defaults; Shape
+overrides `--pagination-page-radius`; Surface overrides `--menu-surface`
+and `--file-upload-dragging-surface`; Popover / Calendar Day tokens
+resolve with no other component CSS present).
+
+### OSS-1B regression root cause (not an extraction boundary bug)
+
+Expanding the tier correctly pulled in three fallback-less references that
+the source never defined: `--primitive-shadow-blur-4`,
+`--primitive-shadow-color-4`, and `--radius-full` (used by
+`--popover-elevation` / `--tag-radius`). Because the audit scans
+Foundation itself, every install graph — including previously-clean
+button/card — failed with those three gaps. Closed in `styles/tokens.css`
+(primitive declarations); proven by Foundation self-consistency + mutation
+tests in `lib/token-delivery-audit.test.ts`. **KNOWN_AFFECTED deleted.**
+
+### Cost (measured against pre-Option-B extraction on the same tokens file)
+
+| | Raw | Gzip | Declared tokens |
+|---|---:|---:|---:|
+| Before (cut before Form control geometry) | 44 474 B | 9 630 B | 148 |
+| After (Option B + missing primitives) | 70 177 B | 15 545 B | 497 |
+| Delta | +57.8% | +61.4% | +349 |
+
+Absolute cost: **+25.7 KB raw / +5.9 KB gzip** on a stylesheet every
+consumer imports once. Accepted: one install graph, cross-component tokens
+work without peer installs, no component API or registry schema change.
+
+### Exit criteria met
+
+- REAL BUG = 0 across 55 distributed components; unresolved runtime token
+  references = 0; HOST-OWNED = 0
+- KNOWN_AFFECTED absent
+- No per-component migration of the 315 declarations
+- No upstream shadcn PR / npm publish (OSS-2 remains separate)

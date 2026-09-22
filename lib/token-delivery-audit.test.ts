@@ -25,68 +25,25 @@ import { buildDistributedRegistryItems, type ShadcnRegistryItem } from "@/lib/sh
  * Foundation's own `--squircle-clip-path-checkbox` definition in
  * `styles/tokens.css`, but that variable is itself consumed nowhere except
  * `checkbox.module.css`. For every component other than Checkbox this is a
- * dead declaration with zero visible effect — Checkbox's own real gap
- * (`--control-checkbox-size`, load-bearing for its rendered box size) is
- * what correctly keeps Checkbox on the KNOWN_AFFECTED list below.
+ * dead declaration with zero visible effect.
  *
- * KNOWN_AFFECTED is the current, exact list this audit found — see
- * docs/architecture/shadcn-distribution.md's "Cross-cutting component-token
- * delivery audit" section for the finding and disposition (a real,
- * consumer-visible bug in ~30 components: e.g. Badge installs with
- * `padding: 0`, `border-radius: 0`, a transparent background, and a black
- * border instead of its intended colored treatment — confirmed via a real
- * installed-consumer browser check, not just this static scan). This is a
- * large, deliberately-deferred migration (see the OSS-1A entry in
- * docs/project-status.md), not something this test fixes.
- *
- * This test is a **shrink-only allowlist**, not a snapshot: any component
- * NOT listed here must have zero gaps (locks in the already-clean 20/55 so
- * nothing new regresses), and any component listed here must still have at
- * least one real gap (so fixing a component and forgetting to remove it
- * from the list fails loudly, instead of the list silently going stale).
+ * OSS-1A found 35 of 55 components failing this check — 315 tokens that no
+ * consumer ever received — and tracked them in a temporary allowlist.
+ * OSS-1B fixed the cause (the Foundation transport now carries the
+ * component tier of styles/tokens.css, in its original source position
+ * ahead of the Shape/Surface mode blocks) and **deleted that allowlist**.
+ * Expanding the tier also exposed three latent holes in the source itself
+ * (`--primitive-shadow-blur-4`, `--primitive-shadow-color-4`,
+ * `--radius-full`) that every install graph now sees via Foundation; those
+ * are closed in `styles/tokens.css`, not by re-allowlisting. The bar is
+ * absolute: every distributed component must resolve every fallback-less
+ * token it references. There is no exception list, and one must not be
+ * reintroduced — a failure here is a real consumer defect, the kind that
+ * shipped an installed Badge with `padding: 0`, `border-radius: 0`, a
+ * transparent background and a black border.
  */
 
 const IGNORED_REFERENCES = new Set(["--control-checkbox-radius-max"]);
-
-// Exact set found by this audit (2026-09-22) — see file header. Shrinks only
-// as components are migrated to component-owned CSS; never grows silently.
-const KNOWN_AFFECTED = new Set([
-  "accordion",
-  "alert",
-  "avatar",
-  "badge",
-  "breadcrumb",
-  "calendar-day",
-  "calendar-grid",
-  "chart-card",
-  "checkbox",
-  "combobox",
-  "data-table",
-  "date-picker",
-  "dialog",
-  "drawer",
-  "empty-state",
-  "file-upload",
-  "list-item",
-  "menu",
-  "pagination",
-  "phone-number-field",
-  "popover",
-  "progress-bar",
-  "radio",
-  "radio-group",
-  "select",
-  "skeleton",
-  "switch",
-  "table",
-  "tabs",
-  "tag",
-  "textarea",
-  "timeline",
-  "toast",
-  "tooltip",
-  "tree-view",
-]);
 
 function cssDeclarations(css: string): Set<string> {
   const set = new Set<string>();
@@ -153,31 +110,91 @@ const byName = new Map(items.map((item) => [item.name, item]));
 const distributedComponents = items.filter((item) => item.name !== "foundation");
 
 describe("cross-cutting token delivery (all distributed manifests)", () => {
-  it("KNOWN_AFFECTED only names real distributed components", () => {
-    const distributedNames = new Set(distributedComponents.map((item) => item.name));
-    for (const name of Array.from(KNOWN_AFFECTED)) {
-      expect(distributedNames.has(name), `${name} is not a currently-distributed component`).toBe(true);
-    }
-  });
-
   it.each(distributedComponents.map((item) => item.name))(
-    "%s: has no undelivered fallback-less var() unless it's on the known-affected allowlist",
+    "%s: every fallback-less var() it references is delivered by its own install graph",
     (name) => {
       const item = byName.get(name)!;
-      const gaps = gapsFor(item, byName);
-      if (KNOWN_AFFECTED.has(name)) {
-        expect(gaps.length, `${name} is on KNOWN_AFFECTED but has no gaps — remove it from the allowlist`).toBeGreaterThan(0);
-      } else {
-        expect(gaps, `${name} has undelivered token(s) — add it to KNOWN_AFFECTED or fix the gap`).toEqual([]);
-      }
+      expect(gapsFor(item, byName), `${name} references token(s) no consumer receives`).toEqual([]);
     },
   );
 
-  it("the allowlist shrinks over time: every fixed component must be removed, not left stale", () => {
-    const stillBroken = distributedComponents
-      .filter((item) => KNOWN_AFFECTED.has(item.name))
-      .filter((item) => gapsFor(item, byName).length === 0)
-      .map((item) => item.name);
-    expect(stillBroken, "these components are fixed but still listed in KNOWN_AFFECTED").toEqual([]);
+  it("the whole distributed surface resolves — no exceptions, no allowlist", () => {
+    const broken = distributedComponents
+      .map((item) => ({ name: item.name, gaps: gapsFor(item, byName) }))
+      .filter((row) => row.gaps.length > 0);
+    expect(broken, "components with undelivered tokens").toEqual([]);
+  });
+
+  // The defect OSS-1B fixed was specifically that component-tier defaults
+  // never left the repo. Assert the transported Foundation carries them, so a
+  // future change to the extraction boundary fails here with a clear reason
+  // rather than as 35 separate mystery failures above.
+  it("the transported Foundation carries component-tier defaults ahead of the mode blocks", () => {
+    const foundation = byName.get("foundation")!;
+    const css = foundation.files.map((file) => file.content).join("\n");
+    for (const token of ["--badge-gap", "--feedback-padding", "--menu-surface", "--popover-surface", "--calendar-day-size"]) {
+      expect(css.includes(`${token}:`), `${token} missing from the Foundation transport`).toBe(true);
+    }
+    // Mode overrides must still come last, or an ancestor [data-skrewww-*]
+    // could no longer beat the default it is meant to override.
+    const firstModeSelector = css.search(/^\[data-skrewww-(shape|surface)="[a-z]+"\] \{/m);
+    expect(firstModeSelector).toBeGreaterThan(-1);
+    expect(css.indexOf("--menu-surface:")).toBeLessThan(firstModeSelector);
+    expect(css.indexOf("--badge-gap:")).toBeLessThan(firstModeSelector);
+  });
+
+  // Mutation proof for the OSS-1B "previously-clean components fail" root
+  // cause: Foundation's own CSS must be self-consistent. Expanding the
+  // component tier without closing source holes (--primitive-shadow-*-4,
+  // --radius-full) made *every* install graph fail — including button/card.
+  it("Foundation CSS is self-consistent — every fallback-less var() it references is declared in Foundation", () => {
+    const foundation = byName.get("foundation")!;
+    const css = foundation.files.map((file) => file.content).join("\n");
+    const declared = cssDeclarations(css);
+    const referenced = fallbackLessReferences(css);
+    const gaps = Array.from(referenced)
+      .filter((token) => !declared.has(token))
+      .sort();
+    expect(gaps, "Foundation references token(s) it does not declare").toEqual([]);
+  });
+
+  it("mutation: stripping a Foundation-declared primitive resurfaces the clean-component regression", () => {
+    const foundation = byName.get("foundation")!;
+    const original = foundation.files.map((file) => file.content).join("\n");
+    expect(original).toMatch(/--primitive-shadow-blur-4:\s*[^;]+;/);
+    expect(original).toMatch(/var\(\s*--primitive-shadow-blur-4\s*\)/);
+
+    const mutilated = original.replace(/--primitive-shadow-blur-4:\s*[^;]+;\s*/g, "");
+    const declared = cssDeclarations(mutilated);
+    const referenced = fallbackLessReferences(mutilated);
+    expect(declared.has("--primitive-shadow-blur-4")).toBe(false);
+    expect(referenced.has("--primitive-shadow-blur-4")).toBe(true);
+
+    // Same gap shape the audit reports when Foundation leaks an undeclared
+    // reference into every component's install graph.
+    const button = byName.get("button")!;
+    const mutatedByName = new Map(byName);
+    mutatedByName.set("foundation", {
+      ...foundation,
+      files: foundation.files.map((file) =>
+        file.path.endsWith(".css") ? { ...file, content: mutilated } : file,
+      ),
+    });
+    expect(gapsFor(button, mutatedByName)).toContain("--primitive-shadow-blur-4");
+    expect(gapsFor(button, byName)).not.toContain("--primitive-shadow-blur-4");
+  });
+
+  it("multi-install order: Foundation payload is identical regardless of which component pulls it in", () => {
+    const foundation = byName.get("foundation")!;
+    const css = foundation.files.map((file) => file.content).join("\n");
+    // Any two install graphs that include Foundation must see the same bytes —
+    // there is one Foundation manifest, not a merge of per-component slices.
+    for (const name of ["badge", "alert", "button", "select", "date-picker", "menu"]) {
+      const item = byName.get(name)!;
+      const closure = closureFor(item, byName);
+      const found = closure.find((entry) => entry.name === "foundation");
+      expect(found, `${name} must depend on foundation`).toBeTruthy();
+      expect(found!.files.map((file) => file.content).join("\n")).toBe(css);
+    }
   });
 });

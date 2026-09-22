@@ -75,9 +75,16 @@
 
   /* ── Primitive: shadow [TEMPORARY] — blur/color values pending Figma confirmation ── */
   --primitive-shadow-blur-3: 8px; /* shadow-blur/3 — TODO: confirm px value */
+  --primitive-shadow-blur-4: 12px; /* shadow-blur/4 — TODO: confirm px value */
   --primitive-shadow-blur-5: 16px; /* shadow-blur/5 — TODO: confirm px value */
   --primitive-shadow-color-3: rgb(19 19 22 / 0.08); /* shadow-color/3 — TODO: confirm alpha */
+  --primitive-shadow-color-4: rgb(19 19 22 / 0.1); /* shadow-color/4 — TODO: confirm alpha */
   --primitive-shadow-color-5: rgb(19 19 22 / 0.12); /* shadow-color/5 — TODO: confirm alpha */
+
+  /* ── Primitive: radius [VERIFIED] ──
+     Figma VariableID:2002:2432 resolves 9999px. Pill / circular exceptions
+     (Tag, Avatar, Calendar Day, Stepper) bind here — not Shape-driven. */
+  --radius-full: 9999px; /* radius/full */
 
   /* ── Semantic (Light) [VERIFIED / ALIASED] ── */
   --semantic-action-primary: var(--primitive-color-brand-500); /* [ALIASED] */
@@ -235,35 +242,27 @@
 
   /*
    * ══ Foundation boundary (verified 2026-08-08; spinner/divider geometry
-   * promoted into Foundation 2026-09-13 for shadcn distribution) ══
+   * promoted into Foundation 2026-09-13; component-tier transport added
+   * 2026-09-22 — OSS-1B Option B) ══
    *
-   * Everything above this line in this file — Primitive, Semantic, Brand,
-   * the Shape/Surface aliased defaults, Control sizing, and shared
-   * Spinner/Divider geometry — is the universal Foundation tier: needed by
-   * every component (or by multiple independent components), owned by none
-   * of them individually. The Shape mode blocks ([data-skrewww-shape=...],
-   * further down this file) and Surface mode blocks
-   * ([data-skrewww-surface=...], further down still) are ALSO part of
-   * this Foundation tier, even though they're physically distant in this
-   * file — they override the same universal aliases declared here, not
-   * anything component-specific.
+   * Conceptual ownership (unchanged): everything above this line —
+   * Primitive, Semantic, Brand, Shape/Surface aliased defaults, Control
+   * sizing, and shared Spinner/Divider geometry — is the universal tier:
+   * needed by every component (or by multiple independent components),
+   * owned by none of them individually. Everything below, from
+   * "Form control geometry" through the named "<Component> geometry"
+   * blocks, is component-specific: it belongs to one component (or a
+   * small family), not to every component. Button does not read any
+   * custom property from any of those component-geometry blocks.
    *
-   * Everything below this line, from "Form control geometry" onward
-   * through the named "<Component> geometry" blocks, is
-   * component-specific: it belongs to one component (or a small family,
-   * e.g. Checkbox/Radio/Switch/Textarea share "Form control geometry"),
-   * not to every component. Button does not read any custom property
-   * from any of these component-geometry blocks.
-   *
-   * This split is a recorded fact, not a new design: it is exactly the
-   * boundary this file's own section comments already draw. Verified
-   * with a direct grep before writing this comment — no universal-tier
-   * declaration above this line, nor any Shape/Surface mode override,
-   * references a component-specific custom property. The dependency
-   * direction only ever runs component-geometry → universal, never the
-   * reverse, which is what makes a future physical split into a
-   * standalone Foundation stylesheet safe whenever that's undertaken —
-   * not attempted in this slice.
+   * shadcn Foundation *transport* (OSS-1B): `extractFoundationCssFromSource`
+   * now ships the component-tier defaults as well (this comment through
+   * the end of `:root`), still ahead of the Shape/Surface mode blocks
+   * further down this file. Mode attributes are applied on `<html>` with
+   * equal specificity to `:root`, so source order — defaults first, mode
+   * overrides later — is what keeps Shape/Surface winning. The marker
+   * comments below remain the extraction anchors; do not reorder them
+   * without updating the generator.
    */
 
   /* ── Form control geometry [TEMPORARY] ── */

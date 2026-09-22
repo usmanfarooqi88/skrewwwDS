@@ -206,9 +206,9 @@ describe("shadcn registry generator", () => {
     expect(css).toMatch(/--primitive-color-warning-700:\s*#b9770e/i);
     expect(css).toMatch(/--primitive-color-warning-800:\s*#8a4f00/i);
     expect(css).toMatch(/--semantic-feedback-warning:\s*#b36a00/i);
-    // Badge component locals live below the Form-control cut line and are not
-    // Foundation-transported (Badge is not shadcn-distributed).
-    expect(css).not.toMatch(/--badge-warning-text/);
+    // OSS-1B Option B: component-tier defaults (including Badge locals) ride
+    // in the Foundation transport, ahead of the Shape/Surface mode blocks.
+    expect(css).toMatch(/--badge-warning-text:/);
 
     const steps = Array.from(css.matchAll(/--primitive-color-warning-(\d+):/g)).map((m) => m[1]);
     expect(steps.sort()).toEqual(["100", "500", "700", "800"]);

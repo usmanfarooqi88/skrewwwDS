@@ -1,6 +1,33 @@
 # Project status
 
-Last verified: **2026-09-22** (**OSS-1A ⛔ BLOCKED — token hardening required**, OSS-1B next, OSS-2 gated behind it; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-22** (**OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport**, OSS-2 next; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-22 — OSS-1B Distributed Token Delivery Hardening (COMPLETE)
+
+**Verdict: COMPLETE — READY FOR OSS-2.** Option B accepted: the Foundation
+transport now carries the component tier of `styles/tokens.css` (defaults
+ahead of Shape/Surface mode blocks). Exhaustive token audit: **55 CLEAN /
+0 REAL BUG / 0 HOST-OWNED**. `KNOWN_AFFECTED` deleted.
+
+**Root cause of the mid-phase “previously-clean components fail”
+regression:** Expansion correctly included `--popover-elevation` /
+`--tag-radius`, which referenced three never-defined primitives
+(`--primitive-shadow-blur-4`, `--primitive-shadow-color-4`,
+`--radius-full`). The audit scans Foundation references, so every install
+graph failed with those three gaps. Closed in `styles/tokens.css`; not an
+extraction-boundary bug and not an allowlist fix.
+
+**Proofs:** Foundation self-consistency + mutation tests in
+`lib/token-delivery-audit.test.ts`; computed-style cascade proof via
+`scripts/oss1b-foundation-cascade-proof.ts` (Badge/Alert defaults, Shape
+pagination radius, Surface menu + file-upload, Popover + Calendar Day
+without peer CSS). Foundation size: 44 474 → 70 177 B raw (+57.8%),
+9 630 → 15 545 B gzip (+61.4%). No component API, registry schema, Figma,
+or Guard rule changes. No upstream shadcn PR / npm publish.
+
+**Canonical next:** OSS-2 — Official shadcn Registry Directory submission.
+Details:
+[`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md#distributed-token-delivery-hardening--2026-09-22-oss-1b).
 
 ## 2026-09-22 — OSS-1A Submission Readiness Hardening (BLOCKED — TOKEN HARDENING REQUIRED)
 
@@ -46,11 +73,8 @@ and mode precedence must be decided together. Full analysis and the exact
 lists live in
 [`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md#cross-cutting-component-token-delivery-audit--2026-09-22-oss-1a).
 
-**Canonical next:** OSS-1B — Distributed Token Delivery Hardening
-(**NOT STARTED**). Its exit criterion is deleting the allowlist in
-`lib/token-delivery-audit.test.ts` outright. OSS-2 (directory submission)
-is gated behind it; the draft namespace entry, logo and PR copy are
-already prepared and recorded in the OSS-1A final report.
+**Canonical next (historical):** OSS-1B — Distributed Token Delivery
+Hardening. **Superseded 2026-09-22 by the OSS-1B COMPLETE entry above.**
 
 ## 2026-09-22 — NAV-3 Component Directory Reorganization (COMPLETE)
 

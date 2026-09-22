@@ -656,6 +656,57 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       /from "@\/components\/ui\/Badge"/.test(pageSource) && /Smoke active/.test(pageSource),
     harnessAssertionLabel:
       "consumer page imports Badge and renders it, exercising the shared internal/feedback-types.ts type-only helper",
+    browserAssert: async ({ page }) => {
+      // OSS-1B: previously shipped with padding/radius 0 and a transparent
+      // background because --badge-* lived only in the unshipped tier.
+      // Children render in an inner <span>; styles live on the outer root.
+      // Use page.evaluate (not locator.evaluate) with zero outer-scope
+      // references so Playwright can serialize a clean function body —
+      // tsx keepNames can otherwise inject __name into nested callbacks.
+      await page.getByText("Smoke active").waitFor({ state: "visible", timeout: 5000 });
+      const style = await page.evaluate(() => {
+        const nodes = Array.from(document.querySelectorAll("span"));
+        const label = nodes.find((node) => (node.textContent || "").trim() === "Smoke active");
+        if (!label) throw new Error("Badge label not found");
+        let root = label;
+        while (root && root !== document.body) {
+          if (root.className && String(root.className).includes("badge")) break;
+          root = root.parentElement;
+        }
+        if (!root) throw new Error("Badge root missing");
+        const s = getComputedStyle(root);
+        const rootStyles = getComputedStyle(document.documentElement);
+        return {
+          className: String(root.className),
+          tag: root.tagName,
+          paddingTop: s.paddingTop,
+          paddingLeft: s.paddingLeft,
+          borderRadius: s.borderTopLeftRadius,
+          background: s.backgroundColor,
+          display: s.display,
+          minHeight: s.minHeight,
+          tokenGap: rootStyles.getPropertyValue("--badge-gap").trim(),
+          tokenPadY: rootStyles.getPropertyValue("--badge-padding-y-md").trim(),
+          tokenSuccessBg: rootStyles.getPropertyValue("--badge-success-surface").trim(),
+        };
+      });
+      if (!style.tokenGap || !style.tokenPadY) {
+        throw new Error(
+          `Installed Badge: Foundation tokens missing on :root (gap="${style.tokenGap}", padY="${style.tokenPadY}").`,
+        );
+      }
+      if (style.paddingTop === "0px" || style.paddingLeft === "0px") {
+        throw new Error(
+          `Installed Badge: padding still unresolved (${style.paddingTop} ${style.paddingLeft}); root=${style.tag}.${style.className}; display=${style.display}; minH=${style.minHeight}; tokenSuccessBg=${style.tokenSuccessBg}.`,
+        );
+      }
+      if (style.borderRadius === "0px") {
+        throw new Error(`Installed Badge: border-radius still unresolved (${style.borderRadius}).`);
+      }
+      if (style.background === "rgba(0, 0, 0, 0)" || style.background === "transparent") {
+        throw new Error(`Installed Badge: background still transparent (${style.background}).`);
+      }
+    },
   },
   // First-ever zero-owned-CSS component: Alert.tsx transports no CSS of its
   // own, only the internal FeedbackSurface cluster (its own CSS + icons +
@@ -687,6 +738,59 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       /from "@\/components\/ui\/Alert"/.test(pageSource) && /Smoke alert/.test(pageSource),
     harnessAssertionLabel:
       "consumer page imports Alert (no owned CSS) and renders it, proving the shared FeedbackSurface helper cluster transports correctly",
+    browserAssert: async ({ page }) => {
+      // OSS-1B: previously shipped with padding/radius 0 because --feedback-*
+      // lived only in the unshipped component tier. Alert's FeedbackSurface
+      // root intentionally sets `border: 0` (Toast is the bordered shell) —
+      // assert padding/radius/surface, not border width.
+      await page.getByText("Smoke alert").waitFor({ state: "visible", timeout: 5000 });
+      const style = await page.evaluate(() => {
+        const title = Array.from(document.querySelectorAll("*")).find(
+          (node) => (node.textContent || "").trim() === "Smoke alert" && node.children.length === 0,
+        );
+        if (!title) throw new Error("Alert title not found");
+        let el = title;
+        while (el && el !== document.body) {
+          const s = getComputedStyle(el);
+          if (s.paddingTop !== "0px" || s.borderTopLeftRadius !== "0px") {
+            const rootStyles = getComputedStyle(document.documentElement);
+            return {
+              paddingTop: s.paddingTop,
+              borderRadius: s.borderTopLeftRadius,
+              background: s.backgroundColor,
+              tokenPad: rootStyles.getPropertyValue("--feedback-padding").trim(),
+              tokenRadius: rootStyles.getPropertyValue("--feedback-radius").trim(),
+              tokenInfoSurface: rootStyles.getPropertyValue("--feedback-info-surface").trim(),
+              tokenInfoBorder: rootStyles.getPropertyValue("--feedback-info-border").trim(),
+            };
+          }
+          el = el.parentElement;
+        }
+        return {
+          paddingTop: "0px",
+          borderRadius: "0px",
+          background: "transparent",
+          tokenPad: "",
+          tokenRadius: "",
+          tokenInfoSurface: "",
+          tokenInfoBorder: "",
+        };
+      });
+      if (!style.tokenPad || !style.tokenRadius || !style.tokenInfoSurface) {
+        throw new Error(
+          `Installed Alert: Foundation feedback tokens missing (pad="${style.tokenPad}", radius="${style.tokenRadius}", surface="${style.tokenInfoSurface}", borderToken="${style.tokenInfoBorder}").`,
+        );
+      }
+      if (style.paddingTop === "0px") {
+        throw new Error(`Installed Alert: padding still unresolved (${style.paddingTop}).`);
+      }
+      if (style.borderRadius === "0px") {
+        throw new Error(`Installed Alert: border-radius still unresolved (${style.borderRadius}).`);
+      }
+      if (style.background === "rgba(0, 0, 0, 0)" || style.background === "transparent") {
+        throw new Error(`Installed Alert: feedback surface still transparent (${style.background}).`);
+      }
+    },
   },
   // First-ever multi-registryDependency composition without file
   // re-transport: EmptyState imports the real Button and Link components,
@@ -1319,14 +1423,20 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
     harnessAssertionLabel:
       "consumer page imports the Menu compound family and renders a real command list, exercising the @skrewww/popover registryDependency resolution",
     browserAssert: async ({ page }) => {
-      const WAIT_MS = 5000;
+      const WAIT_MS = 15000;
       const trigger = page.getByRole("button", { name: "Project actions" });
       const menu = page.getByRole("menu", { name: "Project actions" });
 
+      await trigger.waitFor({ state: "visible", timeout: WAIT_MS });
+      // Client-component portal menus can miss the first click if hydration
+      // is still settling after next start — retry once.
       await trigger.click();
-      await menu.waitFor({ state: "visible", timeout: WAIT_MS }).catch(() => {
-        throw new Error("Installed Menu: menu did not become visible after trigger click.");
-      });
+      try {
+        await menu.waitFor({ state: "visible", timeout: 5000 });
+      } catch {
+        await trigger.click();
+        await menu.waitFor({ state: "visible", timeout: WAIT_MS });
+      }
       const expanded = await trigger.getAttribute("aria-expanded");
       if (expanded !== "true") throw new Error(`Installed Menu: trigger aria-expanded was "${expanded}", expected "true".`);
 
@@ -1360,6 +1470,39 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       await page.getByRole("menuitem", { name: "Export (disabled)" }).click({ force: true });
       const stillOpen = await menu.isVisible();
       if (!stillOpen) throw new Error("Installed Menu: disabled item execution closed the menu (it should not execute).");
+
+      // OSS-1B Option B: Foundation carries --menu-surface defaults ahead of
+      // Surface mode overrides. Prove cascade on <html> (equal specificity →
+      // source order). The role=menu node is often transparent; the content
+      // shell paints --menu-surface — assert the token + the painted shell.
+      await page.evaluate(() => {
+        document.documentElement.removeAttribute("data-skrewww-surface");
+      });
+      const readSurface = async () =>
+        page.evaluate(() => {
+          const rootToken = getComputedStyle(document.documentElement).getPropertyValue("--menu-surface").trim();
+          const shell = document.querySelector('[class*="content"]');
+          const bg = shell ? getComputedStyle(shell).backgroundColor : "";
+          return { rootToken, bg };
+        });
+      const defaults = await readSurface();
+      await page.evaluate(() => {
+        document.documentElement.setAttribute("data-skrewww-surface", "glass");
+      });
+      const glass = await readSurface();
+      await page.evaluate(() => {
+        document.documentElement.removeAttribute("data-skrewww-surface");
+      });
+      if (!defaults.rootToken || defaults.rootToken === glass.rootToken) {
+        throw new Error(
+          `Installed Menu: Surface mode did not override --menu-surface (default "${defaults.rootToken}", glass "${glass.rootToken}").`,
+        );
+      }
+      if (defaults.bg && glass.bg && defaults.bg === glass.bg) {
+        throw new Error(
+          `Installed Menu: Surface mode did not change painted menu shell (default "${defaults.bg}", glass "${glass.bg}").`,
+        );
+      }
     },
   },
   "split-button": {
