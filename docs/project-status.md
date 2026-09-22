@@ -2,6 +2,37 @@
 
 Last verified: **2026-09-22** (**CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE**; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
 
+## 2026-09-22 — NAV-3 Component Directory Reorganization (COMPLETE)
+
+**Verdict: COMPLETE.** `/components` is now an information-dense directory
+instead of a uniform card grid. A compact in-page category index links to the
+six unchanged canonical category groups; component rows are alphabetized for
+scanning and derive Stable/Beta maturity from the canonical registry.
+Documentation-only patterns remain discoverable but carry an explicit
+“Docs only” label and non-installability explanation. Category pages reuse the
+same row treatment and derive their status summaries from the same model.
+
+Charts are represented once through a dedicated `/components/charts`
+directory link (five shipped entries) rather than duplicated in the main
+category list; category pages still retain each chart under its canonical
+registry category. Industries remains a separate directory link with its three
+existing Banking compositions excluded from generic category groups. A local
+filter was evaluated and deferred: native category anchors solve the current
+discovery need without adding client state, hydration, or NAV-5 overlap. No
+availability matrix or “New” list was added because it would add noise or lack
+durable canonical newness metadata.
+
+**Performance.** The directory remains server-rendered and imports no public
+component implementations, previews, Recharts, or Reference App modules. Its
+production client entry is byte-identical to the NAV-2 baseline: 192,660 bytes
+raw / 58,732 bytes gzip (delta 0). Focused model and Chromium coverage verify
+grouping, ordering, counts, status accuracy, conceptual-entry treatment,
+category/component/specialized links, the six required responsive widths, and
+the NAV-2 contextual sidebar. Full repository gates and exact-SHA CI are
+recorded in the NAV-3 final report/commit.
+
+**Canonical next:** NAV-4 — Charts Directory Refinement (**NOT STARTED**).
+
 ## 2026-09-22 — NAV-2 Contextual Section Navigation (COMPLETE)
 
 **Verdict: COMPLETE.** The universal documentation sidebar is no longer part

@@ -1,12 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { allComponents } from "@/lib/data";
-import { categories } from "@/lib/types";
-import { getCategoryPageHref } from "@/lib/category-content";
-import type { CategoryName } from "@/lib/category-content";
+import { ComponentDirectoryList } from "@/components/docs/ComponentDirectoryList";
+import {
+  getComponentDirectoryGroups,
+  getComponentDirectoryStats,
+} from "@/lib/component-directory";
+import { CHARTS_HUB_HREF } from "@/lib/global-nav";
 import { INDUSTRIES_INDEX_HREF } from "@/lib/industry-content";
-import { getImplementedRegistryEntries } from "@/lib/component-registry";
-import { REDIRECTED_COMPONENT_SLUGS, getComponentHref } from "@/lib/routes";
 import { absoluteUrl, getDefaultSocialImageUrl, siteConfig } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
 
@@ -31,72 +31,103 @@ export const metadata: Metadata = {
 };
 
 export default function ComponentsIndexPage() {
-  const implementedCount = getImplementedRegistryEntries().length;
+  const groups = getComponentDirectoryGroups();
+  const stats = getComponentDirectoryStats();
 
   return (
-    <div className="mx-auto max-w-4xl px-8 py-16">
+    <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-16">
       <h1 className="text-2xl font-semibold tracking-tight text-ink-900">Components</h1>
-      <p className="mt-2 text-sm text-ink-500">
-        {allComponents.length} documented components across {categories.length} categories.
-        {implementedCount} have Beta React implementations with live previews.
-      </p>
-      <p className="mt-2 text-sm text-ink-500">
-        Layer 4 Industry Systems components (Banking and future industries) are grouped
-        separately — see{" "}
-        <Link href={INDUSTRIES_INDEX_HREF} className="text-brand-600 hover:text-brand-700">
-          Industries
-        </Link>
-        .
+      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-ink-500">
+        Browse {stats.implemented} React components across six canonical categories: {stats.stable} Stable
+        and {stats.beta} Beta. Documentation-only patterns are labelled separately and are not independent
+        React components.
       </p>
 
-      <div className="mt-10 space-y-10">
-        {categories.map((category) => {
-          const items = allComponents.filter(
-            (component) =>
-              component.category === category &&
-              !component.industry &&
-              !REDIRECTED_COMPONENT_SLUGS.includes(
-                component.slug as (typeof REDIRECTED_COMPONENT_SLUGS)[number],
-              ),
-          );
+      <nav aria-label="Component categories" className="mt-6 flex flex-wrap gap-2">
+        {groups.map((group) => (
+          <a
+            key={group.category}
+            href={`#${group.href.split("/").at(-1)}`}
+            className="rounded-full border border-ink-200 px-3 py-1.5 text-xs font-medium text-ink-700 transition-colors hover:border-brand-500 hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          >
+            {group.category} <span className="text-ink-400">{group.entries.length}</span>
+          </a>
+        ))}
+      </nav>
+
+      <section aria-labelledby="specialized-directories-heading" className="mt-10">
+        <h2
+          id="specialized-directories-heading"
+          className="font-mono text-[11px] font-medium uppercase tracking-wide text-ink-400"
+        >
+          Specialized directories
+        </h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Link
+            href={CHARTS_HUB_HREF}
+            className="rounded-lg border border-ink-200 p-4 transition-colors hover:border-brand-500 hover:bg-ink-50"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-sm font-semibold text-ink-900">Charts</h3>
+              <span className="font-mono text-[11px] text-ink-400">{stats.charts} components</span>
+            </div>
+            <p className="mt-1 text-sm text-ink-500">
+              Chart families and dashboard compositions, grouped in their dedicated hub.
+            </p>
+          </Link>
+          <Link
+            href={INDUSTRIES_INDEX_HREF}
+            className="rounded-lg border border-ink-200 p-4 transition-colors hover:border-brand-500 hover:bg-ink-50"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-sm font-semibold text-ink-900">Industries</h3>
+              <span className="font-mono text-[11px] text-ink-400">{stats.industries} components</span>
+            </div>
+            <p className="mt-1 text-sm text-ink-500">
+              Industry-specific compositions, kept distinct from generic primitives.
+            </p>
+          </Link>
+        </div>
+      </section>
+
+      <div className="mt-12 space-y-12">
+        {groups.map((group) => {
+          const anchor = group.href.split("/").at(-1);
           return (
-            <div key={category}>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="text-sm font-semibold text-ink-900">
-                  <Link
-                    href={getCategoryPageHref(category as CategoryName)}
-                    className="hover:text-brand-600"
-                  >
-                    {category}
-                  </Link>
-                </h2>
-                <Link
-                  href={getCategoryPageHref(category as CategoryName)}
-                  className="font-mono text-[11px] text-ink-400 hover:text-ink-700"
-                >
-                  Category page
+            <section
+              key={group.category}
+              id={anchor}
+              aria-labelledby={`${anchor}-heading`}
+              className="scroll-mt-20"
+            >
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <div className="flex items-baseline gap-2">
+                  <h2 id={`${anchor}-heading`} className="text-base font-semibold text-ink-900">
+                    {group.category}
+                  </h2>
+                  <span className="font-mono text-[11px] text-ink-400">
+                    {group.entries.length}
+                  </span>
+                </div>
+                <Link href={group.href} className="text-xs font-medium text-brand-600 hover:text-brand-700">
+                  View category
                 </Link>
               </div>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {items.map((item) => (
-                  <Link
-                    key={item.slug}
-                    href={getComponentHref(item.slug)}
-                    className="rounded-lg border border-ink-200 p-3.5 hover:border-brand-500 hover:bg-brand-50/40"
-                  >
-                    <div className="text-sm font-medium text-ink-900">{item.name}</div>
-                    {item.variants && (
-                      <div className="mt-0.5 font-mono text-[11px] text-ink-400">
-                        {item.variants}
-                      </div>
-                    )}
-                  </Link>
-                ))}
-              </div>
-            </div>
+              {group.category === "Content & Data" ? (
+                <p className="mb-3 text-xs text-ink-500">
+                  Chart components are grouped in the dedicated Charts directory above.
+                </p>
+              ) : null}
+              <ComponentDirectoryList entries={group.entries} />
+            </section>
           );
         })}
       </div>
+
+      <p className="mt-12 border-t border-ink-200 pt-5 text-xs leading-relaxed text-ink-500">
+        {stats.docsOnly} documentation-only patterns are included where they clarify a component
+        family. Their “Docs only” label means they are not independently installable React components.
+      </p>
     </div>
   );
 }

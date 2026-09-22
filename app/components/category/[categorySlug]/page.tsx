@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/docs/JsonLd";
-import { getImplementedRegistryEntries } from "@/lib/component-registry";
+import { ComponentDirectoryList } from "@/components/docs/ComponentDirectoryList";
+import { getCategoryDirectoryEntries } from "@/lib/component-directory";
 import {
   categoryPageContent,
   categorySlugMap,
@@ -10,7 +11,6 @@ import {
   getCategoryPageHref,
 } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
-import { getComponentHref } from "@/lib/routes";
 import { getCategoryIndexing, getMetadataRobots } from "@/lib/indexing-policy";
 import { categoryPageJsonLd } from "@/lib/structured-data";
 import { absoluteUrl } from "@/lib/site-config";
@@ -55,12 +55,10 @@ export default async function ComponentCategoryPage(
   if (!category) notFound();
 
   const content = categoryPageContent[category];
-  // Industry-classified (Layer 4) components are excluded — they belong
-  // to their own Industries > {industry} grouping (/components/industries),
-  // not their `category`, matching categoryPageJsonLd's own exclusion.
-  const implemented = getImplementedRegistryEntries().filter(
-    (entry) => entry.category === category && !entry.industry,
-  );
+  const entries = getCategoryDirectoryEntries(category);
+  const stableCount = entries.filter((entry) => entry.status === "stable").length;
+  const betaCount = entries.filter((entry) => entry.status === "beta").length;
+  const docsOnlyCount = entries.filter((entry) => entry.status === "docs-only").length;
 
   return (
     <article className="mx-auto max-w-4xl px-8 py-16">
@@ -101,7 +99,12 @@ export default async function ComponentCategoryPage(
 
         <section>
           <h2 className="text-sm font-semibold text-ink-900">Status</h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-600">{content.statusNote}</p>
+          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            {stableCount} Stable and {betaCount} Beta React components.
+            {docsOnlyCount > 0
+              ? ` ${docsOnlyCount} documentation-only ${docsOnlyCount === 1 ? "pattern is" : "patterns are"} labelled separately and are not independently installable.`
+              : ""}
+          </p>
         </section>
 
         <section>
@@ -113,27 +116,12 @@ export default async function ComponentCategoryPage(
 
         <section>
           <h2 className="text-sm font-semibold text-ink-900">
-            Implemented components ({implemented.length})
+            Components and documented patterns ({entries.length})
           </h2>
-          {implemented.length ? (
-            <ul className="mt-3 space-y-2">
-              {implemented.map((entry) => (
-                <li key={entry.slug}>
-                  <Link
-                    href={getComponentHref(entry.slug)}
-                    className="block rounded-lg border border-ink-200 p-3.5 hover:border-brand-500 hover:bg-brand-50/40"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-ink-900">{entry.name}</span>
-                      <span className="rounded-full bg-warning/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-warning">
-                        {entry.status}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-ink-500">{entry.summary}</p>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {entries.length ? (
+            <div className="mt-3">
+              <ComponentDirectoryList entries={entries} />
+            </div>
           ) : (
             <p className="mt-2 text-sm text-ink-500">
               No React implementation is available in this category yet. Documentation-only
