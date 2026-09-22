@@ -671,7 +671,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
         let root: Element | null = label;
         while (root && root !== document.body) {
           if (root.className && String(root.className).includes("badge")) break;
-          root = root.parentElement;
+          root = root.parentElement as Element | null;
         }
         if (!root) throw new Error("Badge root missing");
         const s = getComputedStyle(root);
