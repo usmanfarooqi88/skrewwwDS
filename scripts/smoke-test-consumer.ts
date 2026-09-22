@@ -749,7 +749,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
           (node) => (node.textContent || "").trim() === "Smoke alert" && node.children.length === 0,
         );
         if (!title) throw new Error("Alert title not found");
-        let el = title;
+        let el: Element | null = title;
         while (el && el !== document.body) {
           const s = getComputedStyle(el);
           if (s.paddingTop !== "0px" || s.borderTopLeftRadius !== "0px") {
@@ -764,7 +764,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
               tokenInfoBorder: rootStyles.getPropertyValue("--feedback-info-border").trim(),
             };
           }
-          el = el.parentElement;
+          el = el.parentElement as Element | null;
         }
         return {
           paddingTop: "0px",
