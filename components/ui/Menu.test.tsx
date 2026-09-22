@@ -154,6 +154,35 @@ describe("Menu items", () => {
     await user.keyboard("{Enter}");
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
+
+  it("renders a real anchor for an href item, passing target/rel through for an external destination", async () => {
+    const user = userEvent.setup();
+    render(
+      <Menu>
+        <MenuTrigger>
+          <Button type="button">Links</Button>
+        </MenuTrigger>
+        <MenuContent aria-label="Links">
+          <MenuItem href="/guard">Guard</MenuItem>
+          <MenuItem href="https://github.com/example/example" target="_blank" rel="noopener noreferrer">
+            GitHub
+          </MenuItem>
+        </MenuContent>
+      </Menu>,
+    );
+    await user.click(screen.getByRole("button", { name: "Links" }));
+
+    const internal = screen.getByRole("menuitem", { name: "Guard" });
+    expect(internal.tagName).toBe("A");
+    expect(internal).toHaveAttribute("href", "/guard");
+    expect(internal).not.toHaveAttribute("target");
+
+    const external = screen.getByRole("menuitem", { name: "GitHub" });
+    expect(external.tagName).toBe("A");
+    expect(external).toHaveAttribute("href", "https://github.com/example/example");
+    expect(external).toHaveAttribute("target", "_blank");
+    expect(external).toHaveAttribute("rel", "noopener noreferrer");
+  });
 });
 
 describe("Menu keyboard and focus", () => {

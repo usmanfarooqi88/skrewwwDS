@@ -37,6 +37,11 @@ export const siteConfig = {
   defaultSocialImagePath: "/opengraph-image",
   repositoryUrl: "https://github.com/usmanfarooqi88/skrewwwDS",
   figmaUrl: undefined as string | undefined,
+  /** The real, public Figma Community file — same destination as the homepage hero's "Get free Figma file" CTA. */
+  figmaFreeFileUrl:
+    "https://www.figma.com/community/file/1666920112751907121/skrewww-design-system-free",
+  /** The real, paid Gumroad destination — same as the homepage hero's "Get Skrewww Pro" CTA. */
+  gumroadProUrl: "https://usmanfarooqi.gumroad.com/l/skrewww-pro",
   accessibilityBaseline: "WCAG 2.2 AA (target)",
 } as const;
 

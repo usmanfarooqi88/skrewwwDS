@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/Button";
 import { trackEvent } from "@/lib/analytics";
 import { trackGAEvent } from "@/lib/ga";
+import { siteConfig } from "@/lib/site-config";
 
-const FIGMA_FREE_FILE_HREF =
-  "https://www.figma.com/community/file/1666920112751907121/skrewww-design-system-free";
-const GUMROAD_PRO_HREF = "https://usmanfarooqi.gumroad.com/l/skrewww-pro";
+// Same destinations as the global header's Resources menu (lib/global-nav.ts)
+// — kept as one canonical source in siteConfig, not duplicated here.
+const FIGMA_FREE_FILE_HREF = siteConfig.figmaFreeFileUrl;
+const GUMROAD_PRO_HREF = siteConfig.gumroadProUrl;
 
 const FREE_FIGMA_COMPONENT_COUNT = 23;
 

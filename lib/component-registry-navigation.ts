@@ -545,6 +545,16 @@ export function Example() {
         type: "(event: Event) => void",
         description: "MenuItem activation callback (not a Menu root prop).",
       },
+      {
+        name: "MenuItem.target",
+        type: "string",
+        description: "Anchor target for a MenuItem with href, e.g. \"_blank\" for an external destination (not a Menu root prop).",
+      },
+      {
+        name: "MenuItem.rel",
+        type: "string",
+        description: "Anchor rel for a MenuItem with href, e.g. \"noopener noreferrer\" alongside target=\"_blank\" (not a Menu root prop).",
+      },
     ],
     reactExample: `"use client";
 

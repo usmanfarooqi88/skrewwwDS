@@ -46,9 +46,9 @@ test.describe("Mobile drawer navigation", () => {
 
   test("opens labelled drawer, navigates, closes, and restores menu focus", async ({ page }) => {
     await page.goto("/components/select");
-    const menu = page.getByRole("button", { name: "Open documentation menu" });
+    const menu = page.getByRole("button", { name: "Open navigation menu" });
     await menu.click();
-    const drawer = page.getByRole("dialog", { name: "Documentation navigation" });
+    const drawer = page.getByRole("dialog", { name: "Navigation" });
     await expect(drawer).toBeVisible();
     await drawer.getByRole("link", { name: "Date Picker" }).click();
     await expect(page).toHaveURL(/\/components\/date-picker$/);
@@ -58,9 +58,9 @@ test.describe("Mobile drawer navigation", () => {
 
   test("preserves drawer width, alignment, and the top-right close header", async ({ page }) => {
     await page.goto("/components/select");
-    await page.getByRole("button", { name: "Open documentation menu" }).click();
+    await page.getByRole("button", { name: "Open navigation menu" }).click();
 
-    const drawer = page.getByRole("dialog", { name: "Documentation navigation" });
+    const drawer = page.getByRole("dialog", { name: "Navigation" });
     const close = drawer.getByRole("button", { name: "Close drawer" });
     const navigation = drawer.getByRole("navigation", { name: "Documentation" });
     const drawerBody = navigation.locator("..");
@@ -115,9 +115,9 @@ test.describe("Mobile drawer navigation", () => {
   test("keeps the close header fixed while only DrawerBody scrolls", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 480 });
     await page.goto("/components/select");
-    await page.getByRole("button", { name: "Open documentation menu" }).click();
+    await page.getByRole("button", { name: "Open navigation menu" }).click();
 
-    const drawer = page.getByRole("dialog", { name: "Documentation navigation" });
+    const drawer = page.getByRole("dialog", { name: "Navigation" });
     const close = drawer.getByRole("button", { name: "Close drawer" });
     const navigation = drawer.getByRole("navigation", { name: "Documentation" });
     const drawerBody = navigation.locator("..");
@@ -166,6 +166,6 @@ test.describe("Desktop sidebar navigation", () => {
   test("shows fixed sidebar and hides mobile menu trigger", async ({ page }) => {
     await page.goto("/components/button");
     await expect(page.locator("aside")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Open documentation menu" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Open navigation menu" })).toHaveCount(0);
   });
 });

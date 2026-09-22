@@ -385,6 +385,10 @@ export type MenuItemProps = {
   textValue?: string;
   closeOnSelect?: boolean;
   href?: string;
+  /** Anchor target, e.g. "_blank" for an external destination. Only meaningful alongside `href`. */
+  target?: string;
+  /** Anchor rel — pass "noopener noreferrer" with target="_blank" for a real external link, matching the site's other external-link usage. */
+  rel?: string;
   className?: string;
 };
 
@@ -398,6 +402,8 @@ export function MenuItem({
   textValue,
   closeOnSelect,
   href,
+  target,
+  rel,
   className,
 }: MenuItemProps) {
   const itemId = useId();
@@ -451,6 +457,8 @@ export function MenuItem({
     return (
       <a
         href={href}
+        target={target}
+        rel={rel}
         role="menuitem"
         ref={itemRef as RefObject<HTMLAnchorElement>}
         className={classes}

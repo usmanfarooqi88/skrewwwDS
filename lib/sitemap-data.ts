@@ -23,6 +23,7 @@ import {
 } from "@/lib/indexing-policy";
 import { getComponentHref } from "@/lib/routes";
 import { absoluteUrl } from "@/lib/site-config";
+import { CHART_COMPONENT_SLUGS } from "@/lib/global-nav";
 import {
   changelogEntries,
   getSortedChangelogEntries,
@@ -88,6 +89,10 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
   const industryCatalogDate = getMaxRegistryContentDate(
     componentRegistry.filter((entry) => entry.industry != null),
   );
+  const chartComponents = (CHART_COMPONENT_SLUGS as readonly string[])
+    .map((slug) => getRegistryEntry(slug))
+    .filter((entry): entry is NonNullable<typeof entry> => entry != null);
+  const chartsCatalogDate = getMaxRegistryContentDate(chartComponents);
 
   const staticPages: MetadataRoute.Sitemap = [
     sitemapEntry("/", {
@@ -109,6 +114,19 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
     sitemapEntry("/foundations", {
       changeFrequency: "monthly",
       priority: 0.8,
+    }),
+    // Docs hub (NAV-1): orientation page, no trustworthy route-level date.
+    sitemapEntry("/docs", {
+      changeFrequency: "monthly",
+      priority: 0.8,
+    }),
+    // Charts hub (NAV-1): dated by the newest of the five chart components
+    // it links to, matching category-page priority since it's structurally
+    // a themed sub-index of /components.
+    sitemapEntry("/components/charts", {
+      lastModified: chartsCatalogDate,
+      changeFrequency: "weekly",
+      priority: 0.75,
     }),
     sitemapEntry("/agent-kit", {
       lastModified: agentKitDate,
