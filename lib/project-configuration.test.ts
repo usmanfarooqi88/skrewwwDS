@@ -305,11 +305,11 @@ describe("project configuration", () => {
 
   it("tracks mixed Stable and Beta component maturity at platform 1.0", () => {
     const implemented = getImplementedRegistryEntries();
-    expect(implemented).toHaveLength(56);
+    expect(implemented).toHaveLength(58);
     const stable = implemented.filter((entry) => entry.status === "stable");
     const beta = implemented.filter((entry) => entry.status === "beta");
     expect(stable.length).toBe(27);
-    expect(beta.length).toBe(29);
+    expect(beta.length).toBe(31);
     expect(stable.every((entry) => entry.version === "1.0.0")).toBe(true);
     expect(beta.every((entry) => entry.version.includes("beta"))).toBe(true);
     expect(beta.every((entry) => entry.version !== "1.0.0")).toBe(true);
@@ -370,7 +370,7 @@ describe("project configuration", () => {
     expect(names).toContain("data-table");
     expect(names).toContain("bar-chart");
     expect(names).toContain("line-chart");
-    expect(names).toHaveLength(54);
+    expect(names).toHaveLength(56);
     const validationMessage = getImplementedRegistryEntries().find(
       (entry) => entry.slug === "validation-message",
     );

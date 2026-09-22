@@ -1,0 +1,58 @@
+/*
+ * No background/border/radius/Shape/Surface property anywhere in this file:
+ * ChartCard renders inside Card's own body, so every surface property
+ * (fill, border, radius, Glass/Squircle behavior) already comes from Card's
+ * own stylesheet — see Card.tsx / card.module.css and BankingAccountCard's
+ * own "Surface/Shape inheritance" note, the same mechanism this reuses.
+ */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.heading {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--semantic-text-primary);
+}
+
+.description {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--semantic-text-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stateBox {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyState {
+  padding: 1.5rem 1rem;
+}

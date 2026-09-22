@@ -58,6 +58,10 @@ export type {
 } from "@/components/ui/BarChart";
 export { LineChart } from "@/components/ui/LineChart";
 export type { LineChartDatum, LineChartProps } from "@/components/ui/LineChart";
+export { ChartCard } from "@/components/ui/ChartCard";
+export type { ChartCardProps, ChartCardState } from "@/components/ui/ChartCard";
+export { ChartMetric } from "@/components/ui/ChartMetric";
+export type { ChartMetricDelta, ChartMetricDeltaDirection, ChartMetricProps } from "@/components/ui/ChartMetric";
 export { Timeline } from "@/components/ui/Timeline";
 export type { TimelineEntry, TimelineProps } from "@/components/ui/Timeline";
 export { BankingTransactionRow, BankingTransactionDetailRow } from "@/components/ui/BankingTransactionRow";

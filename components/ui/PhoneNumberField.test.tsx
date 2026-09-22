@@ -35,7 +35,7 @@ describe("PhoneNumberField discovery and registry", () => {
     expect(entry?.figmaAvailability).toBe("available");
     expect(entry?.figmaNodeId).toBe(PHONE_NUMBER_FIELD_FIGMA_COMPONENT_SET_NODE_ID);
     expect(PHONE_NUMBER_FIELD_FIGMA_VARIANT_COUNT).toBe(4);
-    expect(getImplementedComponentCount()).toBe(56);
+    expect(getImplementedComponentCount()).toBe(58);
   });
 
   it("exports PhoneNumberField publicly", () => {

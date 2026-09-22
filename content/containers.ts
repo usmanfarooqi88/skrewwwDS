@@ -15,6 +15,25 @@ export const containersComponents: ComponentDoc[] = [
     properties: "Elevation as variants. Title (optional string). Body is children ReactNode. Footer is optional ReactNode for composed actions. React composition is ahead of Figma Card 2044:25756 (Title/Body TEXT + hardcoded Footer Buttons).",
   },
   {
+    slug: "chart-card",
+    name: "Chart Card",
+    category: "Containers & Overlays",
+    variants: "Single component — state is a prop, not a variant",
+    purpose:
+      "A Card composed for a chart: an optional title/description/actions header, and a body that owns loading/empty/error presentation around a chart you supply as children.",
+    whenToUse:
+      "Wrapping a chart (Bar Chart, Line Chart, Area Chart) in a dashboard, with consistent loading/empty/error handling and an optional header row for a title, description, and actions (a time-range control, a filter, a menu).",
+    whenNotToUse:
+      "A plain content container with no chart — use Card directly. A page-blocking decision — use Dialog. An industry-specific widget (a named revenue/occupancy/vitals card) — compose Chart Card yourself; that naming and business meaning belongs to the consuming app, not this component.",
+    accessibility:
+      "The error state is announced (Alert, announce=\"polite\"); loading exposes a visually-hidden label via aria-busy; the visual chart itself stays non-tabbable, unchanged from Bar/Line/Area Chart's own model.",
+    commonMistakes:
+      "Inventing a `metric` prop instead of composing a Chart Metric into children; assuming `state=\"loading\"`/`\"empty\"`/`\"error\"` still render children underneath (they don't — only one region renders); adding independent Shape/Surface props (Chart Card has none — it inherits Card's).",
+    tokensUsed: ["semantic/text/primary", "semantic/text/secondary", "semantic/surface/default", "semantic/border/default", "component/radius/container"],
+    properties:
+      "title, description, headingLevel (default h3), actions (header-right slot). elevation (passed through to Card). state (\"ready\" default | \"loading\" | \"empty\" | \"error\"). contentHeight (number, default 240 — a minimum, not a fixed height). loadingLabel, emptyTitle/emptyDescription, errorTitle/errorDescription/errorAction. children (rendered only when state is \"ready\"). footer (passed through to Card).",
+  },
+  {
     slug: "accordion",
     name: "Accordion",
     category: "Containers & Overlays",

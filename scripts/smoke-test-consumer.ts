@@ -103,6 +103,8 @@ import {
   buildTreeViewManifest,
   buildDataTableManifest,
   buildAreaChartManifest,
+  buildChartCardManifest,
+  buildChartMetricManifest,
   buildBarChartManifest,
   buildLineChartManifest,
   type ShadcnRegistryItem,
@@ -169,6 +171,8 @@ const MANIFEST_BUILDERS: Record<string, () => ShadcnRegistryItem> = {
   "bar-chart": buildBarChartManifest,
   "line-chart": buildLineChartManifest,
   "area-chart": buildAreaChartManifest,
+  "chart-card": buildChartCardManifest,
+  "chart-metric": buildChartMetricManifest,
 };
 
 /**
@@ -2532,6 +2536,169 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       }
 
       await assertConsumerMultiSeries(page, "Area Chart", { elementSelector: ".recharts-area-curve", prop: "stroke" });
+    },
+  },
+  // CH-3 — Chart Metric (standalone; no chart, no Card).
+  "chart-metric": {
+    criticalPaths: [
+      "components/ui/ChartMetric.tsx",
+      "components/ui/chart-metric.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { ChartMetric } from "@/components/ui/ChartMetric";',
+        "",
+        "export default function Home() {",
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <ChartMetric label="Total balance" value="$4,231.09" />',
+        '      <ChartMetric label="Revenue" value="$12,000" delta={{ direction: "up", value: "+4.2%", label: "vs last 30 days" }} />',
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/ChartMetric"/.test(pageSource) && /Total balance/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports ChartMetric and renders a value-only and a delta metric",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 8000;
+      await page.getByText("$4,231.09").waitFor({ state: "visible", timeout: WAIT_MS });
+      await page.getByText("+4.2%").waitFor({ state: "visible", timeout: WAIT_MS });
+
+      const resolveColor = (cssValue: string) =>
+        page.evaluate((value) => {
+          const probe = document.createElement("span");
+          probe.style.color = value;
+          document.body.appendChild(probe);
+          const color = getComputedStyle(probe).color;
+          probe.remove();
+          return color;
+        }, cssValue);
+      const expectedNeutral = await resolveColor("var(--semantic-text-secondary)");
+      const deltaColor = await page
+        .locator('[class*="delta"]')
+        .first()
+        .evaluate((el) => getComputedStyle(el).color);
+      if (deltaColor !== expectedNeutral) {
+        throw new Error(
+          `Installed Chart Metric: delta color "${deltaColor}" did not resolve to delivered --semantic-text-secondary "${expectedNeutral}" (must never be a status color).`,
+        );
+      }
+
+      const srOnlyDirection = await page.locator('.sr-only:has-text("Increased")').count();
+      if (srOnlyDirection !== 1) {
+        throw new Error("Installed Chart Metric: expected the visually-hidden direction word \"Increased\" to be present.");
+      }
+      const icon = page.locator('[class*="delta"] svg').first();
+      if ((await icon.getAttribute("aria-hidden")) !== "true") {
+        throw new Error("Installed Chart Metric: delta icon must be aria-hidden.");
+      }
+    },
+  },
+  // CH-3 — Chart Card. Multi-hop graph (chart-card -> card, empty-state, alert,
+  // skeleton -> foundation) with real content dependencies (EmptyState -> Button/Link).
+  "chart-card": {
+    criticalPaths: [
+      "components/ui/ChartCard.tsx",
+      "components/ui/chart-card.module.css",
+      "components/ui/Card.tsx",
+      "components/ui/card.module.css",
+      "components/ui/EmptyState.tsx",
+      "components/ui/empty-state.module.css",
+      "components/ui/Button.tsx",
+      "components/ui/button.module.css",
+      "components/ui/Link.tsx",
+      "components/ui/link.module.css",
+      "components/ui/Alert.tsx",
+      "components/ui/internal/FeedbackSurface.tsx",
+      "components/ui/internal/feedback-surface.module.css",
+      "components/ui/internal/feedback-icons.tsx",
+      "components/ui/internal/feedback-types.ts",
+      "components/ui/Skeleton.tsx",
+      "components/ui/skeleton.module.css",
+      "lib/cn.ts",
+      "styles/skrewww-foundation.css",
+    ],
+    // lib/cn.ts is contributed by chart-card, card, empty-state, alert, and skeleton alike.
+    expectedSharedTargets: ["lib/cn.ts"],
+    closeStdinOnAdd: true,
+    renderHarness: () =>
+      [
+        '"use client";',
+        "",
+        'import { useState } from "react";',
+        'import { ChartCard } from "@/components/ui/ChartCard";',
+        "",
+        "const data = [",
+        '  { label: "Jan", value: 58 },',
+        '  { label: "Feb", value: 95 },',
+        '  { label: "Mar", value: 76 },',
+        "];",
+        "",
+        "export default function Home() {",
+        '  const [state, setState] = useState<"ready" | "loading" | "empty" | "error">("ready");',
+        "  return (",
+        '    <div style={{ padding: 40 }}>',
+        '      <button id="show-loading" onClick={() => setState("loading")}>loading</button>',
+        '      <button id="show-empty" onClick={() => setState("empty")}>empty</button>',
+        '      <button id="show-error" onClick={() => setState("error")}>error</button>',
+        '      <div id="card-fixture">',
+        '        <ChartCard title="Monthly signups" description="Last 3 months" state={state} emptyDescription="No data for this period." errorDescription="Something went wrong.">',
+        '          <div role="img" aria-label="Monthly signups">{JSON.stringify(data)}</div>',
+        "        </ChartCard>",
+        "      </div>",
+        "    </div>",
+        "  );",
+        "}",
+        "",
+      ].join("\n"),
+    assertHarness: (pageSource) =>
+      /from "@\/components\/ui\/ChartCard"/.test(pageSource) && /Monthly signups/.test(pageSource),
+    harnessAssertionLabel: "consumer page imports ChartCard and toggles ready/loading/empty/error",
+    browserAssert: async ({ page }) => {
+      const WAIT_MS = 8000;
+      await page.getByRole("heading", { name: "Monthly signups" }).waitFor({ state: "visible", timeout: WAIT_MS });
+      if ((await page.getByRole("img", { name: "Monthly signups" }).count()) !== 1) {
+        throw new Error("Installed Chart Card: expected the ready-state children to render.");
+      }
+
+      await page.locator("#show-loading").click();
+      const busy = page.locator('[aria-busy="true"]');
+      await busy.waitFor({ state: "visible", timeout: WAIT_MS });
+      if ((await page.getByRole("img", { name: "Monthly signups" }).count()) !== 0) {
+        throw new Error("Installed Chart Card: loading state must not also render ready children.");
+      }
+      // Skeleton is a real installed dependency, not a fake — assert its element is present.
+      const skeleton = page.locator('[class*="skeleton"]');
+      if ((await skeleton.count()) === 0) {
+        throw new Error("Installed Chart Card: expected a Skeleton element while loading.");
+      }
+
+      await page.locator("#show-empty").click();
+      if ((await page.getByRole("heading", { name: "No data" }).count()) !== 1) {
+        throw new Error("Installed Chart Card: expected the installed EmptyState's default title while empty.");
+      }
+      if (!(await page.getByText("No data for this period.").isVisible())) {
+        throw new Error("Installed Chart Card: expected the empty description to render.");
+      }
+
+      await page.locator("#show-error").click();
+      const status = page.getByRole("status");
+      await status.waitFor({ state: "visible", timeout: WAIT_MS });
+      if (!(await status.textContent())?.includes("Something went wrong.")) {
+        throw new Error("Installed Chart Card: expected the installed Alert's error message, announced via role=status.");
+      }
+
+      const heightBefore = await page.locator("#card-fixture").evaluate((el) => el.getBoundingClientRect().height);
+      if (!(heightBefore >= 240)) {
+        throw new Error(`Installed Chart Card: expected the card to keep its minimum content height (got ${heightBefore}px).`);
+      }
     },
   },
   "spinner-divider-link": {

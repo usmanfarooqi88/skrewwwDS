@@ -78,8 +78,8 @@ Beta — overview, getting started, and known limitations:
 | Category | Components |
 |----------|------------|
 | Actions | Button, Button Group, Link, Split Button, Toggle Group |
-| Containers & Overlays | Accordion, Card, Dialog, Drawer, Popover |
-| Content & Data | Area Chart, Avatar, Banking Account Card, Banking Balance Summary, Banking Transaction Row, Bar Chart, Calendar Day, Calendar Grid, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
+| Containers & Overlays | Accordion, Card, Chart Card, Dialog, Drawer, Popover |
+| Content & Data | Area Chart, Avatar, Banking Account Card, Banking Balance Summary, Banking Transaction Row, Bar Chart, Calendar Day, Calendar Grid, Chart Metric, Data Table, Divider, Empty State, Line Chart, List Item, Table, Tag, Timeline, Tree View |
 | Forms | Checkbox, Combobox, Credit Card Field, Date Picker, File Upload, Form Field, Number Input, Phone Number Field, Radio, Radio Group, Search Field, Select, Slider, Switch, Text Input, Textarea, Validation Message |
 | Feedback | Alert, Badge, Progress Bar, Skeleton, Spinner, Toast, Tooltip |
 | Navigation | Breadcrumb, Menu, Pagination, Stepper, Tabs |
@@ -236,6 +236,7 @@ Redirect aliases (e.g. `form-field-wrapper`) are always excluded.
 - **Data Table** — narrow MVP scope (sorting via a composed Table + external Pagination); no dedicated Figma component set yet
 - **Tree View** — single-select only; multi-select, drag-and-drop reordering, virtualization, and async/lazy-loaded children are deferred
 - **Area Chart, Bar Chart, Line Chart** — static Cartesian charts (multi-series; optional axes, grid, legend and tooltip): the legend is a non-interactive key (no series toggling), the tooltip is pointer/touch-only, there is no keyboard chart interaction and no dense-data or long-label policy; Area Chart has no Figma reference
+- **Chart Card, Chart Metric** — the dashboard composition layer for charts (header/actions, loading/empty/error state ownership, a labeled value with a direction-only delta); no Figma reference, no interactive legend, no dedicated time-range control (compose with Tabs — see Banking Balance Summary), no industry-specific naming (that belongs to a consuming app)
 - **Advanced overlays** beyond Dialog, Drawer, Popover, Menu — largely deferred
 - **Full Style System rollout** — Shape/Surface personalities partially wired
 - Temporary tokens are marked in `styles/tokens.css` where Figma values are unresolved

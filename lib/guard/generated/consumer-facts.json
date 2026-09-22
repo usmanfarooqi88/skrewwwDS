@@ -94,6 +94,18 @@
       "installable": true
     },
     {
+      "slug": "chart-card",
+      "displayName": "Chart Card",
+      "status": "beta",
+      "installable": true
+    },
+    {
+      "slug": "chart-metric",
+      "displayName": "Chart Metric",
+      "status": "beta",
+      "installable": true
+    },
+    {
       "slug": "checkbox",
       "displayName": "Checkbox",
       "status": "stable",

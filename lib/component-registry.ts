@@ -932,6 +932,215 @@ export function Example() {
 }`,
   },
   {
+    slug: "chart-card",
+    name: "Chart Card",
+    category: "Containers & Overlays",
+    summary:
+      "Chart Card is a Card composed for a chart: an optional title/description/actions header, and a body that owns loading/empty/error presentation around a chart the consumer supplies as children.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/containers.ts",
+    documentationLastUpdated: "2026-09-22",
+    reactLastUpdated: "2026-09-22",
+    documentationUrl: getComponentDocumentationUrl("chart-card"),
+    supportedVariants: ["default"],
+    supportedSizes: [],
+    tokensUsed: [
+      "semantic/text/primary",
+      "semantic/text/secondary",
+      "semantic/surface/default",
+      "semantic/border/default",
+      "component/radius/container",
+    ],
+    relatedComponents: [
+      { label: "Card — the underlying container; Chart Card owns no surface of its own", href: "/components/card" },
+      { label: "Chart Metric — a labeled value with an optional delta, for the header or body", href: "/components/chart-metric" },
+      { label: "Bar Chart — a chart family to place in the body", href: "/components/bar-chart" },
+      { label: "Line Chart — a chart family to place in the body", href: "/components/line-chart" },
+      { label: "Area Chart — a chart family to place in the body", href: "/components/area-chart" },
+    ],
+    relatedTokens: [
+      { label: "semantic/text/primary", href: "/foundations" },
+      { label: "semantic/text/secondary", href: "/foundations" },
+    ],
+    relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
+    openQuestions: [
+      "No Figma reference exists for Chart Card or its states — this implementation uses Card's own established visual language (spacing, type scale) conservatively; no Figma parity is claimed.",
+      "A canonical, generic time-range control (e.g. a shared TimeRangeTabs component) was evaluated and rejected for v1: Banking Balance Summary already proves the composition (Tabs in the `actions` slot, one TabsPanel per range, each holding its own chart instance) without a new abstraction. Compose with Tabs/ToggleGroup/Select/ButtonGroup directly; promote to a shared control only if a second, materially different real use case emerges.",
+      "Interactive legend (per-series toggling) remains out of scope, unchanged from CH-2 — Chart Card does not add one.",
+      "`errorAction`/`emptyDescription` accept arbitrary ReactNode but Chart Card fetches nothing itself — retry/action behavior is entirely the consumer's.",
+      "Chart Card was not retrofitted onto Banking Account Card or Banking Balance Summary — both predate it and remain unchanged; their duplicated metric-value styling (documented on Chart Metric) is left as recorded evidence, not migrated, since neither is trivial/zero-risk to change without its own review.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "A Card (no title passed to Card itself) whose body renders: an optional header row (title as a heading at the given `headingLevel`, an optional description, and an optional `actions` slot on the right, wrapping via flexbox — no media query), then a content region holding exactly one of: the `children` you supply (state=\"ready\", the default), a Skeleton the size of `contentHeight` (state=\"loading\"), an EmptyState with no icon or illustration (state=\"empty\"), or an Alert (type=\"error\", announced politely) (state=\"error\"). Card's own `footer` passes straight through. No background, border, radius, or Shape/Surface property exists anywhere in Chart Card's own stylesheet — every surface property is Card's.",
+    announcementBehavior:
+      "The error state renders Alert with announce=\"polite\" (role=\"status\", aria-live=\"polite\"), since it represents a change the user was not otherwise told about. Loading and empty states are not announced as alerts — loading exposes a visually-hidden label via aria-busy instead, and empty is an ordinary heading/description region.",
+    comparisons: [
+      {
+        title: "Why doesn't Chart Card have its own Shape/Surface props?",
+        body: "It renders inside Card's own body and adds no background, border, or radius anywhere in its stylesheet, so it inherits Card's Shape/Surface behavior automatically through the CSS cascade — the same mechanism Banking Account Card's own \"Surface/Shape inheritance\" note documents. Adding independent props here would just be a second way to set the same thing.",
+      },
+      {
+        title: "Why is there no `metric` prop?",
+        body: "Metric placement (before the chart, after it, beside it) is layout, not identity — it belongs in `children` alongside the chart, typically as a Chart Metric element, rather than as a dedicated slot with its own positioning rules to maintain.",
+      },
+      {
+        title: "Why does loading/empty/error hide `children` instead of layering on top?",
+        body: "A chart rendered underneath a loading skeleton or an error message would still mount with whatever `data` the consumer passed — usually stale or placeholder data — and \"static chart, static children\" is a much easier contract to reason about and test than a hidden-but-mounted chart.",
+      },
+      {
+        title: "Why is `contentHeight` a `minHeight`, not a fixed height?",
+        body: "A fixed height would either clip taller ready content or leave dead space under shorter content. A minimum keeps every state (including the Skeleton and EmptyState, which are told to fill it) from collapsing the card below a stable size, while still letting real content grow.",
+      },
+    ],
+    apiProps: [
+      { name: "title", type: "string", description: "Optional header title." },
+      { name: "description", type: "ReactNode", description: "Optional header description, shown under the title." },
+      { name: "headingLevel", type: '"h2" | "h3" | "h4"', default: '"h3"', description: "Heading level for the optional title." },
+      { name: "actions", type: "ReactNode", description: "Header-right slot — e.g. a time-range Tabs group, a filter Button, or a Menu of chart actions." },
+      { name: "elevation", type: '"flat" | "raised"', description: "Passed through to the underlying Card." },
+      { name: "state", type: '"ready" | "loading" | "empty" | "error"', default: '"ready"', description: "Which region renders in the body." },
+      { name: "contentHeight", type: "number", default: "240", description: "Minimum body height in pixels, matching a chart's own default height — keeps the card's size stable across every state." },
+      { name: "loadingLabel", type: "string", default: '"Loading chart"', description: "Visually-hidden label announced while state is \"loading\"." },
+      { name: "emptyTitle", type: "string", default: '"No data"', description: "EmptyState title while state is \"empty\"." },
+      { name: "emptyDescription", type: "ReactNode", description: "EmptyState description while state is \"empty\"." },
+      { name: "errorTitle", type: "string", default: '"Couldn\'t load chart"', description: "Alert title while state is \"error\"." },
+      { name: "errorDescription", type: "ReactNode", description: "Alert description while state is \"error\"." },
+      { name: "errorAction", type: "ReactNode", description: "e.g. a \"Retry\" Button, rendered alongside the error message." },
+      { name: "children", type: "ReactNode", description: "Rendered only when state is \"ready\" — typically a Chart Metric and a chart." },
+      { name: "footer", type: "ReactNode", description: "Passed through to the underlying Card's footer." },
+    ],
+    reactExample: `import { ChartCard, ChartMetric, LineChart } from "@/components/ui";
+
+const trend = [
+  { label: "Jan", value: 58 },
+  { label: "Feb", value: 95 },
+  { label: "Mar", value: 76 },
+  { label: "Apr", value: 128 },
+];
+
+export function Example() {
+  return (
+    <ChartCard title="Monthly signups" description="Last 4 months">
+      <ChartMetric label="Total" value="357" delta={{ direction: "up", value: "+12%", label: "vs prior period" }} />
+      <LineChart data={trend} label="Monthly signups" showCategoryAxis tooltip />
+    </ChartCard>
+  );
+}
+
+export function LoadingExample() {
+  return <ChartCard title="Monthly signups" state="loading" />;
+}
+
+export function EmptyExample() {
+  return (
+    <ChartCard title="Monthly signups" state="empty" emptyDescription="No signups recorded for this period." />
+  );
+}
+
+export function ErrorExample() {
+  return (
+    <ChartCard title="Monthly signups" state="error" errorDescription="Something went wrong loading this chart." />
+  );
+}`,
+    dependencies: [],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts"],
+    registryDependencies: ["@skrewww/card", "@skrewww/empty-state", "@skrewww/alert", "@skrewww/skeleton", "@skrewww/foundation"],
+    coreDependencies: ["tokens", "shape", "surface"],
+    files: ["components/ui/ChartCard.tsx", "components/ui/chart-card.module.css"],
+    cssTokens: ["--semantic-text-primary", "--semantic-text-secondary"],
+  },
+  {
+    slug: "chart-metric",
+    name: "Chart Metric",
+    category: "Content & Data",
+    summary:
+      "Chart Metric is a labeled value with an optional directional delta, for use above a chart or standalone — the delta's direction drives only its icon, never a color.",
+    status: "beta",
+    version: "0.1.0-beta",
+    reactAvailability: "available",
+    figmaAvailability: "unavailable",
+    documentationCompleteness: "partial",
+    accessibilityLevel: "WCAG 2.2 AA (target)",
+    documentationSource: "content/content-data.ts",
+    documentationLastUpdated: "2026-09-22",
+    reactLastUpdated: "2026-09-22",
+    documentationUrl: getComponentDocumentationUrl("chart-metric"),
+    supportedVariants: ["default"],
+    supportedSizes: [],
+    tokensUsed: ["semantic/text/primary", "semantic/text/secondary"],
+    relatedComponents: [
+      { label: "Chart Card — a common place to put a Chart Metric, above a chart", href: "/components/chart-card" },
+      { label: "Bar Chart, Line Chart, Area Chart — the charts a Chart Metric typically summarizes", href: "/components/bar-chart" },
+    ],
+    relatedTokens: [
+      { label: "semantic/text/primary", href: "/foundations" },
+      { label: "semantic/text/secondary", href: "/foundations" },
+    ],
+    relatedConcepts: [],
+    openQuestions: [
+      "No Figma reference exists for Chart Metric — its typography was extracted from three independent, ad hoc implementations that already existed: Banking Account Card's `.balance`, Banking Balance Summary's `.totalValue` (byte-identical CSS to `.balance`), and the Reference App overview page's raw Tailwind `text-3xl font-semibold tabular-nums`. No Figma parity is claimed.",
+      "Positive/negative semantic coloring (e.g. tying `direction` to a feedback/status color) is an explicit non-goal for v1: an increase is not always a good outcome (spend, churn, error rate), so no green-is-good/red-is-bad rule exists. If a future, evidence-based semantic model is designed, it is a deliberate addition, not a bug fix.",
+      "Chart Metric was not retrofitted onto Banking Account Card, Banking Balance Summary, or the Reference App overview page — all three predate it and remain unchanged; the duplication is recorded as evidence, not migrated.",
+    ],
+    hasImplementation: true,
+    hasPreview: true,
+    indexing: "index",
+    anatomy:
+      "A label (`p`, semantic/text/secondary) above a value (`p`, semantic/text/primary, tabular-nums), with an optional delta rendered inline after the value: a directional icon (ArrowUp, ArrowDown, or Minus from Phosphor, aria-hidden), a visually-hidden word (\"Increased\"/\"Decreased\"/\"Unchanged\") naming the direction for assistive tech, the pre-formatted delta value, and an optional comparison label. The delta's color is the same semantic/text/secondary as the label — never a feedback/status token — regardless of direction.",
+    announcementBehavior:
+      "The delta's direction is announced in words via visually-hidden text before the value, so it is never conveyed by the icon or color alone. The component has no live region of its own — it is a static value display, not a notification.",
+    comparisons: [
+      {
+        title: "Why doesn't an upward delta render green (or a downward delta red)?",
+        body: "Direction is not sentiment. An increase can be a bad outcome (costs, churn, error rate) as easily as a good one, so Chart Metric makes no claim either way — it shows an arrow and lets the label/context (\"Revenue\" vs. \"Errors\") carry the meaning.",
+      },
+      {
+        title: "Why isn't this a `size` variant?",
+        body: "All three real implementations Chart Metric replaces used the same 1.5rem/700-weight value styling — there was no evidence for a second size, so v1 ships exactly one.",
+      },
+    ],
+    apiProps: [
+      { name: "label", type: "string", description: "The metric's label." },
+      { name: "value", type: "string", description: "Pre-formatted value (e.g. \"$4,231.09\") — formatting is the consumer's responsibility." },
+      {
+        name: "delta",
+        type: "{ direction: \"up\" | \"down\" | \"flat\"; value: string; label?: string }",
+        description: "Optional directional delta. `direction` selects only the icon; `value` is pre-formatted (e.g. \"+4.2%\"); `label` is optional comparison context (e.g. \"vs last 30 days\").",
+      },
+    ],
+    reactExample: `import { ChartMetric } from "@/components/ui";
+
+export function Example() {
+  return <ChartMetric label="Total balance" value="$4,231.09" />;
+}
+
+export function WithDeltaExample() {
+  return (
+    <ChartMetric
+      label="Revenue"
+      value="$12,000"
+      delta={{ direction: "up", value: "+4.2%", label: "vs last 30 days" }}
+    />
+  );
+}`,
+    dependencies: ["@phosphor-icons/react"],
+    hostRequirements: ["react", "react-dom"],
+    internalDependencies: ["lib/cn.ts"],
+    registryDependencies: ["@skrewww/foundation"],
+    coreDependencies: ["tokens"],
+    files: ["components/ui/ChartMetric.tsx", "components/ui/chart-metric.module.css"],
+    cssTokens: ["--semantic-text-primary", "--semantic-text-secondary"],
+  },
+  {
     slug: "text-input",
     name: "Text Input",
     category: "Forms",

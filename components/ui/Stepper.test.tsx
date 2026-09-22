@@ -22,7 +22,7 @@ describe("Stepper discovery and registry", () => {
     expect(entry?.figmaAvailability).toBe("available");
     expect(entry?.figmaNodeId).toBe(STEPPER_FIGMA_COMPONENT_SET_NODE_ID);
     expect(STEPPER_FIGMA_VARIANT_COUNT).toBe(3);
-    expect(getImplementedComponentCount()).toBe(56);
+    expect(getImplementedComponentCount()).toBe(58);
   });
 
   it("exports Stepper and Step publicly", () => {

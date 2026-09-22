@@ -132,6 +132,23 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:ui",
     target: "~/components/ui/card.module.css",
   },
+  // CH-3 — Chart Card / Chart Metric (dashboard composition layer)
+  "components/ui/ChartCard.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/ChartCard.tsx",
+  },
+  "components/ui/chart-card.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/chart-card.module.css",
+  },
+  "components/ui/ChartMetric.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/ChartMetric.tsx",
+  },
+  "components/ui/chart-metric.module.css": {
+    type: "registry:ui",
+    target: "~/components/ui/chart-metric.module.css",
+  },
   "components/ui/TextInput.tsx": {
     type: "registry:ui",
     target: "~/components/ui/TextInput.tsx",
@@ -936,6 +953,14 @@ export function buildCardManifest(): ShadcnRegistryItem {
   return buildComponentManifest("card");
 }
 
+export function buildChartCardManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("chart-card");
+}
+
+export function buildChartMetricManifest(): ShadcnRegistryItem {
+  return buildComponentManifest("chart-metric");
+}
+
 export function buildTextInputManifest(): ShadcnRegistryItem {
   return buildComponentManifest("text-input");
 }
@@ -1210,6 +1235,8 @@ export function buildDistributedRegistryItems(): ShadcnRegistryItem[] {
     buildBarChartManifest(),
     buildLineChartManifest(),
     buildAreaChartManifest(),
+    buildChartCardManifest(),
+    buildChartMetricManifest(),
   ];
 }
 

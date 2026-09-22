@@ -94,6 +94,14 @@ export const previewLoaders = {
     import("@/components/previews/CardPreview").then((m) => ({
       default: m.CardPreview,
     })),
+  "chart-card": () =>
+    import("@/components/previews/ChartCardPreview").then((m) => ({
+      default: m.ChartCardPreview,
+    })),
+  "chart-metric": () =>
+    import("@/components/previews/ChartMetricPreview").then((m) => ({
+      default: m.ChartMetricPreview,
+    })),
   dialog: () =>
     import("@/components/previews/DialogPreview").then((m) => ({
       default: m.DialogPreview,

@@ -19,7 +19,7 @@ describe("Guard consumer facts bundle", () => {
     expect(loaded.ok).toBe(true);
     if (!loaded.ok) return;
     expect(loaded.bundle.guardToolVersion).toBe(GUARD_TOOL_VERSION);
-    expect(loaded.bundle.components).toHaveLength(56);
+    expect(loaded.bundle.components).toHaveLength(58);
     const bySlug = new Map(loaded.bundle.components.map((c) => [c.slug, c]));
     expect(bySlug.get("button")?.installable).toBe(true);
     expect(bySlug.get("button")?.status).toBe("stable");

@@ -1,0 +1,47 @@
+.root {
+  display: block;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--semantic-text-secondary);
+}
+
+.value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  margin: 0.125rem 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: var(--semantic-text-primary);
+}
+
+/*
+ * Neutral by design: this is the same --semantic-text-secondary used for
+ * .label, never --semantic-feedback-success / --semantic-feedback-error.
+ * See ChartMetric.tsx for why direction never implies sentiment.
+ */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--semantic-text-secondary);
+}
+
+.deltaIcon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+.deltaLabel {
+  font-weight: 400;
+}

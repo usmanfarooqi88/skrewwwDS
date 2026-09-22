@@ -5,14 +5,16 @@ import { compileAllContracts } from "@/lib/agent-kit/contract-compiler";
 import { componentRegistry } from "@/lib/component-registry";
 
 /**
- * Drift guard between the chart components' declared TypeScript props, the
- * canonical registry `apiProps`, and the compiled Agent contract.
+ * Drift guard between the chart-family and chart-composition components'
+ * declared TypeScript props, the canonical registry `apiProps`, and the
+ * compiled Agent contract.
  *
  * CH-0 found `LineChart.sparkline` in source, tests and Banking Account Card, but
  * absent from `apiProps` and therefore from the generated contract — so a
  * contract-following agent would treat a real prop as invalid. This compares
  * canonical sources directly (source ↔ registry ↔ compiler output) and needs no
- * generated files on disk.
+ * generated files on disk. CH-3 extends the same guard to Chart Card and Chart
+ * Metric — the same drift risk applies to any component with real TypeScript props.
  *
  * `className` is a declared prop in source but deliberately not listed in
  * `apiProps` (established convention across the registry), so it is excluded from
@@ -23,6 +25,8 @@ const CHARTS = [
   { slug: "bar-chart", file: "components/ui/BarChart.tsx", propsType: "BarChartProps" },
   { slug: "line-chart", file: "components/ui/LineChart.tsx", propsType: "LineChartProps" },
   { slug: "area-chart", file: "components/ui/AreaChart.tsx", propsType: "AreaChartProps" },
+  { slug: "chart-card", file: "components/ui/ChartCard.tsx", propsType: "ChartCardProps" },
+  { slug: "chart-metric", file: "components/ui/ChartMetric.tsx", propsType: "ChartMetricProps" },
 ] as const;
 
 function declaredProps(file: string, propsType: string): string[] {

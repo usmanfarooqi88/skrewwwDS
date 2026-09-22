@@ -58,6 +58,8 @@ import {
   buildBarChartManifest,
   buildLineChartManifest,
   buildAreaChartManifest,
+  buildChartCardManifest,
+  buildChartMetricManifest,
   buildDistributedRegistryItems,
   buildRegistryIndex,
   projectRegistryIndexItem,
@@ -1164,6 +1166,64 @@ describe("shadcn registry generator", () => {
     }
   });
 
+  // CH-3 — Chart Card / Chart Metric (dashboard composition layer)
+  it("transports Chart Card as its own two files, declaring Card/EmptyState/Alert/Skeleton/Foundation as registryDependencies rather than bundling their files", () => {
+    const manifest = buildChartCardManifest();
+    expect(manifest.name).toBe("chart-card");
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/ChartCard.tsx",
+      "components/ui/chart-card.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual([
+      "@skrewww/card",
+      "@skrewww/empty-state",
+      "@skrewww/alert",
+      "@skrewww/skeleton",
+      "@skrewww/foundation",
+    ]);
+    expect(manifest.dependencies).toEqual([]);
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+    // Every one of Chart Card's registryDependencies must itself be a real, distributed item —
+    // otherwise the shadcn CLI's recursive resolution would fail on a real consumer install.
+    const distributedNames = new Set(buildDistributedRegistryItems().map((item) => item.name));
+    for (const dep of manifest.registryDependencies) {
+      expect(distributedNames.has(dep.replace("@skrewww/", "")), `${dep} is not a distributed registry item`).toBe(true);
+    }
+    const tsx = manifest.files.find((file) => file.path === "components/ui/ChartCard.tsx")!;
+    expect(tsx.content).toMatch(/^\/\*\* @skrewww-component chart-card \*\/\n/);
+    expect(tsx.content).toMatch(/from "@\/components\/ui\/Card"/);
+    expect(tsx.content).not.toMatch(/from "@\/components\/ui\/(Bar|Line|Area)Chart"/);
+  });
+
+  it("transports Chart Metric independently, with no chart/Card/banking dependency at all", () => {
+    const manifest = buildChartMetricManifest();
+    expect(manifest.name).toBe("chart-metric");
+    expect(manifest.files.map((file) => file.path).sort()).toEqual([
+      "components/ui/ChartMetric.tsx",
+      "components/ui/chart-metric.module.css",
+      "lib/cn.ts",
+    ]);
+    expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
+    // Real npm dependency: ChartMetric.tsx imports ArrowUp/ArrowDown/Minus from
+    // @phosphor-icons/react/dist/ssr for the delta direction icon.
+    expect(manifest.dependencies).toEqual(["@phosphor-icons/react"]);
+    expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
+    // Checks real import statements only — ChartMetric.tsx's own doc comment names
+    // BankingAccountCard/BankingBalanceSummary as provenance context (what it replaced),
+    // which is expected and not a functional dependency.
+    expect(manifest.files.map((file) => file.path)).not.toEqual(
+      expect.arrayContaining([expect.stringMatching(/Chart\.tsx$|Card\.tsx$|banking-|Banking(Account|Balance|Transaction)/)]),
+    );
+    for (const file of manifest.files) {
+      expect(file.content).not.toMatch(/from "@\/components\/ui\/(Bar|Line|Area)Chart"/);
+      expect(file.content).not.toMatch(/from "@\/components\/ui\/Card"/);
+      expect(file.content).not.toMatch(/from "@\/components\/ui\/Banking/);
+    }
+    const tsx = manifest.files.find((file) => file.path === "components/ui/ChartMetric.tsx")!;
+    expect(tsx.content).toMatch(/^\/\*\* @skrewww-component chart-metric \*\/\n/);
+  });
+
   it("rejects a registry item with an empty target as invalid", () => {
     const invalid = {
       $schema: "https://ui.shadcn.com/schema/registry-item.json",
@@ -1184,8 +1244,8 @@ describe("shadcn registry generator", () => {
   it("derives the registry index from the same distributed collection used for item manifests", () => {
     const items = buildDistributedRegistryItems();
     const index = buildRegistryIndex(items);
-    expect(items).toHaveLength(54);
-    expect(index.items).toHaveLength(54);
+    expect(items).toHaveLength(56);
+    expect(index.items).toHaveLength(56);
     expect(items.map((item) => item.name)).toEqual(index.items.map((item) => item.name));
     expect(items[0]?.name).toBe("foundation");
     expect(index.name).toBe(SKREWWW_SHADCN_REGISTRY_NAME);
