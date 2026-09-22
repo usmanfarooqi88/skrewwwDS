@@ -81,7 +81,7 @@ test.describe("global navigation", () => {
 test.describe("mobile global navigation", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
-  test("retains every global, Resource, and component destination with accessible close behavior", async ({ page }) => {
+  test("keeps global navigation separate from contextual section navigation", async ({ page }) => {
     await page.goto("/components/button");
     const trigger = page.getByRole("button", { name: "Open navigation menu" });
     await trigger.click();
@@ -90,10 +90,17 @@ test.describe("mobile global navigation", () => {
     for (const label of ["Docs", "Components", "Charts", "Agent Kit", "Guard", "Changelog", "GitHub", "Figma Free", "Figma Pro"]) {
       await expect(global.getByRole("link", { name: label, exact: true })).toBeVisible();
     }
-    await expect(drawer.getByRole("navigation", { name: "Documentation" }).getByRole("link", { name: "Button", exact: true })).toBeVisible();
+    await expect(drawer.getByRole("link", { name: "Button", exact: true })).toHaveCount(0);
     await page.keyboard.press("Escape");
     await expect(drawer).toHaveCount(0);
     await expect(trigger).toBeFocused();
+
+    const sectionTrigger = page.getByRole("button", { name: "Open Components section navigation" });
+    await sectionTrigger.click();
+    const sectionDrawer = page.getByRole("dialog", { name: "Components section navigation" });
+    await expect(sectionDrawer.getByRole("navigation", { name: "Components section" }).getByRole("link", { name: "Button", exact: true })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(sectionTrigger).toBeFocused();
 
     const widths = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
     expect(widths.document).toBeLessThanOrEqual(widths.viewport + 1);
@@ -124,4 +131,40 @@ test.describe("global navigation responsive boundaries", () => {
       await expect(page.getByRole("main")).toBeFocused();
     });
   }
+});
+
+test.describe("contextual section navigation", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  test("renders the one correct sidebar, exact active item, or no sidebar", async ({ page }) => {
+    const cases = [
+      ["/docs", "Docs", "Overview"],
+      ["/foundations", "Docs", "Foundations"],
+      ["/components", "Components", "Overview"],
+      ["/components/button", "Components", "Button"],
+      ["/components/category/forms", "Components", "Forms overview"],
+      ["/components/industries", "Components", "Industries overview"],
+      ["/components/industries/banking", "Components", "Banking"],
+      ["/components/charts", "Charts", "Overview"],
+      ["/components/bar-chart", "Charts", "Bar Chart"],
+      ["/components/line-chart", "Charts", "Line Chart"],
+      ["/components/area-chart", "Charts", "Area Chart"],
+      ["/components/chart-card", "Charts", "Chart Card"],
+      ["/components/chart-metric", "Charts", "Chart Metric"],
+    ] as const;
+
+    for (const [path, section, active] of cases) {
+      await page.goto(path);
+      const nav = page.getByRole("navigation", { name: `${section} section` });
+      await expect(nav).toBeVisible();
+      await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
+      await expect(nav.getByRole("link", { name: active, exact: true })).toHaveAttribute("aria-current", "page");
+    }
+
+    for (const path of ["/", "/agent-kit", "/guard", "/changelog"]) {
+      await page.goto(path);
+      await expect(page.locator("aside")).toHaveCount(0);
+      expect(await page.getByRole("main").evaluate((main) => main.getBoundingClientRect().left)).toBe(0);
+    }
+  });
 });

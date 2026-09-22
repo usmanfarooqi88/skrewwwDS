@@ -2,7 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { Sidebar } from "@/components/Sidebar";
+import { MobileSectionNav } from "@/components/MobileSectionNav";
+import { SectionSidebar } from "@/components/SectionSidebar";
+import { resolveSection, sectionNavModels } from "@/lib/section-nav";
+import { cn } from "@/lib/cn";
 
 /**
  * Isolates the docs site chrome from `/reference/*` so the Reference App can
@@ -11,6 +14,8 @@ import { Sidebar } from "@/components/Sidebar";
 export function DocsChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isReferenceApp = pathname === "/reference" || pathname.startsWith("/reference/");
+  const section = resolveSection(pathname);
+  const sectionNav = section ? sectionNavModels[section] : null;
 
   if (isReferenceApp) {
     return <>{children}</>;
@@ -25,8 +30,9 @@ export function DocsChrome({ children }: { children: React.ReactNode }) {
         Skip to content
       </a>
       <GlobalHeader />
-      <Sidebar />
-      <main id="main-content" tabIndex={-1} className="min-h-screen md:ml-64">
+      {sectionNav ? <SectionSidebar model={sectionNav} /> : null}
+      {sectionNav ? <MobileSectionNav model={sectionNav} /> : null}
+      <main id="main-content" tabIndex={-1} className={cn("min-h-screen", sectionNav && "md:ml-64")}>
         {children}
       </main>
     </>

@@ -2,6 +2,34 @@
 
 Last verified: **2026-09-22** (**CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE**; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
 
+## 2026-09-22 — NAV-2 Contextual Section Navigation (COMPLETE)
+
+**Verdict: COMPLETE.** The universal documentation sidebar is no longer part
+of the rendered site shell. `resolveSection()` deterministically selects
+`docs`, `components`, `charts`, or `null`, with chart routes taking precedence
+over the broader `/components` prefix. Docs exposes only Overview and
+Foundations; Components preserves the canonical category/industry taxonomy and
+all ordinary shipped components; Charts exposes only Overview, the three
+shipped families, and the two shipped compositions. Home, Agent Kit, Guard,
+and Changelog render without a sidebar or reserved left gutter. Reference App
+retains its isolated shell and robots policy.
+
+Desktop uses one shared section-sidebar renderer with section-specific data.
+Mobile uses a separate labelled section trigger and accessible Drawer, keeping
+contextual navigation out of the global navigation drawer. Breadcrumbs and
+URLs are unchanged. No search, filtering, directory reorganization, chart
+expansion, mobile-IA redesign, or SEO migration was introduced.
+
+**Proof.** Resolver/model unit coverage and the NAV-1 global-nav regression
+suite pass. Focused Chromium coverage verifies the route/active-state matrix,
+mobile focus restoration and Escape behavior, independent scrolling, no
+horizontal overflow, sidebar/header alignment, no-sidebar content offset,
+breadcrumbs, and Reference App isolation across the required responsive
+widths. Full repository gates and exact-SHA CI are recorded in the NAV-2 final
+report/commit.
+
+**Canonical next:** NAV-3 — Component Directory Reorganization (**NOT STARTED**).
+
 ## 2026-09-22 — CH-3 Chart Card / Dashboard Compositions (COMPLETE)
 
 **Verdict: COMPLETE.** Added the reusable dashboard-composition layer around

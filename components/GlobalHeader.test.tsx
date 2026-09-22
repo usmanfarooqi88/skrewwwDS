@@ -76,7 +76,7 @@ describe("GlobalHeader", () => {
     ).toHaveLength(0);
   });
 
-  it("opens the mobile drawer with the new destinations, external resources, and the existing sidebar nav, then restores focus to the trigger on close", async () => {
+  it("opens the mobile drawer with only global destinations and resources, then restores focus to the trigger on close", async () => {
     const user = userEvent.setup();
     render(<GlobalHeader />);
     const menuTrigger = screen.getByRole("button", { name: "Open navigation menu" });
@@ -100,8 +100,8 @@ describe("GlobalHeader", () => {
     const github = within(globalLinksNav).getByRole("link", { name: "GitHub" });
     expect(github).toHaveAttribute("target", "_blank");
 
-    // The existing sidebar (Foundations, Agent Kit, Guard, Changelog, categories) still renders below.
-    expect(within(dialog).getByRole("link", { name: /^Foundations/ })).toBeInTheDocument();
+    expect(within(dialog).queryByRole("link", { name: /^Foundations/ })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("navigation", { name: /section/i })).not.toBeInTheDocument();
 
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();

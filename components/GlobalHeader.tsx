@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/Drawer";
 import { HeaderNavLink } from "@/components/HeaderNavLink";
 import { ResourcesMenu } from "@/components/ResourcesMenu";
-import { SidebarNav } from "@/components/SidebarNav";
 import { getActiveGlobalNavArea, globalNavItems, isResourcesPath, resourceLinks } from "@/lib/global-nav";
 
 /**
@@ -74,7 +73,6 @@ export function GlobalHeader() {
             </div>
             <DrawerBody className="px-0 pb-6">
               <MobileGlobalLinks pathname={pathname} activeArea={activeArea} onNavigate={closeDrawer} />
-              <SidebarNav onNavigate={closeDrawer} />
             </DrawerBody>
           </DrawerContent>
         </Drawer>
@@ -85,8 +83,8 @@ export function GlobalHeader() {
 
 /**
  * The four global-nav destinations plus the complete Resources set as a
- * flat list at the top of the mobile drawer. Guard and Changelog remain in
- * the unchanged contextual sidebar below for now; NAV-2 owns that cleanup.
+ * flat list in the global drawer. Contextual section navigation has its own
+ * trigger and drawer so the two navigation layers remain distinct.
  */
 function MobileGlobalLinks({
   pathname,

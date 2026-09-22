@@ -41,7 +41,7 @@ test.describe("Sidebar Nav Surface parity", () => {
   }) => {
     const sidebar = page.locator("aside");
     const active = sidebar.getByRole("link", { name: "Foundations", exact: true });
-    const hover = sidebar.getByRole("link", { name: "Button", exact: true });
+    const hover = sidebar.getByRole("link", { name: "Overview", exact: true });
 
     await expect(active).toHaveAttribute("aria-current", "page");
     await expect(hover).not.toHaveAttribute("aria-current", "page");

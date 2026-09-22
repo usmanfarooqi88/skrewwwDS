@@ -1,10 +1,8 @@
 import { siteConfig } from "@/lib/site-config";
 
 /**
- * Canonical model for the NAV-1 global header — separate from
- * `lib/sidebar-nav.ts`, which is untouched and still owns the existing
- * left sidebar (`primaryNavLinks`, category/industry lists). See
- * `docs/architecture/navigation.md` for the full NAV-0/NAV-1 record.
+ * Canonical model for the global header. Contextual section navigation is
+ * resolved separately in `lib/section-nav.ts`; neither model owns the other.
  */
 
 export type GlobalNavArea = "docs" | "components" | "charts" | "agent-kit";

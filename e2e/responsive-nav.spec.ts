@@ -46,9 +46,9 @@ test.describe("Mobile drawer navigation", () => {
 
   test("opens labelled drawer, navigates, closes, and restores menu focus", async ({ page }) => {
     await page.goto("/components/select");
-    const menu = page.getByRole("button", { name: "Open navigation menu" });
+    const menu = page.getByRole("button", { name: "Open Components section navigation" });
     await menu.click();
-    const drawer = page.getByRole("dialog", { name: "Navigation" });
+    const drawer = page.getByRole("dialog", { name: "Components section navigation" });
     await expect(drawer).toBeVisible();
     await drawer.getByRole("link", { name: "Date Picker" }).click();
     await expect(page).toHaveURL(/\/components\/date-picker$/);
@@ -58,11 +58,11 @@ test.describe("Mobile drawer navigation", () => {
 
   test("preserves drawer width, alignment, and the top-right close header", async ({ page }) => {
     await page.goto("/components/select");
-    await page.getByRole("button", { name: "Open navigation menu" }).click();
+    await page.getByRole("button", { name: "Open Components section navigation" }).click();
 
-    const drawer = page.getByRole("dialog", { name: "Navigation" });
+    const drawer = page.getByRole("dialog", { name: "Components section navigation" });
     const close = drawer.getByRole("button", { name: "Close drawer" });
-    const navigation = drawer.getByRole("navigation", { name: "Documentation" });
+    const navigation = drawer.getByRole("navigation", { name: "Components section" });
     const drawerBody = navigation.locator("..");
     const closeHeader = close.locator("..");
     await waitForDrawerMotion(drawer);
@@ -75,7 +75,7 @@ test.describe("Mobile drawer navigation", () => {
       drawer.evaluate((element) => {
         const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
         const drawerStyle = getComputedStyle(element);
-        const body = element.querySelector('nav[aria-label="Documentation"]')?.parentElement;
+        const body = element.querySelector('nav[aria-label="Components section"]')?.parentElement;
         const bodyStyle = body ? getComputedStyle(body) : null;
         return {
           expectedWidth: Math.min(24 * rootFontSize, window.innerWidth * 0.92),
@@ -115,11 +115,11 @@ test.describe("Mobile drawer navigation", () => {
   test("keeps the close header fixed while only DrawerBody scrolls", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 480 });
     await page.goto("/components/select");
-    await page.getByRole("button", { name: "Open navigation menu" }).click();
+    await page.getByRole("button", { name: "Open Components section navigation" }).click();
 
-    const drawer = page.getByRole("dialog", { name: "Navigation" });
+    const drawer = page.getByRole("dialog", { name: "Components section navigation" });
     const close = drawer.getByRole("button", { name: "Close drawer" });
-    const navigation = drawer.getByRole("navigation", { name: "Documentation" });
+    const navigation = drawer.getByRole("navigation", { name: "Components section" });
     const drawerBody = navigation.locator("..");
     await waitForDrawerMotion(drawer);
     const before = await close.boundingBox();
