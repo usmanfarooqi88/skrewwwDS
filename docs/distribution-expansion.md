@@ -14,6 +14,13 @@
 > Canonical planning artifact for CE-3. Does **not** redesign the locked
 > shadcn transport architecture. Implementation batches CE-3D–O are
 > **SHIPPED / COMPLETE** (see Status table).
+>
+> **Historical record — counts below are as of CE-3's own close
+> (2026-09-15) and are intentionally not updated.** Later phases (CH-1/2/3)
+> added the five chart-related components after CE-3M; distribution now
+> covers all 55 non-banking components. For the current coverage figure,
+> see [`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md#url-shape)
+> or the live `/r/registry.json` itself.
 
 ## Purpose
 

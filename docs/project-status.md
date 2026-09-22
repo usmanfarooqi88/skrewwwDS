@@ -1,6 +1,56 @@
 # Project status
 
-Last verified: **2026-09-22** (**CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE**; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-22** (**OSS-1A ⛔ BLOCKED — token hardening required**, OSS-1B next, OSS-2 gated behind it; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-22 — OSS-1A Submission Readiness Hardening (BLOCKED — TOKEN HARDENING REQUIRED)
+
+**Verdict: BLOCKED — TOKEN HARDENING REQUIRED.** OSS-1 found Skrewww
+otherwise eligible for the official shadcn Registry Directory
+(`@skrewww`, submitted by PR to `apps/v4/registry/directory.json` in
+`shadcn-ui/ui`). OSS-1A closed the documentation and metadata gaps but
+could not close the token-delivery gap without an architecture decision,
+so **no upstream PR was opened and OSS-2 does not start**.
+
+**What shipped.** README no longer claims an "exactly six items" install
+surface (it points at the live `/r/registry.json` instead of a count that
+goes stale); `docs/architecture/shadcn-distribution.md` current-coverage
+line corrected 53 → 56 items while `docs/distribution-expansion.md`'s
+dated CE-3 batch records were preserved as history with a pointer
+forward; `package.json` gained factual `description`/`homepage`/
+`repository`/`author`/`keywords` (no version, scripts, deps or publish
+behaviour touched). New `lib/token-delivery-audit.test.ts` checks all 56
+manifests' transported bytes on every `npm test`.
+
+**The blocker.** 35 of 55 distributed components reference 315 distinct
+custom properties that nothing in their install closure defines — all 315
+from one source, the `styles/tokens.css` component tier that the
+Foundation transport deliberately excludes. Proven in fresh consumers with
+real browsers, not static analysis: installed Badge computes
+`padding: 0px` / `border-radius: 0px` / transparent background / black
+border; installed Alert computes `padding: 0px` / `border-radius: 0px` /
+`border-width: 0px` with `--feedback-*` undefined while the
+Foundation-tier `--semantic-surface-default` resolves correctly in the
+same document. Docs-site rendering is unaffected — it loads the token file
+whole; this is a distribution-path-only defect.
+
+Neither available fix is mechanical: per-component ownership (the CH-1
+chart pattern) means relocating 315 declarations into 35 CSS modules and
+resolving 15 tokens that are consumed by a file other than their
+name-owner (the popover/select/date-picker and calendar-day/period-cell
+clusters) via per-component DOM nesting judgement; expanding Foundation to
+carry the component tier is a Foundation-scope change with no supporting
+architecture evidence for a tier its own comments mark `[TEMPORARY]`.
+Either way, 12 component-tier tokens are re-declared inside the
+Shape/Surface mode blocks Foundation *does* transport, so token ownership
+and mode precedence must be decided together. Full analysis and the exact
+lists live in
+[`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md#cross-cutting-component-token-delivery-audit--2026-09-22-oss-1a).
+
+**Canonical next:** OSS-1B — Distributed Token Delivery Hardening
+(**NOT STARTED**). Its exit criterion is deleting the allowlist in
+`lib/token-delivery-audit.test.ts` outright. OSS-2 (directory submission)
+is gated behind it; the draft namespace entry, logo and PR copy are
+already prepared and recorded in the OSS-1A final report.
 
 ## 2026-09-22 — NAV-3 Component Directory Reorganization (COMPLETE)
 

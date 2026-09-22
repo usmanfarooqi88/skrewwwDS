@@ -164,10 +164,12 @@ registry (`lib/component-registry.ts`) via `npm run generate:registry` and
 served as static manifests under `/r/{name}.json`. This is a separate path
 from the `/registry.json` metadata feed below.
 
-**Supported `/r` install surface (exactly six items):** `foundation`,
-`button`, `card`, `text-input`, `form-field`, and `validation-message`.
-Other implemented React components are documented on this site but are not
-part of the current shadcn install surface.
+**Supported `/r` install surface.** A growing subset of implemented React
+components is installable this way; the current, authoritative list is the
+live catalog itself — [`/r/registry.json`](https://skrewww.com/r/registry.json)
+(or `npx shadcn@latest search @skrewww`) — not a count maintained here, since
+it changes as components are added. Some implemented components are
+documented on this site but not yet part of the shadcn install surface.
 
 Scope, mechanism, and verified consumer testing:
 [`docs/architecture/shadcn-distribution.md`](docs/architecture/shadcn-distribution.md).

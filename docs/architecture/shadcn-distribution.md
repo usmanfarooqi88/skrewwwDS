@@ -141,9 +141,13 @@ Served as static files under `public/r/`:
   (`…/r/{name}.json` with `name=registry`). Index items omit file
   `content`; install payloads remain on the individual manifests.
   Foundation is included as an installable `registry:file` item. Current
-  coverage: foundation + 52 component manifests = **53** discovery items
-  (52/55 React components; three banking pilots intentionally deferred).
-  See [`docs/distribution-expansion.md`](../distribution-expansion.md).
+  coverage (verified 2026-09-22, OSS-1A): foundation + 55 component
+  manifests = **56** discovery items (55/58 React components; the three
+  banking pilots remain intentionally deferred). This count moves as
+  components are added — treat `/r/registry.json` itself as the source of
+  truth, not this line.
+  See [`docs/distribution-expansion.md`](../distribution-expansion.md) for
+  the batch-by-batch history that built up to full non-banking coverage.
 
 This coexists with `/registry.json`
 at the root — a different path, a different purpose (shadcn CLI
@@ -408,3 +412,88 @@ each `registryDependencies: ["@skrewww/foundation"]`, empty npm
 
 **Consumer proof:** `npm run smoke:consumer -- spinner|divider|link` and
 composed `spinner-divider-link`. Schema remains `1.4.0`.
+
+## Cross-cutting component-token delivery audit — 2026-09-22 (OSS-1A)
+
+The "Token transport rule" above (component-private geometry lives in the
+component's own CSS module) was applied consistently for charts and for
+Spinner/Divider/Link, but not retroactively to most earlier components.
+OSS-1A re-audited every distributed manifest's transported payload (not
+repo source) for `var(--token)` references with no CSS fallback that are
+undefined by the manifest's own CSS, its resolved `registryDependencies`
+closure, or Foundation — including scanning `.tsx` for inline
+custom-property definitions (e.g. Slider sets its own `--slider-*`
+variables via React inline `style`, which is correctly self-sufficient and
+not a bug).
+
+**Finding (exact, not approximate):** **35 of 55** distributed components
+reference **315 distinct** custom properties that no part of their install
+closure defines. Every one of those 315 tokens comes from exactly one
+place: the component tier of `styles/tokens.css` — the span between
+`/* ── Form control geometry` and `/* ── Shape modes ── */` that
+`extractFoundationCssFromSource()` deliberately excludes from the
+Foundation transport. Zero come from anywhere else, so this is a single
+root cause, not a collection of unrelated defects.
+
+The 20 clean components are: `button`, `card`, `text-input`, `form-field`,
+`validation-message`, `spinner`, `divider`, `link`, `slider`, `stepper`,
+`button-group`, `toggle-group`, `search-field`, `credit-card-field`,
+`number-input`, `split-button`, `bar-chart`, `line-chart`, `area-chart`,
+`chart-metric`.
+
+**Consumer proof (two independent clusters, real browsers, fresh
+installs):**
+
+- `@skrewww/badge` — computed `padding: 0px`, `border-radius: 0px`,
+  `background-color: rgba(0,0,0,0)`, `border-color: rgb(23,23,23)`
+  instead of the intended success treatment.
+- `@skrewww/alert` — computed `padding: 0px`, `border-radius: 0px`,
+  `gap: normal`, `border-width: 0px`; `--feedback-padding`,
+  `--feedback-radius` and `--feedback-info-border` all resolve to nothing,
+  while the Foundation-tier `--semantic-surface-default` correctly
+  resolves to `#fff` in the same document. That contrast is the whole bug
+  in one measurement: Foundation transport works, the component tier
+  simply never ships.
+
+Note this is a **distribution-only** defect. The docs site loads
+`styles/tokens.css` whole, so every tier cascades from `:root` and the
+site renders correctly; only the `/r` install path is affected.
+
+**Disposition — deferred to a dedicated phase (OSS-1B), not fixed here.**
+Both candidate fixes change architecture rather than being mechanical:
+
+1. *Per-component ownership* (the CH-1 chart pattern) means relocating 315
+   declarations out of the canonical token file into 35 component CSS
+   modules. Beyond volume, 15 of those tokens are referenced by a file
+   other than their name-owner — `--popover-surface`/`-border`/
+   `-elevation`/`-viewport-padding` are consumed by `select.module.css`
+   and `date-picker.module.css` (and `--popover-surface` is not consumed
+   by `popover.module.css` at all), and eight `--calendar-day-*` tokens
+   are consumed by `calendar-period-cell.module.css`. Scoping those to a
+   component root only resolves if the consuming element is actually
+   nested inside the owning element, which is a per-component DOM
+   judgement, not a mechanical move.
+2. *Expanding the Foundation transport to carry the component tier* would
+   ship ~361 tokens to every consumer regardless of what they installed,
+   and the tier is explicitly marked `[TEMPORARY]` in `tokens.css` — there
+   is no architecture evidence that global delivery is the intended
+   design, so this is a Foundation-scope decision, not a bug fix.
+
+There is also a third design question either option must answer first: 12
+component-tier tokens (`--menu-surface`, `--menu-border`,
+`--menu-elevation`, `--menu-item-hover-surface`, `--menu-backdrop-filter`,
+`--feedback-{info,success,warning,error}-surface`,
+`--file-upload-dragging-surface`, `--pagination-page-radius`,
+`--component-list-item-supporting-text`) are re-declared inside the
+Shape/Surface mode blocks that Foundation *does* transport. A declaration
+placed on the component element would defeat those ancestor-level mode
+overrides, so token ownership and Shape/Surface mode precedence have to be
+decided together.
+
+**Guard rail in the meantime:** `lib/token-delivery-audit.test.ts` checks
+all 56 manifests on every `npm test`. It allowlists the 35 currently-known
+components so CI is not red on a tracked, deliberately-deferred defect,
+but the allowlist is shrink-only — fixing a component without removing it
+from the list fails the test, and a regression in any of the 20 clean
+components fails it too. Deleting that allowlist entirely is OSS-1B's exit
+criterion.

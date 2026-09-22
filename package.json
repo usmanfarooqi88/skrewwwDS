@@ -2,7 +2,23 @@
   "name": "skrewww-docs",
   "version": "1.0.0",
   "private": true,
+  "description": "AI-first React design system with machine-readable contracts for coding agents.",
+  "homepage": "https://skrewww.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usmanfarooqi88/skrewwwDS.git"
+  },
+  "author": "Usman Farooqi",
   "license": "MIT",
+  "keywords": [
+    "design-system",
+    "react",
+    "typescript",
+    "shadcn",
+    "accessibility",
+    "ai",
+    "coding-agents"
+  ],
   "engines": {
     "node": ">=22.13.0 <23 || >=24 <25"
   },
