@@ -1,6 +1,103 @@
 # Project status
 
-Last verified: **2026-09-22** (**CH-2 Core Cartesian Charts ✅ COMPLETE**; CH-3 Chart Card / Dashboard Compositions **NOT STARTED**; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-22** (**CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE**; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-22 — CH-3 Chart Card / Dashboard Compositions (COMPLETE)
+
+**Verdict: COMPLETE.** Added the reusable dashboard-composition layer around
+charts: two new public components, `ChartCard` and `ChartMetric`. **No new
+chart family, no Scatter, no Pie/Donut/etc., no Guard rule, no systemic token
+migration, no banking redesign.**
+
+**Architecture decision (Option C — a small public wrapper plus existing
+primitives, not a new base container and not composition-only docs).**
+Justified by real, existing duplication found before writing any code: the
+same value typography (1.5rem/700-weight/tabular-nums) was independently
+reimplemented three times — `BankingAccountCard`'s `.balance`,
+`BankingBalanceSummary`'s `.totalValue` (byte-identical CSS), and the
+Reference App overview page's raw Tailwind `text-3xl font-semibold
+tabular-nums` — and Card's own `title` has no description/actions slot. Chart
+family (Bar/Line/Area Chart) ≠ Chart Card (this composition) ≠ an
+industry-specific block (`RevenueChartCard`, etc.) — the last layer stays out
+of core, explicitly, per the registry `openQuestions`.
+
+**`ChartCard`** (Containers & Overlays, Beta, no Figma reference): renders
+inside `Card`'s own body — no background/border/radius/Shape/Surface property
+anywhere in its own stylesheet, so Shape/Surface come from `Card` through the
+CSS cascade, unchanged from `BankingAccountCard`'s own documented mechanism.
+Header is `title`/`description`/`headingLevel`/`actions` (wraps via flexbox,
+no media query). `state: "ready" | "loading" | "empty" | "error"` (default
+`"ready"`) — only one region renders; a chart family never owns network state,
+`ChartCard` does, and it fetches nothing itself. `contentHeight` (default 240)
+is a `minHeight`, not a fixed height, so every state keeps the same minimum
+card size (Skeleton/EmptyState/Alert all measured stable across state
+switches, including under real browser load). `loading` reuses `Skeleton`;
+`empty` reuses `EmptyState` (no icon/illustration — compact); `error` reuses
+`Alert` (`type="error"`, `announce="polite"` — the only state that is
+announced, since it is the one the user was not otherwise told about). There
+is **no `metric` prop** — a metric belongs in `children`, composed alongside
+the chart, exactly as both banking components already do it by hand.
+**No canonical time-range control was built**: Banking Balance Summary
+already proves the composition (Tabs in the `actions` slot, one `TabsPanel`
+per range, each with its own chart instance) without a new abstraction —
+documented as the composition pattern instead, per the task's own instruction
+not to invent one without a second, materially different real use case.
+
+**`ChartMetric`** (Content & Data, Beta, no Figma reference): label + value +
+optional `delta: { direction: "up"|"down"|"flat"; value; label? }`.
+`direction` selects only the icon (Phosphor `ArrowUp`/`ArrowDown`/`Minus`,
+`aria-hidden`) — **never a color**: the delta uses the exact same
+`--semantic-text-secondary` as the label, proven equal against the real
+compiled stylesheet, and the direction is announced in words
+("Increased"/"Decreased"/"Unchanged") via visually-hidden text, never
+conveyed by icon or color alone. No green-is-good/red-is-bad rule exists —
+an increase is not always a good outcome (spend, churn, error rate) — this is
+a recorded design decision, not a placeholder.
+
+**Registry / Agent / distribution.** Both components: full registry entries
+(`apiProps`, `cssTokens`, `openQuestions`), docs content
+(`content/containers.ts` for Chart Card, matching Card's own file;
+`content/content-data.ts` for Chart Metric, matching the charts'), previews,
+README inventory. 56 manifests + index, 58 Agent contracts.
+`ChartCard.registryDependencies = ["@skrewww/card", "@skrewww/empty-state",
+"@skrewww/alert", "@skrewww/skeleton", "@skrewww/foundation"]` — every one
+already a real, distributed registry item (test-enforced); `ChartMetric`
+depends only on Foundation, plus a real `@phosphor-icons/react` npm
+dependency (caught by the official consumer smoke: the first `build:
+Module not found` run genuinely failed until this was added to the registry
+— a real bug the harness caught, not a hypothetical one). Confirmed
+independently installable: `bar-chart`'s own route grew by exactly the same
+bytes as every unrelated route (registry-index metadata only, not chart-card
+code) — installing a chart pulls in neither Card, EmptyState, Alert, nor
+Skeleton.
+
+**Proof.** 149 test files / 1457 Vitest tests pass — new tests were
+mutation-checked (state gating, `announce="polite"`, `minHeight`, neutral
+delta color, direction announcement, prop-alignment drift). Official
+`npm run smoke:consumer` passes for both `chart-card` (41 checks: real
+install, state switching in the browser including the installed
+Skeleton/EmptyState/Alert elements, minimum height held) and `chart-metric`
+(23 checks, after the dependency fix above). 10 new Playwright tests pass
+(desktop, 375px, keyboard-tab-order across every chart on the page,
+loading→empty→error→ready with no layout collapse, the Tabs time-range
+composition switching charts).
+
+**Recorded, not fixed (separate follow-ups, unchanged from CH-1/CH-2)**
+1. Cross-cutting component-tier token delivery for 33 other distributed
+   manifests — untouched here.
+2. Guard package artifacts (`packages/guard/dist`, packaged facts) remain
+   behind the registry, as recorded in CH-2 — not rebuilt in CH-3 either.
+3. Open decisions carried forward: categorical series palette,
+   positive/negative chart colors, dense-data/long-label policy, interactive
+   legend, keyboard-operable charts, Figma chart component sets (neither
+   Chart Card nor Chart Metric has one).
+4. `ChartCard`/`ChartMetric` were not retrofitted onto `BankingAccountCard`,
+   `BankingBalanceSummary`, or the Reference App overview page — all three
+   predate them and are unchanged; the duplication that motivated this phase
+   is recorded as evidence in the registry `openQuestions`, not migrated.
+
+**Canonical next:** a later chart phase (e.g. industry-specific chart
+compositions, or advanced chart families) — **NOT STARTED**.
 
 ## 2026-09-22 — CH-2 Core Cartesian Charts (COMPLETE)
 
