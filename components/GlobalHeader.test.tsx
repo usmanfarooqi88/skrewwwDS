@@ -98,6 +98,30 @@ describe("GlobalHeader", () => {
     ).toHaveLength(0);
   });
 
+  // The header borrows Tabs' *visual* language (underline on the header's own
+  // bottom divider) but must never borrow its semantics: these are page
+  // navigation links, not tab panels.
+  it("introduces no tab semantics while reusing the Tabs underline treatment", () => {
+    mockPathname = "/docs";
+    const { container } = render(<GlobalHeader />);
+    const header = container.querySelector("header")!;
+    expect(header.querySelectorAll('[role="tab"]')).toHaveLength(0);
+    expect(header.querySelectorAll('[role="tablist"]')).toHaveLength(0);
+    expect(header.querySelectorAll('[role="tabpanel"]')).toHaveLength(0);
+    expect(header.querySelectorAll("[aria-selected]")).toHaveLength(0);
+    // The active item still conveys itself the navigation way.
+    expect(within(header).getByRole("link", { name: "Docs" })).toHaveAttribute("aria-current", "page");
+  });
+
+  it("keeps Resources a Menu trigger, not a plain link or a tab", () => {
+    render(<GlobalHeader />);
+    const nav = screen.getByRole("navigation", { name: "Global" });
+    const trigger = within(nav).getByRole("button", { name: "Resources" });
+    expect(trigger).toHaveAttribute("aria-haspopup", "menu");
+    expect(trigger.tagName).toBe("BUTTON");
+    expect(trigger).not.toHaveAttribute("href");
+  });
+
   it("opens the mobile drawer with only global destinations and resources, then restores focus to the trigger on close", async () => {
     const user = userEvent.setup();
     render(<GlobalHeader />);

@@ -45,13 +45,18 @@ export function GlobalHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink-200 bg-white/90 backdrop-blur-sm">
-      <div className="flex h-14 items-center justify-between gap-4 px-4 md:px-6">
+    // The header's own bottom border is the single shared baseline every
+    // active nav indicator sits on — see HeaderNavLink/ResourcesMenu's doc
+    // comments. Reuses Tabs' own border token/color rather than a separate
+    // ink-200 divider, so there is only ever one line, never a header
+    // border plus a floating nav underline.
+    <header className="sticky top-0 z-40 border-b border-[var(--tab-border)] bg-white/90 backdrop-blur-sm">
+      <div className="flex h-14 items-stretch justify-between gap-4 px-4 md:px-6">
         <Link href="/" className="inline-flex shrink-0 items-center" aria-label="Skrewww home">
           <Image src="/logo.svg" alt="skrewww" width={590} height={161} className="h-6 w-auto" priority />
         </Link>
 
-        <nav aria-label="Global" className="hidden items-center gap-6 lg:flex">
+        <nav aria-label="Global" className="hidden items-stretch gap-6 lg:flex">
           {globalNavItems.map((item) => (
             <HeaderNavLink key={item.href} href={item.href} isActive={activeArea === item.area}>
               {item.label}
