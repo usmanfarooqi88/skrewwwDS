@@ -1,6 +1,57 @@
 # Project status
 
-Last verified: **2026-09-23** (**OSS-4B SUBMITTED — PENDING REVIEW** — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-23** (**OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-23 — OSS-4C Final Curated Directory Audit (COMPLETE — no additional directory selected)
+
+**Outcome: OSS-4C — curated directory audit complete. No additional
+high-signal directory selected.** The curated-directory discovery track is
+closed with the three already-submitted listings
+([shadcn-ui/ui#11991](https://github.com/shadcn-ui/ui/pull/11991),
+[awesome-shadcn-ui#626](https://github.com/birobirobiro/awesome-shadcn-ui/pull/626),
+registry.directory `skrewww-com-r-registry-json-2d32f29a`).
+
+**Five candidates audited, all rejected** against the quality bar (a
+candidate needed to clear all eight criteria):
+
+- **21st.dev shadcn directory** (`21st.dev/community/shadcn-directory`,
+  336 registries, real per-entry GitHub star counts and live last-commit
+  timestamps, active editorial blog under a named author) — genuinely
+  active and high-visibility, but no public self-service submission
+  mechanism was found after checking the directory page (`find` for
+  "submit"/"suggest" returned zero matches) and its publishing blog post
+  (describes how to *build* a registry, not how to get *listed* on 21st).
+  An open, unanswered upstream issue asking exactly "How to add a template
+  on .../community/templates" (`serafimcloud/21st#284`) and a second open
+  bug report that their "Send for review" publish flow "does nothing with
+  no error" (`serafimcloud/21st#280`) corroborate that listing here isn't
+  a reliable, documented path today. Rejected on criterion 3.
+- **shoogle.dev/directory** — its own page states "Community registries
+  **pulled from the shadcn/ui directory**" and lists the same count as the
+  official `shadcn-ui/ui` directory; an auto-generated mirror, not an
+  independent list, and Skrewww will appear there automatically once
+  #11991 merges with no separate action possible or needed. Rejected on
+  criterion 6 (duplicate/mirror of an existing submission).
+- **bytefer/awesome-shadcn-ui** — same title, same one-line description,
+  same generic-awesome-list format as `birobirobiro/awesome-shadcn-ui`
+  (already submitted); recently active (pushed 2026-09-14) but a parallel
+  list of the same genre and scope. Rejected on criterion 6.
+- **Grokipedia "List of shadcn/ui registries"** — an auto-generated
+  reference/wiki page (xAI's Grokipedia), not a maintained community
+  project with a submission process. Rejected on criteria 3 and 4.
+- **ShadcnStore** — itself a commercial shadcn-compatible component
+  registry/marketplace (comparable to entries already *inside*
+  awesome-shadcn-ui and registry.directory, e.g. `beste-ui`, `paceui`),
+  not a third-party discovery directory that lists other registries.
+  Not applicable — there is nothing here for Skrewww to be listed *in*.
+
+**No submission was made in this phase.** No existing submission
+(shadcn-ui/ui#11991, awesome-shadcn-ui#626, or the registry.directory
+pending entry) was modified.
+
+**Canonical next:** none for curated-directory discovery — that track is
+closed. Remaining open items are upstream review outcomes on the three
+existing submissions, tracked in their own dated entries above.
 
 ## 2026-09-23 — OSS-4B registry.directory Submission (SUBMITTED — PENDING REVIEW)
 
