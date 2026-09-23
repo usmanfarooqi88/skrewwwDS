@@ -1,6 +1,49 @@
 # Project status
 
-Last verified: **2026-09-23** (**OSS-2A ✅ COMPLETE — upstream submission dry run green, READY TO OPEN OSS-2 PR**; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-23** (**OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW** — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-23 — OSS-2 Official shadcn Registry Directory Submission (SUBMITTED — AWAITING UPSTREAM REVIEW)
+
+**Status: SUBMITTED — AWAITING UPSTREAM REVIEW.** Not complete — directory
+inclusion is only COMPLETE once upstream merges the PR and the public
+registry directory (`https://ui.shadcn.com/r/registries.json`) actually
+lists `@skrewww`.
+
+Immediately before submitting: Skrewww `main` reconfirmed at
+`60ec7b1f306780d610d62d9122c4d6a7ab782267` with CI **success** on that exact
+SHA (run `35839490766`); upstream `@skrewww` recollision-checked (absent
+from both the 382-entry published index and `directory.json`, no
+conflicting open/closed PR); upstream base recheck showed no new commits
+since the OSS-2A dry run (`98a1fe6`); the submission SVG re-rendered and
+re-confirmed byte-identical to the OSS-2A-corrected version (root
+`fill="none"` retained); five representative live `/r/*.json` endpoints
+(`registry.json`, `foundation.json`, `button.json`, `badge.json`,
+`alert.json`) reconfirmed HTTP 200.
+
+**Submission.** Forked `shadcn-ui/ui` to `usmanfarooqi88/ui`, branch
+`feat/skrewww-registry` off upstream `main@98a1fe6`, one commit
+(`8deab5096a42c90885176dcd225df7621a373018`) appending the single validated
+`@skrewww` entry to `apps/v4/registry/directory.json` — `pnpm
+validate:registries` exit 0 immediately before commit, diff exactly
+`1 file changed, 7 insertions(+)`. PR:
+[shadcn-ui/ui#11991](https://github.com/shadcn-ui/ui/pull/11991).
+
+**Initial upstream checks:** Signed commits ✅ pass, Socket Security Project
+Report ✅ pass, Socket Security PR Alerts ✅ pass, Vercel Security Review ✅
+pass. Vercel's own preview-deploy check shows "Authorization required to
+deploy" — the standard first-time-external-contributor gate Vercel applies
+before running an outside PR's code in their deploy environment, not a
+finding about this submission's content, and not something this side can
+resolve.
+
+**Not done, by design:** no merge performed or requested, no npm publish, no
+Skrewww release, no social announcement, no maintainer ping beyond opening
+the PR itself.
+
+**Canonical next:** wait for upstream review/merge. Do not reopen OSS-2 to
+resubmit unless the PR is closed without merging. Once merged, update this
+entry to COMPLETE with confirmation that `@skrewww` is live in
+`https://ui.shadcn.com/r/registries.json`.
 
 ## 2026-09-23 — OSS-2A Upstream Submission Dry Run (COMPLETE — READY FOR OSS-2)
 
