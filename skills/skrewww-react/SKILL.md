@@ -55,6 +55,14 @@ State the mode before acting if it is not obvious. Do not switch modes silently.
 | **DISTRIBUTE** | Registry, installability, and the generated consumer projection. | Canonical source only; regenerate outputs. |
 | **VALIDATE** | Run parity/contract/test checks without unrelated implementation. | No product edits. |
 
+**Mixed "audit and fix" requests** (e.g. "audit parity and fix whatever is
+missing"): run AUDIT first, say when you switch to FIX, and classify every
+finding as (a) a proven implementation defect, (b) intentional non-parity or
+deferred scope, or (c) an unresolved human design/API decision. Fix only (a),
+and only because the request authorized fixing. Report (b). STOP and ask on (c).
+An audit observation is never permission to invent behavior, add API, or settle
+a design question.
+
 ## 3. Authority — what decides what
 
 Different questions have different authorities. Conflicts between sources are
@@ -278,6 +286,28 @@ Figma parity, visual output, or Shape/Surface.
   `npm run generate:guard-facts` (and `build:guard-package` if the package
   changed).
 
+**Consumer Contract Verification is not Guard.** Keep the two layers distinct:
+
+- **Guard** validates deterministic *claims* about canonical Skrewww facts, from
+  source text and generated artifacts. It never installs or runs anything.
+- **Consumer Contract Verification** proves the *installed result* works: a real
+  empty app, a real registry install, and evidence read from what actually
+  landed. Intended checks include distributed exports being importable,
+  unresolved imports, CSS variables/tokens actually resolving, registry manifest
+  ↔ real exports, representative rendering, release source-SHA/test evidence,
+  postinstall audit, and token rename/removal compatibility.
+- `npm run smoke:consumer -- <slug>` is an existing per-component precursor
+  (fresh consumer, real shadcn CLI, build); it does not satisfy the broader
+  layer. Its status is tracked in the **Phase roadmap** in
+  `docs/project-status.md` (entry "Consumer Contract Verification"). Read that
+  entry for what, if anything, has been built; do not assume more.
+  `docs/architecture/shadcn-distribution.md` describes the existing harness.
+- It is a validation layer, **not a Guard rule**. Do not fold it into Guard, add
+  a rule for it, or build the broader layer unless explicitly asked. A request
+  like "add a real consumer install verification" is this layer: inspect the
+  existing consumer harness first, and keep it out of Guard's zero-config,
+  offline scope.
+
 ## 10. Validation
 
 Pick gates by the task. Work outward: focused → static → unit → build → browser.
@@ -338,7 +368,14 @@ Rules:
   checklists under `docs/releases/` first (choose the file at task time; do not
   assume one). Green implementation is not release permission. npm publish,
   GitHub Release, website announcement, and Figma Pro / Free Community / Gumroad
-  republish each require explicit human approval for that action. When a React or
+  republish each require explicit human approval for that action. Approval
+  must identify the target well enough that nothing is guessed: "publish it"
+  is not enough when more than one package or release is possible. Before an
+  irreversible or outward-facing release action, confirm at least the exact
+  package/artifact, the version, and the channel/dist-tag where one applies
+  (e.g. npm `latest` vs `beta`), and ask if any is unclear. No magic phrase is
+  required; a message that names the target is approval. This gate is for
+  release/publish/announce actions, not ordinary `git push` (§11). When a React or
   shared change materially affects the paid Figma Pro system, **flag the
   Figma/Gumroad sync requirement**; do not act on it.
 - **Security/privacy:** no credentials, tokens, or `.env*` contents in commits,

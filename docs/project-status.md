@@ -5005,6 +5005,7 @@ here instead.
 | Guard CI-2 (non-required enforcement) | **NOT STARTED** |
 | Guard CI-3 (required gate) | **NOT STARTED** |
 | Post-v0.1 Rules | NOT STARTED — re-audit deferred candidates; no auto-reopen of `api/nonexistent-prop` |
+| Consumer Contract Verification | **PLANNED / NOT STARTED** — real installed-consumer validation, **separate from Guard** (not a Guard rule); scope in [Consumer Contract Verification](#consumer-contract-verification-planned--not-started) below |
 
 **Current focus:** CE-2K Stepper implementation **SHIPPED** — Beta
 `0.1.0-beta`, exactly matching CE-2J's verified narrow contract (no
@@ -5040,6 +5041,36 @@ Keep only if they become product requirements (not active work):
 
 - Checkbox compact/label-visibility if the empty-label table-selection override becomes authoring-fragile
 - Data Table Row only if selected/hover chrome or denser action rows are required
+
+### Consumer Contract Verification (PLANNED / NOT STARTED)
+
+Recorded 2026-09-23. **Status: PLANNED / NOT STARTED.** Nothing here is
+implemented, and no phase has been scoped or approved.
+
+**Purpose:** prove the *installed result* works, from a clean external consumer
+rather than from Skrewww's own source. Planned checks:
+
+- clean external consumer install (empty app, real registry install)
+- distributed exports exist and are importable
+- unresolved imports
+- CSS variable / token resolution
+- registry manifest ↔ actual export surface
+- representative renderability where practical
+- release source SHA / contract-test evidence
+- unexpected postinstall audit
+- token rename / removal compatibility
+
+**Boundary.** This is **separate from Guard.** Guard validates deterministic
+claims about canonical Skrewww facts and never installs or runs anything; this
+layer validates a real install. Both are "contract" checks, but that does not
+make this a Guard rule, and it must not become one. Do not fold it into Guard.
+
+**Existing harness.** `npm run smoke:consumer -- <slug>`
+(`scripts/smoke-test-consumer.ts`) is a per-component install/build harness and
+a partial precursor. It is **not** evidence that this planned scope is met, and
+this entry does not claim it is.
+
+Update this entry when a phase is actually scoped or started.
 
 ## Source-of-truth rules
 
