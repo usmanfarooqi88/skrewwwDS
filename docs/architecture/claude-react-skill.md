@@ -66,6 +66,8 @@ Outside it:
 - Building Consumer Contract Verification (real installed-consumer validation) —
   a separate validation layer from Guard; the skill records the boundary and
   points at the existing `smoke:consumer` harness, but does not implement it.
+  Its status is tracked in the Phase roadmap in
+  [`../project-status.md`](../project-status.md), not in the skill.
 
 ## Updating it
 
