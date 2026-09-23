@@ -63,6 +63,9 @@ Outside it:
 - Live project status — [`../project-status.md`](../project-status.md).
 - Guard rule design — the Guard docs and readiness audit; this skill only
   describes Guard's boundaries.
+- Building Consumer Contract Verification (real installed-consumer validation) —
+  a separate validation layer from Guard; the skill records the boundary and
+  points at the existing `smoke:consumer` harness, but does not implement it.
 
 ## Updating it
 

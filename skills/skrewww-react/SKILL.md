@@ -278,6 +278,26 @@ Figma parity, visual output, or Shape/Surface.
   `npm run generate:guard-facts` (and `build:guard-package` if the package
   changed).
 
+**Consumer Contract Verification is not Guard.** Keep the two layers distinct:
+
+- **Guard** validates deterministic *claims* about canonical Skrewww facts, from
+  source text and generated artifacts. It never installs or runs anything.
+- **Consumer Contract Verification** proves the *installed result* works: a real
+  empty app, a real registry install, and evidence read from what actually
+  landed. Intended checks include distributed exports being importable,
+  unresolved imports, CSS variables/tokens actually resolving, registry manifest
+  ↔ real exports, representative rendering, release source-SHA/test evidence,
+  postinstall audit, and token rename/removal compatibility.
+- `npm run smoke:consumer -- <slug>` is the existing per-component instance of
+  this idea (fresh consumer, real shadcn CLI, build). Read
+  `docs/project-status.md` and `docs/architecture/shadcn-distribution.md` for
+  how much of the broader layer exists; do not assume it is complete.
+- It is a validation layer, **not a Guard rule**. Do not fold it into Guard, add
+  a rule for it, or build the broader layer unless explicitly asked. A request
+  like "add a real consumer install verification" is this layer: inspect the
+  existing consumer harness first, and keep it out of Guard's zero-config,
+  offline scope.
+
 ## 10. Validation
 
 Pick gates by the task. Work outward: focused → static → unit → build → browser.
