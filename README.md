@@ -1,28 +1,62 @@
-# Skrewww Docs
+# Skrewww
 
-Documentation site for **Skrewww Design System 1.0** — token-driven components, native-first form semantics with accessible custom controls where native HTML cannot represent the confirmed interaction model, server-rendered usage guidance, and React implementations with live previews.
+**Skrewww** is a React and TypeScript design system: accessible, semantic
+components with token-driven Shape and Surface personalities, distributed
+through a shadcn-compatible installable registry, paired with a matching
+Figma library, and described to AI coding agents through machine-readable
+contracts — one connected system, not separate products.
 
-Skrewww **1.0** is the platform and documentation release. Individual React components retain their own Beta maturity until explicitly promoted to Stable.
+Skrewww **1.0** is the platform and documentation release. Individual React
+components retain their own Beta maturity until explicitly promoted to
+Stable — see [Implemented React components](#implemented-react-components).
 
-## Getting Started
+[![CI](https://github.com/usmanfarooqi88/skrewwwDS/actions/workflows/ci.yml/badge.svg)](https://github.com/usmanfarooqi88/skrewwwDS/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/usmanfarooqi88/skrewwwDS)](https://github.com/usmanfarooqi88/skrewwwDS/releases)
 
-**New to this repository? Start here: [`docs/getting-started.md`](docs/getting-started.md).**
+![Skrewww — React design system: token-driven, native controls, React implementations](https://skrewww.com/opengraph-image)
 
-That guide is the canonical developer onboarding path (local run, repo map,
-architecture, Figma ↔ React rules, tokens, registry, tests, and Git safety).
+## Quick Start
 
-Contribution rules: [`docs/contributing.md`](docs/contributing.md) · also
-[`CONTRIBUTING.md`](CONTRIBUTING.md).
+Install a component from the `@skrewww` registry with the real [shadcn](https://ui.shadcn.com) CLI.
 
-```bash
-npm install
-npm run verify:node
-npm run dev
+`@skrewww` is not yet listed in shadcn's official registry directory
+([shadcn-ui/ui#11991](https://github.com/shadcn-ui/ui/pull/11991) is open) —
+until it merges, declare the registry once in your project's
+`components.json`:
+
+```json
+{
+  "registries": {
+    "@skrewww": "https://skrewww.com/r/{name}.json"
+  }
+}
 ```
 
-Requires Node.js `>=22.13.0 <23 || >=24 <25` (see `engines` in
-`package.json`; `.nvmrc` pins recommended local Node 24). `npm run dev`
-prints the local URL on startup.
+Then install:
+
+```bash
+npx shadcn@latest add @skrewww/button
+```
+
+This resolves the token-driven Foundation stylesheet and any
+component-to-component dependencies automatically via `registryDependencies`
+— no separate install step. Verified end-to-end (fresh project, real CLI,
+production build); tested commands and the Tailwind-free `components.json`
+shape live in
+[`docs/architecture/shadcn-distribution.md`](docs/architecture/shadcn-distribution.md).
+Full catalog: [`/r/registry.json`](https://skrewww.com/r/registry.json) ·
+Browse components: [skrewww.com/components](https://skrewww.com/components).
+
+Once #11991 merges, `npx shadcn@latest add @skrewww/button` and
+`npx shadcn@latest search @skrewww` will resolve the namespace without the
+manual `components.json` entry above.
+
+**New to this repository as a contributor?** Start at
+[`docs/getting-started.md`](docs/getting-started.md) (local run, repo map,
+architecture, Figma ↔ React rules, tokens, registry, tests, Git safety) or
+[`CONTRIBUTING.md`](CONTRIBUTING.md) / [`docs/contributing.md`](docs/contributing.md).
+Running the docs site itself: see [Running locally](#running-locally) below.
 
 ### Documentation map
 
@@ -41,9 +75,12 @@ prints the local URL on startup.
 Code in this repository is [MIT](LICENSE). Third-party dependencies keep their
 own licenses, and the Skrewww name, logo, and brand identity are **not**
 granted by the code license — see [`TRADEMARKS.md`](TRADEMARKS.md) and
-[`docs/licensing.md`](docs/licensing.md). Skrewww Pro (the paid Figma library
-and Gumroad deliverables) and Skrewww Free (the Community Figma file) are
-separate from this repository and not included in it.
+[`docs/licensing.md`](docs/licensing.md).
+
+**Figma.** The paired Figma library is separate from this repository (not
+MIT, not included in it): [Skrewww Free](https://www.figma.com/community/file/1666920112751907121/skrewww-design-system-free)
+is the free Community file; [Skrewww Pro](https://usmanfarooqi.gumroad.com/l/skrewww-pro)
+is the paid Gumroad file/deliverables.
 
 ## Contributing, feedback, and security
 
@@ -72,6 +109,16 @@ machine-readable contracts instead of relying on model memory. Public
 Beta — overview, getting started, and known limitations:
 [`/agent-kit`](https://skrewww.com/agent-kit) ·
 [`docs/architecture/agent-kit.md`](docs/architecture/agent-kit.md).
+
+## Guard (Beta)
+
+An offline CLI that checks generated code against Skrewww's canonical
+component contracts — invented components/props, wrong maturity claims, and
+non-installable install commands, for example. It is not a TypeScript
+checker, an accessibility checker, a visual-regression tool, or a Figma
+checker. [`/guard`](https://skrewww.com/guard) ·
+[released](https://github.com/usmanfarooqi88/skrewwwDS/releases/tag/guard-v0.1.0-beta.1)
+as `@skrewww/guard@0.1.0-beta.1`.
 
 ### Implemented React components
 
@@ -158,11 +205,17 @@ Stable-v1 Gradient contract: [`docs/architecture/gradient-foundation.md`](docs/a
 ## Distribution Model
 
 **Currently implemented — shadcn-compatible registry distribution.** A
-**supported subset** of components can be installed into a consumer project with
-`npx shadcn@latest add @skrewww/<component>`, generated from the canonical
-registry (`lib/component-registry.ts`) via `npm run generate:registry` and
-served as static manifests under `/r/{name}.json`. This is a separate path
-from the `/registry.json` metadata feed below.
+**supported subset** of components can be installed into a consumer project
+with `npx shadcn@latest add @skrewww/<component>` **once `@skrewww` is
+declared under `registries` in your `components.json`** — see
+[Quick Start](#quick-start) above for the exact entry and a tested command.
+`@skrewww` is not yet listed in shadcn's official registry directory
+([shadcn-ui/ui#11991](https://github.com/shadcn-ui/ui/pull/11991) is open),
+so the bare command above fails with "Unknown registry" until either that
+merges or the entry is declared manually. Manifests are generated from the
+canonical registry (`lib/component-registry.ts`) via `npm run
+generate:registry` and served as static files under `/r/{name}.json`; this
+is a separate path from the `/registry.json` metadata feed below.
 
 **Supported `/r` install surface.** A growing subset of implemented React
 components is installable this way; the current, authoritative list is the
@@ -171,10 +224,7 @@ live catalog itself — [`/r/registry.json`](https://skrewww.com/r/registry.json
 implemented components are documented on this site but not yet part of the
 shadcn install surface.
 
-`npx shadcn@latest search @skrewww` works once `@skrewww` is declared under
-`registries` in your `components.json` (see the architecture doc below for a
-minimal, Tailwind-free example). Until the namespace is listed in shadcn's
-public registry directory, the CLI cannot resolve it by name on its own.
+`npx shadcn@latest search @skrewww` has the same prerequisite as `add` above.
 
 Scope, mechanism, and verified consumer testing:
 [`docs/architecture/shadcn-distribution.md`](docs/architecture/shadcn-distribution.md).
