@@ -1,6 +1,39 @@
 # Project status
 
-Last verified: **2026-09-23** (**OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW** — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-23** (**OSS-4A SUBMITTED — AWAITING REVIEW** — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-23 — OSS-4A awesome-shadcn/ui Curated Directory Submission (SUBMITTED — AWAITING REVIEW)
+
+**Status: SUBMITTED — AWAITING REVIEW.** Not complete — only COMPLETE once
+`birobirobiro/awesome-shadcn-ui` merges the entry.
+
+Reverified current upstream rules from `CONTRIBUTING.md` before submitting
+(row format, no manually-written Date cell, alphabetical ordering ignoring
+case, one-resource-per-PR, paid-tier disclosure) — unchanged from what was
+assumed. Confirmed no existing `skrewww`/`skrewww.com` listing and no
+conflicting open or closed PR.
+
+**Submission.** Forked to `usmanfarooqi88/awesome-shadcn-ui`, branch
+`feat/add-skrewww` off upstream `main@3c4e186e86a878f2b7d8d6f87f17dddd2776b195`,
+one signed commit
+(`5f5077226c225ac7ece1f3d48d28a6156d93c548`) adding a single Registries row
+for Skrewww, alphabetically placed between `shadcn-rjsf-form-builder` and
+`sora-ui`, linking `https://skrewww.com`. Diff: `README.md` only, 1 line
+inserted. Validated by running the repo's own `scripts/format-readme.js` —
+the exact script its "Format README" CI check runs — locally: exit 0, zero
+changes (already correctly formatted), and its built-in duplicate-name/
+duplicate-URL/usable-link checks passed silently. PR:
+[birobirobiro/awesome-shadcn-ui#626](https://github.com/birobirobiro/awesome-shadcn-ui/pull/626).
+
+**Commit signature:** GitHub API reports `verified: true`, `reason: "valid"`
+for this commit — the same SSH signing key configured for the shadcn-ui/ui
+submission now verifies here too.
+
+**Not done, by design:** no merge performed or requested, no second
+directory submission, no Skrewww product/registry/token/Guard/Figma change.
+
+**Canonical next:** wait for upstream review/merge. Once merged, update this
+entry to COMPLETE.
 
 ## 2026-09-23 — OSS-2 Official shadcn Registry Directory Submission (SUBMITTED — AWAITING UPSTREAM REVIEW)
 
