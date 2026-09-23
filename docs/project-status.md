@@ -1,6 +1,62 @@
 # Project status
 
-Last verified: **2026-09-23** (**OSS-4A SUBMITTED — AWAITING REVIEW** — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-23** (**OSS-4B SUBMITTED — PENDING REVIEW** — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-23 — OSS-4B registry.directory Submission (SUBMITTED — PENDING REVIEW)
+
+**Status: SUBMITTED — PENDING REVIEW.** Not complete — only COMPLETE once a
+registry.directory maintainer approves it and it appears in the published
+`directory.json`.
+
+Refetched the current contract fresh (`how-to-submit.md`, `openapi.json`,
+`directory.json`) rather than trusting cached assumptions — unchanged from
+what was expected: `POST /api/submit`, no account/fork/PR, `registry_url` as
+the dedup key, `namespace` verified against the official shadcn index if
+sent, `pro` requiring all five booleans when present. Duplicate check: none
+of `Skrewww` / `skrewww.com` / the registry URL / the GitHub repo appear in
+the 86-entry live directory.
+
+**Eligibility verified live, not assumed.** `https://skrewww.com/r/registry.json`
+— HTTP 200, valid schema, 56 items. Seven representative items
+(`button`, `data-table`, `combobox`, `date-picker`, `file-upload`,
+`bar-chart`, `chart-card`) each resolved HTTP 200 with real, non-empty
+`files[].content` (5.8–31.9 KB of real source per item, zero placeholders).
+Two clean `npx shadcn@4.16.2 add <direct-registry-url>` installs from fresh
+scratch projects both succeeded (`data-table`: 8 files; `bar-chart`: 10
+files).
+
+**Submitted:**
+```json
+{
+  "name": "Skrewww",
+  "description": "Open-source React and TypeScript design system with a shadcn-compatible registry, token-driven Shape and Surface modes, machine-readable contracts for coding agents, and paired Figma libraries.",
+  "url": "https://skrewww.com",
+  "registry_url": "https://skrewww.com/r/registry.json",
+  "github_url": "https://github.com/usmanfarooqi88/skrewwwDS",
+  "github_profile": "https://github.com/usmanfarooqi88.png",
+  "featured": ["data-table", "combobox", "date-picker", "file-upload", "bar-chart", "chart-card"],
+  "pro": { "pro_blocks": false, "templates": false, "figma_kit": true, "mcp_agent": false, "team_license": false }
+}
+```
+
+**`namespace` intentionally omitted** — `shadcn-ui/ui#11991` (the official
+directory listing for `@skrewww`) is still open, and registry.directory
+verifies namespace claims against that index during review; sending it now
+would 422. **Pro disclosure**: only `figma_kit` is `true` — Skrewww Pro is a
+paid Figma library (Gumroad); Agent Kit is free and is not an MCP/agent
+product, so `mcp_agent` stays `false` per the letter of that distinction.
+
+**Response:** HTTP 201, `success: true`, `status: "pending"`, id
+`skrewww-com-r-registry-json-2d32f29a`. The one-time `submission_token` is
+saved locally at `~/.config/skrewww/registry-directory-submission-token`
+(directory `700`, file `600`, verified) — never committed, never printed
+again after the initial response.
+
+**Canonical next:** wait for registry.directory review. **If
+`shadcn-ui/ui#11991` merges while this submission is still pending**,
+re-POST the same `registry_url` with `namespace: "@skrewww"` added, using
+the saved token as an `Authorization: Bearer` header, to update the pending
+entry before it's reviewed.
 
 ## 2026-09-23 — OSS-4A awesome-shadcn/ui Curated Directory Submission (SUBMITTED — AWAITING REVIEW)
 
