@@ -1,6 +1,55 @@
 # Project status
 
-Last verified: **2026-09-22** (**OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport**, OSS-2 next; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-23** (**OSS-2A ✅ COMPLETE — upstream submission dry run green, READY TO OPEN OSS-2 PR**; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-23 — OSS-2A Upstream Submission Dry Run (COMPLETE — READY FOR OSS-2)
+
+**Verdict: READY TO OPEN OSS-2 PR.** Everything needed for the shadcn
+Registry Directory submission is verified and staged; the only remaining
+action is opening the upstream PR, which OSS-2 owns. No upstream PR, push,
+fork, npm publish, release or announcement was made.
+
+**Live production sweep.** All 56 `/r/*.json` endpoints returned HTTP 200
+with valid JSON, correct schema, zero `hostRequirements`/internal-metadata
+leakage, and resolvable `registryDependencies`; an invalid slug still 404s.
+Every manifest is byte-identical to a fresh local build of this SHA, and the
+deployed Foundation (69,171 bytes, sha256 `513231aa…`) carries the OSS-1B
+component tier with the Shape/Surface mode blocks still after it.
+
+**Proofs.** The exhaustive token audit reports 55/55 clean, REAL BUG = 0,
+no allowlist. The OSS-1B cascade proof passes all 12 checks (defaults,
+Shape and Surface overrides beating those defaults, restoration on mode
+removal, and the cross-component popover/calendar-day tokens). Ten
+clean-room installs through the real shadcn CLI pass (323 assertions).
+Installed-consumer computed styles confirm the OSS-1A defects are gone:
+Badge now renders `padding: 3px 8px`, `border-radius: 6px`, `gap: 4px`,
+success-green background/border/text (was 0/0/normal/transparent/black);
+Alert renders `padding: 16px`, `border-radius: 12px`, `gap: 12px`, info-blue
+background, with every `--feedback-*` resolving (all were undefined).
+Two seven-component installs in opposite orders produced a byte-identical
+Foundation (same sha256 as live), 30 UI files each, clean builds — and zero
+duplicate declarations inside `:root`.
+
+**Upstream dry run (temporary checkout outside this repo, never pushed).**
+`shadcn-ui/ui@98a1fe6`, entry appended to `apps/v4/registry/directory.json`
+(383 entries), `pnpm validate:registries` **exited 0**; a deliberate
+negative control — removing the `{name}` placeholder — correctly exited 1,
+proving the validator exercises the new entry. The upstream working tree
+diff was exactly the 7-line entry, with no lockfile churn. `@skrewww`
+remains uncollided across both the published index and `directory.json`
+(382 entries each).
+
+**Corrections made here.** README advertised
+`npx shadcn@latest search @skrewww`, which fails today with "Unknown
+registry" because the namespace is not yet in shadcn's public directory —
+the line now states the components.json prerequisite. A defect in the
+prepared submission logo was also caught and fixed before it shipped:
+compaction had dropped the root `fill="none"`, which SVG inherits, filling
+the stroke-only chevrons black; the logo now renders identically to
+`public/fav.svg`.
+
+**Canonical next:** OSS-2 — Official shadcn Registry Directory Submission
+(**NOT STARTED**).
 
 ## 2026-09-22 — OSS-1B Distributed Token Delivery Hardening (COMPLETE)
 

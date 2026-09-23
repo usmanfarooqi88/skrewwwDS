@@ -167,9 +167,14 @@ from the `/registry.json` metadata feed below.
 **Supported `/r` install surface.** A growing subset of implemented React
 components is installable this way; the current, authoritative list is the
 live catalog itself — [`/r/registry.json`](https://skrewww.com/r/registry.json)
-(or `npx shadcn@latest search @skrewww`) — not a count maintained here, since
-it changes as components are added. Some implemented components are
-documented on this site but not yet part of the shadcn install surface.
+— not a count maintained here, since it changes as components are added. Some
+implemented components are documented on this site but not yet part of the
+shadcn install surface.
+
+`npx shadcn@latest search @skrewww` works once `@skrewww` is declared under
+`registries` in your `components.json` (see the architecture doc below for a
+minimal, Tailwind-free example). Until the namespace is listed in shadcn's
+public registry directory, the CLI cannot resolve it by name on its own.
 
 Scope, mechanism, and verified consumer testing:
 [`docs/architecture/shadcn-distribution.md`](docs/architecture/shadcn-distribution.md).
