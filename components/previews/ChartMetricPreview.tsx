@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartMetric } from "@/components/ui";
+import { ChartMetric } from "@/components/ui/ChartMetric";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 
 export function ChartMetricPreview() {

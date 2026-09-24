@@ -1,6 +1,6 @@
 "use client";
 
-import { Timeline, type TimelineEntry } from "@/components/ui";
+import { Timeline, type TimelineEntry } from "@/components/ui/Timeline";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 
 const events: TimelineEntry[] = [

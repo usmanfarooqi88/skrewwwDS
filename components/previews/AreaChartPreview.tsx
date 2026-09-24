@@ -1,6 +1,6 @@
 "use client";
 
-import { AreaChart } from "@/components/ui";
+import { AreaChart } from "@/components/ui/AreaChart";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 
 const monthlyUsers = [

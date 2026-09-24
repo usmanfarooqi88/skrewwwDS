@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart } from "@/components/ui";
+import { BarChart } from "@/components/ui/BarChart";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 
 const monthlySignups = [

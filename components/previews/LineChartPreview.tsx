@@ -1,6 +1,6 @@
 "use client";
 
-import { LineChart } from "@/components/ui";
+import { LineChart } from "@/components/ui/LineChart";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 
 const monthlySignups = [

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Folder, FileTs, FileCss } from "@phosphor-icons/react";
-import { TreeView, type TreeNode } from "@/components/ui";
+import { TreeView, type TreeNode } from "@/components/ui/TreeView";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 
 const fileTree: TreeNode[] = [

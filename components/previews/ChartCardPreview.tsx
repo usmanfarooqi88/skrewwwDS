@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { ChartCard, ChartMetric, LineChart } from "@/components/ui";
+import { ChartCard } from "@/components/ui/ChartCard";
+import { ChartMetric } from "@/components/ui/ChartMetric";
+import { LineChart } from "@/components/ui/LineChart";
 import { Tabs, TabsList, TabsPanel, TabsTrigger } from "@/components/ui/Tabs";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 

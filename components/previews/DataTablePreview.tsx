@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { DataTableSortHeader } from "@/components/ui/DataTableSortHeader";
+import { Pagination, buildPaginationItems } from "@/components/ui/Pagination";
 import {
-  DataTableSortHeader,
-  Pagination,
   Table,
   TableBody,
   TableCaption,
@@ -11,8 +11,7 @@ import {
   TableHeader,
   TableRow,
   TableScrollArea,
-  buildPaginationItems,
-} from "@/components/ui";
+} from "@/components/ui/Table";
 import { useDataTableSort } from "@/lib/use-data-table-sort";
 import { ComponentPreview, PreviewGroup } from "@/components/docs/ComponentPreview";
 
