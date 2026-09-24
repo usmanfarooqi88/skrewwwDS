@@ -15,6 +15,13 @@ export type ComponentDoc = {
    */
   industry?: string;
   variants?: string;
+  /**
+   * Explicit indexing for docs-only entries that have no registry entry.
+   * Use "noindex" for sub-component/anatomy pages whose meaning depends on a
+   * parent page (the parent stays the search landing page). Omit to fall
+   * back to the substantive-documentation check.
+   */
+  indexing?: "index" | "noindex";
   purpose: string;
   whenToUse: string;
   whenNotToUse: string;

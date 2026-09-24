@@ -130,6 +130,7 @@ export const contentDataComponents: ComponentDoc[] = [
     slug: "tree-item",
     name: "Tree Item",
     category: "Content & Data",
+    indexing: "noindex",
     variants: "State (Default/Hover/Selected) — 3 variants",
     purpose:
       "Tree Item describes the individual hierarchical row in a Tree View — file explorers, nested category browsers, org charts. It is the Figma row pattern; public React composition and interaction live on Tree View.",
@@ -241,6 +242,7 @@ export const contentDataComponents: ComponentDoc[] = [
     slug: "timeline-item",
     name: "Timeline Item",
     category: "Content & Data",
+    indexing: "noindex",
     variants: "State (Default/Highlighted) — 2 variants",
     purpose: "Timeline Item is a single event in a chronological Timeline — activity feeds, order status history, audit logs.",
     whenToUse: "Sequential, time-stamped events where chronological order itself is meaningful.",

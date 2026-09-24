@@ -59,6 +59,8 @@ export default async function IndustryPage(
   const implemented = getImplementedRegistryEntries().filter(
     (entry) => entry.industry === industry,
   );
+  const stableCount = implemented.filter((entry) => entry.status === "stable").length;
+  const betaCount = implemented.filter((entry) => entry.status === "beta").length;
 
   return (
     <article className="mx-auto max-w-4xl px-8 py-16">
@@ -102,7 +104,9 @@ export default async function IndustryPage(
 
         <section>
           <h2 className="text-sm font-semibold text-ink-900">Status</h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-600">{content.statusNote}</p>
+          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            {stableCount} Stable and {betaCount} Beta React components. {content.statusNote}
+          </p>
         </section>
 
         <section>

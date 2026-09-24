@@ -34,7 +34,6 @@ type CategoryPageContent = {
   summary: string;
   description: string;
   accessibilityNotes: string;
-  statusNote: string;
   indexing: "index" | "noindex";
 };
 
@@ -47,8 +46,6 @@ export const categoryPageContent: Record<CategoryName, CategoryPageContent> = {
       "Use action components for intentional user-initiated operations. Prefer one primary action per view and keep destructive actions visually distinct.",
     accessibilityNotes:
       "Action targets must have accessible names, visible focus indicators, and disabled states that are both visual and semantic.",
-    statusNote:
-      "Implemented React components in this category are Beta while Figma parity gaps remain open.",
     indexing: "index",
   },
   Forms: {
@@ -59,8 +56,6 @@ export const categoryPageContent: Record<CategoryName, CategoryPageContent> = {
       "Skrewww forms separate field wrappers from controls. FormField owns label, description, required indication, and validation placement. Individual controls own native input semantics. ValidationMessage renders typed inline feedback linked with aria-describedby.",
     accessibilityNotes:
       "Every control needs a programmatic label. Error state uses aria-invalid and aria-describedby. Native controls preserve platform keyboard, mobile picker, and screen-reader behavior.",
-    statusNote:
-      "All implemented form controls are Beta. Select is non-searchable. Combobox is searchable. Search Field is the canonical search-specific component at /components/search-field.",
     indexing: "index",
   },
   Navigation: {
@@ -71,8 +66,6 @@ export const categoryPageContent: Record<CategoryName, CategoryPageContent> = {
       "Navigation patterns should expose current location, preserve keyboard access, and avoid duplicating page titles without context.",
     accessibilityNotes:
       "Use landmarks, visible focus, and meaningful link text. Do not rely on color alone for the current item.",
-    statusNote:
-      "Link, Breadcrumb, Tabs, Pagination, Menu, and Stepper are implemented (Stepper is Beta). Sidebar and Top Navigation items remain documentation-only.",
     indexing: "index",
   },
   Feedback: {
@@ -83,8 +76,6 @@ export const categoryPageContent: Record<CategoryName, CategoryPageContent> = {
       "Feedback must pair icon or color with explanatory text. Field-level feedback belongs near the related control with ValidationMessage. Persistent page content uses Alert. Transient confirmations use Toast.",
     accessibilityNotes:
       "Associate inline validation with fields through aria-describedby. Use live regions intentionally — static Alerts do not announce by default.",
-    statusNote:
-      "All seven Feedback components with Figma documentation are implemented in Beta: Alert, Toast, Progress Bar, Spinner, Badge, Tooltip, and Skeleton.",
     indexing: "index",
   },
   "Containers & Overlays": {
@@ -95,8 +86,6 @@ export const categoryPageContent: Record<CategoryName, CategoryPageContent> = {
       "Containers establish visual boundaries. Overlays must manage focus, escape dismissal, and background interaction according to pattern requirements.",
     accessibilityNotes:
       "Dialogs and drawers require focus management and accessible names. Clickable cards need a single clear interactive target.",
-    "statusNote":
-      "Card, Dialog, Drawer, Popover, and Accordion are implemented in Beta.",
     indexing: "index",
   },
   "Content & Data": {
@@ -107,8 +96,6 @@ export const categoryPageContent: Record<CategoryName, CategoryPageContent> = {
       "These components prioritize readable hierarchy, consistent spacing tokens, and semantic HTML where possible.",
     accessibilityNotes:
       "Preserve heading order, list semantics, and text alternatives for non-text content.",
-    statusNote:
-      "Calendar Day, Calendar Grid, Tag, Avatar, Divider, List Item, and Empty State are implemented in Beta.",
     indexing: "index",
   },
 };

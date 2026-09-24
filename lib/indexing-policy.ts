@@ -40,6 +40,10 @@ export function getComponentIndexing(slug: string): IndexingPolicy {
     return "noindex";
   }
 
+  if (doc.indexing) {
+    return doc.indexing;
+  }
+
   return isSubstantiveDocumentation(doc) ? "index" : "noindex";
 }
 

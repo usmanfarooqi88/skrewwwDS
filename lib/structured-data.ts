@@ -92,9 +92,10 @@ export function componentPageJsonLd(slug: string): JsonLd[] {
     name: doc.name,
     description: registry.summary,
     url: pageUrl,
-    datePublished: registry.documentationLastUpdated,
+    // No canonical per-component publication date exists (registry dates are
+    // last-updated dates), so datePublished is intentionally omitted.
     // Docs and React sources are dated independently; the page was last
-    // modified when either changed, and never before it was published.
+    // modified when either changed.
     dateModified:
       registry.reactLastUpdated > registry.documentationLastUpdated
         ? registry.reactLastUpdated
@@ -144,7 +145,7 @@ export function categoryPageJsonLd(category: CategoryName): JsonLd[] {
       "@context": "https://schema.org",
       "@type": "WebPage",
       name: `${category} components — ${siteConfig.shortName}`,
-      description: `${implemented.length} implemented Beta component(s) documented in the ${category} category.`,
+      description: `${implemented.length} implemented React component(s) documented in the ${category} category.`,
       url: pageUrl,
       dateModified: siteConfig.lastUpdated,
       isPartOf: websiteJsonLd(),
@@ -166,7 +167,7 @@ export function industryPageJsonLd(industry: IndustryName): JsonLd[] {
       "@context": "https://schema.org",
       "@type": "WebPage",
       name: `${industry} components — ${siteConfig.shortName}`,
-      description: `${implemented.length} implemented Beta component(s) documented in the ${industry} industry.`,
+      description: `${implemented.length} implemented React component(s) documented in the ${industry} industry.`,
       url: pageUrl,
       dateModified: siteConfig.lastUpdated,
       isPartOf: websiteJsonLd(),

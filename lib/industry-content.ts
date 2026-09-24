@@ -61,7 +61,7 @@ export const industryPageContent: Record<IndustryName, IndustryPageContent> = {
     accessibilityNotes:
       "Banking components inherit their accessibility model entirely from the Layer 2 primitives they compose — no separate accessibility surface of their own.",
     statusNote:
-      "Banking Transaction Row, Banking Account Card, and Banking Balance Summary are implemented in Beta. Figma parity is pending for all three — confirmed via a full Figma file search that no Industry Systems reference exists yet, not an oversight.",
+      "Figma parity is pending for the Banking components — confirmed via a full Figma file search that no Industry Systems reference exists yet, not an oversight.",
     indexing: "index",
   },
 };

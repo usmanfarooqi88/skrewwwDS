@@ -65,12 +65,16 @@ describe("SEO-1B — structured data scope", () => {
     expect(read("app/changelog/page.tsx")).not.toMatch(/TechArticle|JsonLd/);
   });
 
-  it("component TechArticle dates are consistent for every implemented component", () => {
+  it("component TechArticle dateModified is truthful and datePublished is not invented", () => {
     for (const entry of getImplementedRegistryEntries()) {
       const [breadcrumbs, article] = componentPageJsonLd(entry.slug);
       expect(breadcrumbs["@type"], entry.slug).toBe("BreadcrumbList");
       expect(article["@type"], entry.slug).toBe("TechArticle");
-      expect(String(article.dateModified) >= String(article.datePublished), entry.slug).toBe(true);
+      // No canonical per-component publication date exists, so none is claimed.
+      expect(article, entry.slug).not.toHaveProperty("datePublished");
+      expect(String(article.dateModified), entry.slug).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(String(article.dateModified) >= entry.documentationLastUpdated, entry.slug).toBe(true);
+      expect(String(article.dateModified) >= entry.reactLastUpdated, entry.slug).toBe(true);
       expect(String(article.url)).toBe(absoluteUrl(`/components/${entry.slug}`));
     }
   });

@@ -61,8 +61,9 @@ export default function FoundationsPage() {
     <div className="mx-auto max-w-3xl px-8 py-16">
       <h1 className="text-2xl font-semibold tracking-tight text-ink-900">Foundations</h1>
       <p className="mt-2 text-sm text-ink-500">
-        160+ variables across 6 collections. Everything else in this system is built on top of
-        these — components never hardcode a raw value.
+        Six variable collections — Primitive, Semantic, Component, Brand, Shape, and Surface.
+        Everything else in this system is built on top of these — components never hardcode a
+        raw value.
       </p>
 
       <div className="mt-10 space-y-4">
