@@ -15,6 +15,7 @@ import { getCategoryIndexing, getMetadataRobots } from "@/lib/indexing-policy";
 import { categoryPageJsonLd } from "@/lib/structured-data";
 import { absoluteUrl } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 export function generateStaticParams() {
   return Object.values(categorySlugMap).map((categorySlug) => ({ categorySlug }));
@@ -41,7 +42,7 @@ export async function generateMetadata(
     description: content.summary,
     alternates: { canonical: url },
     robots: getMetadataRobots(getCategoryIndexing(category)),
-    openGraph: { title, description: content.summary, url, type: "website" },
+    ...pageSocialMetadata({ title, description: content.summary, url }),
   };
 }
 

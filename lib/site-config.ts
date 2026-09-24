@@ -26,7 +26,7 @@ export const siteConfig = {
   shortName: "Skrewww",
   organizationName: "Skrewww",
   description:
-    "AI-first design system platform with token-driven components, native-first form semantics with accessible custom controls where native HTML cannot represent the confirmed interaction model, and documentation for designers, developers, and coding agents.",
+    "React and TypeScript design system with accessible, token-driven components, a shadcn-compatible registry, a paired Figma library, and machine-readable contracts for AI coding agents.",
   origin: resolveSiteOrigin(),
   designSystemVersion: "1.0.0",
   documentationVersion: "1.0.0",

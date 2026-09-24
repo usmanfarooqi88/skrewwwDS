@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { getSortedChangelogEntries, type ChangelogItemType } from "@/content/changelog";
 import { absoluteUrl } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 const pageTitle = "Changelog";
 const title = brandedDocumentTitle(pageTitle);
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   title: pageTitle,
   description,
   alternates: { canonical: url },
-  openGraph: { title, description, url, type: "website" },
+  ...pageSocialMetadata({ title, description, url }),
 };
 
 const ITEM_TYPE_LABEL: Record<ChangelogItemType, string> = {

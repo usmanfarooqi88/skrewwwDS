@@ -78,7 +78,7 @@ describe("Technical SEO Batch 1 — hub canonicals and titles", () => {
     const source = readFileSync(join(root, "app", "changelog", "page.tsx"), "utf8");
     expect(source).toContain('const pageTitle = "Changelog"');
     expect(source).toContain("title: pageTitle");
-    expect(source).toContain("openGraph: { title, description, url, type: \"website\" }");
+    expect(source).toContain("...pageSocialMetadata({ title, description, url })");
     expect(source).toContain('alternates: { canonical: url }');
     expect(source).toContain('absoluteUrl("/changelog")');
   });

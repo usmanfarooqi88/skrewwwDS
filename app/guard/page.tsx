@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { GUARD_TOOL_VERSION } from "@/lib/guard/version";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 const title = `Guard (Beta) — ${siteConfig.name}`;
 const description =
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   title: { absolute: title },
   description,
   alternates: { canonical: url },
-  openGraph: { title, description, url, type: "website" },
+  ...pageSocialMetadata({ title, description, url }),
 };
 
 function Code({ children }: { children: React.ReactNode }) {

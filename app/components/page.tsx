@@ -7,8 +7,9 @@ import {
 } from "@/lib/component-directory";
 import { CHARTS_HUB_HREF } from "@/lib/global-nav";
 import { INDUSTRIES_INDEX_HREF } from "@/lib/industry-content";
-import { absoluteUrl, getDefaultSocialImageUrl, siteConfig } from "@/lib/site-config";
+import { absoluteUrl } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 const pageTitle = "Components";
 const title = brandedDocumentTitle(pageTitle);
@@ -20,14 +21,7 @@ export const metadata: Metadata = {
   title: pageTitle,
   description,
   alternates: { canonical: url },
-  openGraph: {
-    title,
-    description,
-    url,
-    type: "website",
-    siteName: siteConfig.name,
-    images: [{ url: getDefaultSocialImageUrl() }],
-  },
+  ...pageSocialMetadata({ title, description, url }),
 };
 
 export default function ComponentsIndexPage() {

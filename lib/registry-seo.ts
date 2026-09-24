@@ -3,7 +3,8 @@ import { getRegistryEntry, getImplementedRegistryEntries } from "@/lib/component
 import { getComponentBySlug } from "@/lib/data";
 import { getComponentIndexing, getMetadataRobots } from "@/lib/indexing-policy";
 import { getCanonicalComponentSlug } from "@/lib/routes";
-import { absoluteUrl, getDefaultSocialImageUrl, siteConfig } from "@/lib/site-config";
+import { absoluteUrl, siteConfig } from "@/lib/site-config";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 /** Full document title after the root `%s — ${siteConfig.name}` template. */
 export function brandedDocumentTitle(pageTitle: string): string {
@@ -31,14 +32,7 @@ export function getComponentPageMetadata(slug: string): Metadata {
     description,
     alternates: { canonical: url },
     robots: getMetadataRobots(indexing),
-    openGraph: {
-      title,
-      description,
-      url,
-      type: "article",
-      siteName: siteConfig.name,
-      images: [{ url: getDefaultSocialImageUrl(), width: 1200, height: 630 }],
-    },
+    ...pageSocialMetadata({ title, description, url, type: "article" }),
   };
 }
 

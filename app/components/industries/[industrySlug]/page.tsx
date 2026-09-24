@@ -15,6 +15,7 @@ import { getIndustryIndexing, getMetadataRobots } from "@/lib/indexing-policy";
 import { industryPageJsonLd } from "@/lib/structured-data";
 import { absoluteUrl } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 export function generateStaticParams() {
   return Object.values(industrySlugMap).map((industrySlug) => ({ industrySlug }));
@@ -41,7 +42,7 @@ export async function generateMetadata(
     description: content.summary,
     alternates: { canonical: url },
     robots: getMetadataRobots(getIndustryIndexing(industry)),
-    openGraph: { title, description: content.summary, url, type: "website" },
+    ...pageSocialMetadata({ title, description: content.summary, url }),
   };
 }
 

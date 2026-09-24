@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { AGENT_KIT_PRODUCT_VERSION } from "@/lib/agent-kit/beta-version";
 import { getPublicAgentContractCount } from "@/lib/agent-kit/contract-compiler";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 const title = `Agent Kit (Beta) — ${siteConfig.name}`;
 const description =
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   title: { absolute: title },
   description,
   alternates: { canonical: url },
-  openGraph: { title, description, url, type: "website" },
+  ...pageSocialMetadata({ title, description, url }),
 };
 
 function Code({ children }: { children: React.ReactNode }) {

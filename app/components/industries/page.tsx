@@ -2,8 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { industries, industryPageContent, getIndustryPageHref } from "@/lib/industry-content";
 import { getImplementedRegistryEntries } from "@/lib/component-registry";
-import { absoluteUrl, siteConfig } from "@/lib/site-config";
+import { absoluteUrl } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 const pageTitle = "Industries";
 const title = brandedDocumentTitle(pageTitle);
@@ -15,13 +16,7 @@ export const metadata: Metadata = {
   title: pageTitle,
   description,
   alternates: { canonical: url },
-  openGraph: {
-    title,
-    description,
-    url,
-    type: "website",
-    siteName: siteConfig.name,
-  },
+  ...pageSocialMetadata({ title, description, url }),
 };
 
 export default function IndustriesIndexPage() {

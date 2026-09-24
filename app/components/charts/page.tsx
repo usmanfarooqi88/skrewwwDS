@@ -5,8 +5,9 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Card } from "@/components/ui/Card";
 import { getRegistryEntry } from "@/lib/component-registry";
 import { CHART_COMPOSITION_SLUGS, CHART_FAMILY_SLUGS } from "@/lib/global-nav";
-import { absoluteUrl, getDefaultSocialImageUrl, siteConfig } from "@/lib/site-config";
+import { absoluteUrl } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 const pageTitle = "Charts";
 const title = brandedDocumentTitle(pageTitle);
@@ -18,14 +19,7 @@ export const metadata: Metadata = {
   title: pageTitle,
   description,
   alternates: { canonical: url },
-  openGraph: {
-    title,
-    description,
-    url,
-    type: "website",
-    siteName: siteConfig.name,
-    images: [{ url: getDefaultSocialImageUrl() }],
-  },
+  ...pageSocialMetadata({ title, description, url }),
 };
 
 /**

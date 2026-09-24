@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { TokenPill } from "@/components/TokenPill";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
+import { pageSocialMetadata } from "@/lib/social-metadata";
 
 const title = `Foundations — ${siteConfig.name}`;
 const description =
-  "Skrewww design-system foundations: 160+ variables across Primitive, Semantic, Component, Brand, Shape, and Surface collections that every component builds on.";
+  "Skrewww design-system foundations: the Primitive, Semantic, Component, Brand, Shape, and Surface token collections that every component builds on.";
 const url = absoluteUrl("/foundations");
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title: { absolute: title },
   description,
   alternates: { canonical: url },
-  openGraph: { title, description, url, type: "website" },
+  ...pageSocialMetadata({ title, description, url }),
 };
 
 const collections = [
