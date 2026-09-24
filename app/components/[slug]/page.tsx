@@ -87,7 +87,7 @@ export default async function ComponentDetailPage(props: { params: Promise<{ slu
           </p>
         ) : null}
         {component.variants ? (
-          <p className="mt-2 font-mono text-sm text-ink-400">{component.variants}</p>
+          <p className="mt-2 break-words font-mono text-sm text-ink-400">{component.variants}</p>
         ) : null}
       </header>
 

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="rounded bg-ink-100 px-1.5 py-0.5 font-mono text-[13px] text-ink-700">
+    <code className="break-words rounded bg-ink-100 px-1.5 py-0.5 font-mono text-[13px] text-ink-700">
       {children}
     </code>
   );
