@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { TokenPill } from "@/components/TokenPill";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
@@ -62,8 +63,11 @@ export default function FoundationsPage() {
       <h1 className="text-2xl font-semibold tracking-tight text-ink-900">Foundations</h1>
       <p className="mt-2 text-sm text-ink-500">
         Six variable collections — Primitive, Semantic, Component, Brand, Shape, and Surface.
-        Everything else in this system is built on top of these — components never hardcode a
-        raw value.
+        Everything else in this system is built on top of these — the{" "}
+        <Link href="/components" className="underline">
+          components
+        </Link>{" "}
+        never hardcode a raw value.
       </p>
 
       <div className="mt-10 space-y-4">

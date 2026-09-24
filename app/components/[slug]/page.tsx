@@ -10,7 +10,8 @@ import { JsonLd } from "@/components/docs/JsonLd";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
 import { getIndustryPageHref } from "@/lib/industry-content";
-import { componentPageJsonLd } from "@/lib/structured-data";
+import { componentPageJsonLd, docsOnlyComponentJsonLd } from "@/lib/structured-data";
+import { CHARTS_HUB_HREF, isChartsPath } from "@/lib/global-nav";
 import { TokenPillRow } from "@/components/TokenPill";
 import { ComponentApiSection } from "@/components/docs/ComponentApiSection";
 import { ComponentLiveSection } from "@/components/docs/ComponentLiveSection";
@@ -50,7 +51,7 @@ export default async function ComponentDetailPage(props: { params: Promise<{ slu
 
   return (
     <article className="mx-auto max-w-3xl px-8 py-16">
-      <JsonLd data={componentPageJsonLd(canonicalSlug)} />
+      <JsonLd data={[...componentPageJsonLd(canonicalSlug), ...docsOnlyComponentJsonLd(canonicalSlug)]} />
       <ComponentViewTracker
         slug={canonicalSlug}
         name={component.name}
@@ -70,6 +71,15 @@ export default async function ComponentDetailPage(props: { params: Promise<{ slu
           {component.name}
         </h1>
         <p className="mt-3 text-base leading-relaxed text-ink-600">{intro}</p>
+        {isChartsPath(`/components/${canonicalSlug}`) ? (
+          <p className="mt-2 text-sm text-ink-500">
+            Part of the chart components — see the{" "}
+            <Link href={CHARTS_HUB_HREF} className="underline">
+              Charts overview
+            </Link>{" "}
+            for how the families and dashboard compositions fit together.
+          </p>
+        ) : null}
         {canonicalSlug === "form-field" ? (
           <p className="mt-2 text-sm text-ink-500">
             Figma naming reference: <span className="font-medium">Form Field Wrapper</span>.

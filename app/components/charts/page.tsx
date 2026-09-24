@@ -8,6 +8,8 @@ import { CHART_COMPOSITION_SLUGS, CHART_FAMILY_SLUGS } from "@/lib/global-nav";
 import { absoluteUrl } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
 import { pageSocialMetadata } from "@/lib/social-metadata";
+import { JsonLd } from "@/components/docs/JsonLd";
+import { chartsHubBreadcrumbJsonLd } from "@/lib/structured-data";
 
 const pageTitle = "Charts";
 const title = brandedDocumentTitle(pageTitle);
@@ -77,6 +79,7 @@ function ChartEntryCard({
 export default function ChartsHubPage() {
   return (
     <div className="mx-auto max-w-4xl px-5 py-10 sm:px-8 sm:py-16">
+      <JsonLd data={chartsHubBreadcrumbJsonLd()} />
       <Breadcrumb
         className="mb-4"
         items={[

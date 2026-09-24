@@ -4,6 +4,7 @@ import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
 import { getIndustryPageHref, INDUSTRIES_INDEX_HREF } from "@/lib/industry-content";
 import type { IndustryName } from "@/lib/industry-content";
+import { getComponentIndexing } from "@/lib/indexing-policy";
 import { getComponentCanonicalUrl } from "@/lib/registry-seo";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
@@ -125,6 +126,50 @@ export function componentPageJsonLd(slug: string): JsonLd[] {
   }
 
   return [breadcrumbs, article];
+}
+
+/**
+ * Breadcrumb-only markup for docs-only component pages (no registry entry).
+ * Emitted only when the page is indexable, so noindex pages carry no
+ * rich-result markup. Mirrors the visible breadcrumb (Home > Components >
+ * {category} > {name}).
+ */
+export function docsOnlyComponentJsonLd(slug: string): JsonLd[] {
+  const doc = getComponentBySlug(slug);
+  if (!doc || getRegistryEntry(slug) || getComponentIndexing(slug) !== "index") return [];
+
+  return [
+    breadcrumbJsonLd([
+      { name: "Home", url: siteConfig.origin },
+      { name: "Components", url: absoluteUrl("/components") },
+      { name: doc.category, url: absoluteUrl(getCategoryPageHref(doc.category as CategoryName)) },
+      { name: doc.name, url: getComponentCanonicalUrl(slug) },
+    ]),
+  ];
+}
+
+// Static hub pages whose visible breadcrumb trail already exists; the
+// structured trail mirrors it exactly.
+export function chartsHubBreadcrumbJsonLd(): JsonLd {
+  return breadcrumbJsonLd([
+    { name: "Home", url: siteConfig.origin },
+    { name: "Components", url: absoluteUrl("/components") },
+    { name: "Charts", url: absoluteUrl("/components/charts") },
+  ]);
+}
+
+export function industriesIndexBreadcrumbJsonLd(): JsonLd {
+  return breadcrumbJsonLd([
+    { name: "Home", url: siteConfig.origin },
+    { name: "Industries", url: absoluteUrl(INDUSTRIES_INDEX_HREF) },
+  ]);
+}
+
+export function changelogBreadcrumbJsonLd(): JsonLd {
+  return breadcrumbJsonLd([
+    { name: "Home", url: siteConfig.origin },
+    { name: "Changelog", url: absoluteUrl("/changelog") },
+  ]);
 }
 
 export function categoryPageJsonLd(category: CategoryName): JsonLd[] {

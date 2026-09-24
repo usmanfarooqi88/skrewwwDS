@@ -40,9 +40,12 @@ describe("SEO-1B — structured data scope", () => {
     const renderers = sourceFiles("app").filter((f) => /<JsonLd/.test(read(f)));
     expect(renderers.sort()).toEqual(
       [
+        "app/changelog/page.tsx", // breadcrumb only, mirrors the visible trail (SEO-3)
         "app/components/[slug]/page.tsx",
         "app/components/category/[categorySlug]/page.tsx",
+        "app/components/charts/page.tsx", // breadcrumb only (SEO-3)
         "app/components/industries/[industrySlug]/page.tsx",
+        "app/components/industries/page.tsx", // breadcrumb only (SEO-3)
         "app/page.tsx",
       ].sort(),
     );
@@ -62,7 +65,10 @@ describe("SEO-1B — structured data scope", () => {
   });
 
   it("changelog is a listing page and does not claim to be a TechArticle", () => {
-    expect(read("app/changelog/page.tsx")).not.toMatch(/TechArticle|JsonLd/);
+    const source = read("app/changelog/page.tsx");
+    expect(source).not.toMatch(/TechArticle/);
+    // The only markup allowed on the listing page is its breadcrumb trail.
+    expect(source).toContain("changelogBreadcrumbJsonLd()");
   });
 
   it("component TechArticle dateModified is truthful and datePublished is not invented", () => {

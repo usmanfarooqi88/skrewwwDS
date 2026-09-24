@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/Card";
 import { getSortedChangelogEntries, type ChangelogItemType } from "@/content/changelog";
 import { absoluteUrl } from "@/lib/site-config";
 import { brandedDocumentTitle } from "@/lib/registry-seo";
+import { JsonLd } from "@/components/docs/JsonLd";
+import { changelogBreadcrumbJsonLd } from "@/lib/structured-data";
 import { pageSocialMetadata } from "@/lib/social-metadata";
 
 const pageTitle = "Changelog";
@@ -56,6 +58,7 @@ export default function ChangelogPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-8 py-16">
+      <JsonLd data={changelogBreadcrumbJsonLd()} />
       <nav aria-label="Breadcrumb" className="mb-4">
         <ol className="flex flex-wrap items-center gap-1.5 font-mono text-xs text-ink-400">
           <li>
@@ -73,7 +76,16 @@ export default function ChangelogPage() {
       <h1 className="text-2xl font-semibold tracking-tight text-ink-900">Changelog</h1>
       <p className="mt-2 text-sm text-ink-500">
         Meaningful updates to the Skrewww design system, newest first. For current implementation
-        status and technical detail, see the project documentation in the repository.
+        status and technical detail, see the project documentation in the repository. Guard and
+        Agent Kit each track their own release stage — see{" "}
+        <Link href="/guard" className="underline">
+          Guard
+        </Link>{" "}
+        and{" "}
+        <Link href="/agent-kit" className="underline">
+          Agent Kit
+        </Link>
+        .
       </p>
 
       <div className="mt-10 space-y-6">

@@ -23,6 +23,31 @@ const bankingCount = getImplementedRegistryEntries().filter(
   (entry) => entry.industry === "Banking",
 ).length;
 
+const developerPaths = [
+  {
+    title: "Agent Kit (Beta)",
+    href: "/agent-kit",
+    description:
+      "Machine-readable component contracts, recipes, and a skill so coding agents build from current facts.",
+  },
+  {
+    title: "Guard (Beta)",
+    href: "/guard",
+    description:
+      "An offline local CLI that checks selected Skrewww claims in your project against the canonical contracts.",
+  },
+  {
+    title: "Documentation overview",
+    href: "/docs",
+    description: "Orientation across foundations, components, Agent Kit, Guard, and release history.",
+  },
+  {
+    title: "Changelog",
+    href: "/changelog",
+    description: "What changed in Skrewww, newest first.",
+  },
+] as const;
+
 const layers = [
   {
     n: "01",
@@ -135,6 +160,22 @@ export default function HomePage() {
           tokens={["semantic/action/primary", "component/radius/control", "semantic/focus-ring"]}
         />
       </Card>
+
+      <div className="mb-10 sm:mb-16">
+        <h2 className={cn(eyebrowClass, "mb-3.5 sm:mb-4")}>For developers and coding agents</h2>
+        <div className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
+          {developerPaths.map((path) => (
+            <Link
+              key={path.href}
+              href={path.href}
+              className="rounded-lg border border-ink-200 p-3.5 hover:border-brand-500 hover:bg-brand-50/40 sm:p-4"
+            >
+              <div className="text-sm font-semibold text-ink-900">{path.title}</div>
+              <p className="mt-1 text-sm leading-relaxed text-ink-500">{path.description}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
 
       <div>
         <h2 className={cn(eyebrowClass, "mb-3.5 sm:mb-4")}>Components by category</h2>

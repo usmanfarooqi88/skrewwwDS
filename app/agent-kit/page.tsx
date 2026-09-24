@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { AGENT_KIT_PRODUCT_VERSION } from "@/lib/agent-kit/beta-version";
 import { getPublicAgentContractCount } from "@/lib/agent-kit/contract-compiler";
@@ -94,7 +95,11 @@ export default function AgentKitPage() {
           <li>
             <strong>{contractCount} component contracts</strong> — machine-readable API, tokens, guidance, and
             accessibility notes for every implemented component, at{" "}
-            <Code>/agent/contracts/&lt;slug&gt;.json</Code>.
+            <Code>/agent/contracts/&lt;slug&gt;.json</Code>. The human-readable versions live in the{" "}
+            <Link className="underline" href="/components">
+              component documentation
+            </Link>
+            .
           </li>
           <li>
             <strong>The canonical Agent Skill</strong> — one file teaching an agent the rules and
@@ -126,9 +131,9 @@ export default function AgentKitPage() {
           <li>
             Agent Kit guides generation; it does not gate merges or block CI. For offline claim
             validation, see{" "}
-            <a className="underline" href={absoluteUrl("/guard")}>
+            <Link className="underline" href="/guard">
               Guard (Beta)
-            </a>
+            </Link>
             .
           </li>
           <li>No semantic search, embeddings, or vector retrieval — contracts are small,
@@ -316,9 +321,9 @@ export default function AgentKitPage() {
           <li>No custom Skrewww MCP server exists yet.</li>
           <li>
             Guard is a separate Beta product — see{" "}
-            <a className="underline" href={absoluteUrl("/guard")}>
-              /guard
-            </a>
+            <Link className="underline" href="/guard">
+              Guard documentation
+            </Link>
             .
           </li>
           <li>Recipes are a small, 4-item pilot set, not a complete pattern library.</li>
