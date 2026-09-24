@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { resolveSection, sectionNavModels } from "@/lib/section-nav";
+import { resolveSection } from "@/lib/section-nav";
+import { sectionNavModels } from "@/lib/section-nav-models";
 
 describe("resolveSection", () => {
   it.each([

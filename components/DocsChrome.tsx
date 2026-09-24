@@ -1,40 +1,11 @@
-"use client";
-
-import { usePathname } from "next/navigation";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { MobileSectionNav } from "@/components/MobileSectionNav";
-import { SectionSidebar } from "@/components/SectionSidebar";
-import { resolveSection, sectionNavModels } from "@/lib/section-nav";
-import { cn } from "@/lib/cn";
+import { DocsChromeClient } from "@/components/DocsChromeClient";
+import { sectionNavModels } from "@/lib/section-nav-models";
 
 /**
- * Isolates the docs site chrome from `/reference/*` so the Reference App can
- * compose its own product shell without duplicating or forking docs navigation.
+ * Server wrapper for the docs chrome. Builds the label/href navigation models
+ * here so the client bundle never imports the component documentation prose
+ * (`lib/data`); only the small projected models are passed down as props.
  */
 export function DocsChrome({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isReferenceApp = pathname === "/reference" || pathname.startsWith("/reference/");
-  const section = resolveSection(pathname);
-  const sectionNav = section ? sectionNavModels[section] : null;
-
-  if (isReferenceApp) {
-    return <>{children}</>;
-  }
-
-  return (
-    <>
-      <a
-        href="#main-content"
-        className="fixed left-4 top-2 z-50 -translate-y-16 rounded-md bg-white px-3 py-2 text-sm font-medium text-ink-900 shadow-md transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-brand-500"
-      >
-        Skip to content
-      </a>
-      <GlobalHeader />
-      {sectionNav ? <SectionSidebar model={sectionNav} /> : null}
-      {sectionNav ? <MobileSectionNav model={sectionNav} /> : null}
-      <main id="main-content" tabIndex={-1} className={cn("min-h-screen", sectionNav && "md:ml-64")}>
-        {children}
-      </main>
-    </>
-  );
+  return <DocsChromeClient models={sectionNavModels}>{children}</DocsChromeClient>;
 }
