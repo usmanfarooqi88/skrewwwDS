@@ -6,8 +6,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DocsChrome } from "@/components/DocsChrome";
 import { AppProviders } from "@/components/providers/AppProviders";
-import { JsonLd } from "@/components/docs/JsonLd";
-import { siteStructuredData } from "@/lib/structured-data";
 import { getDefaultSocialImageUrl, siteConfig } from "@/lib/site-config";
 
 // Self-hosted via next/font/google (was a render-blocking external
@@ -72,7 +70,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${jetbrainsMono.variable}`}
     >
       <body className="bg-white font-sans text-ink-900 antialiased">
-        <JsonLd data={siteStructuredData()} />
         {/*
           Analytics/SpeedInsights must render before AppProviders in this
           tree. React commits sibling effects in JSX order, and Analytics's

@@ -9,6 +9,8 @@ import { Card } from "@/components/ui/Card";
 import { TokenPillRow } from "@/components/TokenPill";
 import { HomeHeroCtas } from "@/components/HomeHeroCtas";
 import { cn } from "@/lib/cn";
+import { JsonLd } from "@/components/docs/JsonLd";
+import { siteStructuredData } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   // Homepage owns the default document title and its self-canonical.
@@ -64,6 +66,8 @@ export default function HomePage() {
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10 sm:px-8 sm:py-16">
+      {/* Site-level entities live on the homepage only — the root layout also wraps noindex routes. */}
+      <JsonLd data={siteStructuredData()} />
       <div className="mb-10 sm:mb-16">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-ink-200 px-3 py-1 font-mono text-xs text-ink-500">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />

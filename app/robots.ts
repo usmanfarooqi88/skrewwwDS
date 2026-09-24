@@ -13,9 +13,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // Do not blanket-disallow /_next/ — Google needs /_next/static/*
-        // (CSS, JS, fonts) for rendering. Only keep non-public app paths.
-        disallow: ["/api/", "/preview/"],
+        // No blanket /_next/ disallow — Google needs /_next/static/* (CSS,
+        // JS, fonts) for rendering. The former /api/ and /preview/ rules
+        // targeted routes that no longer exist and were removed. Keep
+        // noindex pages (e.g. /reference) controlled by their robots meta.
       },
       {
         userAgent: "GPTBot",

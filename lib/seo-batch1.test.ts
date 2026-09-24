@@ -104,8 +104,9 @@ describe("Technical SEO Batch 1 — robots crawler access", () => {
     const disallow = generic?.disallow;
     const list = Array.isArray(disallow) ? disallow : disallow ? [disallow] : [];
     expect(list).not.toContain("/_next/");
-    expect(list).toContain("/api/");
-    expect(list).toContain("/preview/");
+    // /api/ and /preview/ were removed: no such routes exist in the app.
+    expect(list).not.toContain("/api/");
+    expect(list).not.toContain("/preview/");
   });
 
   it("preserves GPTBot block and OAI-SearchBot allow", () => {

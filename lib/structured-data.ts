@@ -93,7 +93,12 @@ export function componentPageJsonLd(slug: string): JsonLd[] {
     description: registry.summary,
     url: pageUrl,
     datePublished: registry.documentationLastUpdated,
-    dateModified: registry.reactLastUpdated,
+    // Docs and React sources are dated independently; the page was last
+    // modified when either changed, and never before it was published.
+    dateModified:
+      registry.reactLastUpdated > registry.documentationLastUpdated
+        ? registry.reactLastUpdated
+        : registry.documentationLastUpdated,
     version: registry.version,
     articleSection: registry.industry ?? doc.category,
     inLanguage: "en",
