@@ -44,4 +44,35 @@ module.exports = [
       "@next/next/no-html-link-for-pages": "off",
     },
   },
+  {
+    // Previews are lazy per-slug chunks. The @/components/ui barrel re-exports
+    // the chart components, so one barrel import pulls Recharts into a
+    // non-chart preview (Data Table went ~211 KB → ~382 KB JS). Flag it in the
+    // editor/lint before lib/preview-bundle-isolation.test.ts catches it.
+    // Scoped to previews only: the barrel remains the public consumer import
+    // path used in registry examples.
+    files: ["components/previews/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/components/ui",
+              message:
+                "Import from the component's own module (e.g. @/components/ui/Table). The barrel re-exports the chart components and pulls Recharts into this preview's chunk.",
+            },
+          ],
+          patterns: [
+            {
+              // The same barrel via its index file or a relative path.
+              regex: "^(@/components/ui/index(\\.tsx?)?|\\.\\./ui(/index(\\.tsx?)?)?)$",
+              message:
+                "Import from the component's own module, not the @/components/ui barrel.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ];
