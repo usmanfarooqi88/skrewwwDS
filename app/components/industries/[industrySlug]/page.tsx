@@ -63,7 +63,7 @@ export default async function IndustryPage(
   const betaCount = implemented.filter((entry) => entry.status === "beta").length;
 
   return (
-    <article className="mx-auto max-w-4xl px-8 py-16">
+    <article className="mx-auto max-w-4xl px-8 py-10 sm:py-16">
       <JsonLd data={industryPageJsonLd(industry)} />
 
       <nav aria-label="Breadcrumb" className="mb-4">

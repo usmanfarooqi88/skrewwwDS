@@ -4,7 +4,7 @@ import { GithubLogo, InstagramLogo, LinkedinLogo, List } from "@phosphor-icons/r
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import {
   Drawer,
   DrawerBody,
@@ -30,9 +30,13 @@ import {
  * old `MobileDocsNav` (that component is removed — its logo+hamburger+drawer
  * job is now this component's mobile mode).
  *
+ * On mobile it is a single compact row: logo, then the optional contextual
+ * `sectionNav` trigger (passed in by DocsChrome so this header stays unaware of
+ * section models), then the global menu icon button.
+ *
  * Search is deliberately absent — NAV-1 does not add it.
  */
-export function GlobalHeader() {
+export function GlobalHeader({ sectionNav }: { sectionNav?: ReactNode }) {
   const pathname = usePathname();
   const activeArea = getActiveGlobalNavArea(pathname);
   const resourcesActive = isResourcesPath(pathname);
@@ -66,28 +70,30 @@ export function GlobalHeader() {
           <DesktopSocialLinks />
         </nav>
 
-        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-          <DrawerTrigger>
-            <button
-              ref={menuButtonRef}
-              type="button"
-              className="inline-flex items-center gap-2 rounded-md border border-ink-200 px-3 py-1.5 text-sm font-medium text-ink-700 lg:hidden"
-              aria-label="Open navigation menu"
-            >
-              <List size={18} aria-hidden="true" />
-              Menu
-            </button>
-          </DrawerTrigger>
-          <DrawerContent aria-label="Navigation">
-            <DrawerTitle visuallyHidden>Navigation</DrawerTitle>
-            <div className="flex shrink-0 justify-end px-5 pt-5">
-              <DrawerClose className="min-h-11 min-w-11" />
-            </div>
-            <DrawerBody className="px-0 pb-6">
-              <MobileGlobalLinks pathname={pathname} activeArea={activeArea} onNavigate={closeDrawer} />
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
+        <div className="flex items-center gap-1 lg:hidden">
+          {sectionNav}
+          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <DrawerTrigger>
+              <button
+                ref={menuButtonRef}
+                type="button"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-700 transition-colors hover:bg-ink-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                aria-label="Open navigation menu"
+              >
+                <List size={22} aria-hidden="true" />
+              </button>
+            </DrawerTrigger>
+            <DrawerContent aria-label="Navigation">
+              <DrawerTitle visuallyHidden>Navigation</DrawerTitle>
+              <div className="flex shrink-0 justify-end px-5 pt-5">
+                <DrawerClose className="min-h-11 min-w-11" />
+              </div>
+              <DrawerBody className="px-0 pb-6">
+                <MobileGlobalLinks pathname={pathname} activeArea={activeArea} onNavigate={closeDrawer} />
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        </div>
       </div>
     </header>
   );

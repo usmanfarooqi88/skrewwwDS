@@ -62,7 +62,7 @@ export default async function ComponentCategoryPage(
   const docsOnlyCount = entries.filter((entry) => entry.status === "docs-only").length;
 
   return (
-    <article className="mx-auto max-w-4xl px-8 py-16">
+    <article className="mx-auto max-w-4xl px-8 py-10 sm:py-16">
       <JsonLd data={categoryPageJsonLd(category)} />
 
       <nav aria-label="Breadcrumb" className="mb-4">

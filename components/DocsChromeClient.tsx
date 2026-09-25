@@ -38,9 +38,8 @@ export function DocsChromeClient({
       >
         Skip to content
       </a>
-      <GlobalHeader />
+      <GlobalHeader sectionNav={sectionNav ? <MobileSectionNav model={sectionNav} /> : null} />
       {sectionNav ? <SectionSidebar model={sectionNav} /> : null}
-      {sectionNav ? <MobileSectionNav model={sectionNav} /> : null}
       <main id="main-content" tabIndex={-1} className={cn("min-h-screen", sectionNav && "md:ml-64")}>
         {children}
       </main>

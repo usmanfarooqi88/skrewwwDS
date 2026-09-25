@@ -25,7 +25,7 @@ export default function IndustriesIndexPage() {
   const implemented = getImplementedRegistryEntries();
 
   return (
-    <div className="mx-auto max-w-4xl px-8 py-16">
+    <div className="mx-auto max-w-4xl px-8 py-10 sm:py-16">
       <JsonLd data={industriesIndexBreadcrumbJsonLd()} />
       <nav aria-label="Breadcrumb" className="mb-4">
         <ol className="flex flex-wrap items-center gap-1.5 font-mono text-xs text-ink-400">

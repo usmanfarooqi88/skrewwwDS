@@ -169,3 +169,124 @@ test.describe("Desktop sidebar navigation", () => {
     await expect(page.getByRole("button", { name: "Open navigation menu" })).toHaveCount(0);
   });
 });
+
+// Compact mobile header: one row holding the logo, the contextual section
+// trigger and the global menu icon button (no separate section row).
+const compactHeaderRoutes = [
+  { path: "/", section: null },
+  { path: "/docs", section: "Docs" },
+  { path: "/foundations", section: "Docs" },
+  { path: "/components", section: "Components" },
+  { path: "/components/button", section: "Components" },
+  { path: "/components/data-table", section: "Components" },
+  { path: "/components/charts", section: "Charts" },
+  { path: "/guard", section: null },
+  { path: "/agent-kit", section: null },
+  { path: "/changelog", section: null },
+] as const;
+
+for (const width of [320, 360, 375, 390, 430]) {
+  test.describe(`Compact mobile header (${width}px)`, () => {
+    test.use({ viewport: { width, height: 812 } });
+
+    for (const route of compactHeaderRoutes) {
+      test(`${route.path} has one header row with usable controls`, async ({ page }) => {
+        await page.goto(route.path);
+        const header = page.locator("header").first();
+        const menu = page.getByRole("button", { name: "Open navigation menu" });
+        const logo = page.getByRole("link", { name: "Skrewww home" });
+        await expect(menu).toBeVisible();
+
+        const headerBox = (await header.boundingBox())!;
+        expect(headerBox.height).toBeLessThanOrEqual(64);
+
+        const menuBox = (await menu.boundingBox())!;
+        const logoBox = (await logo.boundingBox())!;
+        expect(menuBox.width).toBeGreaterThanOrEqual(44);
+        expect(menuBox.height).toBeGreaterThanOrEqual(44);
+        expect(menuBox.y).toBeGreaterThanOrEqual(headerBox.y);
+        expect(menuBox.y + menuBox.height).toBeLessThanOrEqual(headerBox.y + headerBox.height + 1);
+        expect(logoBox.x + logoBox.width).toBeLessThanOrEqual(menuBox.x);
+
+        if (route.section) {
+          const sectionTrigger = page.getByRole("button", {
+            name: `Open ${route.section} section navigation`,
+          });
+          await expect(sectionTrigger).toBeVisible();
+          await expect(sectionTrigger).toContainText(route.section);
+          const box = (await sectionTrigger.boundingBox())!;
+          expect(box.height).toBeGreaterThanOrEqual(44);
+          expect(box.y + box.height).toBeLessThanOrEqual(headerBox.y + headerBox.height + 1);
+          // Sits between the logo and the menu button, on the same row.
+          expect(box.x).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+          expect(box.x + box.width).toBeLessThanOrEqual(menuBox.x);
+        } else {
+          await expect(page.getByRole("button", { name: /section navigation/ })).toHaveCount(0);
+        }
+
+        // Page content (breadcrumb or H1, whichever is first) starts right under
+        // the single header row — no second navigation row in between.
+        const contentTop = await page.evaluate(() => {
+          const tops = Array.from(
+            document.querySelectorAll('main h1, main nav[aria-label="Breadcrumb"]'),
+          ).map((element) => element.getBoundingClientRect().top);
+          return Math.min(...tops);
+        });
+        // The homepage keeps its own hero layout (a badge precedes the H1), so it is exempt.
+        if (route.path !== "/") {
+          expect(contentTop - (headerBox.y + headerBox.height)).toBeLessThanOrEqual(64);
+        }
+
+        const widths = await page.evaluate(() => ({
+          viewport: window.innerWidth,
+          document: document.documentElement.scrollWidth,
+        }));
+        expect(widths.document).toBeLessThanOrEqual(widths.viewport);
+      });
+    }
+
+    test("both drawers open, close with Escape and restore focus", async ({ page }) => {
+      await page.goto("/foundations");
+      const sectionTrigger = page.getByRole("button", { name: "Open Docs section navigation" });
+      await sectionTrigger.click();
+      await expect(page.getByRole("dialog", { name: "Docs section navigation" })).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      await expect(sectionTrigger).toBeFocused();
+
+      const menu = page.getByRole("button", { name: "Open navigation menu" });
+      await menu.click();
+      await expect(page.getByRole("dialog", { name: "Navigation" })).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      await expect(menu).toBeFocused();
+    });
+  });
+}
+
+test.describe("Compact mobile header keeps the top spacing tight", () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  test("/foundations heading begins about 40px below the header", async ({ page }) => {
+    await page.goto("/foundations");
+    const header = (await page.locator("header").first().boundingBox())!;
+    const h1 = (await page.getByRole("heading", { level: 1, name: "Foundations" }).boundingBox())!;
+    const gap = h1.y - (header.y + header.height);
+    expect(gap).toBeGreaterThanOrEqual(32);
+    expect(gap).toBeLessThanOrEqual(48);
+  });
+});
+
+test.describe("Desktop header is unaffected by the compact mobile header", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  test("shows the global nav row and no mobile triggers", async ({ page }) => {
+    await page.goto("/components/button");
+    await expect(page.getByRole("navigation", { name: "Global" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /section navigation/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Open navigation menu" })).toHaveCount(0);
+    const header = (await page.locator("header").first().boundingBox())!;
+    expect(header.height).toBeLessThanOrEqual(64);
+    await expect(page.locator("aside")).toBeVisible();
+  });
+});

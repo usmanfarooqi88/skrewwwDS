@@ -50,7 +50,7 @@ export default async function ComponentDetailPage(props: { params: Promise<{ slu
   const intro = registry?.summary ?? component.purpose;
 
   return (
-    <article className="mx-auto max-w-3xl px-8 py-16">
+    <article className="mx-auto max-w-3xl px-8 py-10 sm:py-16">
       <JsonLd data={[...componentPageJsonLd(canonicalSlug), ...docsOnlyComponentJsonLd(canonicalSlug)]} />
       <ComponentViewTracker
         slug={canonicalSlug}

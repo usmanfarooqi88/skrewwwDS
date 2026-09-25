@@ -59,7 +59,7 @@ const collections = [
 
 export default function FoundationsPage() {
   return (
-    <div className="mx-auto max-w-3xl px-8 py-16">
+    <div className="mx-auto max-w-3xl px-8 py-10 sm:py-16">
       <h1 className="text-2xl font-semibold tracking-tight text-ink-900">Foundations</h1>
       <p className="mt-2 text-sm text-ink-500">
         Six variable collections — Primitive, Semantic, Component, Brand, Shape, and Surface.
