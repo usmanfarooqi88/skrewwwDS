@@ -1,6 +1,58 @@
 # Project status
 
-Last verified: **2026-09-23** (**OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-26** (**Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-26 — Figma ↔ React chart parity sync (COMPLETE — repo metadata only)
+
+Repo-side canonical metadata synchronized to the live Pro Figma file
+(`U6KUuNf7DF4CP9QBOkLSUx`, verified 2026-09-26). No React runtime, API,
+typography, Figma, Gumroad, Community, or website change.
+
+**Figma chart strategy — two different kinds of support:**
+
+- **Reusable components (registry `figmaAvailability: "available"`):**
+  `Content/Chart Metric` (component set `3236:6141`; variants Direction=Up
+  `3236:6112`, Down `3236:6122`, Flat `3236:6132`) and `Containers/Chart Card`
+  (component `3239:8017`). Both Beta. The earlier Chart Card node `3237:6424`
+  no longer exists and is not recorded anywhere.
+- **Static visual references (registry `figmaAvailability: "partial"`):** Bar
+  Chart `2058:2532`, Line Chart `2058:2559`, and Area Chart (single series
+  `3237:6726` primary; overlap `3237:6743`; stacked `3237:6769`; 100% stacked
+  `3237:6795`). Plain frames: not components, no properties, no data binding.
+  Figma is the visual reference; React owns data and runtime behavior.
+- `Containers/Chart Card Content` (`3239:7976`) is a Figma-internal helper. It
+  is not a registry entry, has no Agent contract, and is not counted.
+
+**Corrections:** Line Chart reference had 7 markers recorded; the live frame has
+6. Chart Metric / Chart Card / Area Chart no longer say "no Figma reference
+exists". Evidence is in `lib/charts-figma-metadata.ts`
+(`CHARTS_FIGMA_AUDIT_STATUS = verified-2026-09-26`).
+
+**Agent Kit semantics unchanged:** `figma.verified = Boolean(figmaNodeId)` still
+means only "a real Figma node ID is recorded", so all five entries report
+`verified: true`; `availability.figma` separately distinguishes `partial` from
+`available`.
+
+**Intentional current non-parity (follow-up only, not changed here):**
+
+- Chart Metric: Figma label/delta use the 12px Caption style (React 13px);
+  Figma delta is Caption Regular (React weight 500); Figma cannot represent
+  tabular numerals; no green/red direction coloring in either.
+- Chart Card: Figma title Heading/S 18 Bold (React 16/600); Figma description
+  Body/S 14 (React 13px). Card owns Shape/Surface/Elevation; no metric prop or
+  time-range component was introduced.
+
+**Counts are different domains — do not conflate:** the Figma strict
+reusable-component rule (reusable public component sets/components, excluding
+helper primitives, icons, logos, examples, references) gives **Pro 52 / Free
+23**. Repo React/public registry and docs-inventory counts are derived from
+`lib/component-registry.ts` and `lib/data.ts` and are unrelated to those two
+numbers.
+
+**Follow-ups (not done):** sync external product surfaces (Gumroad, Figma
+Community, website) to the strict counts; audit the Alert component's Dark-mode
+contrast.
+
 
 ## 2026-09-23 — OSS-4C Final Curated Directory Audit (COMPLETE — no additional directory selected)
 

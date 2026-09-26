@@ -160,6 +160,12 @@ import {
   SPLIT_BUTTON_FIGMA_COMPONENT_SET_NODE_ID,
   SPLIT_BUTTON_FIGMA_FILE_URL,
 } from "@/lib/split-button-figma-metadata";
+import {
+  CHART_CARD_FIGMA_COMPONENT_NODE_ID,
+  CHART_CARD_FIGMA_FILE_URL,
+  CHART_METRIC_FIGMA_COMPONENT_SET_NODE_ID,
+  CHART_METRIC_FIGMA_FILE_URL,
+} from "@/lib/charts-figma-metadata";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -940,12 +946,16 @@ export function Example() {
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
-    figmaAvailability: "unavailable",
+    figmaAvailability: "available",
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/containers.ts",
-    documentationLastUpdated: "2026-09-22",
+    documentationLastUpdated: "2026-09-26",
     reactLastUpdated: "2026-09-22",
+    figmaReference:
+      "Containers / Chart Card — reusable Figma component (Beta), node 3239:8017. State (Ready/Loading/Empty/Error), Title, Description and Header Actions are owned by the Figma-internal Chart Card Content; Elevation, Shape and Surface come from the nested Card. Verified 2026-09-26.",
+    figmaSourceUrl: CHART_CARD_FIGMA_FILE_URL,
+    figmaNodeId: CHART_CARD_FIGMA_COMPONENT_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("chart-card"),
     supportedVariants: ["default"],
     supportedSizes: [],
@@ -969,7 +979,7 @@ export function Example() {
     ],
     relatedConcepts: [sharedConcepts.shape, sharedConcepts.surface],
     openQuestions: [
-      "No Figma reference exists for Chart Card or its states — this implementation uses Card's own established visual language (spacing, type scale) conservatively; no Figma parity is claimed.",
+      "A reusable Figma component now exists (Containers/Chart Card, Beta, node 3239:8017, verified 2026-09-26). Card remains the Shape/Surface/Elevation owner. The Figma helper Chart Card Content is Figma-internal only and is not a public component. Intentional current non-parity: Figma title is Heading/S (18 Bold) vs React 16/600, and Figma description is Body/S (14) vs React 13px. No metric prop and no dedicated time-range component were introduced.",
       "A canonical, generic time-range control (e.g. a shared TimeRangeTabs component) was evaluated and rejected for v1: Banking Balance Summary already proves the composition (Tabs in the `actions` slot, one TabsPanel per range, each holding its own chart instance) without a new abstraction. Compose with Tabs/ToggleGroup/Select/ButtonGroup directly; promote to a shared control only if a second, materially different real use case emerges.",
       "Interactive legend (per-series toggling) remains out of scope, unchanged from CH-2 — Chart Card does not add one.",
       "`errorAction`/`emptyDescription` accept arbitrary ReactNode but Chart Card fetches nothing itself — retry/action behavior is entirely the consumer's.",
@@ -1067,12 +1077,16 @@ export function ErrorExample() {
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
-    figmaAvailability: "unavailable",
+    figmaAvailability: "available",
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/content-data.ts",
-    documentationLastUpdated: "2026-09-22",
+    documentationLastUpdated: "2026-09-26",
     reactLastUpdated: "2026-09-22",
+    figmaReference:
+      "Content & Data / Chart Metric — reusable Figma component set (Beta), node 3236:6141; Direction (Up/Down/Flat) variants plus Label, Value, Delta value, Comparison label, Show delta and Show comparison. Verified 2026-09-26.",
+    figmaSourceUrl: CHART_METRIC_FIGMA_FILE_URL,
+    figmaNodeId: CHART_METRIC_FIGMA_COMPONENT_SET_NODE_ID,
     documentationUrl: getComponentDocumentationUrl("chart-metric"),
     supportedVariants: ["default"],
     supportedSizes: [],
@@ -1087,7 +1101,7 @@ export function ErrorExample() {
     ],
     relatedConcepts: [],
     openQuestions: [
-      "No Figma reference exists for Chart Metric — its typography was extracted from three independent, ad hoc implementations that already existed: Banking Account Card's `.balance`, Banking Balance Summary's `.totalValue` (byte-identical CSS to `.balance`), and the Reference App overview page's raw Tailwind `text-3xl font-semibold tabular-nums`. No Figma parity is claimed.",
+      "A reusable Figma component now exists (Content/Chart Metric, Beta, node 3236:6141, verified 2026-09-26). React's typography was extracted from three independent, ad hoc implementations: Banking Account Card's `.balance`, Banking Balance Summary's `.totalValue` (byte-identical CSS to `.balance`), and the Reference App overview page's raw Tailwind `text-3xl font-semibold tabular-nums`. Intentional current non-parity: Figma label and delta use the 12px Caption style (React: 13px), Figma delta is Caption Regular (React: weight 500), and Figma cannot represent tabular numerals. Figma applies no green/red status coloring; direction changes only the icon.",
       "Positive/negative semantic coloring (e.g. tying `direction` to a feedback/status color) is an explicit non-goal for v1: an increase is not always a good outcome (spend, churn, error rate), so no green-is-good/red-is-bad rule exists. If a future, evidence-based semantic model is designed, it is a deliberate addition, not a bug fix.",
       "Chart Metric was not retrofitted onto Banking Account Card, Banking Balance Summary, or the Reference App overview page — all three predate it and remain unchanged; the duplication is recorded as evidence, not migrated.",
     ],
