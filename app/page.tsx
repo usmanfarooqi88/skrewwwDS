@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { allComponents, getCategoryCounts } from "@/lib/data";
+import { getCategoryCounts } from "@/lib/data";
 import { getImplementedMaturityCounts, getImplementedRegistryEntries } from "@/lib/component-registry";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
@@ -90,7 +90,6 @@ const eyebrowClass =
 
 export default function HomePage() {
   const counts = getCategoryCounts();
-  const totalComponents = allComponents.length;
   const { implemented, stable, beta } = getImplementedMaturityCounts();
 
   return (
@@ -110,11 +109,11 @@ export default function HomePage() {
         </h1>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-600 sm:mt-5 sm:text-lg sm:text-ink-500">
           Skrewww is a React and TypeScript design system paired with a matching Figma library.
-          The same components adapt through tokens — never forks — across shape, surface, brand,
-          and eventually industry. Machine-readable contracts let coding agents use them from
-          current facts instead of model memory.
+          The same React components adapt through tokens — never forks — across shape, surface,
+          brand, and eventually industry. Machine-readable contracts let coding agents use them
+          from current facts instead of model memory.
         </p>
-        <HomeHeroCtas totalComponents={totalComponents} />
+        <HomeHeroCtas />
       </div>
 
       <div className="mb-10 sm:mb-16">

@@ -1,6 +1,89 @@
 # Project status
 
-Last verified: **2026-09-26** (**Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-28** (**Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-28 — Figma Free/Pro stabilization CLOSED; repo facts synced (COMPLETE)
+
+Figma-side design work (`U6KUuNf7DF4CP9QBOkLSUx` Pro, `KrQIUWznpBdP0ZuWjOu2e3`
+Free) plus the repo-side documentation/product-facts sync that follows it.
+No Figma files were published; no React runtime/API change.
+
+**Free presentation:**
+
+- Presentation V2 coverage 23/23 complete across all six categories.
+- Category overview frames reconciled to orientation-only content; duplicate
+  component-level teaching removed.
+- Customer-facing "Native Slots — QA" artifact removed from Free.
+- The separate "Native Slots" composition-pattern documentation frame was
+  reviewed and intentionally retained (legitimate customer-facing content,
+  not a QA artifact).
+
+**Free ↔ Pro technical parity:**
+
+- Free `Actions/Button` Focus Ring restored (was structurally absent; now
+  matches Pro's token-bound mechanism).
+- Free `Navigation/Page Item` Default-state label was bound to the wrong
+  semantic token (a filled-surface text color used on an unfilled
+  background); corrected to `semantic/text/secondary`.
+- `component/radius/feedback` added to Free and bound on Alert/Toast,
+  matching Pro; fixes a real Pill-mode radius divergence (12px vs 32px).
+- Shared Gradient-surface sheen (a two-stop overlay fill already present on
+  Button/Alert/Toast) mirrored onto Free's Icon Button, Text Input, Select,
+  Accordion Item, Dialog, Avatar, and Tag — components where it was
+  structurally missing despite Gradient being a Free-supported mode.
+- Stale `TOKENS USED` documentation corrected on Free's Badge, Toast, and
+  List Item descriptions (their live component bindings already matched
+  Pro; only the written description text was out of date).
+- Card/Dialog rim-light (`component/card/border-highlight-1/2/3`) confirmed
+  Glass-only by its actual per-mode values — no Free change required.
+
+**Feedback Dark-mode foundation:**
+
+- Toast audited directly and confirmed unaffected (its container already
+  routes through the theme-aware `semantic/surface/default`; only its icon
+  carries status color).
+- New theme-aware `semantic/feedback/{status}-surface` tokens created,
+  routed through `component/feedback/{status}/surface` into Alert.
+- New Alert-scoped `component/feedback/{status}/icon` tokens created,
+  deliberately independent from the shared `semantic/icon/*` /
+  `semantic/feedback/{status}` tokens (which have 27–102 other usages each
+  across the file and were left untouched).
+- Foundation Primitive layer extended with `color/{danger,info,success,
+  warning}/900`, derived from the existing Brand/Neutral scale's own
+  lightness convention at their deepest tier, not an arbitrary hex.
+- Alert Title, Description, and Icon contrast verified ≥4.5:1 / ≥3:1 across
+  Light, Dark × Flat, Dark × Gradient, and Dark × Glass (Pro only), for all
+  four statuses — no threshold rounded into a pass.
+- Free mirrors the same primitives/aliases for its supported Flat/Gradient
+  modes; Glass is Pro-only and was not extended to Free.
+
+**Counts (unchanged, externally locked facts for this task):**
+
+- Free: 23 reusable Figma components (24 top-level nodes incl. the Menu
+  Panel helper).
+- Pro: 52 reusable Figma components.
+
+**Repo/website facts synced to the above:**
+
+- `components/HomeHeroCtas.tsx` displayed the React registry's implemented
+  count (`allComponents.length`, a Stable+Beta React total) as the Pro
+  **Figma** count — two different domains conflated. Both Figma counts now
+  come from `siteConfig.figmaFreeComponentCount` / `figmaProComponentCount`
+  (23 / 52); the unused `totalComponents` prop and its call-site plumbing
+  in `app/page.tsx` were removed.
+- `app/page.tsx` hero copy "The same components adapt..." clarified to
+  "The same React components adapt..." — it was ambiguous between the
+  React and Figma domains; no other homepage wording changed.
+- `lib/llms-content.ts` "Current status" line hardcoded `(Beta)` regardless
+  of actual maturity split; now reports the real Stable/Beta split derived
+  from the same indexable/implemented population the count itself uses.
+- No other current-facing stale count claims found repo-wide (58/55/57
+  matches found elsewhere are dated historical entries, Guard's own
+  installable-count docs, or already-correct current values — left as-is).
+
+**Publication state:** Figma files, repo docs, and site copy are stabilized.
+Gumroad and Figma Community listings have **not** been published or updated
+externally — that remains a manual, human action outside this repo.
 
 ## 2026-09-26 — Figma ↔ React chart parity sync (COMPLETE — repo metadata only)
 

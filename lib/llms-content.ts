@@ -68,6 +68,8 @@ export function buildLlmsTxt(): string {
   const implemented = getImplementedRegistryEntries().filter(
     (entry) => entry.indexing === "index",
   );
+  const stableCount = implemented.filter((entry) => entry.status === "stable").length;
+  const betaCount = implemented.filter((entry) => entry.status === "beta").length;
 
   const lines = [
     `# ${siteConfig.name}`,
@@ -88,7 +90,7 @@ export function buildLlmsTxt(): string {
     "",
     "## Current status",
     `- Design system version: ${siteConfig.designSystemVersion}`,
-    `- Implemented React components: ${implemented.length} (Beta)`,
+    `- Implemented React components: ${implemented.length} (${stableCount} Stable, ${betaCount} Beta)`,
     `- Accessibility baseline: ${siteConfig.accessibilityBaseline}`,
     `- Last updated: ${siteConfig.lastUpdated}`,
     "",

@@ -32,7 +32,7 @@ afterEach(() => {
 describe("HomeHeroCtas", () => {
   it("fires navigation_cta_clicked with the real label and href for Browse components", async () => {
     const user = userEvent.setup();
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     await user.click(screen.getByRole("link", { name: "Browse components" }));
     expect(trackEvent).toHaveBeenCalledExactlyOnceWith("navigation_cta_clicked", {
       label: "Browse components",
@@ -42,7 +42,7 @@ describe("HomeHeroCtas", () => {
 
   it("fires navigation_cta_clicked with the real label and href for View foundations", async () => {
     const user = userEvent.setup();
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     await user.click(screen.getByRole("link", { name: "View foundations" }));
     expect(trackEvent).toHaveBeenCalledExactlyOnceWith("navigation_cta_clicked", {
       label: "View foundations",
@@ -51,7 +51,7 @@ describe("HomeHeroCtas", () => {
   });
 
   it("does not prevent default, so modifier-key clicks (open in new tab) keep working", () => {
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     const link = screen.getByRole("link", { name: "Browse components" });
     const notPrevented = fireEvent.click(link, { metaKey: true });
     expect(notPrevented).toBe(true);
@@ -62,7 +62,7 @@ describe("HomeHeroCtas", () => {
   });
 
   it("keeps real hrefs on both links so navigation is unaffected by tracking", () => {
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     expect(screen.getByRole("link", { name: "Browse components" })).toHaveAttribute(
       "href",
       "/components",
@@ -75,7 +75,7 @@ describe("HomeHeroCtas", () => {
 
   it("fires navigation_cta_clicked with the full external URL for Get free Figma file", async () => {
     const user = userEvent.setup();
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     await user.click(screen.getByRole("link", { name: "Get free Figma file" }));
     expect(trackEvent).toHaveBeenCalledExactlyOnceWith("navigation_cta_clicked", {
       label: "Get free Figma file",
@@ -85,7 +85,7 @@ describe("HomeHeroCtas", () => {
 
   it("fires navigation_cta_clicked with the full external URL for Get Skrewww Pro", async () => {
     const user = userEvent.setup();
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     await user.click(screen.getByRole("link", { name: "Get Skrewww Pro" }));
     expect(trackEvent).toHaveBeenCalledExactlyOnceWith("navigation_cta_clicked", {
       label: "Get Skrewww Pro",
@@ -95,7 +95,7 @@ describe("HomeHeroCtas", () => {
 
   it("fires the named GA4 free_figma_click event exactly once for Get free Figma file", async () => {
     const user = userEvent.setup();
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     await user.click(screen.getByRole("link", { name: "Get free Figma file" }));
     expect(trackGAEvent).toHaveBeenCalledExactlyOnceWith("free_figma_click", {
       cta_location: "home_hero",
@@ -105,7 +105,7 @@ describe("HomeHeroCtas", () => {
 
   it("fires the named GA4 pro_gumroad_click event exactly once for Get Skrewww Pro", async () => {
     const user = userEvent.setup();
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     await user.click(screen.getByRole("link", { name: "Get Skrewww Pro" }));
     expect(trackGAEvent).toHaveBeenCalledExactlyOnceWith("pro_gumroad_click", {
       cta_location: "home_hero",
@@ -115,14 +115,14 @@ describe("HomeHeroCtas", () => {
 
   it("does not fire a named GA4 event for the internal Browse components / View foundations CTAs", async () => {
     const user = userEvent.setup();
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     await user.click(screen.getByRole("link", { name: "Browse components" }));
     await user.click(screen.getByRole("link", { name: "View foundations" }));
     expect(trackGAEvent).not.toHaveBeenCalled();
   });
 
   it("opens the Figma and Gumroad links in a new tab with a safe rel", () => {
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     const figmaLink = screen.getByRole("link", { name: "Get free Figma file" });
     const gumroadLink = screen.getByRole("link", { name: "Get Skrewww Pro" });
 
@@ -138,13 +138,14 @@ describe("HomeHeroCtas", () => {
     expect(gumroadLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("shows a caption reflecting the real total component count passed in", () => {
-    render(<HomeHeroCtas totalComponents={63} />);
-    expect(screen.getByText(/63 in Pro/)).toBeInTheDocument();
+  it("shows a caption with the real Figma component counts — a distinct domain from the React registry", () => {
+    render(<HomeHeroCtas />);
+    expect(screen.getByText(/23 components free/)).toBeInTheDocument();
+    expect(screen.getByText(/52 in Pro/)).toBeInTheDocument();
   });
 
   it("groups Get free Figma file and Get Skrewww Pro in their own row, separate from Browse/View", () => {
-    render(<HomeHeroCtas totalComponents={63} />);
+    render(<HomeHeroCtas />);
     const figmaLink = screen.getByRole("link", { name: "Get free Figma file" });
     const gumroadLink = screen.getByRole("link", { name: "Get Skrewww Pro" });
     const browseLink = screen.getByRole("link", { name: "Browse components" });

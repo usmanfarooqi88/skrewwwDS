@@ -35,6 +35,44 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-09-figma-stabilization",
+    date: "2026-09-28",
+    displayDate: "September 2026",
+    title: "Free/Pro Figma parity and Dark-mode contrast",
+    summary:
+      "The Free Figma library now matches Pro's presentation quality and shared component behavior, and Alert's Dark-mode colors now meet accessible contrast. Figma component counts stay separate from the open-source React library (23 Free / 52 Pro components in Figma).",
+    items: [
+      {
+        type: "improved",
+        text: "Free Figma component pages now use the same presentation structure and quality as Pro across all 23 components.",
+      },
+      {
+        type: "improved",
+        text: "Gradient surface treatment is now consistent across shared Free and Pro components.",
+      },
+      {
+        type: "improved",
+        text: "Alert Dark-mode colors reworked for accessible contrast on title, description, and status icon, across Info, Success, Warning, and Error.",
+      },
+      {
+        type: "fixed",
+        text: "Button's focused-state outline, restored in the Free file.",
+      },
+      {
+        type: "fixed",
+        text: "A pagination item's default-state text was hard to read; corrected.",
+      },
+      {
+        type: "fixed",
+        text: "Alert and Toast corner radius now behaves consistently across Shape modes.",
+      },
+      {
+        type: "fixed",
+        text: "Outdated token references in a few component descriptions, corrected to match current behavior.",
+      },
+    ],
+  },
+  {
     id: "2026-09-guard-beta",
     date: "2026-09-17",
     displayDate: "September 2026",

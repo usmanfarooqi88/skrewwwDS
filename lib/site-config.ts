@@ -45,6 +45,15 @@ export const siteConfig = {
   /** The real, paid Gumroad destination — same as the homepage hero's "Get Skrewww Pro" CTA. */
   gumroadProUrl: "https://usmanfarooqi.gumroad.com/l/skrewww-pro",
   accessibilityBaseline: "WCAG 2.2 AA (target)",
+  /**
+   * Reusable Figma component counts — a distinct domain from the React
+   * registry (see getImplementedComponentCount()). Locked externally by the
+   * Figma files themselves (Free/Pro stabilization, 2026-09-28); update only
+   * when the Figma component count actually changes, not when the React
+   * registry changes.
+   */
+  figmaFreeComponentCount: 23,
+  figmaProComponentCount: 52,
 } as const;
 
 export function absoluteUrl(path: string): string {
