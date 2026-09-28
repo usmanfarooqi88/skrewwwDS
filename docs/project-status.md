@@ -1,6 +1,28 @@
 # Project status
 
-Last verified: **2026-09-29** (**AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-29** (**AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-29 — AG-1A Figma identity map (COMPLETE)
+
+First Audit Agent implementation slice; clears AG-0's P0 for five pilots.
+Details: `docs/architecture/agent-readiness.md` §20.
+
+- New optional registry field `figmaIdentity` (`lib/figma-identity.ts`):
+  `fileKey` + `nodeId` + `nodeType` + `role` + `verifiedAt`. The identity key
+  is the `(fileKey, nodeId)` pair — a bare node ID is not an identity.
+- Pilots, all Pro (`U6KUuNf7DF4CP9QBOkLSUx`) masters verified in the live file
+  by node ID: Button `2012:7752`, Text Input `2022:1151`, Alert `2034:25402`
+  (component sets); Dialog `2044:25869`, Chart Card `3239:8017`
+  (components).
+- **Identity, never parity.** No parity state is stored; `figmaAvailability`,
+  `figmaReference` prose (incl. Dialog's stale "no master" note), tokens and
+  APIs are unchanged. Contracts expose `figma.identity`; `figma.verified`
+  still only means "a concrete node is recorded" and is now `true` for the
+  four pilots that previously had no `figmaNodeId`.
+- Schema versions: registry and Agent contract 1.0.0 → 1.1.0; contract
+  generator 1.0.0 → 1.1.0. Public `/registry.json` unchanged.
+- Remaining: 53 non-pilot entries have no identity yet. Next: AG-1B —
+  read-only Figma snapshot extractor.
 
 ## 2026-09-29 — AG-0 Agent Readiness Audit (COMPLETE — audit + spec only)
 

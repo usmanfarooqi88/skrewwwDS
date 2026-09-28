@@ -1,3 +1,4 @@
+import type { FigmaIdentity } from "@/lib/figma-identity";
 import type { IndexingPolicy } from "@/lib/indexing-policy";
 import type { IndustryName } from "@/lib/industry-content";
 
@@ -66,6 +67,14 @@ export type ComponentRegistryEntry = {
   announcementBehavior?: string;
   figmaSourceUrl?: string;
   figmaNodeId?: string;
+  /**
+   * Unambiguous identity of this component's canonical Figma entity: file
+   * key + node ID + node type + role + verification date (see
+   * lib/figma-identity.ts). Identity only — never a parity claim. When
+   * `figmaNodeId` is also set it must name the same node. Populated only
+   * from live-Figma evidence; absent means "not yet mapped", not "no Figma".
+   */
+  figmaIdentity?: FigmaIdentity;
   /**
    * CLI-resolution fields for the planned "npx skrewww" copy-owned
    * distribution model (see skrewww-claude-project-instructions.md's
@@ -144,7 +153,7 @@ export type ComponentRegistryEntry = {
  *   schedule — a canonical schema change does not require a public
  *   schema bump, and vice versa.
  */
-export const CANONICAL_REGISTRY_SCHEMA_VERSION = "1.0.0";
+export const CANONICAL_REGISTRY_SCHEMA_VERSION = "1.1.0";
 
 import { calendarRegistryEntries } from "@/lib/component-registry-calendar";
 import { containersRegistryEntries } from "@/lib/component-registry-containers";
@@ -166,6 +175,7 @@ import {
   CHART_METRIC_FIGMA_COMPONENT_SET_NODE_ID,
   CHART_METRIC_FIGMA_FILE_URL,
 } from "@/lib/charts-figma-metadata";
+import { PILOT_FIGMA_IDENTITIES } from "@/lib/figma-identity";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -191,6 +201,7 @@ export const componentRegistry: ComponentRegistryEntry[] = [
     version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
+    figmaIdentity: PILOT_FIGMA_IDENTITIES.button,
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/actions.ts",
@@ -947,6 +958,7 @@ export function Example() {
     version: "0.1.0-beta",
     reactAvailability: "available",
     figmaAvailability: "available",
+    figmaIdentity: PILOT_FIGMA_IDENTITIES["chart-card"],
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/containers.ts",
@@ -1163,6 +1175,7 @@ export function WithDeltaExample() {
     version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
+    figmaIdentity: PILOT_FIGMA_IDENTITIES["text-input"],
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/forms.ts",

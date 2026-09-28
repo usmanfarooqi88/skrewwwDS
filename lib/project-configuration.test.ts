@@ -300,7 +300,7 @@ describe("project configuration", () => {
     expect(facts.designSystemVersion).toBe(pkg.version);
     expect(facts.documentationVersion).toBe(pkg.version);
     expect(facts.registrySchemaVersion).toBe("1.4.0");
-    expect(CANONICAL_REGISTRY_SCHEMA_VERSION).toBe("1.0.0");
+    expect(CANONICAL_REGISTRY_SCHEMA_VERSION).toBe("1.1.0");
   });
 
   it("tracks mixed Stable and Beta component maturity at platform 1.0", () => {

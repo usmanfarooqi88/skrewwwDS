@@ -148,8 +148,8 @@ describe("contract-compiler — sparse-field omission", () => {
     expect("distribution" in contract).toBe(false);
   });
 
-  it("reports figma.verified: false and omits nodeId when the registry entry has no figmaNodeId", () => {
-    const entryWithoutFigmaNode = componentRegistry.find((e) => !e.figmaNodeId);
+  it("reports figma.verified: false and omits nodeId when the registry entry records no Figma node", () => {
+    const entryWithoutFigmaNode = componentRegistry.find((e) => !e.figmaNodeId && !e.figmaIdentity);
     if (!entryWithoutFigmaNode) return;
     const doc = allComponents.find((d) => d.slug === entryWithoutFigmaNode.slug)!;
     const contract = compileComponentContract(entryWithoutFigmaNode, doc, FIXED_OPTIONS);

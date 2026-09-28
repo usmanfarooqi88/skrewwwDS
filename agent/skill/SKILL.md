@@ -306,7 +306,9 @@ Presentation V2 is frozen. This Skill and Agent Kit perform no Figma
 writes. `figma.verified`/`figma.nodeId` on a contract reflect whether a
 canonical Figma reference exists — treat that as informational, never as
 something to fabricate, infer from a screenshot, or use to block otherwise
-sound React work.
+sound React work. `figma.identity`, when present, pins the exact Figma file
+and node; it is an identity mapping, never a claim that Figma and React
+match.
 
 ## What this Skill explicitly does not do (yet)
 

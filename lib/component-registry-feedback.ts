@@ -1,4 +1,5 @@
 import type { ComponentRegistryEntry } from "@/lib/component-registry";
+import { PILOT_FIGMA_IDENTITIES } from "@/lib/figma-identity";
 import { getComponentDocumentationUrl } from "@/lib/site-config";
 
 const sharedConcepts = {
@@ -26,6 +27,7 @@ export const feedbackRegistryEntries: ComponentRegistryEntry[] = [
     version: "1.0.0",
     reactAvailability: "available",
     figmaAvailability: "available",
+    figmaIdentity: PILOT_FIGMA_IDENTITIES.alert,
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/feedback.ts",

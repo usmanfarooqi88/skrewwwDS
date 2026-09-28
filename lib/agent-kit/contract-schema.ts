@@ -1,4 +1,5 @@
 import type { AvailabilityStatus, MaturityStatus } from "@/lib/component-registry";
+import type { FigmaIdentity } from "@/lib/figma-identity";
 
 /**
  * Versions the shape of ComponentAgentContract / SystemAgentContract /
@@ -7,10 +8,10 @@ import type { AvailabilityStatus, MaturityStatus } from "@/lib/component-registr
  * (lib/registry-public.ts) — see docs/architecture/agent-kit.md for why
  * these three stay separate.
  */
-export const CANONICAL_AGENT_CONTRACT_SCHEMA_VERSION = "1.0.0";
+export const CANONICAL_AGENT_CONTRACT_SCHEMA_VERSION = "1.1.0";
 
 /** Versions contract-compiler.ts's own generation logic, independent of the schema it emits. */
-export const AGENT_CONTRACT_GENERATOR_VERSION = "1.0.0";
+export const AGENT_CONTRACT_GENERATOR_VERSION = "1.1.0";
 
 export type AgentContractApiProp = {
   name: string;
@@ -29,12 +30,25 @@ export type AgentContractRelatedLink = {
  * registry entry — the compiler never infers one. Consumers must treat an
  * unverified Figma reference as "not currently checkable," not "assumed
  * matching."
+ *
+ * `verified: true` means only that a concrete Figma node is recorded. It is
+ * NOT a claim that Figma and React are in parity.
  */
 export type AgentContractFigma = {
   verified: boolean;
   nodeId?: string;
   sourceUrl?: string;
+  /**
+   * Unambiguous identity of the canonical Figma entity (file key + node ID +
+   * node type + role + verification date), present only when the registry
+   * records one. Identity, never parity. A bare `nodeId` without `identity`
+   * is not a complete identity — node IDs are only unique within a file.
+   */
+  identity?: AgentContractFigmaIdentity;
 };
+
+/** Same shape as the canonical registry record (lib/figma-identity.ts) — compiled 1:1. */
+export type AgentContractFigmaIdentity = FigmaIdentity;
 
 /**
  * CLI-resolution / distribution fields, mirrored 1:1 from the canonical

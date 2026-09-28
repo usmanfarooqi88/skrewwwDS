@@ -1,7 +1,8 @@
 # Agent Readiness Audit (AG-0)
 
 **Phase:** AG-0 Agent Readiness Audit ✅ COMPLETE — audit + AG-1 spec only, no
-implementation.
+implementation. **AG-1A ✅ COMPLETE (2026-09-29)** — P0-1 cleared for the five
+pilot components; see §20.
 **Baseline:** `b1f8a45` (verified 2026-09-29). Live Agent Kit contracts at
 `https://skrewww.com/agent/contracts/<slug>.json` carried the same
 `provenance.sourceGitSha`.
@@ -409,3 +410,58 @@ Markdown summary. Nothing else is written.
 Agent UI, hosted API, auth, database, persistent workspace, autonomous Figma
 or repo edits, Build/Guard/Content agents, Free-file audits, industry
 systems, Consumer Contract Verification, Guard CI-2/CI-3.
+
+## 20. AG-1A — Figma identity map (implemented 2026-09-29)
+
+Clears **P0-1** for the five pilots. Identity only: no parity, token, API, or
+Figma changes.
+
+**Schema.** One optional field on the canonical registry entry, next to the
+existing `figma*` fields — `figmaIdentity?: FigmaIdentity`
+(`lib/figma-identity.ts`):
+
+| Field | Meaning |
+|---|---|
+| `fileKey` | Figma file key (not a URL) |
+| `nodeId` | `<number>:<number>`, unique only within `fileKey` |
+| `nodeType` | `COMPONENT_SET` \| `COMPONENT` \| `FRAME` |
+| `role` | `master` \| `static-reference` \| `composition-only` (role/type pairs validated) |
+| `verifiedAt` | ISO date the pair was confirmed against the live file |
+
+- The identity key is the `(fileKey, nodeId)` pair; a node ID alone is never
+  a complete identity (Free and Pro share node IDs).
+- Existing fields keep their meaning: `figmaAvailability` unchanged,
+  `figmaNodeId` still "a node ID is recorded" (it must equal
+  `figmaIdentity.nodeId` when both are set), `figmaReference` prose
+  untouched — including Dialog's stale "no master" note (AG-1F calibration).
+- Contracts expose it 1:1 as `figma.identity` (compiled, never hand-written).
+  `figma.verified` keeps its meaning — a concrete node is recorded — and is
+  now also `true` for a pilot whose node is recorded only via `figmaIdentity`.
+  It is never a parity claim.
+- Versions: `CANONICAL_REGISTRY_SCHEMA_VERSION` and
+  `CANONICAL_AGENT_CONTRACT_SCHEMA_VERSION` 1.0.0 → 1.1.0 (additive field);
+  `AGENT_CONTRACT_GENERATOR_VERSION` 1.0.0 → 1.1.0. Public `/registry.json`
+  does not expose the field and is unchanged.
+
+**Pilot identities** (Pro `U6KUuNf7DF4CP9QBOkLSUx`, each resolved by ID in the
+live file: one local master of that name, in its own canonical section, with
+live instances):
+
+| Slug | Node | Type | Role |
+|---|---|---|---|
+| `button` | `2012:7752` Actions/Button | COMPONENT_SET | master |
+| `text-input` | `2022:1151` Forms/Text Input | COMPONENT_SET | master |
+| `alert` | `2034:25402` Feedback/Alert | COMPONENT_SET | master |
+| `dialog` | `2044:25869` Containers/Dialog | COMPONENT | master |
+| `chart-card` | `3239:8017` Containers/Chart Card | COMPONENT | master |
+
+**Enforced by** `lib/figma-identity.test.ts` (checked-in evidence only, no
+live Figma in CI): exactly the five pilots carry identity, every identity
+validates, no duplicate `(fileKey, nodeId)` pair, legacy `figmaNodeId`
+consistency, a bare node ID is not an identity, contracts expose identity 1:1
+with no parity fields, and compilation is reproducible.
+
+**Remaining identity debt (53 of 58 entries at `e9634ce`):** 27 `available`
+entries with no node ID at all, and 19 entries with a legacy `figmaNodeId` but
+no file key/type/role (the rest are `partial`/`unavailable` with neither). Each needs the same live-Figma verification before an
+agent can audit it. Next: **AG-1B — read-only Figma snapshot extractor.**

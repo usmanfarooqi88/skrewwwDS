@@ -75,11 +75,14 @@ function buildDistribution(entry: ComponentRegistryEntry): AgentContractDistribu
 }
 
 function buildFigma(entry: ComponentRegistryEntry): AgentContractFigma {
-  // `verified` reflects presence of a real Figma node ID on the canonical
-  // registry entry only — never inferred, never assumed true by default.
-  const figma: AgentContractFigma = { verified: Boolean(entry.figmaNodeId) };
-  if (entry.figmaNodeId) figma.nodeId = entry.figmaNodeId;
+  // `verified` reflects presence of a real Figma node on the canonical
+  // registry entry only — never inferred, never assumed true by default,
+  // and never a parity claim. A recorded identity carries its own node ID.
+  const nodeId = entry.figmaIdentity?.nodeId ?? entry.figmaNodeId;
+  const figma: AgentContractFigma = { verified: Boolean(nodeId) };
+  if (nodeId) figma.nodeId = nodeId;
   if (entry.figmaSourceUrl) figma.sourceUrl = entry.figmaSourceUrl;
+  if (entry.figmaIdentity) figma.identity = { ...entry.figmaIdentity };
   return figma;
 }
 
