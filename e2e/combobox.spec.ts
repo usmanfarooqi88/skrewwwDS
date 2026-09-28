@@ -1,5 +1,5 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
-import { expectColorClose, hexToRgba, resolvedRgba, setSurfaceMode } from "./fixtures";
+import type { Locator, Page } from "@playwright/test";
+import { expect, expectColorClose, hexToRgba, resolvedRgba, setSurfaceMode, test } from "./fixtures";
 
 function basicCountryInput(page: Page): Locator {
   return page

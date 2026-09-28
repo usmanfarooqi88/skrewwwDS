@@ -1,6 +1,64 @@
 # Project status
 
-Last verified: **2026-09-28** (**Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-29** (**Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-29 — Browser-test hygiene: live previews hydrate in place (COMPLETE)
+
+**Symptom:** the full Playwright suite (`npm run test:browser`) had 68/578
+failures across unrelated specs (Switch, Table, Slider, Tree View, Calendar
+Day, Split Button, Combobox, …): computed styles read as `""`, boxes as
+`0`/`null`, keypresses ignored. CSS was never the problem — every stylesheet
+loaded (200, `text/css`) and applied.
+
+**Root cause (two linked races):**
+
+1. `AnalyticsConsentProvider` wraps the whole app and, in a mount effect,
+   made an urgent `setState` (localStorage consent read). That context update
+   reached each component page's live-preview Suspense boundary
+   (`ComponentLiveSection`, a lazy per-slug chunk) before it had hydrated,
+   so React discarded the server HTML and client-rendered the preview ~100ms
+   after `load`. Specs that measured right after `goto` read detached nodes
+   (`isConnected: false`) — hence the empty computed styles.
+2. Even without that swap, the preview hydrates only once its lazy chunk
+   loads, after `load`. Specs that typed or pressed keys immediately acted on
+   inert server HTML, and nothing in the harness waited for hydration.
+
+**Fix:**
+
+- `components/analytics/AnalyticsConsentProvider.tsx`: the mount-time read is
+  now `startTransition(() => setState(...))`, React's documented way to keep
+  an update from forcing a not-yet-hydrated boundary to client-render.
+  Consent behavior is unchanged; previews now hydrate in place instead of
+  being rendered twice.
+- `components/docs/ComponentLiveSection.tsx`: a hidden marker inside the
+  preview boundary flips `data-live-preview-state` from `pending` to `ready`
+  in an effect — effects only run once the whole boundary has hydrated.
+- `e2e/fixtures.ts`: the shared `page` fixture's `goto`/`reload` wait for that
+  marker when a page has one (deterministic; no timeouts). Nine specs that
+  imported `test` directly from `@playwright/test` now use the shared fixture.
+- New guard `e2e/live-preview-hydration.spec.ts`: asserts the server-rendered
+  preview node survives hydration. Verified it fails with the transition fix
+  reverted and passes with it.
+- `e2e/changelog.spec.ts` mobile test: scoped the "New" label check to the
+  Skrewww 1.0 entry, matching the desktop test. **Correction:** this failure
+  was introduced by the 2026-09-28 changelog entry (the newest entry has no
+  "New" item) — the earlier report grouped it with the pre-existing failures.
+
+**Validation:** Switch spec 11/11 ×3; Switch/Table/Slider/Tree View/Calendar
+Day/Split Button 65/65 ×3; Combobox 28/28 ×3. Full canonical suite: 573/580
+passed.
+
+**Remaining browser-test debt (not caused or fixed here):**
+
+- Pre-existing, deterministic — stale nav assumptions: `changelog.spec.ts:26`
+  (no Changelog link in the sidebar on `/foundations`) and
+  `gradient-foundation.spec.ts:202` (no "Button" link inside `<aside>`; its
+  Surface assertions now pass). Test-vs-nav decision needed.
+- Pre-existing product defect: `analytics-consent.spec.ts:187`/`210` — no
+  "Analytics preferences" reopener control is rendered.
+- Parallel-only timing flakes (pass 5/5 serially): `link-pressed.spec.ts:54`,
+  `reference-app-forms.spec.ts:81`, `semantic-text-danger.spec.ts:99`.
+- CI does not run Playwright at all.
 
 ## 2026-09-28 — Figma Free/Pro stabilization CLOSED; repo facts synced (COMPLETE)
 

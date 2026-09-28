@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  startTransition,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import {
   readStoredAnalyticsConsent,
@@ -78,10 +86,16 @@ export function AnalyticsConsentProvider({
   // to model here (readStoredAnalyticsConsent is a one-shot read, not a
   // stream), so useSyncExternalStore would be strictly more machinery for
   // the same one render-cycle delay.
+  //
+  // The update is a transition, not an urgent update: this provider wraps
+  // the whole app, so its context change reaches every Suspense boundary
+  // still hydrating (e.g. the lazy per-slug live previews). An urgent
+  // update to a not-yet-hydrated boundary makes React discard its server
+  // HTML and client-render it; a transition lets hydration finish first.
   useEffect(() => {
     if (!hasGA) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot hydration-safe localStorage read, see comment above
-    setState(readStoredAnalyticsConsent() ?? "undecided");
+    const stored = readStoredAnalyticsConsent() ?? "undecided";
+    startTransition(() => setState(stored));
   }, [hasGA]);
 
   const allow = useCallback(() => {

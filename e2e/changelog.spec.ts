@@ -54,7 +54,10 @@ test.describe("Changelog — mobile", () => {
     );
     expect(hasOverflow).toBe(false);
 
-    const firstArticle = page.locator("article").first();
-    await expect(firstArticle.getByText("New", { exact: true })).toBeVisible();
+    // Same scoping as the desktop label test above: the newest entry need
+    // not carry a "New" item, so check label readability on an entry that
+    // always carries one rather than on whichever release is newest.
+    const skrewww1Article = page.locator("article").filter({ hasText: "Skrewww 1.0" });
+    await expect(skrewww1Article.getByText("New", { exact: true })).toBeVisible();
   });
 });

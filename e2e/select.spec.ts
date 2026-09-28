@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test.describe("Select keyboard model", () => {
   test.beforeEach(async ({ page }) => {

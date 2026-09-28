@@ -15,6 +15,30 @@ Skrewww validates components with Vitest, Testing Library, Playwright, and stati
 
 Vitest excludes `e2e/**` so Playwright specs are not collected twice.
 
+### Specs must use the shared fixture
+
+Import `test` and `expect` from `./fixtures`, never directly from
+`@playwright/test` (type-only imports such as `Locator`/`Page` are fine). The
+shared `page` fixture:
+
+- mocks the Vercel Analytics / Speed Insights scripts (404 locally), and
+- makes `page.goto` / `page.reload` wait until the page's live preview has
+  **hydrated**, not just loaded.
+
+Component pages stream each live preview as a lazy Suspense boundary
+(`components/docs/ComponentLiveSection.tsx`), which hydrates after the `load`
+event. A hidden marker inside that boundary flips `data-live-preview-state`
+from `pending` to `ready` once the boundary has hydrated; the fixture waits on
+it. Acting earlier hits inert server HTML — keypresses and `fill()` are
+ignored. Do not replace this with `waitForTimeout`.
+
+App-wide providers must not make **urgent** state updates on mount. An urgent
+update that reaches a not-yet-hydrated boundary makes React discard its server
+HTML and client-render it, so tests measure detached nodes (empty computed
+styles, zero-size boxes). Wrap such mount-time updates in `startTransition`
+(see `AnalyticsConsentProvider`). `e2e/live-preview-hydration.spec.ts` guards
+this.
+
 ## Current browser coverage
 
 Specs under `e2e/` include smoke, overlay, form, and component-specific flows (Dialog, Popover, Menu, Combobox, Date Picker, and others). Representative checks:

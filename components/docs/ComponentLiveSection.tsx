@@ -1,6 +1,13 @@
 "use client";
 
-import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  type ComponentType,
+  type LazyExoticComponent,
+} from "react";
 
 /**
  * Per-slug preview loaders — each entry is an explicit dynamic `import()`.
@@ -277,12 +284,28 @@ function PreviewLoadingFallback() {
   );
 }
 
+/**
+ * Readiness signal for the live preview. It sits in the same Suspense
+ * boundary as the preview, and effects inside a boundary only run once the
+ * whole boundary has hydrated and committed — so `ready` means the preview
+ * is interactive, not merely present as server HTML. The browser-test
+ * harness (e2e/fixtures.ts) waits on it instead of on arbitrary timeouts.
+ */
+function LivePreviewReadyMarker() {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    ref.current?.setAttribute("data-live-preview-state", "ready");
+  }, []);
+  return <span ref={ref} hidden data-live-preview-state="pending" />;
+}
+
 export function ComponentLiveSection({ slug }: { slug: string }) {
   if (!hasLivePreviewLoader(slug)) return null;
   const Preview = lazyPreviews[slug];
   return (
     <Suspense fallback={<PreviewLoadingFallback />}>
       <Preview />
+      <LivePreviewReadyMarker />
     </Suspense>
   );
 }

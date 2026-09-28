@@ -17,9 +17,37 @@ export const test = base.extend({
     await page.route("**/_vercel/speed-insights/script.js", (route) =>
       route.fulfill({ status: 200, contentType: "application/javascript", body: "" }),
     );
+
+    // Component pages stream their live preview as a lazy Suspense boundary,
+    // which hydrates after the `load` event. Acting before then hits inert
+    // server HTML (keypresses ignored, measurements taken on nodes React may
+    // still replace). Every navigation therefore waits for the preview's own
+    // readiness marker (components/docs/ComponentLiveSection.tsx) when the
+    // page has one — a deterministic hydration signal, not a timeout.
+    const goto = page.goto.bind(page);
+    const reload = page.reload.bind(page);
+    page.goto = async (...args: Parameters<Page["goto"]>) => {
+      const response = await goto(...args);
+      await waitForLivePreview(page);
+      return response;
+    };
+    page.reload = async (...args: Parameters<Page["reload"]>) => {
+      const response = await reload(...args);
+      await waitForLivePreview(page);
+      return response;
+    };
+
     await runTest(page);
   },
 });
+
+/** Resolves once the page's live preview (if any) has hydrated. */
+export async function waitForLivePreview(page: Page): Promise<void> {
+  await page.waitForFunction(() => {
+    const marker = document.querySelector("[data-live-preview-state]");
+    return !marker || marker.getAttribute("data-live-preview-state") === "ready";
+  });
+}
 
 export { expect };
 
