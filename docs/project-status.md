@@ -1,6 +1,39 @@
 # Project status
 
-Last verified: **2026-09-29** (**Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-29** (**AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-29 — AG-0 Agent Readiness Audit (COMPLETE — audit + spec only)
+
+Audit of whether Skrewww's source-of-truth chain can support an Audit Agent
+(Figma ↔ canonical contract ↔ React). No runtime code, dependency, Figma, or
+contract change. Full findings, evidence model, blocker matrix, and the AG-1
+slice plan: `docs/architecture/agent-readiness.md`.
+
+- **Verdict:** READY WITH REQUIRED PREWORK.
+- **P0 (only one):** 31 registry entries are `figmaAvailability: "available"`
+  with no `figmaNodeId` (incl. Button, Text Input, Alert, Dialog); their only
+  Figma link is uncompiled `figmaReference` prose, and no entry records a
+  Figma file key (Free and Pro share node IDs). An agent would have to
+  name-match entities.
+- **Authority clarifications:** `tokensUsed` (Figma-named, R1-locked) and
+  `cssTokens` (CSS variables, own stylesheet only) are different domains;
+  contract `figma.verified` means "node ID recorded", not parity; Agent Kit
+  contracts are a generated projection, not authority.
+- **Reusable foundations:** Guard's `violation | pass | not-applicable |
+  unknown` evaluation model and programmatic `runGuard()`; contract
+  provenance SHA (live contracts matched HEAD); Figma masters are
+  machine-readable (typed properties, variants, named bindings).
+- **Drift the future agent should detect (recorded, not fixed):** Dialog's
+  `figmaReference` says no master exists, but live Pro has
+  `Containers/Dialog` (`2044:25869`); Alert `tokensUsed` lists
+  `component/radius/container` while live Figma binds
+  `component/radius/feedback`; React has no feedback radius token and no
+  Dark theme.
+- **Correction to the 2026-09-28 entry:** `component/radius/feedback` in
+  Pill mode resolves to `radius/full` (9999), not a 12px cap; `container` is
+  `radius/3xl` (32px). The Free token values created that day match Pro —
+  only the written description of the Pill divergence was wrong. React Pill
+  container radius is `16px [TEMPORARY]`.
 
 ## 2026-09-29 — Browser-test hygiene: live previews hydrate in place (COMPLETE)
 
