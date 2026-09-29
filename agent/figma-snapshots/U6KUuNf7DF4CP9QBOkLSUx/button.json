@@ -1,0 +1,2910 @@
+{
+  "schemaVersion": "1.0.0",
+  "capturedAt": "2026-09-29T10:14:52Z",
+  "capture": {
+    "method": "figma-plugin-api",
+    "captureVersion": "1.0.0",
+    "fileName": "Skrewww - Design System"
+  },
+  "identity": {
+    "fileKey": "U6KUuNf7DF4CP9QBOkLSUx",
+    "nodeId": "2012:7752",
+    "nodeType": "COMPONENT_SET",
+    "role": "master",
+    "verifiedAt": "2026-09-29"
+  },
+  "observed": {
+    "node": {
+      "id": "2012:7752",
+      "name": "Actions/Button",
+      "type": "COMPONENT_SET",
+      "pageName": "Actions",
+      "parent": {
+        "id": "2022:1101",
+        "type": "SECTION",
+        "name": "Actions/Button"
+      },
+      "description": "PURPOSE: Primary interactive trigger for user actions — submit, confirm, navigate, initiate a process.\n\nWHEN TO USE: For the main action(s) in a view. Use Primary for the single most important action, Secondary for alternative/less prominent actions, Danger for destructive actions requiring confirmation.\n\nWHEN NOT TO USE: For page-to-page navigation (use Link). For toggling a binary state (use Switch). For a single icon-only action (use Icon Button).\n\nACCESSIBILITY: Renders as a real <button>, not a styled <div>. Keyboard: Tab to focus, Enter/Space to activate. Focus uses semantic/focus-ring (5.31:1 contrast, confirmed on the Accessibility page). Never rely on the Disabled state alone to explain unavailability — pair with visible explanatory text nearby.\n\nCOMMON MISTAKES: More than one Primary button in the same view (dilutes hierarchy). Not disabling the button during an async action (allows double-submission). Skipping a confirmation step for Danger actions just because the button is red.\n\nTOKENS USED: component/radius/control, semantic/action/primary, semantic/action/danger, semantic/surface/default, semantic/text/inverse, semantic/text/primary, semantic/focus-ring, opacity/disabled, spacing scale, font-size scale.\n\nPROPERTIES: Style (Primary/Secondary/Danger) x Size (Small/Medium/Large) x State (Default/Hover/Pressed/Focused/Disabled) as variants. Label (text). Has Icon (boolean) + Icon (instance-swap)."
+    },
+    "componentProperties": [
+      {
+        "key": "Label#2012:38",
+        "name": "Label",
+        "type": "TEXT",
+        "defaultValue": "Button"
+      },
+      {
+        "key": "Leading Icon#2012:84",
+        "name": "Leading Icon",
+        "type": "INSTANCE_SWAP",
+        "defaultValue": "2012:6972"
+      },
+      {
+        "key": "Show leading icon#2012:176",
+        "name": "Show leading icon",
+        "type": "BOOLEAN",
+        "defaultValue": false
+      },
+      {
+        "key": "Show trailing icon#2012:222",
+        "name": "Show trailing icon",
+        "type": "BOOLEAN",
+        "defaultValue": true
+      },
+      {
+        "key": "Size",
+        "name": "Size",
+        "type": "VARIANT",
+        "defaultValue": "Small",
+        "variantOptions": [
+          "Small",
+          "Medium",
+          "Large"
+        ]
+      },
+      {
+        "key": "State",
+        "name": "State",
+        "type": "VARIANT",
+        "defaultValue": "Default",
+        "variantOptions": [
+          "Default",
+          "Hover",
+          "Pressed",
+          "Focused",
+          "Disabled"
+        ]
+      },
+      {
+        "key": "Style",
+        "name": "Style",
+        "type": "VARIANT",
+        "defaultValue": "Primary",
+        "variantOptions": [
+          "Primary",
+          "Secondary",
+          "Danger"
+        ]
+      },
+      {
+        "key": "Trailing Icon#2012:130",
+        "name": "Trailing Icon",
+        "type": "INSTANCE_SWAP",
+        "defaultValue": "2012:6965"
+      }
+    ],
+    "variants": [
+      {
+        "nodeId": "2012:7747",
+        "name": "Style=Danger, Size=Large, State=Default",
+        "values": {
+          "Style": "Danger",
+          "Size": "Large",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7751",
+        "name": "Style=Danger, Size=Large, State=Disabled",
+        "values": {
+          "Style": "Danger",
+          "Size": "Large",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7750",
+        "name": "Style=Danger, Size=Large, State=Focused",
+        "values": {
+          "Style": "Danger",
+          "Size": "Large",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7748",
+        "name": "Style=Danger, Size=Large, State=Hover",
+        "values": {
+          "Style": "Danger",
+          "Size": "Large",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7749",
+        "name": "Style=Danger, Size=Large, State=Pressed",
+        "values": {
+          "Style": "Danger",
+          "Size": "Large",
+          "State": "Pressed"
+        }
+      },
+      {
+        "nodeId": "2012:7742",
+        "name": "Style=Danger, Size=Medium, State=Default",
+        "values": {
+          "Style": "Danger",
+          "Size": "Medium",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7746",
+        "name": "Style=Danger, Size=Medium, State=Disabled",
+        "values": {
+          "Style": "Danger",
+          "Size": "Medium",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7745",
+        "name": "Style=Danger, Size=Medium, State=Focused",
+        "values": {
+          "Style": "Danger",
+          "Size": "Medium",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7743",
+        "name": "Style=Danger, Size=Medium, State=Hover",
+        "values": {
+          "Style": "Danger",
+          "Size": "Medium",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7744",
+        "name": "Style=Danger, Size=Medium, State=Pressed",
+        "values": {
+          "Style": "Danger",
+          "Size": "Medium",
+          "State": "Pressed"
+        }
+      },
+      {
+        "nodeId": "2012:7737",
+        "name": "Style=Danger, Size=Small, State=Default",
+        "values": {
+          "Style": "Danger",
+          "Size": "Small",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7741",
+        "name": "Style=Danger, Size=Small, State=Disabled",
+        "values": {
+          "Style": "Danger",
+          "Size": "Small",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7740",
+        "name": "Style=Danger, Size=Small, State=Focused",
+        "values": {
+          "Style": "Danger",
+          "Size": "Small",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7738",
+        "name": "Style=Danger, Size=Small, State=Hover",
+        "values": {
+          "Style": "Danger",
+          "Size": "Small",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7739",
+        "name": "Style=Danger, Size=Small, State=Pressed",
+        "values": {
+          "Style": "Danger",
+          "Size": "Small",
+          "State": "Pressed"
+        }
+      },
+      {
+        "nodeId": "2012:7717",
+        "name": "Style=Primary, Size=Large, State=Default",
+        "values": {
+          "Style": "Primary",
+          "Size": "Large",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7721",
+        "name": "Style=Primary, Size=Large, State=Disabled",
+        "values": {
+          "Style": "Primary",
+          "Size": "Large",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7720",
+        "name": "Style=Primary, Size=Large, State=Focused",
+        "values": {
+          "Style": "Primary",
+          "Size": "Large",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7718",
+        "name": "Style=Primary, Size=Large, State=Hover",
+        "values": {
+          "Style": "Primary",
+          "Size": "Large",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7719",
+        "name": "Style=Primary, Size=Large, State=Pressed",
+        "values": {
+          "Style": "Primary",
+          "Size": "Large",
+          "State": "Pressed"
+        }
+      },
+      {
+        "nodeId": "2012:7712",
+        "name": "Style=Primary, Size=Medium, State=Default",
+        "values": {
+          "Style": "Primary",
+          "Size": "Medium",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7716",
+        "name": "Style=Primary, Size=Medium, State=Disabled",
+        "values": {
+          "Style": "Primary",
+          "Size": "Medium",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7715",
+        "name": "Style=Primary, Size=Medium, State=Focused",
+        "values": {
+          "Style": "Primary",
+          "Size": "Medium",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7713",
+        "name": "Style=Primary, Size=Medium, State=Hover",
+        "values": {
+          "Style": "Primary",
+          "Size": "Medium",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7714",
+        "name": "Style=Primary, Size=Medium, State=Pressed",
+        "values": {
+          "Style": "Primary",
+          "Size": "Medium",
+          "State": "Pressed"
+        }
+      },
+      {
+        "nodeId": "2012:7707",
+        "name": "Style=Primary, Size=Small, State=Default",
+        "values": {
+          "Style": "Primary",
+          "Size": "Small",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7711",
+        "name": "Style=Primary, Size=Small, State=Disabled",
+        "values": {
+          "Style": "Primary",
+          "Size": "Small",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7710",
+        "name": "Style=Primary, Size=Small, State=Focused",
+        "values": {
+          "Style": "Primary",
+          "Size": "Small",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7708",
+        "name": "Style=Primary, Size=Small, State=Hover",
+        "values": {
+          "Style": "Primary",
+          "Size": "Small",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7709",
+        "name": "Style=Primary, Size=Small, State=Pressed",
+        "values": {
+          "Style": "Primary",
+          "Size": "Small",
+          "State": "Pressed"
+        }
+      },
+      {
+        "nodeId": "2012:7732",
+        "name": "Style=Secondary, Size=Large, State=Default",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Large",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7736",
+        "name": "Style=Secondary, Size=Large, State=Disabled",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Large",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7735",
+        "name": "Style=Secondary, Size=Large, State=Focused",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Large",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7733",
+        "name": "Style=Secondary, Size=Large, State=Hover",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Large",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7734",
+        "name": "Style=Secondary, Size=Large, State=Pressed",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Large",
+          "State": "Pressed"
+        }
+      },
+      {
+        "nodeId": "2012:7727",
+        "name": "Style=Secondary, Size=Medium, State=Default",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Medium",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7731",
+        "name": "Style=Secondary, Size=Medium, State=Disabled",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Medium",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7730",
+        "name": "Style=Secondary, Size=Medium, State=Focused",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Medium",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7728",
+        "name": "Style=Secondary, Size=Medium, State=Hover",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Medium",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7729",
+        "name": "Style=Secondary, Size=Medium, State=Pressed",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Medium",
+          "State": "Pressed"
+        }
+      },
+      {
+        "nodeId": "2012:7722",
+        "name": "Style=Secondary, Size=Small, State=Default",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Small",
+          "State": "Default"
+        }
+      },
+      {
+        "nodeId": "2012:7726",
+        "name": "Style=Secondary, Size=Small, State=Disabled",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Small",
+          "State": "Disabled"
+        }
+      },
+      {
+        "nodeId": "2012:7725",
+        "name": "Style=Secondary, Size=Small, State=Focused",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Small",
+          "State": "Focused"
+        }
+      },
+      {
+        "nodeId": "2012:7723",
+        "name": "Style=Secondary, Size=Small, State=Hover",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Small",
+          "State": "Hover"
+        }
+      },
+      {
+        "nodeId": "2012:7724",
+        "name": "Style=Secondary, Size=Small, State=Pressed",
+        "values": {
+          "Style": "Secondary",
+          "Size": "Small",
+          "State": "Pressed"
+        }
+      }
+    ],
+    "layouts": [
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 0,
+          "padding": [
+            12,
+            24,
+            12,
+            24
+          ],
+          "primaryAxisSizingMode": "AUTO",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 140,
+          "height": 48,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "GRADIENT_LINEAR"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 0,
+          "padding": [
+            6,
+            12,
+            6,
+            12
+          ],
+          "primaryAxisSizingMode": "AUTO",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 93,
+          "height": 29,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "GRADIENT_LINEAR"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 0,
+          "padding": [
+            8,
+            16,
+            8,
+            16
+          ],
+          "primaryAxisSizingMode": "AUTO",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 113,
+          "height": 36,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "GRADIENT_LINEAR"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      }
+    ],
+    "children": [
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "children": [
+          {
+            "name": "Content",
+            "type": "FRAME",
+            "visible": true
+          },
+          {
+            "name": "Focus Ring",
+            "type": "RECTANGLE",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Small, State=Focused"
+        ],
+        "children": [
+          {
+            "name": "Content",
+            "type": "FRAME",
+            "visible": true
+          },
+          {
+            "name": "Focus Ring",
+            "type": "RECTANGLE",
+            "visible": true
+          }
+        ]
+      }
+    ],
+    "variableBindings": [
+      {
+        "scope": "all",
+        "path": "",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "effects[0].radius",
+        "variableId": "VariableID:2057:13",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Small, State=Hover"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:1381",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:1382",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Small, State=Hover"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:1383",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Danger, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:1384",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:1387",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:569",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:570",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:571",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[1].gradientStops[0].color",
+        "variableId": "VariableID:2329:2914",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[1].gradientStops[1].color",
+        "variableId": "VariableID:2329:2915",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Small, State=Disabled"
+        ],
+        "path": "",
+        "property": "opacity",
+        "variableId": "VariableID:2012:7105",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2411",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2416",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2416",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2411",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[0].color",
+        "variableId": "VariableID:2264:459",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[0].color",
+        "variableId": "VariableID:2268:218",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[0].color",
+        "variableId": "VariableID:2270:487",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[1].color",
+        "variableId": "VariableID:2268:219",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[1].color",
+        "variableId": "VariableID:2270:488",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[1].color",
+        "variableId": "VariableID:2271:487",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[2].color",
+        "variableId": "VariableID:2268:220",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[2].color",
+        "variableId": "VariableID:2270:489",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed"
+        ],
+        "path": "",
+        "property": "strokes[0].gradientStops[2].color",
+        "variableId": "VariableID:2271:488",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Label",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2462",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Label",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2057:1529",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Content > Label",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Content > Leading Icon > Vector",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Content > Leading Icon"
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3548",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3548",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "Content > Leading Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3548",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Content > Trailing Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Content > Trailing Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Content > Trailing Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Content > Trailing Icon"
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3548",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3548",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "Content > Trailing Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3548",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2411",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "Content",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Focus Ring",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Focus Ring",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Focus Ring",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2472",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Focus Ring",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Focus Ring",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      }
+    ],
+    "textStyles": [
+      {
+        "scope": [
+          "Style=Danger, Size=Large, State=Default",
+          "Style=Danger, Size=Large, State=Disabled",
+          "Style=Danger, Size=Large, State=Focused",
+          "Style=Danger, Size=Large, State=Hover",
+          "Style=Danger, Size=Large, State=Pressed",
+          "Style=Primary, Size=Large, State=Default",
+          "Style=Primary, Size=Large, State=Disabled",
+          "Style=Primary, Size=Large, State=Focused",
+          "Style=Primary, Size=Large, State=Hover",
+          "Style=Primary, Size=Large, State=Pressed",
+          "Style=Secondary, Size=Large, State=Default",
+          "Style=Secondary, Size=Large, State=Disabled",
+          "Style=Secondary, Size=Large, State=Focused",
+          "Style=Secondary, Size=Large, State=Hover",
+          "Style=Secondary, Size=Large, State=Pressed"
+        ],
+        "path": "Content > Label",
+        "withinInstance": null,
+        "styleName": "Heading/S",
+        "mixed": false
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Danger, Size=Medium, State=Disabled",
+          "Style=Danger, Size=Medium, State=Focused",
+          "Style=Danger, Size=Medium, State=Hover",
+          "Style=Danger, Size=Medium, State=Pressed",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Disabled",
+          "Style=Primary, Size=Medium, State=Focused",
+          "Style=Primary, Size=Medium, State=Hover",
+          "Style=Primary, Size=Medium, State=Pressed",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Disabled",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Medium, State=Hover",
+          "Style=Secondary, Size=Medium, State=Pressed"
+        ],
+        "path": "Content > Label",
+        "withinInstance": null,
+        "styleName": "Label/L",
+        "mixed": false
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Small, State=Default",
+          "Style=Danger, Size=Small, State=Disabled",
+          "Style=Danger, Size=Small, State=Focused",
+          "Style=Danger, Size=Small, State=Hover",
+          "Style=Danger, Size=Small, State=Pressed",
+          "Style=Primary, Size=Small, State=Default",
+          "Style=Primary, Size=Small, State=Disabled",
+          "Style=Primary, Size=Small, State=Focused",
+          "Style=Primary, Size=Small, State=Hover",
+          "Style=Primary, Size=Small, State=Pressed",
+          "Style=Secondary, Size=Small, State=Default",
+          "Style=Secondary, Size=Small, State=Disabled",
+          "Style=Secondary, Size=Small, State=Focused",
+          "Style=Secondary, Size=Small, State=Hover",
+          "Style=Secondary, Size=Small, State=Pressed"
+        ],
+        "path": "Content > Label",
+        "withinInstance": null,
+        "styleName": "Label/M",
+        "mixed": false
+      }
+    ],
+    "nestedInstances": [
+      {
+        "scope": "all",
+        "path": "Content > Leading Icon",
+        "withinInstance": null,
+        "visible": false,
+        "mainComponentId": "2012:6972",
+        "mainComponentName": "Icon/Check",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": "all",
+        "path": "Content > Trailing Icon",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2012:6965",
+        "mainComponentName": "Icon/ArrowRight",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      }
+    ],
+    "explicitVariableModes": [
+      {
+        "scope": [
+          "Style=Primary, Size=Medium, State=Default"
+        ],
+        "collection": "Button Style",
+        "mode": "Primary"
+      },
+      {
+        "scope": [
+          "Style=Danger, Size=Medium, State=Default",
+          "Style=Primary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Default",
+          "Style=Secondary, Size=Medium, State=Focused",
+          "Style=Secondary, Size=Small, State=Default"
+        ],
+        "collection": "Surface",
+        "mode": "Flat"
+      }
+    ],
+    "variables": [
+      {
+        "id": "VariableID:2127:570",
+        "name": "component/button/danger/background",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/action/danger",
+            "aliasId": "VariableID:2002:2468"
+          },
+          "Gradient": {
+            "alias": "semantic/action/danger",
+            "aliasId": "VariableID:2002:2468"
+          },
+          "Glass": {
+            "r": 0.898,
+            "g": 0.2824,
+            "b": 0.302,
+            "a": 0.58
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:1383",
+        "name": "component/button/danger/background-hover",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "color/danger/600",
+            "aliasId": "VariableID:2012:7240"
+          },
+          "Gradient": {
+            "alias": "color/danger/600",
+            "aliasId": "VariableID:2012:7240"
+          },
+          "Glass": {
+            "r": 0.8,
+            "g": 0.2314,
+            "b": 0.2157,
+            "a": 0.64
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:1384",
+        "name": "component/button/danger/background-pressed",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "color/danger/700",
+            "aliasId": "VariableID:2002:2398"
+          },
+          "Gradient": {
+            "alias": "color/danger/700",
+            "aliasId": "VariableID:2002:2398"
+          },
+          "Glass": {
+            "r": 0.702,
+            "g": 0.149,
+            "b": 0.1176,
+            "a": 0.7
+          }
+        }
+      },
+      {
+        "id": "VariableID:2264:459",
+        "name": "component/button/danger/border",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.8
+          }
+        }
+      },
+      {
+        "id": "VariableID:2271:488",
+        "name": "component/button/danger/border-end",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0
+          },
+          "Glass": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0.15
+          }
+        }
+      },
+      {
+        "id": "VariableID:2271:487",
+        "name": "component/button/danger/border-mid",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0
+          },
+          "Glass": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0.6
+          }
+        }
+      },
+      {
+        "id": "VariableID:2587:4250",
+        "name": "component/button/icon/foreground",
+        "resolvedType": "COLOR",
+        "collection": "Button Style",
+        "valuesByMode": {
+          "Standalone": {
+            "alias": "semantic/icon/default",
+            "aliasId": "VariableID:2002:2474"
+          },
+          "Primary": {
+            "alias": "component/surface/content",
+            "aliasId": "VariableID:2057:1529"
+          },
+          "Secondary": {
+            "alias": "semantic/text/primary",
+            "aliasId": "VariableID:2002:2462"
+          },
+          "Danger": {
+            "alias": "component/surface/content",
+            "aliasId": "VariableID:2057:1529"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:569",
+        "name": "component/button/primary/background",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/action/primary",
+            "aliasId": "VariableID:2002:2467"
+          },
+          "Gradient": {
+            "alias": "semantic/action/primary",
+            "aliasId": "VariableID:2002:2467"
+          },
+          "Glass": {
+            "r": 0.4235,
+            "g": 0.298,
+            "b": 0.949,
+            "a": 0.18
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:1381",
+        "name": "component/button/primary/background-hover",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "color/brand/600",
+            "aliasId": "VariableID:2002:2392"
+          },
+          "Gradient": {
+            "alias": "color/brand/600",
+            "aliasId": "VariableID:2002:2392"
+          },
+          "Glass": {
+            "r": 0.3373,
+            "g": 0.2196,
+            "b": 0.8392,
+            "a": 0.24
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:1382",
+        "name": "component/button/primary/background-pressed",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "color/brand/700",
+            "aliasId": "VariableID:2002:2393"
+          },
+          "Gradient": {
+            "alias": "color/brand/700",
+            "aliasId": "VariableID:2002:2393"
+          },
+          "Glass": {
+            "r": 0.2588,
+            "g": 0.1608,
+            "b": 0.6784,
+            "a": 0.3
+          }
+        }
+      },
+      {
+        "id": "VariableID:2270:487",
+        "name": "component/button/primary/border",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.8
+          }
+        }
+      },
+      {
+        "id": "VariableID:2270:489",
+        "name": "component/button/primary/border-end",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Glass": {
+            "r": 0.4235,
+            "g": 0.298,
+            "b": 0.949,
+            "a": 0.15
+          }
+        }
+      },
+      {
+        "id": "VariableID:2270:488",
+        "name": "component/button/primary/border-mid",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Glass": {
+            "r": 0.4235,
+            "g": 0.298,
+            "b": 0.949,
+            "a": 0.6
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:571",
+        "name": "component/button/secondary/background",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Gradient": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Glass": {
+            "alias": "component/surface/fill",
+            "aliasId": "VariableID:2057:11"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:1387",
+        "name": "component/button/secondary/background-elevated",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/surface/elevated",
+            "aliasId": "VariableID:2002:2460"
+          },
+          "Gradient": {
+            "alias": "semantic/surface/elevated",
+            "aliasId": "VariableID:2002:2460"
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.2
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:218",
+        "name": "component/card/border-highlight-1",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.8
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:219",
+        "name": "component/card/border-highlight-2",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 0.5
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:220",
+        "name": "component/card/border-highlight-3",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 0.15
+          }
+        }
+      },
+      {
+        "id": "VariableID:2012:9573",
+        "name": "component/radius/control",
+        "resolvedType": "FLOAT",
+        "collection": "Shape",
+        "valuesByMode": {
+          "Rounded": {
+            "alias": "radius/sm",
+            "aliasId": "VariableID:2002:2426"
+          },
+          "Sharp": {
+            "alias": "radius/none",
+            "aliasId": "VariableID:2002:2424"
+          },
+          "Pill": {
+            "alias": "radius/full",
+            "aliasId": "VariableID:2002:2432"
+          },
+          "Squircle": {
+            "alias": "radius/md",
+            "aliasId": "VariableID:2002:2427"
+          },
+          "Brand Shape": {
+            "alias": "radius/sm",
+            "aliasId": "VariableID:2002:2426"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2057:13",
+        "name": "component/surface/blur",
+        "resolvedType": "FLOAT",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": 0,
+          "Gradient": 0,
+          "Glass": 16
+        }
+      },
+      {
+        "id": "VariableID:2057:1529",
+        "name": "component/surface/content",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/text/inverse",
+            "aliasId": "VariableID:2012:7106"
+          },
+          "Gradient": {
+            "alias": "semantic/text/inverse",
+            "aliasId": "VariableID:2012:7106"
+          },
+          "Glass": {
+            "alias": "semantic/text/primary",
+            "aliasId": "VariableID:2002:2462"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2915",
+        "name": "component/surface/gradient-overlay-end",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0.0392
+          },
+          "Glass": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2914",
+        "name": "component/surface/gradient-overlay-start",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.0784
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2848",
+        "name": "font-family/sans",
+        "resolvedType": "STRING",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": "Inter"
+        }
+      },
+      {
+        "id": "VariableID:2012:7105",
+        "name": "opacity/disabled",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 40
+        }
+      },
+      {
+        "id": "VariableID:2002:2472",
+        "name": "semantic/focus-ring",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/brand/500",
+            "aliasId": "VariableID:2002:2391"
+          },
+          "Dark": {
+            "alias": "color/brand/400",
+            "aliasId": "VariableID:2002:2390"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2003:3548",
+        "name": "semantic/icon-size/lg",
+        "resolvedType": "FLOAT",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "spacing/24",
+            "aliasId": "VariableID:2002:2416"
+          },
+          "Dark": {
+            "alias": "spacing/24",
+            "aliasId": "VariableID:2002:2416"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2003:3547",
+        "name": "semantic/icon-size/md",
+        "resolvedType": "FLOAT",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "spacing/20",
+            "aliasId": "VariableID:2002:2415"
+          },
+          "Dark": {
+            "alias": "spacing/20",
+            "aliasId": "VariableID:2002:2415"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2003:3546",
+        "name": "semantic/icon-size/sm",
+        "resolvedType": "FLOAT",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "spacing/16",
+            "aliasId": "VariableID:2002:2414"
+          },
+          "Dark": {
+            "alias": "spacing/16",
+            "aliasId": "VariableID:2002:2414"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2462",
+        "name": "semantic/text/primary",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/900",
+            "aliasId": "VariableID:2002:2384"
+          },
+          "Dark": {
+            "alias": "color/neutral/0",
+            "aliasId": "VariableID:2002:2374"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2413",
+        "name": "spacing/12",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 12
+        }
+      },
+      {
+        "id": "VariableID:2002:2414",
+        "name": "spacing/16",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 16
+        }
+      },
+      {
+        "id": "VariableID:2002:2416",
+        "name": "spacing/24",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 24
+        }
+      },
+      {
+        "id": "VariableID:2002:2411",
+        "name": "spacing/6",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 6
+        }
+      },
+      {
+        "id": "VariableID:2002:2412",
+        "name": "spacing/8",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 8
+        }
+      }
+    ],
+    "collections": [
+      {
+        "name": "Button Style",
+        "modes": [
+          "Standalone",
+          "Primary",
+          "Secondary",
+          "Danger"
+        ]
+      },
+      {
+        "name": "Primitive",
+        "modes": [
+          "Value"
+        ]
+      },
+      {
+        "name": "Semantic",
+        "modes": [
+          "Light",
+          "Dark"
+        ]
+      },
+      {
+        "name": "Shape",
+        "modes": [
+          "Rounded",
+          "Sharp",
+          "Pill",
+          "Squircle",
+          "Brand Shape"
+        ]
+      },
+      {
+        "name": "Surface",
+        "modes": [
+          "Flat",
+          "Gradient",
+          "Glass"
+        ]
+      }
+    ]
+  },
+  "derived": {
+    "descriptionSections": [
+      "PURPOSE",
+      "WHEN TO USE",
+      "WHEN NOT TO USE",
+      "ACCESSIBILITY",
+      "COMMON MISTAKES",
+      "TOKENS USED",
+      "PROPERTIES"
+    ],
+    "propertyCounts": {
+      "BOOLEAN": 2,
+      "INSTANCE_SWAP": 2,
+      "TEXT": 1,
+      "VARIANT": 3
+    },
+    "variantCount": 45,
+    "variantCombinationsComplete": true,
+    "boundCollections": [
+      "Button Style",
+      "Primitive",
+      "Semantic",
+      "Shape",
+      "Surface"
+    ],
+    "nestedComponents": [
+      {
+        "mainComponentName": "Icon/ArrowRight",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/Check",
+        "componentSetName": null,
+        "kind": "icon"
+      }
+    ]
+  },
+  "unknowns": [
+    {
+      "fact": "documentationLinks",
+      "reason": "Component documentation links are not captured."
+    },
+    {
+      "fact": "modeSupport",
+      "reason": "Collections and explicit modes are recorded as observed; which Light/Dark, Shape or Surface modes the component is designed for is not inferred."
+    },
+    {
+      "fact": "nestedInstanceOverrides",
+      "reason": "Nested instances record their variant selections only; text, boolean and instance-swap override values are not captured."
+    },
+    {
+      "fact": "nestedInstanceRole",
+      "reason": "Whether a nested component is public, an internal helper or decorative is not determinable from Figma beyond the Icon/ naming convention."
+    },
+    {
+      "fact": "otherFiles",
+      "reason": "Only the file named by the identity was read; other files (e.g. Free) and their gating are not captured."
+    },
+    {
+      "fact": "parity",
+      "reason": "A snapshot records what Figma contains; it is not a verdict on whether any other source matches it."
+    },
+    {
+      "fact": "reactMapping",
+      "reason": "Snapshots never map Figma names to React props, CSS variables or registry fields; that is comparison work (AG-1D)."
+    },
+    {
+      "fact": "renderedValues",
+      "reason": "Variable bindings are captured, not rendered output; variable values are recorded one alias hop deep and full alias chains are not resolved."
+    }
+  ]
+}

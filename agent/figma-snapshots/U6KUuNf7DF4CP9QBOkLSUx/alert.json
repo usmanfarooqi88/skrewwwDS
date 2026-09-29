@@ -1,0 +1,1021 @@
+{
+  "schemaVersion": "1.0.0",
+  "capturedAt": "2026-09-29T10:14:52Z",
+  "capture": {
+    "method": "figma-plugin-api",
+    "captureVersion": "1.0.0",
+    "fileName": "Skrewww - Design System"
+  },
+  "identity": {
+    "fileKey": "U6KUuNf7DF4CP9QBOkLSUx",
+    "nodeId": "2034:25402",
+    "nodeType": "COMPONENT_SET",
+    "role": "master",
+    "verifiedAt": "2026-09-29"
+  },
+  "observed": {
+    "node": {
+      "id": "2034:25402",
+      "name": "Feedback/Alert",
+      "type": "COMPONENT_SET",
+      "pageName": "Feedback",
+      "parent": {
+        "id": "2034:25417",
+        "type": "SECTION",
+        "name": "Feedback/Alert"
+      },
+      "description": "PURPOSE: A prominent, inline message block communicating status directly within page content (not floating above it).\n\nWHEN TO USE: Persistent, contextual messages tied to the content on the page (a warning about a specific setting, a success confirmation after an action completes and stays visible).\n\nWHEN NOT TO USE: Transient, auto-dismissing notifications not tied to page content (use Toast instead, which floats and is typically temporary).\n\nACCESSIBILITY: Should render with role=\"alert\" (for Error/Warning, which need immediate announcement) or role=\"status\" (for Info/Success, less urgent) so screen readers announce it appropriately.\n\nCOMMON MISTAKES: Using Alert for something that should auto-dismiss (that's Toast's job) — Alert is meant to persist until the user or system explicitly removes it.\n\nTOKENS USED: color/info/100, color/success/100, color/warning/100, color/danger/100 (backgrounds), semantic/feedback/info/success/warning, semantic/action/danger (icon + accent), semantic/text/primary, semantic/text/secondary.\n\nPROPERTIES: Type (Info/Success/Warning/Error) as variants. Title (text), Description (text), Show close (boolean)."
+    },
+    "componentProperties": [
+      {
+        "key": "Description#2034:23",
+        "name": "Description",
+        "type": "TEXT",
+        "defaultValue": "A short description explaining this message in more detail."
+      },
+      {
+        "key": "Show close#2034:28",
+        "name": "Show close",
+        "type": "BOOLEAN",
+        "defaultValue": true
+      },
+      {
+        "key": "Title#2034:18",
+        "name": "Title",
+        "type": "TEXT",
+        "defaultValue": "Alert title"
+      },
+      {
+        "key": "Type",
+        "name": "Type",
+        "type": "VARIANT",
+        "defaultValue": "Info",
+        "variantOptions": [
+          "Info",
+          "Success",
+          "Warning",
+          "Error"
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "nodeId": "2034:25401",
+        "name": "Type=Error",
+        "values": {
+          "Type": "Error"
+        }
+      },
+      {
+        "nodeId": "2034:25398",
+        "name": "Type=Info",
+        "values": {
+          "Type": "Info"
+        }
+      },
+      {
+        "nodeId": "2034:25399",
+        "name": "Type=Success",
+        "values": {
+          "Type": "Success"
+        }
+      },
+      {
+        "nodeId": "2034:25400",
+        "name": "Type=Warning",
+        "values": {
+          "Type": "Warning"
+        }
+      }
+    ],
+    "layouts": [
+      {
+        "scope": "all",
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 12,
+          "padding": [
+            12,
+            16,
+            12,
+            16
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "MIN",
+          "counterAxisAlignItems": "MIN",
+          "cornerRadius": 12,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 400,
+          "height": 85,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      }
+    ],
+    "children": [
+      {
+        "scope": "all",
+        "children": [
+          {
+            "name": "Icon",
+            "type": "INSTANCE",
+            "visible": true
+          },
+          {
+            "name": "Content",
+            "type": "FRAME",
+            "visible": true
+          },
+          {
+            "name": "Close Icon",
+            "type": "INSTANCE",
+            "visible": true
+          }
+        ]
+      }
+    ],
+    "variableBindings": [
+      {
+        "scope": "all",
+        "path": "",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:3131:9246",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:3131:9246",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "effects[0].radius",
+        "variableId": "VariableID:2057:13",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Type=Info"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2140:2",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Type=Success"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2140:3",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Type=Warning"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2140:4",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Type=Error"
+        ],
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2140:5",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[1].gradientStops[0].color",
+        "variableId": "VariableID:2329:2914",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[1].gradientStops[1].color",
+        "variableId": "VariableID:2329:2915",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:3131:9246",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "topRightRadius",
+        "variableId": "VariableID:3131:9246",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Close Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2259:2",
+        "withinInstance": "Close Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Close Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2259:2",
+        "withinInstance": "Close Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Close Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Close Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Close Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Content > Description",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2463",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Content > Description",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Content > Title",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2462",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Content > Title",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Content",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "Type=Error"
+        ],
+        "path": "Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11426",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Info"
+        ],
+        "path": "Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11427",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Success"
+        ],
+        "path": "Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11428",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Warning"
+        ],
+        "path": "Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11429",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Error"
+        ],
+        "path": "Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11426",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Info"
+        ],
+        "path": "Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11427",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Success"
+        ],
+        "path": "Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11428",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Warning"
+        ],
+        "path": "Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11429",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Error"
+        ],
+        "path": "Icon > Vector[2]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11426",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Info"
+        ],
+        "path": "Icon > Vector[2]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11427",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": [
+          "Type=Warning"
+        ],
+        "path": "Icon > Vector[2]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:3246:11429",
+        "withinInstance": "Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      }
+    ],
+    "textStyles": [
+      {
+        "scope": "all",
+        "path": "Content > Description",
+        "withinInstance": null,
+        "styleName": "Body/S",
+        "mixed": false
+      },
+      {
+        "scope": "all",
+        "path": "Content > Title",
+        "withinInstance": null,
+        "styleName": "Label/L",
+        "mixed": false
+      }
+    ],
+    "nestedInstances": [
+      {
+        "scope": "all",
+        "path": "Close Icon",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2033:25214",
+        "mainComponentName": "Icon/X",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": [
+          "Type=Success"
+        ],
+        "path": "Icon",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2012:6973",
+        "mainComponentName": "Icon/CheckCircle",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": [
+          "Type=Error"
+        ],
+        "path": "Icon",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2022:1439",
+        "mainComponentName": "Icon/WarningCircle",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": [
+          "Type=Warning"
+        ],
+        "path": "Icon",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2022:1442",
+        "mainComponentName": "Icon/Warning",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": [
+          "Type=Info"
+        ],
+        "path": "Icon",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2033:25213",
+        "mainComponentName": "Icon/Info",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      }
+    ],
+    "explicitVariableModes": [],
+    "variables": [
+      {
+        "id": "VariableID:3246:11426",
+        "name": "component/feedback/danger/icon",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/danger/500",
+            "aliasId": "VariableID:2002:2397"
+          },
+          "Dark": {
+            "alias": "color/danger/100",
+            "aliasId": "VariableID:2002:2396"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2140:5",
+        "name": "component/feedback/danger/surface",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/feedback/danger-surface",
+            "aliasId": "VariableID:3245:11378"
+          },
+          "Gradient": {
+            "alias": "semantic/feedback/danger-surface",
+            "aliasId": "VariableID:3245:11378"
+          },
+          "Glass": {
+            "alias": "semantic/feedback/danger-glass",
+            "aliasId": "VariableID:3247:11474"
+          }
+        }
+      },
+      {
+        "id": "VariableID:3246:11427",
+        "name": "component/feedback/info/icon",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/info/500",
+            "aliasId": "VariableID:2002:2406"
+          },
+          "Dark": {
+            "alias": "color/info/100",
+            "aliasId": "VariableID:2002:2405"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2140:2",
+        "name": "component/feedback/info/surface",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/feedback/info-surface",
+            "aliasId": "VariableID:3245:11379"
+          },
+          "Gradient": {
+            "alias": "semantic/feedback/info-surface",
+            "aliasId": "VariableID:3245:11379"
+          },
+          "Glass": {
+            "alias": "semantic/feedback/info-glass",
+            "aliasId": "VariableID:3247:11475"
+          }
+        }
+      },
+      {
+        "id": "VariableID:3246:11428",
+        "name": "component/feedback/success/icon",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/success/500",
+            "aliasId": "VariableID:2002:2400"
+          },
+          "Dark": {
+            "alias": "color/success/100",
+            "aliasId": "VariableID:2002:2399"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2140:3",
+        "name": "component/feedback/success/surface",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/feedback/success-surface",
+            "aliasId": "VariableID:3245:11380"
+          },
+          "Gradient": {
+            "alias": "semantic/feedback/success-surface",
+            "aliasId": "VariableID:3245:11380"
+          },
+          "Glass": {
+            "alias": "semantic/feedback/success-glass",
+            "aliasId": "VariableID:3247:11476"
+          }
+        }
+      },
+      {
+        "id": "VariableID:3246:11429",
+        "name": "component/feedback/warning/icon",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/warning/500",
+            "aliasId": "VariableID:2002:2403"
+          },
+          "Dark": {
+            "alias": "color/warning/100",
+            "aliasId": "VariableID:2002:2402"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2140:4",
+        "name": "component/feedback/warning/surface",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/feedback/warning-surface",
+            "aliasId": "VariableID:3245:11381"
+          },
+          "Gradient": {
+            "alias": "semantic/feedback/warning-surface",
+            "aliasId": "VariableID:3245:11381"
+          },
+          "Glass": {
+            "alias": "semantic/feedback/warning-glass",
+            "aliasId": "VariableID:3247:11477"
+          }
+        }
+      },
+      {
+        "id": "VariableID:3131:9246",
+        "name": "component/radius/feedback",
+        "resolvedType": "FLOAT",
+        "collection": "Shape",
+        "valuesByMode": {
+          "Rounded": {
+            "alias": "radius/lg",
+            "aliasId": "VariableID:2002:2428"
+          },
+          "Sharp": {
+            "alias": "radius/none",
+            "aliasId": "VariableID:2002:2424"
+          },
+          "Pill": {
+            "alias": "radius/full",
+            "aliasId": "VariableID:2002:2432"
+          },
+          "Squircle": {
+            "alias": "radius/xl",
+            "aliasId": "VariableID:2002:2429"
+          },
+          "Brand Shape": {
+            "alias": "radius/lg",
+            "aliasId": "VariableID:2002:2428"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2057:13",
+        "name": "component/surface/blur",
+        "resolvedType": "FLOAT",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": 0,
+          "Gradient": 0,
+          "Glass": 16
+        }
+      },
+      {
+        "id": "VariableID:2259:2",
+        "name": "component/surface/content-muted",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/icon/muted",
+            "aliasId": "VariableID:2002:2475"
+          },
+          "Gradient": {
+            "alias": "semantic/icon/muted",
+            "aliasId": "VariableID:2002:2475"
+          },
+          "Glass": {
+            "alias": "semantic/text/primary",
+            "aliasId": "VariableID:2002:2462"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2915",
+        "name": "component/surface/gradient-overlay-end",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0.0392
+          },
+          "Glass": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2914",
+        "name": "component/surface/gradient-overlay-start",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.0784
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2848",
+        "name": "font-family/sans",
+        "resolvedType": "STRING",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": "Inter"
+        }
+      },
+      {
+        "id": "VariableID:2003:3547",
+        "name": "semantic/icon-size/md",
+        "resolvedType": "FLOAT",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "spacing/20",
+            "aliasId": "VariableID:2002:2415"
+          },
+          "Dark": {
+            "alias": "spacing/20",
+            "aliasId": "VariableID:2002:2415"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2003:3546",
+        "name": "semantic/icon-size/sm",
+        "resolvedType": "FLOAT",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "spacing/16",
+            "aliasId": "VariableID:2002:2414"
+          },
+          "Dark": {
+            "alias": "spacing/16",
+            "aliasId": "VariableID:2002:2414"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2462",
+        "name": "semantic/text/primary",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/900",
+            "aliasId": "VariableID:2002:2384"
+          },
+          "Dark": {
+            "alias": "color/neutral/0",
+            "aliasId": "VariableID:2002:2374"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2463",
+        "name": "semantic/text/secondary",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/600",
+            "aliasId": "VariableID:2002:2381"
+          },
+          "Dark": {
+            "alias": "color/neutral/300",
+            "aliasId": "VariableID:2002:2378"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2413",
+        "name": "spacing/12",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 12
+        }
+      },
+      {
+        "id": "VariableID:2002:2414",
+        "name": "spacing/16",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 16
+        }
+      },
+      {
+        "id": "VariableID:2002:2412",
+        "name": "spacing/8",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 8
+        }
+      }
+    ],
+    "collections": [
+      {
+        "name": "Primitive",
+        "modes": [
+          "Value"
+        ]
+      },
+      {
+        "name": "Semantic",
+        "modes": [
+          "Light",
+          "Dark"
+        ]
+      },
+      {
+        "name": "Shape",
+        "modes": [
+          "Rounded",
+          "Sharp",
+          "Pill",
+          "Squircle",
+          "Brand Shape"
+        ]
+      },
+      {
+        "name": "Surface",
+        "modes": [
+          "Flat",
+          "Gradient",
+          "Glass"
+        ]
+      }
+    ]
+  },
+  "derived": {
+    "descriptionSections": [
+      "PURPOSE",
+      "WHEN TO USE",
+      "WHEN NOT TO USE",
+      "ACCESSIBILITY",
+      "COMMON MISTAKES",
+      "TOKENS USED",
+      "PROPERTIES"
+    ],
+    "propertyCounts": {
+      "BOOLEAN": 1,
+      "TEXT": 2,
+      "VARIANT": 1
+    },
+    "variantCount": 4,
+    "variantCombinationsComplete": true,
+    "boundCollections": [
+      "Primitive",
+      "Semantic",
+      "Shape",
+      "Surface"
+    ],
+    "nestedComponents": [
+      {
+        "mainComponentName": "Icon/CheckCircle",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/Info",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/Warning",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/WarningCircle",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/X",
+        "componentSetName": null,
+        "kind": "icon"
+      }
+    ]
+  },
+  "unknowns": [
+    {
+      "fact": "documentationLinks",
+      "reason": "Component documentation links are not captured."
+    },
+    {
+      "fact": "modeSupport",
+      "reason": "Collections and explicit modes are recorded as observed; which Light/Dark, Shape or Surface modes the component is designed for is not inferred."
+    },
+    {
+      "fact": "nestedInstanceOverrides",
+      "reason": "Nested instances record their variant selections only; text, boolean and instance-swap override values are not captured."
+    },
+    {
+      "fact": "nestedInstanceRole",
+      "reason": "Whether a nested component is public, an internal helper or decorative is not determinable from Figma beyond the Icon/ naming convention."
+    },
+    {
+      "fact": "otherFiles",
+      "reason": "Only the file named by the identity was read; other files (e.g. Free) and their gating are not captured."
+    },
+    {
+      "fact": "parity",
+      "reason": "A snapshot records what Figma contains; it is not a verdict on whether any other source matches it."
+    },
+    {
+      "fact": "reactMapping",
+      "reason": "Snapshots never map Figma names to React props, CSS variables or registry fields; that is comparison work (AG-1D)."
+    },
+    {
+      "fact": "renderedValues",
+      "reason": "Variable bindings are captured, not rendered output; variable values are recorded one alias hop deep and full alias chains are not resolved."
+    }
+  ]
+}

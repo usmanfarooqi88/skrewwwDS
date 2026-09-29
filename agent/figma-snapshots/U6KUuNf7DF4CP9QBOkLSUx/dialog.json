@@ -1,0 +1,1456 @@
+{
+  "schemaVersion": "1.0.0",
+  "capturedAt": "2026-09-29T10:14:52Z",
+  "capture": {
+    "method": "figma-plugin-api",
+    "captureVersion": "1.0.0",
+    "fileName": "Skrewww - Design System"
+  },
+  "identity": {
+    "fileKey": "U6KUuNf7DF4CP9QBOkLSUx",
+    "nodeId": "2044:25869",
+    "nodeType": "COMPONENT",
+    "role": "master",
+    "verifiedAt": "2026-09-29"
+  },
+  "observed": {
+    "node": {
+      "id": "2044:25869",
+      "name": "Containers/Dialog",
+      "type": "COMPONENT",
+      "pageName": "Containers & Overlays",
+      "parent": {
+        "id": "2044:25931",
+        "type": "SECTION",
+        "name": "Containers/Dialog"
+      },
+      "description": "PURPOSE: A modal window that interrupts the current flow, requiring the user's attention or a decision before they can return to the page behind it.\n\nWHEN TO USE: Destructive action confirmation, a focused task that shouldn't be dismissible by accident, collecting required information before proceeding.\n\nWHEN NOT TO USE: Non-critical supplementary information (use Popover instead, which doesn't block the page). Anything the user should be able to easily ignore or work around (a blocking Dialog for a low-stakes decision creates unnecessary friction).\n\nACCESSIBILITY: Must trap focus within the dialog while open (Tab shouldn't escape to the page behind it), return focus to the triggering element on close, support Escape-to-close, and use role=\"dialog\" with aria-modal=\"true\" and an accessible name (aria-labelledby pointing at the Title).\n\nCOMMON MISTAKES: Not trapping focus, allowing keyboard users to Tab into the obscured page content behind the scrim. Not returning focus to the trigger element after closing.\n\nTOKENS USED: semantic/surface/default, radius/lg, shadow-blur/5, shadow-color/5, semantic/text/primary, semantic/text/secondary, semantic/icon/muted.\n\nPROPERTIES: Title (text), Body (text). Footer is a real composed row using actual Button instances (Cancel + Danger-style Confirm). A real \"Modal (example - open)\" composition alongside this component demonstrates the scrim + centered placement."
+    },
+    "componentProperties": [
+      {
+        "key": "Body#2044:71",
+        "name": "Body",
+        "type": "TEXT",
+        "defaultValue": "A short description explaining what this dialog is asking the user to confirm or review."
+      },
+      {
+        "key": "Title#2044:70",
+        "name": "Title",
+        "type": "TEXT",
+        "defaultValue": "Dialog title"
+      }
+    ],
+    "variants": [],
+    "layouts": [
+      {
+        "scope": "all",
+        "layout": {
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 16,
+          "padding": [
+            16,
+            24,
+            16,
+            24
+          ],
+          "primaryAxisSizingMode": "AUTO",
+          "counterAxisSizingMode": "FIXED",
+          "primaryAxisAlignItems": "MIN",
+          "counterAxisAlignItems": "MIN",
+          "cornerRadius": 12,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 400,
+          "height": 160,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "GRADIENT_LINEAR"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      }
+    ],
+    "children": [
+      {
+        "scope": "all",
+        "children": [
+          {
+            "name": "Header",
+            "type": "FRAME",
+            "visible": true
+          },
+          {
+            "name": "Body",
+            "type": "TEXT",
+            "visible": true
+          },
+          {
+            "name": "Footer",
+            "type": "FRAME",
+            "visible": true
+          }
+        ]
+      }
+    ],
+    "variableBindings": [
+      {
+        "scope": "all",
+        "path": "",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2002:2428",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2002:2428",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "effects[0].radius",
+        "variableId": "VariableID:2057:13",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2128:1499",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[1].gradientStops[0].color",
+        "variableId": "VariableID:2329:2914",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[1].gradientStops[1].color",
+        "variableId": "VariableID:2329:2915",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2416",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2416",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "strokes[0].gradientStops[0].color",
+        "variableId": "VariableID:2268:218",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "strokes[0].gradientStops[1].color",
+        "variableId": "VariableID:2268:219",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "strokes[0].gradientStops[2].color",
+        "variableId": "VariableID:2268:220",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2002:2428",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2002:2428",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Body",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2463",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Body",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Label",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2462",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Label",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Leading Icon > Vector",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Footer > Actions/Button[0] > Content > Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Leading Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Leading Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Leading Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Trailing Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Footer > Actions/Button[0] > Content > Trailing Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Trailing Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Footer > Actions/Button[0] > Content > Trailing Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Trailing Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Trailing Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Trailing Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Focus Ring",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Focus Ring",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Focus Ring",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2472",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Focus Ring",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Focus Ring",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Footer > Actions/Button[0]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "effects[0].radius",
+        "variableId": "VariableID:2057:13",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:571",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "fills[1].gradientStops[0].color",
+        "variableId": "VariableID:2329:2914",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "fills[1].gradientStops[1].color",
+        "variableId": "VariableID:2329:2915",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "strokes[0].gradientStops[0].color",
+        "variableId": "VariableID:2268:218",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "strokes[0].gradientStops[1].color",
+        "variableId": "VariableID:2268:219",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "strokes[0].gradientStops[2].color",
+        "variableId": "VariableID:2268:220",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Label",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2057:1529",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Label",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Leading Icon > Vector",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Footer > Actions/Button[1] > Content > Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Leading Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Leading Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Leading Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Trailing Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Footer > Actions/Button[1] > Content > Trailing Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Trailing Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Footer > Actions/Button[1] > Content > Trailing Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Trailing Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Trailing Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Trailing Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Focus Ring",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Focus Ring",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Focus Ring",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2472",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Focus Ring",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Focus Ring",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Footer > Actions/Button[1]"
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "effects[0].radius",
+        "variableId": "VariableID:2057:13",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:570",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "fills[1].gradientStops[0].color",
+        "variableId": "VariableID:2329:2914",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "fills[1].gradientStops[1].color",
+        "variableId": "VariableID:2329:2915",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "strokes[0].gradientStops[0].color",
+        "variableId": "VariableID:2264:459",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "strokes[0].gradientStops[1].color",
+        "variableId": "VariableID:2271:487",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "strokes[0].gradientStops[2].color",
+        "variableId": "VariableID:2271:488",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Header > Close Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2259:2",
+        "withinInstance": "Header > Close Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Header > Close Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2259:2",
+        "withinInstance": "Header > Close Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Header > Close Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3547",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Header > Title",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2462",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Header > Title",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": null
+      }
+    ],
+    "textStyles": [
+      {
+        "scope": "all",
+        "path": "Body",
+        "withinInstance": null,
+        "styleName": "Body/M",
+        "mixed": false
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Label",
+        "withinInstance": "Footer > Actions/Button[0]",
+        "styleName": "Label/L",
+        "mixed": false
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Label",
+        "withinInstance": "Footer > Actions/Button[1]",
+        "styleName": "Label/L",
+        "mixed": false
+      },
+      {
+        "scope": "all",
+        "path": "Header > Title",
+        "withinInstance": null,
+        "styleName": "Heading/S",
+        "mixed": false
+      }
+    ],
+    "nestedInstances": [
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Leading Icon",
+        "withinInstance": "Footer > Actions/Button[0]",
+        "visible": false,
+        "mainComponentId": "2012:6972",
+        "mainComponentName": "Icon/Check",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0] > Content > Trailing Icon",
+        "withinInstance": "Footer > Actions/Button[0]",
+        "visible": true,
+        "mainComponentId": "2012:6965",
+        "mainComponentName": "Icon/ArrowRight",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[0]",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2012:7727",
+        "mainComponentName": "Style=Secondary, Size=Medium, State=Default",
+        "componentSetId": "2012:7752",
+        "componentSetName": "Actions/Button",
+        "remote": false,
+        "variantProperties": {
+          "Style": "Secondary",
+          "Size": "Medium",
+          "State": "Default"
+        }
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Leading Icon",
+        "withinInstance": "Footer > Actions/Button[1]",
+        "visible": false,
+        "mainComponentId": "2012:6972",
+        "mainComponentName": "Icon/Check",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1] > Content > Trailing Icon",
+        "withinInstance": "Footer > Actions/Button[1]",
+        "visible": false,
+        "mainComponentId": "2012:6965",
+        "mainComponentName": "Icon/ArrowRight",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": "all",
+        "path": "Footer > Actions/Button[1]",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2012:7742",
+        "mainComponentName": "Style=Danger, Size=Medium, State=Default",
+        "componentSetId": "2012:7752",
+        "componentSetName": "Actions/Button",
+        "remote": false,
+        "variantProperties": {
+          "Style": "Danger",
+          "Size": "Medium",
+          "State": "Default"
+        }
+      },
+      {
+        "scope": "all",
+        "path": "Header > Close Icon",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2033:25214",
+        "mainComponentName": "Icon/X",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      }
+    ],
+    "explicitVariableModes": [
+      {
+        "scope": "all",
+        "collection": "Surface",
+        "mode": "Flat"
+      }
+    ],
+    "variables": [
+      {
+        "id": "VariableID:2127:570",
+        "name": "component/button/danger/background",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/action/danger",
+            "aliasId": "VariableID:2002:2468"
+          },
+          "Gradient": {
+            "alias": "semantic/action/danger",
+            "aliasId": "VariableID:2002:2468"
+          },
+          "Glass": {
+            "r": 0.898,
+            "g": 0.2824,
+            "b": 0.302,
+            "a": 0.58
+          }
+        }
+      },
+      {
+        "id": "VariableID:2264:459",
+        "name": "component/button/danger/border",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.8
+          }
+        }
+      },
+      {
+        "id": "VariableID:2271:488",
+        "name": "component/button/danger/border-end",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0
+          },
+          "Glass": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0.15
+          }
+        }
+      },
+      {
+        "id": "VariableID:2271:487",
+        "name": "component/button/danger/border-mid",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0
+          },
+          "Glass": {
+            "r": 0.898,
+            "g": 0.282,
+            "b": 0.302,
+            "a": 0.6
+          }
+        }
+      },
+      {
+        "id": "VariableID:2587:4250",
+        "name": "component/button/icon/foreground",
+        "resolvedType": "COLOR",
+        "collection": "Button Style",
+        "valuesByMode": {
+          "Standalone": {
+            "alias": "semantic/icon/default",
+            "aliasId": "VariableID:2002:2474"
+          },
+          "Primary": {
+            "alias": "component/surface/content",
+            "aliasId": "VariableID:2057:1529"
+          },
+          "Secondary": {
+            "alias": "semantic/text/primary",
+            "aliasId": "VariableID:2002:2462"
+          },
+          "Danger": {
+            "alias": "component/surface/content",
+            "aliasId": "VariableID:2057:1529"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:571",
+        "name": "component/button/secondary/background",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Gradient": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Glass": {
+            "alias": "component/surface/fill",
+            "aliasId": "VariableID:2057:11"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:218",
+        "name": "component/card/border-highlight-1",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.8
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:219",
+        "name": "component/card/border-highlight-2",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 0.5
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:220",
+        "name": "component/card/border-highlight-3",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 0.15
+          }
+        }
+      },
+      {
+        "id": "VariableID:2128:1499",
+        "name": "component/card/surface",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Gradient": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Glass": {
+            "alias": "component/surface/fill",
+            "aliasId": "VariableID:2057:11"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2012:9573",
+        "name": "component/radius/control",
+        "resolvedType": "FLOAT",
+        "collection": "Shape",
+        "valuesByMode": {
+          "Rounded": {
+            "alias": "radius/sm",
+            "aliasId": "VariableID:2002:2426"
+          },
+          "Sharp": {
+            "alias": "radius/none",
+            "aliasId": "VariableID:2002:2424"
+          },
+          "Pill": {
+            "alias": "radius/full",
+            "aliasId": "VariableID:2002:2432"
+          },
+          "Squircle": {
+            "alias": "radius/md",
+            "aliasId": "VariableID:2002:2427"
+          },
+          "Brand Shape": {
+            "alias": "radius/sm",
+            "aliasId": "VariableID:2002:2426"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2057:13",
+        "name": "component/surface/blur",
+        "resolvedType": "FLOAT",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": 0,
+          "Gradient": 0,
+          "Glass": 16
+        }
+      },
+      {
+        "id": "VariableID:2057:1529",
+        "name": "component/surface/content",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/text/inverse",
+            "aliasId": "VariableID:2012:7106"
+          },
+          "Gradient": {
+            "alias": "semantic/text/inverse",
+            "aliasId": "VariableID:2012:7106"
+          },
+          "Glass": {
+            "alias": "semantic/text/primary",
+            "aliasId": "VariableID:2002:2462"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2259:2",
+        "name": "component/surface/content-muted",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/icon/muted",
+            "aliasId": "VariableID:2002:2475"
+          },
+          "Gradient": {
+            "alias": "semantic/icon/muted",
+            "aliasId": "VariableID:2002:2475"
+          },
+          "Glass": {
+            "alias": "semantic/text/primary",
+            "aliasId": "VariableID:2002:2462"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2915",
+        "name": "component/surface/gradient-overlay-end",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0.0392
+          },
+          "Glass": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2914",
+        "name": "component/surface/gradient-overlay-start",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.0784
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2848",
+        "name": "font-family/sans",
+        "resolvedType": "STRING",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": "Inter"
+        }
+      },
+      {
+        "id": "VariableID:2002:2428",
+        "name": "radius/lg",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 12
+        }
+      },
+      {
+        "id": "VariableID:2002:2472",
+        "name": "semantic/focus-ring",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/brand/500",
+            "aliasId": "VariableID:2002:2391"
+          },
+          "Dark": {
+            "alias": "color/brand/400",
+            "aliasId": "VariableID:2002:2390"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2003:3547",
+        "name": "semantic/icon-size/md",
+        "resolvedType": "FLOAT",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "spacing/20",
+            "aliasId": "VariableID:2002:2415"
+          },
+          "Dark": {
+            "alias": "spacing/20",
+            "aliasId": "VariableID:2002:2415"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2462",
+        "name": "semantic/text/primary",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/900",
+            "aliasId": "VariableID:2002:2384"
+          },
+          "Dark": {
+            "alias": "color/neutral/0",
+            "aliasId": "VariableID:2002:2374"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2463",
+        "name": "semantic/text/secondary",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/600",
+            "aliasId": "VariableID:2002:2381"
+          },
+          "Dark": {
+            "alias": "color/neutral/300",
+            "aliasId": "VariableID:2002:2378"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2414",
+        "name": "spacing/16",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 16
+        }
+      },
+      {
+        "id": "VariableID:2002:2416",
+        "name": "spacing/24",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 24
+        }
+      },
+      {
+        "id": "VariableID:2002:2412",
+        "name": "spacing/8",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 8
+        }
+      }
+    ],
+    "collections": [
+      {
+        "name": "Button Style",
+        "modes": [
+          "Standalone",
+          "Primary",
+          "Secondary",
+          "Danger"
+        ]
+      },
+      {
+        "name": "Primitive",
+        "modes": [
+          "Value"
+        ]
+      },
+      {
+        "name": "Semantic",
+        "modes": [
+          "Light",
+          "Dark"
+        ]
+      },
+      {
+        "name": "Shape",
+        "modes": [
+          "Rounded",
+          "Sharp",
+          "Pill",
+          "Squircle",
+          "Brand Shape"
+        ]
+      },
+      {
+        "name": "Surface",
+        "modes": [
+          "Flat",
+          "Gradient",
+          "Glass"
+        ]
+      }
+    ]
+  },
+  "derived": {
+    "descriptionSections": [
+      "PURPOSE",
+      "WHEN TO USE",
+      "WHEN NOT TO USE",
+      "ACCESSIBILITY",
+      "COMMON MISTAKES",
+      "TOKENS USED",
+      "PROPERTIES"
+    ],
+    "propertyCounts": {
+      "TEXT": 2
+    },
+    "variantCount": 0,
+    "variantCombinationsComplete": null,
+    "boundCollections": [
+      "Button Style",
+      "Primitive",
+      "Semantic",
+      "Shape",
+      "Surface"
+    ],
+    "nestedComponents": [
+      {
+        "mainComponentName": null,
+        "componentSetName": "Actions/Button",
+        "kind": "component"
+      },
+      {
+        "mainComponentName": "Icon/ArrowRight",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/Check",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/X",
+        "componentSetName": null,
+        "kind": "icon"
+      }
+    ]
+  },
+  "unknowns": [
+    {
+      "fact": "documentationLinks",
+      "reason": "Component documentation links are not captured."
+    },
+    {
+      "fact": "modeSupport",
+      "reason": "Collections and explicit modes are recorded as observed; which Light/Dark, Shape or Surface modes the component is designed for is not inferred."
+    },
+    {
+      "fact": "nestedInstanceOverrides",
+      "reason": "Nested instances record their variant selections only; text, boolean and instance-swap override values are not captured."
+    },
+    {
+      "fact": "nestedInstanceRole",
+      "reason": "Whether a nested component is public, an internal helper or decorative is not determinable from Figma beyond the Icon/ naming convention."
+    },
+    {
+      "fact": "otherFiles",
+      "reason": "Only the file named by the identity was read; other files (e.g. Free) and their gating are not captured."
+    },
+    {
+      "fact": "parity",
+      "reason": "A snapshot records what Figma contains; it is not a verdict on whether any other source matches it."
+    },
+    {
+      "fact": "reactMapping",
+      "reason": "Snapshots never map Figma names to React props, CSS variables or registry fields; that is comparison work (AG-1D)."
+    },
+    {
+      "fact": "renderedValues",
+      "reason": "Variable bindings are captured, not rendered output; variable values are recorded one alias hop deep and full alias chains are not resolved."
+    }
+  ]
+}

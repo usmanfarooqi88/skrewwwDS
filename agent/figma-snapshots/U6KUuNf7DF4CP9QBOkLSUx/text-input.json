@@ -1,0 +1,1545 @@
+{
+  "schemaVersion": "1.0.0",
+  "capturedAt": "2026-09-29T10:14:52Z",
+  "capture": {
+    "method": "figma-plugin-api",
+    "captureVersion": "1.0.0",
+    "fileName": "Skrewww - Design System"
+  },
+  "identity": {
+    "fileKey": "U6KUuNf7DF4CP9QBOkLSUx",
+    "nodeId": "2022:1151",
+    "nodeType": "COMPONENT_SET",
+    "role": "master",
+    "verifiedAt": "2026-09-29"
+  },
+  "observed": {
+    "node": {
+      "id": "2022:1151",
+      "name": "Forms/Text Input",
+      "type": "COMPONENT_SET",
+      "pageName": "Forms",
+      "parent": {
+        "id": "2022:1412",
+        "type": "SECTION",
+        "name": "Forms/Text Input"
+      },
+      "description": "PURPOSE: Single-line text entry for short, free-form data (names, emails, search terms, general form fields).\n\nWHEN TO USE: Any single-line free-text field. Pair with Forms/Form Field Wrapper for the label/helper/error pattern rather than building that structure per-instance.\n\nWHEN NOT TO USE: Multi-line content (use Textarea). A fixed set of choices (use Select). Search-specific fields (use Search Field, which has the correct leading icon and clear-button pattern built in).\n\nACCESSIBILITY: Must have a visible or aria-labelled <label> in code — never rely on placeholder text alone as the label. Error state needs aria-invalid and aria-describedby pointing at the error message. Focused state uses semantic/focus-ring at 2px outside-aligned stroke.\n\nCOMMON MISTAKES: Using placeholder text as a substitute for a real label (disappears once the user starts typing, and isn't reliably announced by screen readers). Not visually distinguishing Disabled from Default strongly enough.\n\nTOKENS USED: component/radius/control, semantic/border/default, semantic/border/strong, semantic/focus-ring, semantic/action/danger, semantic/surface/default, semantic/text/primary, semantic/text/secondary, semantic/text/disabled, opacity/disabled.\n\nPROPERTIES: State (Default/Hover/Focused/Error/Disabled) x Size (Small/Medium/Large) as variants. Value (text). Show leading/trailing icon (booleans) + Leading/Trailing Icon (instance-swap)."
+    },
+    "componentProperties": [
+      {
+        "key": "Leading Icon#2022:226",
+        "name": "Leading Icon",
+        "type": "INSTANCE_SWAP",
+        "defaultValue": "2012:6977"
+      },
+      {
+        "key": "Show leading icon#2022:210",
+        "name": "Show leading icon",
+        "type": "BOOLEAN",
+        "defaultValue": false
+      },
+      {
+        "key": "Show trailing icon#2022:242",
+        "name": "Show trailing icon",
+        "type": "BOOLEAN",
+        "defaultValue": true
+      },
+      {
+        "key": "Size",
+        "name": "Size",
+        "type": "VARIANT",
+        "defaultValue": "Small",
+        "variantOptions": [
+          "Small",
+          "Medium",
+          "Large"
+        ]
+      },
+      {
+        "key": "State",
+        "name": "State",
+        "type": "VARIANT",
+        "defaultValue": "Default",
+        "variantOptions": [
+          "Default",
+          "Hover",
+          "Focused",
+          "Error",
+          "Disabled"
+        ]
+      },
+      {
+        "key": "Trailing Icon#2022:258",
+        "name": "Trailing Icon",
+        "type": "INSTANCE_SWAP",
+        "defaultValue": "2022:1439"
+      },
+      {
+        "key": "Value#2022:194",
+        "name": "Value",
+        "type": "TEXT",
+        "defaultValue": "Placeholder text"
+      }
+    ],
+    "variants": [
+      {
+        "nodeId": "2022:1138",
+        "name": "State=Default, Size=Large",
+        "values": {
+          "State": "Default",
+          "Size": "Large"
+        }
+      },
+      {
+        "nodeId": "2022:1137",
+        "name": "State=Default, Size=Medium",
+        "values": {
+          "State": "Default",
+          "Size": "Medium"
+        }
+      },
+      {
+        "nodeId": "2022:1136",
+        "name": "State=Default, Size=Small",
+        "values": {
+          "State": "Default",
+          "Size": "Small"
+        }
+      },
+      {
+        "nodeId": "2022:1150",
+        "name": "State=Disabled, Size=Large",
+        "values": {
+          "State": "Disabled",
+          "Size": "Large"
+        }
+      },
+      {
+        "nodeId": "2022:1149",
+        "name": "State=Disabled, Size=Medium",
+        "values": {
+          "State": "Disabled",
+          "Size": "Medium"
+        }
+      },
+      {
+        "nodeId": "2022:1148",
+        "name": "State=Disabled, Size=Small",
+        "values": {
+          "State": "Disabled",
+          "Size": "Small"
+        }
+      },
+      {
+        "nodeId": "2022:1147",
+        "name": "State=Error, Size=Large",
+        "values": {
+          "State": "Error",
+          "Size": "Large"
+        }
+      },
+      {
+        "nodeId": "2022:1146",
+        "name": "State=Error, Size=Medium",
+        "values": {
+          "State": "Error",
+          "Size": "Medium"
+        }
+      },
+      {
+        "nodeId": "2022:1145",
+        "name": "State=Error, Size=Small",
+        "values": {
+          "State": "Error",
+          "Size": "Small"
+        }
+      },
+      {
+        "nodeId": "2022:1144",
+        "name": "State=Focused, Size=Large",
+        "values": {
+          "State": "Focused",
+          "Size": "Large"
+        }
+      },
+      {
+        "nodeId": "2022:1143",
+        "name": "State=Focused, Size=Medium",
+        "values": {
+          "State": "Focused",
+          "Size": "Medium"
+        }
+      },
+      {
+        "nodeId": "2022:1142",
+        "name": "State=Focused, Size=Small",
+        "values": {
+          "State": "Focused",
+          "Size": "Small"
+        }
+      },
+      {
+        "nodeId": "2022:1141",
+        "name": "State=Hover, Size=Large",
+        "values": {
+          "State": "Hover",
+          "Size": "Large"
+        }
+      },
+      {
+        "nodeId": "2022:1140",
+        "name": "State=Hover, Size=Medium",
+        "values": {
+          "State": "Hover",
+          "Size": "Medium"
+        }
+      },
+      {
+        "nodeId": "2022:1139",
+        "name": "State=Hover, Size=Small",
+        "values": {
+          "State": "Hover",
+          "Size": "Small"
+        }
+      }
+    ],
+    "layouts": [
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Disabled, Size=Large",
+          "State=Hover, Size=Large"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            12,
+            16,
+            12,
+            16
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 195,
+          "height": 46,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "State=Error, Size=Large"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            12,
+            16,
+            12,
+            16
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1.5,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 195,
+          "height": 46,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "State=Focused, Size=Large"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            12,
+            16,
+            12,
+            16
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 2,
+          "strokeAlign": "OUTSIDE",
+          "clipsContent": false,
+          "width": 195,
+          "height": 46,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Small",
+          "State=Hover, Size=Small"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            6,
+            12,
+            6,
+            12
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 156,
+          "height": 29,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "State=Error, Size=Small"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            6,
+            12,
+            6,
+            12
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1.5,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 156,
+          "height": 29,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "State=Focused, Size=Small"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            6,
+            12,
+            6,
+            12
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 2,
+          "strokeAlign": "OUTSIDE",
+          "clipsContent": false,
+          "width": 156,
+          "height": 29,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "State=Default, Size=Medium",
+          "State=Disabled, Size=Medium",
+          "State=Hover, Size=Medium"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            8,
+            12,
+            8,
+            12
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 171,
+          "height": 35,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "State=Error, Size=Medium"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            8,
+            12,
+            8,
+            12
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 1.5,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 171,
+          "height": 35,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      },
+      {
+        "scope": [
+          "State=Focused, Size=Medium"
+        ],
+        "layout": {
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padding": [
+            8,
+            12,
+            8,
+            12
+          ],
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "cornerRadius": 4,
+          "strokeWeight": 2,
+          "strokeAlign": "OUTSIDE",
+          "clipsContent": false,
+          "width": 171,
+          "height": 35,
+          "fillTypes": [
+            "SOLID",
+            "GRADIENT_LINEAR"
+          ],
+          "strokeTypes": [
+            "SOLID"
+          ],
+          "effectTypes": [
+            "BACKGROUND_BLUR"
+          ]
+        }
+      }
+    ],
+    "children": [
+      {
+        "scope": "all",
+        "children": [
+          {
+            "name": "Leading Icon",
+            "type": "INSTANCE",
+            "visible": false
+          },
+          {
+            "name": "Value",
+            "type": "TEXT",
+            "visible": true
+          },
+          {
+            "name": "Trailing Icon",
+            "type": "INSTANCE",
+            "visible": true
+          }
+        ]
+      }
+    ],
+    "variableBindings": [
+      {
+        "scope": "all",
+        "path": "",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "effects[0].radius",
+        "variableId": "VariableID:2057:13",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2128:1862",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[1].gradientStops[0].color",
+        "variableId": "VariableID:2329:2914",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "fills[1].gradientStops[1].color",
+        "variableId": "VariableID:2329:2915",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Disabled, Size=Large",
+          "State=Disabled, Size=Medium",
+          "State=Disabled, Size=Small"
+        ],
+        "path": "",
+        "property": "opacity",
+        "variableId": "VariableID:2012:7105",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Small",
+          "State=Error, Size=Small",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Small"
+        ],
+        "path": "",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2411",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Medium",
+          "State=Disabled, Size=Medium",
+          "State=Error, Size=Medium",
+          "State=Focused, Size=Medium",
+          "State=Hover, Size=Medium"
+        ],
+        "path": "",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Disabled, Size=Large",
+          "State=Error, Size=Large",
+          "State=Focused, Size=Large",
+          "State=Hover, Size=Large"
+        ],
+        "path": "",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Medium",
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Medium",
+          "State=Disabled, Size=Small",
+          "State=Error, Size=Medium",
+          "State=Error, Size=Small",
+          "State=Focused, Size=Medium",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Medium",
+          "State=Hover, Size=Small"
+        ],
+        "path": "",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Disabled, Size=Large",
+          "State=Error, Size=Large",
+          "State=Focused, Size=Large",
+          "State=Hover, Size=Large"
+        ],
+        "path": "",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Medium",
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Medium",
+          "State=Disabled, Size=Small",
+          "State=Error, Size=Medium",
+          "State=Error, Size=Small",
+          "State=Focused, Size=Medium",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Medium",
+          "State=Hover, Size=Small"
+        ],
+        "path": "",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Disabled, Size=Large",
+          "State=Error, Size=Large",
+          "State=Focused, Size=Large",
+          "State=Hover, Size=Large"
+        ],
+        "path": "",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Small",
+          "State=Error, Size=Small",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Small"
+        ],
+        "path": "",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2411",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Medium",
+          "State=Disabled, Size=Medium",
+          "State=Error, Size=Medium",
+          "State=Focused, Size=Medium",
+          "State=Hover, Size=Medium"
+        ],
+        "path": "",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2412",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Disabled, Size=Large",
+          "State=Error, Size=Large",
+          "State=Focused, Size=Large",
+          "State=Hover, Size=Large"
+        ],
+        "path": "",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Error, Size=Large",
+          "State=Error, Size=Medium",
+          "State=Error, Size=Small"
+        ],
+        "path": "",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2468",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Focused, Size=Large",
+          "State=Focused, Size=Medium",
+          "State=Focused, Size=Small"
+        ],
+        "path": "",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2472",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Default, Size=Medium",
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Large",
+          "State=Disabled, Size=Medium",
+          "State=Disabled, Size=Small"
+        ],
+        "path": "",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2128:1863",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Hover, Size=Large",
+          "State=Hover, Size=Medium",
+          "State=Hover, Size=Small"
+        ],
+        "path": "",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2128:1864",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2475",
+        "withinInstance": "Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2475",
+        "withinInstance": "Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon > Vector[2]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2475",
+        "withinInstance": "Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon > Vector[3]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2475",
+        "withinInstance": "Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon > Vector[4]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2475",
+        "withinInstance": "Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon > Vector[5]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2475",
+        "withinInstance": "Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Leading Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Error, Size=Large",
+          "State=Error, Size=Medium",
+          "State=Error, Size=Small"
+        ],
+        "path": "Trailing Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2476",
+        "withinInstance": "Trailing Icon"
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Default, Size=Medium",
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Large",
+          "State=Disabled, Size=Medium",
+          "State=Disabled, Size=Small",
+          "State=Focused, Size=Large",
+          "State=Focused, Size=Medium",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Large",
+          "State=Hover, Size=Medium",
+          "State=Hover, Size=Small"
+        ],
+        "path": "Trailing Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2259:2",
+        "withinInstance": "Trailing Icon"
+      },
+      {
+        "scope": [
+          "State=Error, Size=Large",
+          "State=Error, Size=Medium",
+          "State=Error, Size=Small"
+        ],
+        "path": "Trailing Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2476",
+        "withinInstance": "Trailing Icon"
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Default, Size=Medium",
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Large",
+          "State=Disabled, Size=Medium",
+          "State=Disabled, Size=Small",
+          "State=Focused, Size=Large",
+          "State=Focused, Size=Medium",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Large",
+          "State=Hover, Size=Medium",
+          "State=Hover, Size=Small"
+        ],
+        "path": "Trailing Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2259:2",
+        "withinInstance": "Trailing Icon"
+      },
+      {
+        "scope": [
+          "State=Error, Size=Large",
+          "State=Error, Size=Medium",
+          "State=Error, Size=Small"
+        ],
+        "path": "Trailing Icon > Vector[2]",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2476",
+        "withinInstance": "Trailing Icon"
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Default, Size=Medium",
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Large",
+          "State=Disabled, Size=Medium",
+          "State=Disabled, Size=Small",
+          "State=Focused, Size=Large",
+          "State=Focused, Size=Medium",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Large",
+          "State=Hover, Size=Medium",
+          "State=Hover, Size=Small"
+        ],
+        "path": "Trailing Icon > Vector[2]",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2259:2",
+        "withinInstance": "Trailing Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Trailing Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Trailing Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Trailing Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Default, Size=Medium",
+          "State=Default, Size=Small",
+          "State=Error, Size=Large",
+          "State=Error, Size=Medium",
+          "State=Error, Size=Small",
+          "State=Focused, Size=Large",
+          "State=Focused, Size=Medium",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Large",
+          "State=Hover, Size=Medium",
+          "State=Hover, Size=Small"
+        ],
+        "path": "Value",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2462",
+        "withinInstance": null
+      },
+      {
+        "scope": [
+          "State=Disabled, Size=Large",
+          "State=Disabled, Size=Medium",
+          "State=Disabled, Size=Small"
+        ],
+        "path": "Value",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2464",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Value",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": null
+      }
+    ],
+    "textStyles": [
+      {
+        "scope": [
+          "State=Default, Size=Large",
+          "State=Disabled, Size=Large",
+          "State=Error, Size=Large",
+          "State=Focused, Size=Large",
+          "State=Hover, Size=Large"
+        ],
+        "path": "Value",
+        "withinInstance": null,
+        "styleName": "Body/L",
+        "mixed": false
+      },
+      {
+        "scope": [
+          "State=Default, Size=Medium",
+          "State=Disabled, Size=Medium",
+          "State=Error, Size=Medium",
+          "State=Focused, Size=Medium",
+          "State=Hover, Size=Medium"
+        ],
+        "path": "Value",
+        "withinInstance": null,
+        "styleName": "Body/M",
+        "mixed": false
+      },
+      {
+        "scope": [
+          "State=Default, Size=Small",
+          "State=Disabled, Size=Small",
+          "State=Error, Size=Small",
+          "State=Focused, Size=Small",
+          "State=Hover, Size=Small"
+        ],
+        "path": "Value",
+        "withinInstance": null,
+        "styleName": "Body/S",
+        "mixed": false
+      }
+    ],
+    "nestedInstances": [
+      {
+        "scope": "all",
+        "path": "Leading Icon",
+        "withinInstance": null,
+        "visible": false,
+        "mainComponentId": "2012:6977",
+        "mainComponentName": "Icon/Calendar",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": "all",
+        "path": "Trailing Icon",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2022:1439",
+        "mainComponentName": "Icon/WarningCircle",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      }
+    ],
+    "explicitVariableModes": [
+      {
+        "scope": [
+          "State=Default, Size=Small"
+        ],
+        "collection": "Surface",
+        "mode": "Flat"
+      }
+    ],
+    "variables": [
+      {
+        "id": "VariableID:2012:9573",
+        "name": "component/radius/control",
+        "resolvedType": "FLOAT",
+        "collection": "Shape",
+        "valuesByMode": {
+          "Rounded": {
+            "alias": "radius/sm",
+            "aliasId": "VariableID:2002:2426"
+          },
+          "Sharp": {
+            "alias": "radius/none",
+            "aliasId": "VariableID:2002:2424"
+          },
+          "Pill": {
+            "alias": "radius/full",
+            "aliasId": "VariableID:2002:2432"
+          },
+          "Squircle": {
+            "alias": "radius/md",
+            "aliasId": "VariableID:2002:2427"
+          },
+          "Brand Shape": {
+            "alias": "radius/sm",
+            "aliasId": "VariableID:2002:2426"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2057:13",
+        "name": "component/surface/blur",
+        "resolvedType": "FLOAT",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": 0,
+          "Gradient": 0,
+          "Glass": 16
+        }
+      },
+      {
+        "id": "VariableID:2259:2",
+        "name": "component/surface/content-muted",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/icon/muted",
+            "aliasId": "VariableID:2002:2475"
+          },
+          "Gradient": {
+            "alias": "semantic/icon/muted",
+            "aliasId": "VariableID:2002:2475"
+          },
+          "Glass": {
+            "alias": "semantic/text/primary",
+            "aliasId": "VariableID:2002:2462"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2915",
+        "name": "component/surface/gradient-overlay-end",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0.0392
+          },
+          "Glass": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2914",
+        "name": "component/surface/gradient-overlay-start",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.0784
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2128:1863",
+        "name": "component/text-input/border",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/border/default",
+            "aliasId": "VariableID:2002:2465"
+          },
+          "Gradient": {
+            "alias": "semantic/border/default",
+            "aliasId": "VariableID:2002:2465"
+          },
+          "Glass": {
+            "alias": "component/surface/border",
+            "aliasId": "VariableID:2057:14"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2128:1864",
+        "name": "component/text-input/border-hover",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/border/strong",
+            "aliasId": "VariableID:2002:2466"
+          },
+          "Gradient": {
+            "alias": "semantic/border/strong",
+            "aliasId": "VariableID:2002:2466"
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.4
+          }
+        }
+      },
+      {
+        "id": "VariableID:2128:1862",
+        "name": "component/text-input/surface",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Gradient": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Glass": {
+            "alias": "component/surface/fill",
+            "aliasId": "VariableID:2057:11"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2848",
+        "name": "font-family/sans",
+        "resolvedType": "STRING",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": "Inter"
+        }
+      },
+      {
+        "id": "VariableID:2012:7105",
+        "name": "opacity/disabled",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 40
+        }
+      },
+      {
+        "id": "VariableID:2002:2468",
+        "name": "semantic/action/danger",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/danger/500",
+            "aliasId": "VariableID:2002:2397"
+          },
+          "Dark": {
+            "alias": "color/danger/500",
+            "aliasId": "VariableID:2002:2397"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2472",
+        "name": "semantic/focus-ring",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/brand/500",
+            "aliasId": "VariableID:2002:2391"
+          },
+          "Dark": {
+            "alias": "color/brand/400",
+            "aliasId": "VariableID:2002:2390"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2003:3546",
+        "name": "semantic/icon-size/sm",
+        "resolvedType": "FLOAT",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "spacing/16",
+            "aliasId": "VariableID:2002:2414"
+          },
+          "Dark": {
+            "alias": "spacing/16",
+            "aliasId": "VariableID:2002:2414"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2476",
+        "name": "semantic/icon/danger",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/danger/500",
+            "aliasId": "VariableID:2002:2397"
+          },
+          "Dark": {
+            "alias": "color/danger/500",
+            "aliasId": "VariableID:2002:2397"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2475",
+        "name": "semantic/icon/muted",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/400",
+            "aliasId": "VariableID:2002:2379"
+          },
+          "Dark": {
+            "alias": "color/neutral/500",
+            "aliasId": "VariableID:2002:2380"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2464",
+        "name": "semantic/text/disabled",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/400",
+            "aliasId": "VariableID:2002:2379"
+          },
+          "Dark": {
+            "alias": "color/neutral/600",
+            "aliasId": "VariableID:2002:2381"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2462",
+        "name": "semantic/text/primary",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/900",
+            "aliasId": "VariableID:2002:2384"
+          },
+          "Dark": {
+            "alias": "color/neutral/0",
+            "aliasId": "VariableID:2002:2374"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2413",
+        "name": "spacing/12",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 12
+        }
+      },
+      {
+        "id": "VariableID:2002:2414",
+        "name": "spacing/16",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 16
+        }
+      },
+      {
+        "id": "VariableID:2002:2411",
+        "name": "spacing/6",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 6
+        }
+      },
+      {
+        "id": "VariableID:2002:2412",
+        "name": "spacing/8",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 8
+        }
+      }
+    ],
+    "collections": [
+      {
+        "name": "Primitive",
+        "modes": [
+          "Value"
+        ]
+      },
+      {
+        "name": "Semantic",
+        "modes": [
+          "Light",
+          "Dark"
+        ]
+      },
+      {
+        "name": "Shape",
+        "modes": [
+          "Rounded",
+          "Sharp",
+          "Pill",
+          "Squircle",
+          "Brand Shape"
+        ]
+      },
+      {
+        "name": "Surface",
+        "modes": [
+          "Flat",
+          "Gradient",
+          "Glass"
+        ]
+      }
+    ]
+  },
+  "derived": {
+    "descriptionSections": [
+      "PURPOSE",
+      "WHEN TO USE",
+      "WHEN NOT TO USE",
+      "ACCESSIBILITY",
+      "COMMON MISTAKES",
+      "TOKENS USED",
+      "PROPERTIES"
+    ],
+    "propertyCounts": {
+      "BOOLEAN": 2,
+      "INSTANCE_SWAP": 2,
+      "TEXT": 1,
+      "VARIANT": 2
+    },
+    "variantCount": 15,
+    "variantCombinationsComplete": true,
+    "boundCollections": [
+      "Primitive",
+      "Semantic",
+      "Shape",
+      "Surface"
+    ],
+    "nestedComponents": [
+      {
+        "mainComponentName": "Icon/Calendar",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/WarningCircle",
+        "componentSetName": null,
+        "kind": "icon"
+      }
+    ]
+  },
+  "unknowns": [
+    {
+      "fact": "documentationLinks",
+      "reason": "Component documentation links are not captured."
+    },
+    {
+      "fact": "modeSupport",
+      "reason": "Collections and explicit modes are recorded as observed; which Light/Dark, Shape or Surface modes the component is designed for is not inferred."
+    },
+    {
+      "fact": "nestedInstanceOverrides",
+      "reason": "Nested instances record their variant selections only; text, boolean and instance-swap override values are not captured."
+    },
+    {
+      "fact": "nestedInstanceRole",
+      "reason": "Whether a nested component is public, an internal helper or decorative is not determinable from Figma beyond the Icon/ naming convention."
+    },
+    {
+      "fact": "otherFiles",
+      "reason": "Only the file named by the identity was read; other files (e.g. Free) and their gating are not captured."
+    },
+    {
+      "fact": "parity",
+      "reason": "A snapshot records what Figma contains; it is not a verdict on whether any other source matches it."
+    },
+    {
+      "fact": "reactMapping",
+      "reason": "Snapshots never map Figma names to React props, CSS variables or registry fields; that is comparison work (AG-1D)."
+    },
+    {
+      "fact": "renderedValues",
+      "reason": "Variable bindings are captured, not rendered output; variable values are recorded one alias hop deep and full alias chains are not resolved."
+    }
+  ]
+}

@@ -1,0 +1,1126 @@
+{
+  "schemaVersion": "1.0.0",
+  "capturedAt": "2026-09-29T10:14:52Z",
+  "capture": {
+    "method": "figma-plugin-api",
+    "captureVersion": "1.0.0",
+    "fileName": "Skrewww - Design System"
+  },
+  "identity": {
+    "fileKey": "U6KUuNf7DF4CP9QBOkLSUx",
+    "nodeId": "3239:8017",
+    "nodeType": "COMPONENT",
+    "role": "master",
+    "verifiedAt": "2026-09-29"
+  },
+  "observed": {
+    "node": {
+      "id": "3239:8017",
+      "name": "Containers/Chart Card",
+      "type": "COMPONENT",
+      "pageName": "Containers & Overlays",
+      "parent": {
+        "id": "3237:6425",
+        "type": "SECTION",
+        "name": "Containers/Chart Card"
+      },
+      "description": "STATUS: Beta\n\nPURPOSE: A Card composed for a chart or other data content: a header (title, optional description, optional right-aligned actions) above a body region that shows the content or its loading, empty, or error state. It is a composition of the existing Card, not a new container.\n\nWHEN TO USE: Framing a chart, table summary, or metric group with a title and optional controls (for example a range selector built from Tabs, Toggle Group, Select, or Button Group in the header actions).\n\nWHEN NOT TO USE: General content grouping with no chart or data body (use Card). A page-blocking message (use Dialog). Chart Card is optional: a chart or Chart Metric can appear without it.\n\nACCESSIBILITY: The title is a heading, so choose a level that fits the page outline (in code, headingLevel is h2, h3, or h4). State must be communicated in text, not by appearance alone: the error state uses an Alert, empty uses Empty State text, and loading exposes a hidden label. Figma shows the visual design only and does not provide these runtime behaviors.\n\nCOMMON MISTAKES: Adding a second surface, border, or radius (Chart Card inherits all of these from Card). Using Chart Card as a time-range control (compose Tabs or similar instead). Leaving the Ready body as a placeholder in a shipped design.\n\nTOKENS USED: Inherited from Card (component/card/surface, semantic/border/default, radius/lg, Shape and Surface modes). Header text: Heading/S, Body/S; semantic/text/primary, semantic/text/secondary.\n\nPROPERTIES: Under Chart Card Content: State (Ready / Loading / Empty / Error), Title, Description (text), and Header Actions (slot: add, swap, or remove buttons, tabs, or menus). Under Card: Elevation (Flat / Raised), inherited from Card along with Shape and Surface; the Actions slot is the optional footer (hidden by default; unhide it to add footer actions). Header and State edits are independent, so customizing the header does not stop State from switching the Body. Leave the exposed Card Title and Content properties alone: the Card title is hidden (the title lives in Chart Card Content) and Content holds the Chart Card Content instance."
+    },
+    "componentProperties": [],
+    "variants": [],
+    "layouts": [
+      {
+        "scope": "all",
+        "layout": {
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 0,
+          "padding": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "primaryAxisSizingMode": "AUTO",
+          "counterAxisSizingMode": "FIXED",
+          "primaryAxisAlignItems": "MIN",
+          "counterAxisAlignItems": "MIN",
+          "cornerRadius": 0,
+          "strokeWeight": 1,
+          "strokeAlign": "INSIDE",
+          "clipsContent": false,
+          "width": 480,
+          "height": 327,
+          "fillTypes": [],
+          "strokeTypes": [],
+          "effectTypes": []
+        }
+      }
+    ],
+    "children": [
+      {
+        "scope": "all",
+        "children": [
+          {
+            "name": "Card",
+            "type": "INSTANCE",
+            "visible": true
+          }
+        ]
+      }
+    ],
+    "variableBindings": [
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Body — ready > Chart or content goes here",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2463",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Body — ready > Chart or content goes here",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Body — ready",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2002:2425",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Body — ready",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2002:2425",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Body — ready",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2465",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Body — ready",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2002:2425",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Body — ready",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2002:2425",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Label",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2462",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Label",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Leading Icon > Vector",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Leading Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Leading Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Leading Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Leading Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Trailing Icon > Vector[0]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Trailing Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Trailing Icon > Vector[1]",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2587:4250",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Trailing Icon"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Trailing Icon",
+        "property": "height",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Trailing Icon",
+        "property": "maxWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Trailing Icon",
+        "property": "minWidth",
+        "variableId": "VariableID:2003:3546",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2411",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Focus Ring",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Focus Ring",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Focus Ring",
+        "property": "strokes[0].color",
+        "variableId": "VariableID:2002:2472",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Focus Ring",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Focus Ring",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "effects[0].radius",
+        "variableId": "VariableID:2057:13",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2127:571",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "fills[1].gradientStops[0].color",
+        "variableId": "VariableID:2329:2914",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "fills[1].gradientStops[1].color",
+        "variableId": "VariableID:2329:2915",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2411",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2411",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "strokes[0].gradientStops[0].color",
+        "variableId": "VariableID:2268:218",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "strokes[0].gradientStops[1].color",
+        "variableId": "VariableID:2268:219",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "strokes[0].gradientStops[2].color",
+        "variableId": "VariableID:2268:220",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2012:9573",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Title Group > Description",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2463",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Title Group > Description",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Title Group > Title",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2462",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Title Group > Title",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": "Card > Content > Chart Card Content"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Title",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2002:2462",
+        "withinInstance": "Card"
+      },
+      {
+        "scope": "all",
+        "path": "Card > Title",
+        "property": "fontFamily[0]",
+        "variableId": "VariableID:2002:2848",
+        "withinInstance": "Card"
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "bottomLeftRadius",
+        "variableId": "VariableID:2057:1558",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "bottomRightRadius",
+        "variableId": "VariableID:2057:1558",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "effects[0].radius",
+        "variableId": "VariableID:2057:13",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "fills[0].color",
+        "variableId": "VariableID:2128:1499",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "fills[1].gradientStops[0].color",
+        "variableId": "VariableID:2329:2914",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "fills[1].gradientStops[1].color",
+        "variableId": "VariableID:2329:2915",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "itemSpacing",
+        "variableId": "VariableID:2002:2413",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "paddingBottom",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "paddingLeft",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "paddingRight",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "paddingTop",
+        "variableId": "VariableID:2002:2414",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "strokes[0].gradientStops[0].color",
+        "variableId": "VariableID:2268:218",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "strokes[0].gradientStops[1].color",
+        "variableId": "VariableID:2268:219",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "strokes[0].gradientStops[2].color",
+        "variableId": "VariableID:2268:220",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "topLeftRadius",
+        "variableId": "VariableID:2057:1558",
+        "withinInstance": null
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "property": "topRightRadius",
+        "variableId": "VariableID:2057:1558",
+        "withinInstance": null
+      }
+    ],
+    "textStyles": [
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Body — ready > Chart or content goes here",
+        "withinInstance": "Card > Content > Chart Card Content",
+        "styleName": "Caption",
+        "mixed": false
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Label",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "styleName": "Label/M",
+        "mixed": false
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Title Group > Description",
+        "withinInstance": "Card > Content > Chart Card Content",
+        "styleName": "Body/S",
+        "mixed": false
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Title Group > Title",
+        "withinInstance": "Card > Content > Chart Card Content",
+        "styleName": "Heading/S",
+        "mixed": false
+      },
+      {
+        "scope": "all",
+        "path": "Card > Title",
+        "withinInstance": "Card",
+        "styleName": "Heading/S",
+        "mixed": false
+      }
+    ],
+    "nestedInstances": [
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Leading Icon",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "visible": false,
+        "mainComponentId": "2012:6972",
+        "mainComponentName": "Icon/Check",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button > Content > Trailing Icon",
+        "withinInstance": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "visible": false,
+        "mainComponentId": "2012:6965",
+        "mainComponentName": "Icon/ArrowRight",
+        "componentSetId": null,
+        "componentSetName": null,
+        "remote": false,
+        "variantProperties": null
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content > Header > Header Actions > Actions/Button",
+        "withinInstance": "Card > Content > Chart Card Content",
+        "visible": true,
+        "mainComponentId": "2012:7722",
+        "mainComponentName": "Style=Secondary, Size=Small, State=Default",
+        "componentSetId": "2012:7752",
+        "componentSetName": "Actions/Button",
+        "remote": false,
+        "variantProperties": {
+          "Style": "Secondary",
+          "Size": "Small",
+          "State": "Default"
+        }
+      },
+      {
+        "scope": "all",
+        "path": "Card > Content > Chart Card Content",
+        "withinInstance": "Card",
+        "visible": true,
+        "mainComponentId": "3239:7882",
+        "mainComponentName": "State=Ready",
+        "componentSetId": "3239:7976",
+        "componentSetName": "Containers/Chart Card Content",
+        "remote": false,
+        "variantProperties": {
+          "State": "Ready"
+        }
+      },
+      {
+        "scope": "all",
+        "path": "Card",
+        "withinInstance": null,
+        "visible": true,
+        "mainComponentId": "2044:25754",
+        "mainComponentName": "Elevation=Flat",
+        "componentSetId": "2044:25756",
+        "componentSetName": "Containers/Card",
+        "remote": false,
+        "variantProperties": {
+          "Elevation": "Flat"
+        }
+      }
+    ],
+    "explicitVariableModes": [],
+    "variables": [
+      {
+        "id": "VariableID:2587:4250",
+        "name": "component/button/icon/foreground",
+        "resolvedType": "COLOR",
+        "collection": "Button Style",
+        "valuesByMode": {
+          "Standalone": {
+            "alias": "semantic/icon/default",
+            "aliasId": "VariableID:2002:2474"
+          },
+          "Primary": {
+            "alias": "component/surface/content",
+            "aliasId": "VariableID:2057:1529"
+          },
+          "Secondary": {
+            "alias": "semantic/text/primary",
+            "aliasId": "VariableID:2002:2462"
+          },
+          "Danger": {
+            "alias": "component/surface/content",
+            "aliasId": "VariableID:2057:1529"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2127:571",
+        "name": "component/button/secondary/background",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Gradient": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Glass": {
+            "alias": "component/surface/fill",
+            "aliasId": "VariableID:2057:11"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:218",
+        "name": "component/card/border-highlight-1",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.8
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:219",
+        "name": "component/card/border-highlight-2",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 0.5
+          }
+        }
+      },
+      {
+        "id": "VariableID:2268:220",
+        "name": "component/card/border-highlight-3",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Gradient": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 1
+          },
+          "Glass": {
+            "r": 0.8745,
+            "g": 0.8784,
+            "b": 0.8941,
+            "a": 0.15
+          }
+        }
+      },
+      {
+        "id": "VariableID:2128:1499",
+        "name": "component/card/surface",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Gradient": {
+            "alias": "semantic/surface/default",
+            "aliasId": "VariableID:2002:2459"
+          },
+          "Glass": {
+            "alias": "component/surface/fill",
+            "aliasId": "VariableID:2057:11"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2057:1558",
+        "name": "component/radius/container",
+        "resolvedType": "FLOAT",
+        "collection": "Shape",
+        "valuesByMode": {
+          "Rounded": {
+            "alias": "radius/lg",
+            "aliasId": "VariableID:2002:2428"
+          },
+          "Sharp": {
+            "alias": "radius/none",
+            "aliasId": "VariableID:2002:2424"
+          },
+          "Pill": {
+            "alias": "radius/3xl",
+            "aliasId": "VariableID:2002:2431"
+          },
+          "Squircle": {
+            "alias": "radius/xl",
+            "aliasId": "VariableID:2002:2429"
+          },
+          "Brand Shape": {
+            "alias": "radius/lg",
+            "aliasId": "VariableID:2002:2428"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2012:9573",
+        "name": "component/radius/control",
+        "resolvedType": "FLOAT",
+        "collection": "Shape",
+        "valuesByMode": {
+          "Rounded": {
+            "alias": "radius/sm",
+            "aliasId": "VariableID:2002:2426"
+          },
+          "Sharp": {
+            "alias": "radius/none",
+            "aliasId": "VariableID:2002:2424"
+          },
+          "Pill": {
+            "alias": "radius/full",
+            "aliasId": "VariableID:2002:2432"
+          },
+          "Squircle": {
+            "alias": "radius/md",
+            "aliasId": "VariableID:2002:2427"
+          },
+          "Brand Shape": {
+            "alias": "radius/sm",
+            "aliasId": "VariableID:2002:2426"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2057:13",
+        "name": "component/surface/blur",
+        "resolvedType": "FLOAT",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": 0,
+          "Gradient": 0,
+          "Glass": 16
+        }
+      },
+      {
+        "id": "VariableID:2329:2915",
+        "name": "component/surface/gradient-overlay-end",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0.0392
+          },
+          "Glass": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2329:2914",
+        "name": "component/surface/gradient-overlay-start",
+        "resolvedType": "COLOR",
+        "collection": "Surface",
+        "valuesByMode": {
+          "Flat": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          },
+          "Gradient": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.0784
+          },
+          "Glass": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2848",
+        "name": "font-family/sans",
+        "resolvedType": "STRING",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": "Inter"
+        }
+      },
+      {
+        "id": "VariableID:2002:2425",
+        "name": "radius/xs",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 2
+        }
+      },
+      {
+        "id": "VariableID:2002:2465",
+        "name": "semantic/border/default",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/200",
+            "aliasId": "VariableID:2002:2377"
+          },
+          "Dark": {
+            "alias": "color/neutral/700",
+            "aliasId": "VariableID:2002:2382"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2472",
+        "name": "semantic/focus-ring",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/brand/500",
+            "aliasId": "VariableID:2002:2391"
+          },
+          "Dark": {
+            "alias": "color/brand/400",
+            "aliasId": "VariableID:2002:2390"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2003:3546",
+        "name": "semantic/icon-size/sm",
+        "resolvedType": "FLOAT",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "spacing/16",
+            "aliasId": "VariableID:2002:2414"
+          },
+          "Dark": {
+            "alias": "spacing/16",
+            "aliasId": "VariableID:2002:2414"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2462",
+        "name": "semantic/text/primary",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/900",
+            "aliasId": "VariableID:2002:2384"
+          },
+          "Dark": {
+            "alias": "color/neutral/0",
+            "aliasId": "VariableID:2002:2374"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2463",
+        "name": "semantic/text/secondary",
+        "resolvedType": "COLOR",
+        "collection": "Semantic",
+        "valuesByMode": {
+          "Light": {
+            "alias": "color/neutral/600",
+            "aliasId": "VariableID:2002:2381"
+          },
+          "Dark": {
+            "alias": "color/neutral/300",
+            "aliasId": "VariableID:2002:2378"
+          }
+        }
+      },
+      {
+        "id": "VariableID:2002:2413",
+        "name": "spacing/12",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 12
+        }
+      },
+      {
+        "id": "VariableID:2002:2414",
+        "name": "spacing/16",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 16
+        }
+      },
+      {
+        "id": "VariableID:2002:2411",
+        "name": "spacing/6",
+        "resolvedType": "FLOAT",
+        "collection": "Primitive",
+        "valuesByMode": {
+          "Value": 6
+        }
+      }
+    ],
+    "collections": [
+      {
+        "name": "Button Style",
+        "modes": [
+          "Standalone",
+          "Primary",
+          "Secondary",
+          "Danger"
+        ]
+      },
+      {
+        "name": "Primitive",
+        "modes": [
+          "Value"
+        ]
+      },
+      {
+        "name": "Semantic",
+        "modes": [
+          "Light",
+          "Dark"
+        ]
+      },
+      {
+        "name": "Shape",
+        "modes": [
+          "Rounded",
+          "Sharp",
+          "Pill",
+          "Squircle",
+          "Brand Shape"
+        ]
+      },
+      {
+        "name": "Surface",
+        "modes": [
+          "Flat",
+          "Gradient",
+          "Glass"
+        ]
+      }
+    ]
+  },
+  "derived": {
+    "descriptionSections": [
+      "STATUS",
+      "PURPOSE",
+      "WHEN TO USE",
+      "WHEN NOT TO USE",
+      "ACCESSIBILITY",
+      "COMMON MISTAKES",
+      "TOKENS USED",
+      "PROPERTIES"
+    ],
+    "propertyCounts": {},
+    "variantCount": 0,
+    "variantCombinationsComplete": null,
+    "boundCollections": [
+      "Button Style",
+      "Primitive",
+      "Semantic",
+      "Shape",
+      "Surface"
+    ],
+    "nestedComponents": [
+      {
+        "mainComponentName": null,
+        "componentSetName": "Actions/Button",
+        "kind": "component"
+      },
+      {
+        "mainComponentName": null,
+        "componentSetName": "Containers/Card",
+        "kind": "component"
+      },
+      {
+        "mainComponentName": null,
+        "componentSetName": "Containers/Chart Card Content",
+        "kind": "component"
+      },
+      {
+        "mainComponentName": "Icon/ArrowRight",
+        "componentSetName": null,
+        "kind": "icon"
+      },
+      {
+        "mainComponentName": "Icon/Check",
+        "componentSetName": null,
+        "kind": "icon"
+      }
+    ]
+  },
+  "unknowns": [
+    {
+      "fact": "componentProperties",
+      "reason": "This master exposes no component properties of its own; nested instances are recorded only by their variant selections."
+    },
+    {
+      "fact": "documentationLinks",
+      "reason": "Component documentation links are not captured."
+    },
+    {
+      "fact": "modeSupport",
+      "reason": "Collections and explicit modes are recorded as observed; which Light/Dark, Shape or Surface modes the component is designed for is not inferred."
+    },
+    {
+      "fact": "nestedInstanceOverrides",
+      "reason": "Nested instances record their variant selections only; text, boolean and instance-swap override values are not captured."
+    },
+    {
+      "fact": "nestedInstanceRole",
+      "reason": "Whether a nested component is public, an internal helper or decorative is not determinable from Figma beyond the Icon/ naming convention."
+    },
+    {
+      "fact": "otherFiles",
+      "reason": "Only the file named by the identity was read; other files (e.g. Free) and their gating are not captured."
+    },
+    {
+      "fact": "parity",
+      "reason": "A snapshot records what Figma contains; it is not a verdict on whether any other source matches it."
+    },
+    {
+      "fact": "reactMapping",
+      "reason": "Snapshots never map Figma names to React props, CSS variables or registry fields; that is comparison work (AG-1D)."
+    },
+    {
+      "fact": "renderedValues",
+      "reason": "Variable bindings are captured, not rendered output; variable values are recorded one alias hop deep and full alias chains are not resolved."
+    }
+  ]
+}

@@ -2,7 +2,8 @@
 
 **Phase:** AG-0 Agent Readiness Audit ✅ COMPLETE — audit + AG-1 spec only, no
 implementation. **AG-1A ✅ COMPLETE (2026-09-29)** — P0-1 cleared for the five
-pilot components; see §20.
+pilot components; see §20. **AG-1B ✅ COMPLETE (2026-09-29)** — read-only Figma
+snapshots for the five pilots; see §21.
 **Baseline:** `b1f8a45` (verified 2026-09-29). Live Agent Kit contracts at
 `https://skrewww.com/agent/contracts/<slug>.json` carried the same
 `provenance.sourceGitSha`.
@@ -465,3 +466,88 @@ with no parity fields, and compilation is reproducible.
 entries with no node ID at all, and 19 entries with a legacy `figmaNodeId` but
 no file key/type/role (the rest are `partial`/`unavailable` with neither). Each needs the same live-Figma verification before an
 agent can audit it. Next: **AG-1B — read-only Figma snapshot extractor.**
+
+## 21. AG-1B — read-only Figma snapshots (implemented 2026-09-29)
+
+Turns each AG-1A identity into a versioned, machine-readable record of what
+that exact Figma node contains. No comparison, no React facts, no Figma writes.
+
+**Snapshots are captured evidence — not canonical truth and never parity.**
+Live Figma stays the authority for Figma; the registry and contracts do not
+read snapshots.
+
+**Architecture (transport separated from normalization):**
+
+```
+figmaIdentity (registry)
+  → scripts/figma-snapshot/capture-in-figma.js   plugin-runtime, read-only → RawFigmaCapture
+  → lib/figma-snapshot/normalize.ts               pure, deterministic       → FigmaSnapshot
+  → lib/figma-snapshot/validate.ts                identity + integrity checks
+  → agent/figma-snapshots/<fileKey>/<slug>.json   committed evidence
+```
+
+- Repo code cannot call the Figma Desktop Bridge, so the capture script runs
+  in the Figma plugin runtime (the bridge's `figma_execute` today) and emits
+  `RawFigmaCapture` (`lib/figma-snapshot/raw-capture.ts`) — the boundary any
+  future transport (plugin, REST) must produce. The script refuses targets
+  whose file key differs from the open file (Free shares node IDs with Pro).
+- `scripts/figma-snapshot/write-snapshots.ts` takes identities from the
+  registry, normalizes, validates, and writes nothing unless every snapshot
+  passes.
+
+**Read surface (plugin API, pilots):**
+
+| Fact | Available |
+|---|---|
+| Node ID/name/type, page, parent section | structured |
+| Component properties (VARIANT/TEXT/BOOLEAN/INSTANCE_SWAP, keys, defaults, options) | structured |
+| Variants and their values | structured |
+| Variable bindings (radius, padding, gap, size, fills, strokes, gradient stops, effects, fontFamily, opacity) incl. inside nested instances | structured, with variable names |
+| Variable collections, modes, per-mode values (one alias hop) | structured |
+| Explicit variable modes set on a variant | structured |
+| Text styles on text layers | structured (style name) |
+| Nested instances → main component / component set, variant selections | structured |
+| Auto-layout (mode, gap, padding, sizing, alignment), radius, stroke, size | structured |
+| Description | prose (section headings derived) |
+| Nested instance text/boolean/swap override values | not captured |
+| Rendered per-mode output, full alias chains | not captured |
+| Documentation links | not captured |
+| Whether a nested component is public/helper/decorative | not determinable (Icon/ naming only) |
+
+**Schema** (`lib/figma-snapshot/schema.ts`, `FIGMA_SNAPSHOT_SCHEMA_VERSION`
+1.0.0): `schemaVersion`, `capturedAt` (the only volatile field), `capture`
+(method, capture-script version, file name), `identity` (must equal the
+registry's `figmaIdentity`), then three blocks:
+
+- `observed` — node, componentProperties, variants, layouts, children,
+  variableBindings, textStyles, nestedInstances, explicitVariableModes,
+  variables, collections. Figma names are preserved exactly. Per-variant facts
+  are grouped with a `scope` of `"all"` or the variant names that have them.
+- `derived` — only from `observed`: description section headings, property
+  counts, variant count, whether all axis combinations exist, directly bound
+  collections, distinct nested masters (`icon` by naming convention only).
+- `unknowns` — what was not captured and why (always includes React mapping,
+  parity, rendered values, mode support).
+
+No React mapping (`Style → variant` etc.) and no mode-support claims ("supports
+Dark") appear anywhere; the validator rejects React/parity keys.
+
+**Pilot snapshots** (Pro, captured 2026-09-29):
+
+| Slug | Properties | Variant axes | Variants | Bindings (grouped) | Variables | Nested masters |
+|---|---|---|---|---|---|---|
+| `button` | 8 | Size, State, Style | 45 (complete) | 68 | 35 | Icon/ArrowRight, Icon/Check |
+| `text-input` | 7 | Size, State | 15 (complete) | 44 | 21 | Icon/Calendar, Icon/WarningCircle |
+| `alert` | 4 | Type | 4 (complete) | 40 | 21 | 5 icons |
+| `dialog` | 2 | — | — | 88 | 25 | Actions/Button, 3 icons |
+| `chart-card` | 0 | — | — | 61 | 21 | Actions/Button, Containers/Card, Containers/Chart Card Content, 2 icons |
+
+**Reproducibility:** two independent live captures were byte-identical at the
+raw level; re-normalizing the second with a different `capturedAt` reproduced
+every committed snapshot exactly apart from that field.
+
+**Limits / debt:** only the five pilots have snapshots (53 registry entries
+have no identity yet); Button's per-variant scopes make it the largest file
+(~99 KB) — expressing scopes as axis predicates is a later optimization;
+capture requires a human-run plugin step until an automated transport exists.
+Next: **AG-1C — repo facts collector.**

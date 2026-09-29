@@ -1,6 +1,27 @@
 # Project status
 
-Last verified: **2026-09-29** (**AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-29** (**AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-29 — AG-1B read-only Figma snapshots (COMPLETE)
+
+Second Audit Agent slice. Details: `docs/architecture/agent-readiness.md` §21.
+
+- Transport and normalization are separate: a plugin-runtime capture script
+  (`scripts/figma-snapshot/capture-in-figma.js`, read-only, refuses targets
+  from any file but the one its identity names) emits a raw capture; a pure,
+  deterministic normalizer + validator (`lib/figma-snapshot/`) turns it into a
+  versioned snapshot. Repo code cannot drive the Figma Desktop Bridge, so the
+  capture step is run by a person/agent through the bridge.
+- Five committed pilot snapshots in `agent/figma-snapshots/U6KUuNf7DF4CP9QBOkLSUx/`
+  (Button, Text Input, Alert, Dialog, Chart Card), each bound to its
+  registry `figmaIdentity`. Facts are split into `observed` / `derived` /
+  `unknowns`; no React mapping, no parity, no mode-support claims.
+- Snapshots are captured evidence, not canonical truth; the registry and Agent
+  contracts do not read them, and no contract schema changed.
+- Two independent live captures were byte-identical; snapshots differ only in
+  `capturedAt` between captures of unchanged nodes.
+- Remaining: snapshots exist only for the five pilots. Next: AG-1C — repo
+  facts collector.
 
 ## 2026-09-29 — AG-1A Figma identity map (COMPLETE)
 
