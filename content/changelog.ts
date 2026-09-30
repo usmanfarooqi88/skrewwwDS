@@ -35,6 +35,24 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-09-shadcn-directory-listing",
+    date: "2026-09-30",
+    displayDate: "September 2026",
+    title: "Listed in the shadcn community registry directory",
+    summary:
+      "Skrewww is listed in the official shadcn community registry directory, so the shadcn CLI resolves the @skrewww namespace without any components.json setup.",
+    items: [
+      {
+        type: "new",
+        text: "Install directly with npx shadcn@latest add @skrewww/button — Foundation installs automatically, and no registry entry needs to be added first.",
+      },
+      {
+        type: "new",
+        text: "Browse every installable Skrewww item from the CLI with npx shadcn@latest search @skrewww.",
+      },
+    ],
+  },
+  {
     id: "2026-09-figma-stabilization",
     date: "2026-09-28",
     displayDate: "September 2026",

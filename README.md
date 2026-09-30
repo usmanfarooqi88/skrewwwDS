@@ -20,20 +20,9 @@ Stable — see [Implemented React components](#implemented-react-components).
 
 Install a component from the `@skrewww` registry with the real [shadcn](https://ui.shadcn.com) CLI.
 
-`@skrewww` is not yet listed in shadcn's official registry directory
-([shadcn-ui/ui#11991](https://github.com/shadcn-ui/ui/pull/11991) is open) —
-until it merges, declare the registry once in your project's
-`components.json`:
-
-```json
-{
-  "registries": {
-    "@skrewww": "https://skrewww.com/r/{name}.json"
-  }
-}
-```
-
-Then install:
+Skrewww is listed in the official
+[shadcn community registry directory](https://ui.shadcn.com/docs/directory?q=skrewww),
+so the CLI resolves `@skrewww` with no `components.json` setup:
 
 ```bash
 npx shadcn@latest add @skrewww/button
@@ -41,16 +30,19 @@ npx shadcn@latest add @skrewww/button
 
 This resolves the token-driven Foundation stylesheet and any
 component-to-component dependencies automatically via `registryDependencies`
-— no separate install step. Verified end-to-end (fresh project, real CLI,
-production build); tested commands and the Tailwind-free `components.json`
-shape live in
+— no separate install step. Import `styles/skrewww-foundation.css` once in
+your root layout. If your project already has shadcn's own
+`components/ui/button.tsx` (the default `shadcn init` preset creates one), the
+CLI asks before overwriting it; answer `y` or pass `--overwrite`. Verified
+end-to-end (fresh project, real CLI, production build); tested commands and
+the Tailwind-free `components.json` shape live in
 [`docs/architecture/shadcn-distribution.md`](docs/architecture/shadcn-distribution.md).
 Full catalog: [`/r/registry.json`](https://skrewww.com/r/registry.json) ·
 Browse components: [skrewww.com/components](https://skrewww.com/components).
 
-Once #11991 merges, `npx shadcn@latest add @skrewww/button` and
-`npx shadcn@latest search @skrewww` will resolve the namespace without the
-manual `components.json` entry above.
+Declaring the registry explicitly in `components.json` still works (the
+consumer smoke test uses this form):
+`"registries": { "@skrewww": "https://skrewww.com/r/{name}.json" }`.
 
 **New to this repository as a contributor?** Start at
 [`docs/getting-started.md`](docs/getting-started.md) (local run, repo map,
@@ -206,13 +198,12 @@ Stable-v1 Gradient contract: [`docs/architecture/gradient-foundation.md`](docs/a
 
 **Currently implemented — shadcn-compatible registry distribution.** A
 **supported subset** of components can be installed into a consumer project
-with `npx shadcn@latest add @skrewww/<component>` **once `@skrewww` is
-declared under `registries` in your `components.json`** — see
-[Quick Start](#quick-start) above for the exact entry and a tested command.
-`@skrewww` is not yet listed in shadcn's official registry directory
-([shadcn-ui/ui#11991](https://github.com/shadcn-ui/ui/pull/11991) is open),
-so the bare command above fails with "Unknown registry" until either that
-merges or the entry is declared manually. Manifests are generated from the
+with `npx shadcn@latest add @skrewww/<component>` — see
+[Quick Start](#quick-start) above for a tested command. Skrewww is listed in
+the official shadcn community registry directory
+([shadcn-ui/ui#12059](https://github.com/shadcn-ui/ui/pull/12059), merged
+2026-09-30), so current CLI versions resolve `@skrewww` without a manual
+`components.json` entry. Manifests are generated from the
 canonical registry (`lib/component-registry.ts`) via `npm run
 generate:registry` and served as static files under `/r/{name}.json`; this
 is a separate path from the `/registry.json` metadata feed below.
@@ -224,7 +215,7 @@ live catalog itself — [`/r/registry.json`](https://skrewww.com/r/registry.json
 implemented components are documented on this site but not yet part of the
 shadcn install surface.
 
-`npx shadcn@latest search @skrewww` has the same prerequisite as `add` above.
+`npx shadcn@latest search @skrewww` also works without configuration.
 
 Scope, mechanism, and verified consumer testing:
 [`docs/architecture/shadcn-distribution.md`](docs/architecture/shadcn-distribution.md).

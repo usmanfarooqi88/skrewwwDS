@@ -1,6 +1,45 @@
 # Project status
 
-Last verified: **2026-09-29** (**AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 SUBMITTED — AWAITING UPSTREAM REVIEW — shadcn-ui/ui#11991; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-09-30** (**OSS-2 ✅ LISTED — Skrewww is listed in the official shadcn community registry directory (shadcn-ui/ui#12059 merged; #11991 superseded); zero-config `npx shadcn@latest add @skrewww/button` verified with shadcn 4.21.0**; **AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 original PR shadcn-ui/ui#11991 closed unmerged — superseded by #12059; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-09-30 — shadcn community registry directory listing (COMPLETE — docs only)
+
+Skrewww is listed in the official shadcn community registry directory.
+Architecture record: `docs/architecture/shadcn-distribution.md`
+("shadcn community registry directory listing — 2026-09-30").
+
+- **Upstream.** shadcn-ui/ui#11991 was closed unmerged on 2026-09-30 by the
+  maintainer ("added this to #12059"). shadcn-ui/ui#12059 ("feat(registry):
+  add community registries") merged 2026-09-30 (`9ef6dd0`), adding
+  `@skrewww` to `apps/v4/registry/directory.json`; it is an ancestor of
+  upstream `main`.
+- **CI history.** The four `failure` runs on #11991 (Code check
+  35845242907, Templates 35845242924, Test 35845243032, Validate Registries
+  35845242922) have **zero jobs**: one attempt, a check suite with 0 check
+  runs, no logs, concluded one second after the PR closed. They are **not**
+  test failures. No job ever executed against Skrewww. The fork-approval gate
+  is a consistent explanation, not a proven one. Signed commits passed. On
+  #12059 all six workflows passed with real jobs (Code check 3/3,
+  Templates 25/25, Test 3/3, Validate Registries 1/1 incl.
+  `pnpm validate:registries`, Signed commits 1/1, dynamic 2/2).
+- **Live.** `ui.shadcn.com/r/registries.json` (408 entries) includes
+  `@skrewww`, and the directory page lists it. `skrewww.com/r/registry.json`
+  (56 items), `/r/button.json` and `/r/foundation.json` return 200 with
+  valid JSON.
+- **Real consumer flow** (fresh `create-next-app@16.3.7`, Node 24.14.0,
+  npm 11.12.1, shadcn 4.21.0, default `init` with `"registries": {}`):
+  - `add @skrewww/button` resolved the namespace with no manual config and
+    installed Foundation.
+  - It then hit an overwrite prompt: shadcn's default preset had already
+    created `components/ui/button.tsx`, which collides with Skrewww's
+    `Button.tsx` on case-insensitive filesystems. Run non-interactively,
+    the CLI **exited 0 with only Foundation written**.
+  - With `--overwrite`, all five files landed with an npm delta of 0, and
+    `tsc` and `next build` passed with Foundation imported and Button
+    rendered.
+  - `search @skrewww` also works with no configuration.
+- **Not changed:** registry architecture, components, Figma, Agent Kit, Guard.
+  The Button filename collision is reported for a human decision, not fixed.
 
 ## 2026-09-29 — AG-1B read-only Figma snapshots (COMPLETE)
 

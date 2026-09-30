@@ -147,7 +147,13 @@ export default function AgentKitPage() {
 
       <Section id="getting-started" title="Getting started">
         <p className="font-medium text-ink-700">1. Configure the Skrewww registry (if installing components)</p>
-        <p>Add the namespaced registry to your project&rsquo;s <Code>components.json</Code>:</p>
+        <p>
+          Skrewww is listed in the official shadcn community registry directory, so{" "}
+          <Code>npx shadcn@latest add @skrewww/button</Code> resolves <Code>@skrewww</Code>{" "}
+          without setup and records it in <Code>components.json</Code>. To declare it
+          explicitly, add the namespaced registry to your project&rsquo;s{" "}
+          <Code>components.json</Code>:
+        </p>
         <CodeBlock>{`{
   "registries": {
     "@skrewww": "${siteConfig.origin}/r/{name}.json"

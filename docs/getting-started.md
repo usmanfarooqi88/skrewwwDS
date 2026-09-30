@@ -415,11 +415,16 @@ Two different numbers matter:
 | **Implemented React components** | All registry entries with `hasImplementation: true` (currently dozens; count is derived at runtime — do not hardcode it in docs). Documented on this site with live previews. |
 | **shadcn `/r` install surface** | The **subset** generated into `public/r/*.json` and installable via `npx shadcn@latest add @skrewww/<name>`. |
 
-**Current supported `/r` items (exactly six):**
+The current supported `/r` items are whatever the live catalog lists —
+[`/r/registry.json`](https://skrewww.com/r/registry.json) (Foundation plus a
+subset of components; do not hardcode the count). Other implemented
+components are **not** part of the current install surface.
 
-`foundation`, `button`, `card`, `text-input`, `form-field`, `validation-message`
-
-Other implemented components are **not** part of the current install surface.
+Skrewww is listed in the official shadcn community registry directory
+(added by [shadcn-ui/ui#12059](https://github.com/shadcn-ui/ui/pull/12059),
+merged 2026-09-30), so current shadcn CLI versions resolve `@skrewww` with no
+`components.json` entry. Details and the verified consumer flow:
+[`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
 
 ### How generation works
 

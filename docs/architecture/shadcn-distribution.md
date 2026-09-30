@@ -565,3 +565,56 @@ work without peer installs, no component API or registry schema change.
 - KNOWN_AFFECTED absent
 - No per-component migration of the 315 declarations
 - No upstream shadcn PR / npm publish (OSS-2 remains separate)
+
+## shadcn community registry directory listing — 2026-09-30
+
+Skrewww is listed in the official shadcn community registry directory.
+
+- **Upstream history.** The original submission,
+  [shadcn-ui/ui#11991](https://github.com/shadcn-ui/ui/pull/11991), was
+  closed unmerged on 2026-09-30 and superseded by
+  [shadcn-ui/ui#12059](https://github.com/shadcn-ui/ui/pull/12059)
+  ("feat(registry): add community registries", merged 2026-09-30,
+  merge commit `9ef6dd0`), which added the `@skrewww` entry to
+  `apps/v4/registry/directory.json`.
+- **CI on #11991 was not a test failure.** Its Code check, Templates, Test and
+  Validate Registries runs report `failure` with **zero jobs**: one attempt, a
+  check suite with no check runs, and no logs. No test, template, code-check
+  or registry-validation job ever executed against Skrewww. #12059's
+  equivalent workflows ran with real jobs and all passed, including
+  Validate Registries (`pnpm validate:registries`).
+- **Live.** `https://ui.shadcn.com/r/registries.json` includes `@skrewww`
+  (`https://skrewww.com/r/{name}.json`), and
+  [the directory](https://ui.shadcn.com/docs/directory?q=skrewww) shows it.
+
+### Zero-config consumer flow (verified 2026-09-30)
+
+Fresh `create-next-app@16.3.7` project (TypeScript, Tailwind v4, App
+Router), Node 24.14.0, npm 11.12.1, `shadcn@latest` = **4.21.0**, macOS
+(case-insensitive filesystem). `npx shadcn@latest init --defaults` wrote
+`components.json` with `"registries": {}` — no `@skrewww` entry.
+
+1. `npx shadcn@latest add @skrewww/button` resolved `@skrewww` from the
+   built-in directory (the CLI itself added the `@skrewww` entry to
+   `components.json`) and installed `@skrewww/foundation` via
+   `registryDependencies`.
+2. The default `init` preset (`base-nova`) had already created shadcn's own
+   `components/ui/button.tsx`, which collides with Skrewww's
+   `components/ui/Button.tsx` on a case-insensitive filesystem. The CLI
+   prompted `The file Button.tsx already exists. Would you like to
+   overwrite?`. Run non-interactively, it wrote only Foundation and
+   **exited 0** without the Button files.
+3. Re-running with `--overwrite` (equivalent to answering `y`) installed all
+   five Button files. The Skrewww `add` changed no npm dependencies.
+4. With `styles/skrewww-foundation.css` imported in the root layout and
+   `<Button>` rendered, `tsc --noEmit` and `next build` passed. The prerendered
+   page contains the Skrewww Button markup, and all 497 Foundation custom
+   properties are present in the built CSS.
+
+`npx shadcn@latest search @skrewww` also resolves (56 items) without
+configuration, even in a directory with no `components.json`.
+
+Not tested: a case-sensitive filesystem (where `Button.tsx` and shadcn's
+`button.tsx` would be separate files), and older CLI versions. The explicit
+`registries` entry above remains valid and is what `npm run smoke:consumer`
+uses.
