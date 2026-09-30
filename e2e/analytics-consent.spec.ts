@@ -28,6 +28,25 @@ function gaScriptTagCount(page: Page): Promise<number> {
   );
 }
 
+/**
+ * Seeds a returning visitor's stored choice once. Init scripts re-run on every
+ * navigation, so this only writes when nothing is stored yet — otherwise a
+ * reload would overwrite a choice the test just changed and hide persistence.
+ */
+async function seedConsent(page: Page, value: "granted" | "denied") {
+  await page.addInitScript(
+    ([key, stored]) => {
+      if (window.localStorage.getItem(key) === null) window.localStorage.setItem(key, stored);
+    },
+    [CONSENT_KEY, value],
+  );
+}
+
+/** The footer control that reopens the banner — not the banner region itself. */
+function preferencesTrigger(page: Page) {
+  return page.getByRole("button", { name: "Analytics preferences" });
+}
+
 function banner(page: Page) {
   return page.getByRole("region", { name: "Analytics preferences" });
 }
@@ -184,19 +203,17 @@ test.describe("Analytics consent", () => {
     await expect(banner(page)).toBeVisible();
   });
 
-  test("reopening: a granted visitor can switch to denied immediately via the sidebar link, no reload needed", async ({
+  test("reopening: a granted visitor can switch to denied immediately via Analytics preferences, no reload needed", async ({
     page,
   }) => {
     await stubGtagScript(page);
-    await page.addInitScript(
-      ([key, value]) => window.localStorage.setItem(key, value),
-      [CONSENT_KEY, "granted"],
-    );
+    await seedConsent(page, "granted");
     await page.goto("/");
     await expect(banner(page)).toBeHidden();
 
-    await page.getByRole("button", { name: "Analytics preferences" }).click();
+    await preferencesTrigger(page).click();
     await expect(banner(page)).toBeVisible();
+    await expect(banner(page)).toContainText("Current choice: analytics allowed");
 
     await page.getByRole("button", { name: "Decline" }).click();
     await expect(banner(page)).toBeHidden();
@@ -205,25 +222,103 @@ test.describe("Analytics consent", () => {
     const dataLayer = await page.evaluate(() => (window.dataLayer ?? []).map((entry) => Array.from(entry as unknown[])));
     const lastUpdate = [...dataLayer].reverse().find((entry) => entry[0] === "consent" && entry[1] === "update");
     expect(lastUpdate?.[2]).toMatchObject({ analytics_storage: "denied" });
+
+    // The change survives a reload, and the trigger is still there.
+    await page.reload();
+    await expect(banner(page)).toBeHidden();
+    await expect(preferencesTrigger(page)).toBeVisible();
+    expect(await page.evaluate((key) => window.localStorage.getItem(key), CONSENT_KEY)).toBe("denied");
+    await page.waitForTimeout(300);
+    expect(await gaScriptTagCount(page)).toBe(0);
   });
 
-  test("reopening: a denied visitor can switch to granted without a page reload", async ({ page }) => {
+  test("reopening: a denied visitor can switch to granted without a page reload, and it persists", async ({ page }) => {
     await stubGtagScript(page);
-    await page.addInitScript(
-      ([key, value]) => window.localStorage.setItem(key, value),
-      [CONSENT_KEY, "denied"],
-    );
+    await seedConsent(page, "denied");
     await page.goto("/");
     await expect(banner(page)).toBeHidden();
     expect(await gaScriptTagCount(page)).toBe(0);
 
-    await page.getByRole("button", { name: "Analytics preferences" }).click();
+    await preferencesTrigger(page).click();
     await expect(banner(page)).toBeVisible();
+    await expect(banner(page)).toContainText("Current choice: analytics declined");
 
     await page.getByRole("button", { name: "Allow analytics" }).click();
     await expect(banner(page)).toBeHidden();
     expect(await page.evaluate((key) => window.localStorage.getItem(key), CONSENT_KEY)).toBe("granted");
     await expect.poll(() => gaScriptTagCount(page)).toBe(1);
+
+    await page.reload();
+    await expect(banner(page)).toBeHidden();
+    await expect(preferencesTrigger(page)).toBeVisible();
+    expect(await page.evaluate((key) => window.localStorage.getItem(key), CONSENT_KEY)).toBe("granted");
+    await expect.poll(() => gaScriptTagCount(page)).toBe(1);
+  });
+
+  for (const stored of ["granted", "denied"] as const) {
+    for (const route of ["/", "/components/button", "/docs", "/foundations", "/reference"]) {
+      test(`Analytics preferences is reachable for a ${stored} visitor on ${route} and opens exactly one region`, async ({
+        page,
+      }) => {
+        await stubGtagScript(page);
+        await seedConsent(page, stored);
+        await page.goto(route);
+        await expect(banner(page)).toBeHidden();
+        await expect(preferencesTrigger(page)).toHaveCount(1);
+
+        await preferencesTrigger(page).click();
+        await expect(banner(page)).toHaveCount(1);
+        await expect(banner(page)).toBeVisible();
+        // Reopening alone never rewrites the stored choice.
+        expect(await page.evaluate((key) => window.localStorage.getItem(key), CONSENT_KEY)).toBe(stored);
+      });
+    }
+  }
+
+  test("Analytics preferences is operable from the keyboard (Enter and Space) with visible focus", async ({ page }) => {
+    await stubGtagScript(page);
+    await seedConsent(page, "denied");
+    await page.goto("/docs");
+    await expect(banner(page)).toBeHidden();
+
+    const trigger = preferencesTrigger(page);
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    const outline = await trigger.evaluate((el) => getComputedStyle(el).outlineStyle);
+    expect(outline).not.toBe("none");
+
+    await page.keyboard.press("Enter");
+    await expect(banner(page)).toBeVisible();
+    await page.getByRole("button", { name: "Decline" }).click();
+    await expect(banner(page)).toBeHidden();
+
+    await trigger.focus();
+    await page.keyboard.press("Space");
+    await expect(banner(page)).toBeVisible();
+    await expect(banner(page)).toHaveCount(1);
+  });
+
+  test("returning visitor: trigger is reachable on /reference and reuses the same consent region", async ({ page }) => {
+    await stubGtagScript(page);
+    await seedConsent(page, "granted");
+    await page.goto("/reference");
+    await expect(banner(page)).toBeHidden();
+
+    await preferencesTrigger(page).click();
+    await expect(banner(page)).toBeVisible();
+    await page.getByRole("button", { name: "Decline" }).click();
+    await expect(banner(page)).toBeHidden();
+    await page.reload();
+    await expect(preferencesTrigger(page)).toBeVisible();
+    expect(await page.evaluate((key) => window.localStorage.getItem(key), CONSENT_KEY)).toBe("denied");
+  });
+
+  test("fresh visitor: still sees exactly one consent region and no 'current choice' line", async ({ page }) => {
+    await stubGtagScript(page);
+    await page.goto("/");
+    await expect(banner(page)).toHaveCount(1);
+    await expect(banner(page)).toBeVisible();
+    await expect(banner(page)).not.toContainText("Current choice");
   });
 
   test("banner is keyboard accessible with visible focus, and is not a modal/focus trap", async ({ page }) => {

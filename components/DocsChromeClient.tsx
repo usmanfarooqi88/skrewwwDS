@@ -1,6 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { AnalyticsPreferencesTrigger } from "@/components/analytics/AnalyticsPreferencesTrigger";
+import { useAnalyticsConsent } from "@/components/analytics/AnalyticsConsentProvider";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { MobileSectionNav } from "@/components/MobileSectionNav";
 import { SectionSidebar } from "@/components/SectionSidebar";
@@ -22,6 +24,7 @@ export function DocsChromeClient({
   models: Record<Section, SectionNavModel>;
 }) {
   const pathname = usePathname();
+  const { hasGA } = useAnalyticsConsent();
   const isReferenceApp = pathname === "/reference" || pathname.startsWith("/reference/");
   const section = resolveSection(pathname);
   const sectionNav = section ? models[section] : null;
@@ -43,6 +46,11 @@ export function DocsChromeClient({
       <main id="main-content" tabIndex={-1} className={cn("min-h-screen", sectionNav && "md:ml-64")}>
         {children}
       </main>
+      {hasGA ? (
+        <footer className={cn("border-t border-ink-200 px-5 py-2 sm:px-8", sectionNav && "md:ml-64")}>
+          <AnalyticsPreferencesTrigger />
+        </footer>
+      ) : null}
     </>
   );
 }

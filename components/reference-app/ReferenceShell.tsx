@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnalyticsPreferencesTrigger } from "@/components/analytics/AnalyticsPreferencesTrigger";
 import { ReferenceBannerSpacer } from "@/components/reference-app/ReferenceBannerSpacer";
 import { ReferenceMobileHeader } from "@/components/reference-app/ReferenceMobileHeader";
 import { ReferenceNav } from "@/components/reference-app/ReferenceNav";
@@ -62,6 +63,9 @@ export function ReferenceShell({ children }: { children: React.ReactNode }) {
           className="min-h-screen min-w-0 overflow-x-clip outline-none"
         >
           {children}
+          <div className="px-5 pb-4 empty:hidden sm:px-8">
+            <AnalyticsPreferencesTrigger />
+          </div>
           <ReferenceBannerSpacer />
         </main>
       </div>

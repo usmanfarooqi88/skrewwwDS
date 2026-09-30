@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/Button";
  * Non-modal analytics consent banner — fixed to the viewport bottom, no
  * backdrop, no focus trap, no motion. It only ever renders when
  * AnalyticsConsentProvider's showBanner is true (fresh visit with no valid
- * stored choice, or a returning visitor reopened it from the sidebar), so
+ * stored choice, or a returning visitor reopened it with the Analytics
+ * preferences control), so
  * a route with no GA configured never pays for this component at all.
  */
 export function AnalyticsConsentBanner() {
-  const { showBanner, allow, decline } = useAnalyticsConsent();
+  const { showBanner, state, allow, decline } = useAnalyticsConsent();
 
   if (!showBanner) return null;
 
@@ -28,6 +29,11 @@ export function AnalyticsConsentBanner() {
             We use Google Analytics to understand how Skrewww is used and improve the experience.
             You can allow or decline analytics; essential site functionality works either way.
           </p>
+          {state === "granted" || state === "denied" ? (
+            <p className="mt-1 text-sm text-ink-600">
+              Current choice: {state === "granted" ? "analytics allowed" : "analytics declined"}.
+            </p>
+          ) : null}
         </div>
         <div className="flex shrink-0 gap-2">
           <Button variant="secondary" size="sm" onClick={decline}>

@@ -1,6 +1,37 @@
 # Project status
 
-Last verified: **2026-09-30** (**OSS-2 ✅ LISTED — Skrewww is listed in the official shadcn community registry directory (shadcn-ui/ui#12059 merged; #11991 superseded); zero-config `npx shadcn@latest add @skrewww/button` verified with shadcn 4.21.0**; **AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 original PR shadcn-ui/ui#11991 closed unmerged — superseded by #12059; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-10-01** (**AP-1 ✅ — returning visitors can reopen Analytics preferences (docs/public shell + /reference); accepted/declined both verified; no gating change**; **OSS-2 ✅ LISTED — Skrewww is listed in the official shadcn community registry directory (shadcn-ui/ui#12059 merged; #11991 superseded); zero-config `npx shadcn@latest add @skrewww/button` verified with shadcn 4.21.0**; **AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 original PR shadcn-ui/ui#11991 closed unmerged — superseded by #12059; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-10-01 — AP-1 Analytics preferences reopener (COMPLETE)
+
+A returning visitor who had already accepted or declined analytics had no way to
+change that choice. The only `reopen()` caller lived in `SidebarNav`, which no
+route has mounted since NAV-1 (`96b933cc7`); `analytics-consent.spec.ts` reopen
+tests failed on it, and the `2026-08-analytics-consent` changelog line claimed
+a sidebar control that did not render.
+
+- **One reusable control:** `components/analytics/AnalyticsPreferencesTrigger.tsx`
+  — a semantic button labelled "Analytics preferences" that only calls the
+  provider's existing `reopen()`. Renders nothing when GA is not configured.
+- **Mounted in two shells, same component:** a quiet `<footer>` strip in
+  `DocsChromeClient` (every docs/public route, desktop and mobile) and at the
+  end of `<main>` in `ReferenceShell` (every `/reference/*` route, which has its
+  own shell without the docs chrome).
+- **Banner:** when reopened after a stored choice, one line reads "Current choice:
+  analytics allowed/declined." A first-time visitor sees the banner unchanged.
+- **Verified:** accepted → declined and declined → accepted both apply at once,
+  persist across reload, and the trigger remains after reload; Enter and Space
+  work; exactly one consent region ever exists; `/`, `/components/button`,
+  `/docs`, `/foundations` and `/reference` each expose exactly one trigger.
+  `analytics-consent.spec.ts`: 26 passed (the two previously failing reopen
+  tests now pass). Full browser suite: 591 passed, 2 failed — `changelog.spec.ts:26`
+  and `gradient-foundation.spec.ts:202`, both already recorded above as pre-existing
+  stale-nav assumptions (neither touches the consent control).
+- **Unchanged:** consent storage key/schema, `gtag` consent-mode updates, and
+  gating. GA still mounts only after `granted`. Vercel Analytics and Speed
+  Insights still render unconditionally, as before.
+- **Left alone:** `Sidebar`/`SidebarNav` (dead code; cleanup is separate scope),
+  the locked NAV-1 Resources menu, navigation, SEO, registry.
 
 ## 2026-09-30 — shadcn community registry directory listing (COMPLETE — docs only)
 
@@ -169,8 +200,8 @@ passed.
   (no Changelog link in the sidebar on `/foundations`) and
   `gradient-foundation.spec.ts:202` (no "Button" link inside `<aside>`; its
   Surface assertions now pass). Test-vs-nav decision needed.
-- Pre-existing product defect: `analytics-consent.spec.ts:187`/`210` — no
-  "Analytics preferences" reopener control is rendered.
+- ~~Pre-existing product defect: `analytics-consent.spec.ts:187`/`210` — no
+  "Analytics preferences" reopener control is rendered.~~ **Fixed by AP-1 (2026-10-01).**
 - Parallel-only timing flakes (pass 5/5 serially): `link-pressed.spec.ts:54`,
   `reference-app-forms.spec.ts:81`, `semantic-text-danger.spec.ts:99`.
 - CI does not run Playwright at all.

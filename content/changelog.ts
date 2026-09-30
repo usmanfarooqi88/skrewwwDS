@@ -184,7 +184,7 @@ export const changelogEntries: ChangelogEntry[] = [
       },
       {
         type: "improved",
-        text: "Analytics preferences can be reopened at any time from the sidebar to change your choice.",
+        text: "Analytics preferences can be reopened at any time using the Analytics preferences control to change your choice.",
       },
     ],
   },
