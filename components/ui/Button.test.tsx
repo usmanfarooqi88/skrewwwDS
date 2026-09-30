@@ -8,21 +8,6 @@ import { describe, expect, it, vi } from "vitest";
 import { Button } from "@/components/ui/Button";
 import { PlusIcon } from "@/components/ui/icons";
 
-vi.mock("next/link", () => ({
-  default: ({
-    href,
-    children,
-    ...props
-  }: {
-    href: string;
-    children: React.ReactNode;
-  }) => (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  ),
-}));
-
 describe("Button", () => {
   it("renders a native button without href", () => {
     render(<Button type="submit">Save</Button>);

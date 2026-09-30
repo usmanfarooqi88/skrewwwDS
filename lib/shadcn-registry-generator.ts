@@ -305,6 +305,10 @@ const FILE_DESTINATIONS: Record<string, { type: ShadcnFileType; target: string }
     type: "registry:ui",
     target: "~/components/ui/table.module.css",
   },
+  "components/ui/router-navigation.tsx": {
+    type: "registry:ui",
+    target: "~/components/ui/router-navigation.tsx",
+  },
   "components/ui/internal/link-utils.ts": {
     type: "registry:lib",
     target: "~/components/ui/internal/link-utils.ts",

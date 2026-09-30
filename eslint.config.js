@@ -21,6 +21,9 @@ module.exports = [
       // typechecking them as project code would fail the build on
       // content that's supposed to be broken.
       "lib/guard/__fixtures__/**",
+      // Generated output of scripts/build-react-package.ts (not committed).
+      "packages/react/dist/**",
+      "packages/react/.build/**",
     ],
   },
   ...nextCoreWebVitals,

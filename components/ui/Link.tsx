@@ -1,7 +1,7 @@
-import NextLink from "next/link";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { getLinkRel, shouldUseNativeAnchor } from "@/components/ui/internal/link-utils";
+import { RouterAnchor } from "@/components/ui/router-navigation";
+import { getLinkRel } from "@/components/ui/internal/link-utils";
 import styles from "@/components/ui/link.module.css";
 
 export type LinkVariant = "default" | "subtle" | "danger";
@@ -44,7 +44,6 @@ export function Link({
   rel,
   ...rest
 }: LinkProps) {
-  const external = shouldUseNativeAnchor(href);
   const resolvedRel = getLinkRel(target, rel);
   const classes = cn(styles.link, variantClass[variant], sizeClass[size], className);
 
@@ -64,17 +63,9 @@ export function Link({
     </>
   );
 
-  if (external) {
-    return (
-      <a href={href} className={classes} target={target} rel={resolvedRel} {...rest}>
-        {content}
-      </a>
-    );
-  }
-
   return (
-    <NextLink href={href} className={classes} target={target} rel={resolvedRel} {...rest}>
+    <RouterAnchor href={href} className={classes} target={target} rel={resolvedRel} {...rest}>
       {content}
-    </NextLink>
+    </RouterAnchor>
   );
 }

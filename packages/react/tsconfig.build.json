@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "incremental": false,
+    "plugins": [],
+    "target": "es2020",
+    "rootDir": "../..",
+    "outDir": "./dist/types"
+  },
+  "include": ["./.build/index.ts", "./css-modules.d.ts"],
+  "exclude": ["node_modules"]
+}

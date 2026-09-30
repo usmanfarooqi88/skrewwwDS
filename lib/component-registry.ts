@@ -233,12 +233,13 @@ export const componentRegistry: ComponentRegistryEntry[] = [
     ],
     // Proof-of-concept for the planned CLI-resolution schema — derived directly
     // from components/ui/Button.tsx and button.module.css, not guessed.
-    // Real dependency contract, verified against actual source (2026-08-08):
+    // Real dependency contract, verified against actual source:
     // Button's own source imports no third-party npm package of its own —
-    // "react"/"react-dom"/"next" are host/framework assumptions, not
-    // packages the registry should install (see `hostRequirements`).
+    // "react"/"react-dom" are host assumptions, not packages the registry
+    // should install (see `hostRequirements`). Since MK-1 it renders a native
+    // anchor through router-navigation.tsx and imports nothing from next/*.
     dependencies: [],
-    hostRequirements: ["react", "react-dom", "next"],
+    hostRequirements: ["react", "react-dom"],
     // lib/cn.ts (class-name join helper), the `LoadingSpinner` export from
     // components/ui/icons.tsx, and button-group-context.ts (Button reads
     // useButtonGroupItem() to apply joined-item geometry inside a Button
@@ -248,7 +249,13 @@ export const componentRegistry: ComponentRegistryEntry[] = [
     // consumer smoke test (empty-state, which composes Button) surfaced
     // a "Module not found" build failure — Button.tsx has imported this
     // context since CE-1B, but it was never declared here.
-    internalDependencies: ["lib/cn.ts", "components/ui/icons.tsx", "components/ui/button-group-context.ts"],
+    internalDependencies: [
+      "lib/cn.ts",
+      "components/ui/icons.tsx",
+      "components/ui/button-group-context.ts",
+      "components/ui/internal/link-utils.ts",
+      "components/ui/router-navigation.tsx",
+    ],
     // The shared Foundation resource (universal Primitive/Semantic/Brand/
     // Shape/Surface/control-sizing tier + the shared accessibility utility
     // in styles/foundation.css) — does not have its own registry entry

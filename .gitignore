@@ -62,3 +62,7 @@ coverage/
 # Personal Claude Code workflow file — not repo policy
 CLAUDE.md
 packages/guard/*.tgz
+
+# @skrewww/react package candidate (scripts/build-react-package.ts) — generated entry and tarballs
+packages/react/.build/
+packages/react/*.tgz

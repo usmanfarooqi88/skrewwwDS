@@ -1,5 +1,5 @@
-import NextLink from "next/link";
 import { cn } from "@/lib/cn";
+import { RouterAnchor } from "@/components/ui/router-navigation";
 import { getLinkRel, shouldUseNativeAnchor } from "@/components/ui/internal/link-utils";
 import styles from "@/components/ui/pagination.module.css";
 
@@ -63,9 +63,9 @@ function PageControl({
       );
     }
     return (
-      <NextLink href={href} className={className} aria-label={label}>
+      <RouterAnchor href={href} className={className} aria-label={label}>
         {page}
-      </NextLink>
+      </RouterAnchor>
     );
   }
 
@@ -116,9 +116,9 @@ function BoundaryControl({
       );
     }
     return (
-      <NextLink href={href} className={className} aria-label={label}>
+      <RouterAnchor href={href} className={className} aria-label={label}>
         {kind === "previous" ? "Previous" : "Next"}
-      </NextLink>
+      </RouterAnchor>
     );
   }
 

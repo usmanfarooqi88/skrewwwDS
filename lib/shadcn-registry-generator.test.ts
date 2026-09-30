@@ -424,10 +424,11 @@ describe("shadcn registry generator", () => {
       "components/ui/Link.tsx",
       "components/ui/internal/link-utils.ts",
       "components/ui/link.module.css",
+      "components/ui/router-navigation.tsx",
       "lib/cn.ts",
     ]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
-    expect(manifest.docs).toContain("next");
+    expect(manifest.docs).not.toContain("next");
     const joined = manifest.files.map((file) => file.content).join("\n");
     expect(joined).not.toMatch(/site-config/);
     expect(joined).toMatch(/--link-text-default:\s*var\(--semantic-action-primary\)/);
@@ -519,17 +520,18 @@ describe("shadcn registry generator", () => {
     expect(JSON.stringify(manifest)).not.toMatch(/FormField\.tsx/);
   });
 
-  it("transports Pagination with link-utils and next host docs", () => {
+  it("transports Pagination with link-utils and the router-navigation anchor (no next host docs)", () => {
     const manifest = buildPaginationManifest();
     expect(manifest.files.map((file) => file.path).sort()).toEqual([
       "components/ui/Pagination.tsx",
       "components/ui/internal/link-utils.ts",
       "components/ui/pagination.module.css",
+      "components/ui/router-navigation.tsx",
       "lib/cn.ts",
     ]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);
     expect(manifest.dependencies).toEqual([]);
-    expect(manifest.docs).toContain("next");
+    expect(manifest.docs).not.toContain("next");
     expect(JSON.stringify(manifest)).not.toMatch(/hostRequirements/);
   });
 
@@ -640,6 +642,7 @@ describe("shadcn registry generator", () => {
       "components/ui/ListItem.tsx",
       "components/ui/internal/link-utils.ts",
       "components/ui/list-item.module.css",
+      "components/ui/router-navigation.tsx",
       "lib/cn.ts",
     ]);
     expect(manifest.registryDependencies).toEqual(["@skrewww/foundation"]);

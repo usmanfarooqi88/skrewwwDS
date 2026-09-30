@@ -805,7 +805,7 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       "lib/cn.ts",
       "styles/skrewww-foundation.css",
     ],
-    expectedSharedTargets: ["lib/cn.ts"],
+    expectedSharedTargets: ["lib/cn.ts", "components/ui/internal/link-utils.ts", "components/ui/router-navigation.tsx"],
     closeStdinOnAdd: true,
     renderHarness: () =>
       [
@@ -2768,8 +2768,9 @@ const COMPONENT_DESCRIPTORS: Record<string, ComponentSmokeDescriptor> = {
       "lib/cn.ts",
       "styles/skrewww-foundation.css",
     ],
-    // lib/cn.ts is contributed by chart-card, card, empty-state, alert, and skeleton alike.
-    expectedSharedTargets: ["lib/cn.ts"],
+    // lib/cn.ts is contributed by chart-card, card, empty-state, alert, and skeleton alike;
+    // link-utils.ts and router-navigation.tsx by both Button and Link (native-anchor router contract).
+    expectedSharedTargets: ["lib/cn.ts", "components/ui/internal/link-utils.ts", "components/ui/router-navigation.tsx"],
     closeStdinOnAdd: true,
     renderHarness: () =>
       [
@@ -2936,6 +2937,16 @@ function targetToRelPath(target: string): string {
 function stripLeadingBlockCommentLine(content: string): string {
   const match = /^\/\*\*.*\*\/\r?\n/.exec(content);
   return match ? content.slice(match[0].length) : content;
+}
+
+/**
+ * Same diagnosed shadcn CLI quirk as above, for a multi-line leading `/** ... *\/`
+ * docblock: the CLI also drops the whole leading docblock (and the blank line
+ * after it). Only that leading comment plus following whitespace may differ —
+ * everything else must still match byte for byte.
+ */
+function stripLeadingDocBlock(content: string): string {
+  return content.replace(/^\/\*\*[\s\S]*?\*\/\s*/, "");
 }
 
 /** Resolves the full @skrewww registry dependency graph from a root item name, using the same pure builders the real generator script uses — no network, no filesystem write. */
@@ -3417,7 +3428,10 @@ async function main(): Promise<void> {
       const canonicalContent = Array.from(contributingContents)[0];
       if (onDiskContent === canonicalContent) {
         assert(`installed ${relPath} is byte-identical to the canonical content every contributing manifest embeds`, true);
-      } else if (onDiskContent === stripLeadingBlockCommentLine(canonicalContent)) {
+      } else if (
+        onDiskContent === stripLeadingBlockCommentLine(canonicalContent) ||
+        onDiskContent === stripLeadingDocBlock(canonicalContent)
+      ) {
         // Diagnosed, reproducible shadcn@4.16.2 CLI behavior (confirmed
         // independent of sharing — happens even for a single-source,
         // non-shared install): a file whose very first line is a

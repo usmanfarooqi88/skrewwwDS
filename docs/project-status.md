@@ -1,6 +1,61 @@
 # Project status
 
-Last verified: **2026-10-01** (**AP-1 ✅ — returning visitors can reopen Analytics preferences (docs/public shell + /reference); accepted/declined both verified; no gating change**; **OSS-2 ✅ LISTED — Skrewww is listed in the official shadcn community registry directory (shadcn-ui/ui#12059 merged; #11991 superseded); zero-config `npx shadcn@latest add @skrewww/button` verified with shadcn 4.21.0**; **AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 original PR shadcn-ui/ui#11991 closed unmerged — superseded by #12059; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-10-01** (**MK-1 ✅ — unpublished `@skrewww/react` package candidate + clean-Vite consumer proof (42/42); canonical components are Next-free (native anchors + optional router provider); nothing published, no Make Kit**; **AP-1 ✅ — returning visitors can reopen Analytics preferences (docs/public shell + /reference); accepted/declined both verified; no gating change**; **OSS-2 ✅ LISTED — Skrewww is listed in the official shadcn community registry directory (shadcn-ui/ui#12059 merged; #11991 superseded); zero-config `npx shadcn@latest add @skrewww/button` verified with shadcn 4.21.0**; **AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 original PR shadcn-ui/ui#11991 closed unmerged — superseded by #12059; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-10-01 — MK-1 `@skrewww/react` package candidate (COMPLETE — unpublished)
+
+First implementation slice after the Figma Make Kit / npm readiness audit.
+Architecture: `docs/architecture/react-package.md`. **Nothing was published to npm or
+Figma, no Make Kit exists, and Make Kit readiness is not closed.**
+
+- **Router decoupling (canonical source):** Button, Link, Pagination and List Item
+  no longer import `next/link`. They render a native `<a href>` through
+  `components/ui/router-navigation.tsx` (`RouterAnchor`, internal) and an optional
+  public `SkrewwwRouterProvider` (`navigate(href)` callback). Without a provider a
+  click is ordinary browser navigation. Only plain primary same-window clicks on
+  root-relative paths are handed to `navigate`; modified/non-primary clicks,
+  `target` other than `_self`, `download`, prevented events, hash, relative and
+  external hrefs stay native. No framework-specific props were added.
+  `components/ui` has zero `next/*` imports (enforced by
+  `lib/react-package/package-boundary.test.ts`).
+- **Docs app:** `components/providers/NextRouterIntegration.tsx` (app layer, uses
+  `next/navigation`) is mounted in `AppProviders`, so Skrewww's own internal links
+  keep client-side navigation. No prefetching (none was required/tested).
+  `e2e/router-navigation.spec.ts` (6 tests): real anchors, client-side navigation
+  (same JS document), modified click and external `target=_blank` not intercepted.
+- **shadcn transport metadata:** `hostRequirements` for those four entries dropped
+  `next`; `router-navigation.tsx` added as an internal `registry:ui` file
+  (`FILE_DESTINATIONS`, `internalDependencies`). Generator/registry tests updated;
+  `smoke:consumer` passed for button, link, empty-state, chart-card. Two smoke
+  expectations changed: empty-state/chart-card now share `link-utils.ts` and
+  `router-navigation.tsx`, and the harness tolerates the shadcn CLI also dropping a
+  multi-line leading docblock (same diagnosed quirk as the single-line case).
+  Not tested: a shadcn install of these components into a non-Next app.
+- **Package candidate:** `packages/react` — `@skrewww/react@0.1.0-candidate.0`,
+  `private: true`, ESM, explicit `exports` (`.`, `./styles.css`, `./package.json`),
+  `sideEffects: ["**/*.css"]`, peers `react`/`react-dom` `^19.2` (React 18 untested),
+  one runtime dependency `@phosphor-icons/react`. No `next`, `recharts`, `@vercel/*`.
+  Built by `npm run build:react-package` from canonical source: entry generated from
+  the registry + `components/ui/index.ts` (pilot: Button, Link, Card, Text Input, Form
+  Field, Validation Message, Spinner, Dialog, router provider; all currently Stable in
+  the registry — status is read, never set, by the build). Output is generated and
+  ignored, like `public/r`.
+- **Stylesheet:** `@skrewww/react/styles.css` = Foundation extraction + compiled
+  component CSS. Declarations are rewritten so no `@/` alias remains; the build fails
+  on any next/recharts/@vercel/alias leak (`lib/react-package/output-checks.ts`).
+- **Vite proof:** `npm run smoke:react-package` — builds, packs a real tarball
+  (33 files, 36,675 B packed, 168,916 B unpacked), installs only the tarball into a
+  fresh Vite 8 + React 19 app (no next/recharts/@vercel), strict typecheck, production
+  build, then Chromium checks: 42/42 passed (Button/Link anchors and behavior, Card,
+  Text Input/Form Field/Validation Message relationships, Spinner animation, Shape
+  sharp/rounded/pill/squircle, Surface flat/gradient/glass, Dialog portal/focus/Escape/
+  close with document-level modes on `<html>`, router provider, no console errors).
+- **Remaining before npm publication / Make Kit:** publication decision and release
+  ownership; Figma library publication state and Make Kit assembly; guidelines
+  (contracts still describe shadcn paths); more components and charts (optional
+  `recharts` peer); React 18; `sideEffects`-aware tree-shaking measurement; hashed
+  CSS Module class names; CI wiring for `smoke:react-package`. Next proposed: MK-2
+  (publication readiness + Make Kit assembly/guidelines audit) — not started.
 
 ## 2026-10-01 — AP-1 Analytics preferences reopener (COMPLETE)
 

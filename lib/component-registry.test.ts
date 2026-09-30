@@ -229,9 +229,14 @@ describe("component registry — Spinner / Divider / Link distribution metadata"
 
   it("declares Link distribution fields without site-config as a transported file", () => {
     expect(link?.files).toEqual(["components/ui/Link.tsx", "components/ui/link.module.css"]);
-    expect(link?.internalDependencies).toEqual(["lib/cn.ts", "components/ui/internal/link-utils.ts"]);
+    expect(link?.internalDependencies).toEqual([
+      "lib/cn.ts",
+      "components/ui/internal/link-utils.ts",
+      "components/ui/router-navigation.tsx",
+    ]);
     expect(link?.registryDependencies).toEqual(["@skrewww/foundation"]);
-    expect(link?.hostRequirements).toEqual(["react", "react-dom", "next"]);
+    // Link renders a native anchor through router-navigation.tsx — no next/link.
+    expect(link?.hostRequirements).toEqual(["react", "react-dom"]);
     expect(link?.dependencies).toEqual([]);
   });
 });

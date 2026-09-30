@@ -618,3 +618,18 @@ Not tested: a case-sensitive filesystem (where `Button.tsx` and shadcn's
 `button.tsx` would be separate files), and older CLI versions. The explicit
 `registries` entry above remains valid and is what `npm run smoke:consumer`
 uses.
+
+## Router decoupling — 2026-10-01 (MK-1)
+
+Button, Link, Pagination and List Item no longer import `next/link`; they render
+a native `<a href>` through `components/ui/router-navigation.tsx` (see
+`react-package.md`). For `/r/*` this changes metadata only:
+
+- `hostRequirements` for those four entries drops `next` (now `react`, `react-dom`).
+  The generated manifests' `docs` text no longer says Next is assumed.
+- `components/ui/router-navigation.tsx` is a new `registry:ui` internal file
+  (`FILE_DESTINATIONS`) listed in each entry's `internalDependencies`; Button also
+  lists `components/ui/internal/link-utils.ts`, which that file imports.
+
+The shadcn architecture, manifests' shape and Foundation delivery are unchanged.
+The manifests no longer assume Next. A shadcn install of these components into a non-Next app has not been tested in this task.

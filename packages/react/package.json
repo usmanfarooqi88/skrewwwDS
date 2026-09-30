@@ -1,0 +1,50 @@
+{
+  "name": "@skrewww/react",
+  "version": "0.1.0-candidate.0",
+  "private": true,
+  "description": "Unpublished candidate: framework-agnostic Skrewww React components (MK-1 pilot subset) with one stylesheet.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10"
+  },
+  "keywords": [
+    "skrewww",
+    "design-system",
+    "react",
+    "typescript"
+  ],
+  "homepage": "https://skrewww.com",
+  "bugs": {
+    "url": "https://github.com/usmanfarooqi88/skrewwwDS/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usmanfarooqi88/skrewwwDS.git",
+    "directory": "packages/react"
+  }
+}

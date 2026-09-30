@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   forwardRef,
   type AnchorHTMLAttributes,
@@ -8,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/cn";
+import { RouterAnchor } from "@/components/ui/router-navigation";
 import { LoadingSpinner } from "@/components/ui/icons";
 import { useButtonGroupItem } from "@/components/ui/button-group-context";
 import styles from "@/components/ui/button.module.css";
@@ -233,7 +233,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonComponentProps>(functi
     }
 
     return (
-      <Link
+      <RouterAnchor
         href={href}
         className={classes}
         target={target}
@@ -249,7 +249,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonComponentProps>(functi
         >
           {children}
         </ButtonLayers>
-      </Link>
+      </RouterAnchor>
     );
   }
 

@@ -1,9 +1,9 @@
 "use client";
 
-import NextLink from "next/link";
 import { useEffect, type ReactNode } from "react";
 import { getLinkRel, shouldUseNativeAnchor } from "@/components/ui/internal/link-utils";
 import { cn } from "@/lib/cn";
+import { RouterAnchor } from "@/components/ui/router-navigation";
 import styles from "@/components/ui/list-item.module.css";
 
 export type ListItemProps = {
@@ -107,14 +107,14 @@ export function ListItem({
             {content}
           </a>
         ) : (
-          <NextLink
+          <RouterAnchor
             href={href}
             className={rowClassName}
             aria-disabled={disabled || undefined}
             tabIndex={disabled ? -1 : undefined}
           >
             {content}
-          </NextLink>
+          </RouterAnchor>
         )}
       </li>
     );
