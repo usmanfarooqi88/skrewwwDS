@@ -33,6 +33,7 @@ describe("@skrewww/react manifest release contract", () => {
     ["prerelease on latest", (p: any) => { p.publishConfig.tag = "latest"; }, /non-latest/],
     ["engines missing", (p: any) => { delete p.engines; }, /engines/],
     ["prepublish guard missing", (p: any) => { delete p.scripts; }, /prepublishOnly/],
+    ["resolved-tag guard dropped from prepublishOnly", (p: any) => { p.scripts.prepublishOnly = "npm --prefix ../.. run prepublish:react-package"; }, /resolved-publish-tag guard/],
     ["next dependency", (p: any) => { p.dependencies.next = "^16"; }, /forbidden dependency: next/],
     ["recharts peer", (p: any) => { p.peerDependencies.recharts = "^3"; }, /peerDependencies|recharts/],
     ["@vercel dependency", (p: any) => { p.dependencies["@vercel/analytics"] = "^2"; }, /forbidden dependency/],

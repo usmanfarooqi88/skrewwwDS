@@ -54,6 +54,7 @@ export function checkManifest(pkg: PackageManifest): ReleaseIssue[] {
     if (FORBIDDEN_DEPENDENCIES.includes(name) || name.startsWith("@vercel/")) add(`forbidden dependency: ${name}`);
   }
   if (!pkg.scripts?.prepublishOnly) add("prepublishOnly guard is missing");
+  else if (!pkg.scripts.prepublishOnly.includes("check-react-publish-tag")) add("prepublishOnly must run the resolved-publish-tag guard (npm 11.12.1 ignores publishConfig.tag)");
   return issues;
 }
 

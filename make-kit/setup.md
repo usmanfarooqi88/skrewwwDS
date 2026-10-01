@@ -4,7 +4,7 @@
 
 ## Package
 
-- Package: `@skrewww/react`. The version these guidelines were generated for is recorded in `manifest.json`. A kit must pin an exact published version; the package is not published yet, so a kit can only be assembled after a beta version is published.
+- Package: `@skrewww/react`. The version these guidelines were generated for is recorded in `manifest.json`. The package is published on public npm. A kit must pin an exact published version in its package.json — not a tag or a range.
 - Import the stylesheet once, at the app entry, before your own styles:
 
   ```tsx

@@ -32,7 +32,7 @@
     "tag": "beta"
   },
   "scripts": {
-    "prepublishOnly": "npm --prefix ../.. run prepublish:react-package"
+    "prepublishOnly": "node ../../scripts/check-react-publish-tag.mjs && npm --prefix ../.. run prepublish:react-package"
   },
   "peerDependencies": {
     "react": "^19.2.0",

@@ -2,9 +2,23 @@
 
 Framework-agnostic Skrewww React components with one stylesheet.
 
-> **Status: release candidate for `0.1.0-beta.1`.** Publication to npm, under the
-> `beta` dist-tag, is performed from this exact commit; until it has happened and
-> been verified there is nothing to install from npm. There is no Figma Make Kit.
+> **Status: public beta.** `0.1.0-beta.1` is published on npm under the `beta` dist-tag. It is a
+> beta: the API may still change. There is no Figma Make Kit yet.
+
+## Install
+
+```bash
+npm install @skrewww/react@beta
+```
+
+or pin the exact version:
+
+```bash
+npm install @skrewww/react@0.1.0-beta.1
+```
+
+Because this is the package's first version, npm also points the `latest` tag at it, so a bare
+`npm install @skrewww/react` currently resolves to the same beta. Prefer `@beta` or an exact version.
 
 This package is a distribution of Skrewww's canonical components, built from
 `components/ui` in the [Skrewww repository](https://github.com/usmanfarooqi88/skrewwwDS).
@@ -84,6 +98,8 @@ npm run build:react-package       # build dist from canonical source
 npm run prepublish:react-package  # fast integrity checks (what prepublishOnly runs)
 npm run smoke:react-package       # pack, install into a clean Vite app, typecheck, build, Chromium proof
 npm run release-gate:react-package # the complete pre-publication gate
+# publish a prerelease ONLY with the explicit tag (npm 11 ignores publishConfig.tag; prepublishOnly enforces it):
+#   cd packages/react && npm publish --tag beta
 ```
 
 Release mechanics, the gate and the first-release procedure:

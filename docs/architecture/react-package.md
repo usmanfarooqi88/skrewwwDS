@@ -1,8 +1,7 @@
 # `@skrewww/react` package boundary and release mechanics
 
-**Status: release candidate for `0.1.0-beta.1`.** The manifest is no longer `private`;
-publication to npm (MK-2C) is performed manually from the release commit, and this note is
-updated once it has succeeded and been verified. No Figma Make Kit exists. This note records the package boundary and how it relates to the other
+**Status: first public beta published — `@skrewww/react@0.1.0-beta.1` on public npm.** The 8-component
+pilot only. No Figma Make Kit exists. Release facts are recorded under "First public release (MK-2C)". This note records the package boundary and how it relates to the other
 distribution paths. Current status of the work: `docs/project-status.md`.
 
 ## One canonical source, two distributions
@@ -88,12 +87,19 @@ package's real public exports by `npm run build:make-guidelines`; see
   until publication): the release commit should differ from the verified commit only by
   removing `"private": true`, mirroring how `@skrewww/guard` carried its release version
   before publication. `private: true` was removed in the MK-2C release commit; until then npm refused to publish it.
-- **Dist-tag:** `publishConfig.tag` is `beta` and `publishConfig.access` is `public`
-  (scoped packages default to private). The intent is `beta` only. The registry may still
-  point `latest` at the very first version — it did for Guard
-  (`docs/releases/guard-v0.1.0-beta.1.md`) — and the manifest cannot prevent that. Verify
-  with `npm view @skrewww/react dist-tags` after publishing and tell consumers to use `@beta`.
-  Do not move `latest` deliberately.
+- **Dist-tag — `--tag beta` is mandatory.** `publishConfig` carries `access: public` (scoped packages
+  default to private) and a `tag` of `beta`, **but npm 11.12.1 does not apply `publishConfig.tag`**: a plain
+  `npm publish` (and `npm publish --dry-run`) resolves to `latest`; only an explicit `--tag beta` resolves to
+  `beta` (found during the MK-2C release). Always publish a prerelease with `npm publish --tag beta`.
+  `prepublishOnly` enforces it: `scripts/check-react-publish-tag.mjs` reads `npm_config_tag` (which npm
+  exports to lifecycle scripts only when the resolved tag is not the default, so `undefined` means
+  `latest`) and refuses to publish a prerelease unless that tag is its own prerelease tag (`beta`).
+  `NPM_CONFIG_TAG=beta` is deliberately not trusted: npm honours it for publishing but does not export
+  `npm_config_tag`, and an explicit `--tag` flag overrides it. The guard and its tests were verified
+  against real `npm publish --dry-run` runs.
+- **`latest` after the first publish:** npm also pointed `latest` at `0.1.0-beta.1`, as it did for Guard
+  (`docs/releases/guard-v0.1.0-beta.1.md`) — the registry sets `latest` for a package's first version.
+  It was left unchanged and not moved deliberately; consumers should install `@beta` or an exact version.
 - **Engines:** `>=22.13.0 <23 || >=24 <25`, the repository's own tooling range, same as the
   root and Guard. Consumers with `engine-strict` on other Node versions would be refused.
 - **Release method:** first publish is manual by the npm scope owner. Later releases may use
@@ -152,18 +158,42 @@ Performed by the npm scope owner; npm authentication and 2FA are the owner's, ne
    everything below on that exact commit; CI green.
 3. `git checkout <verified-release-sha>` in a clean checkout, then `npm ci --ignore-scripts`.
 4. `npm run release-gate:react-package` — must pass.
-5. `cd packages/react && npm publish` — `publishConfig` supplies `access: public` and
-   `tag: beta`; `prepublishOnly` rebuilds and re-checks; npm prompts for the 2FA code. Never
+5. `cd packages/react && npm publish --tag beta` — the flag is required (see Dist-tag above) and
+   `prepublishOnly` refuses to continue without it; it then rebuilds and re-checks. Run it in a real
+   interactive terminal: npm asks for a one-time password or browser approval, which a non-interactive
+   runner cannot answer (the PUT then fails with 401/EOTP and nothing is published). Never
    `--force`, never disable 2FA.
-6. Verify: `npm view @skrewww/react dist-tags version`, then install the published version into a
-   clean Vite app by hand.
+6. Verify: the registry packument can lag the publish by a few minutes for a brand-new package (it
+   returned 404 while the dist-tags endpoint already answered), so poll rather than republish. Then
+   `npm view @skrewww/react dist-tags version`, and run
+   `npm run smoke:react-package -- --from-registry <version>`, which installs the published package from
+   public npm into a clean Vite app and runs the full browser proof.
 7. Tag the release commit `react-v0.1.0-beta.1` (mirrors `guard-v0.1.0-beta.1`; this also
    triggers the package workflow) and write release notes, as for Guard.
 8. Rollback is `npm deprecate`, not unpublish. npm's unpublish limits were not verified here.
 
+## First public release (MK-2C)
+
+- `@skrewww/react@0.1.0-beta.1` published to public npm by the `skrewww` account, from release
+  commit `47c7b5ca2d62fe9d482f6bfcb453c4b36f53236a` (registry `gitHead` matches). Git tag
+  `react-v0.1.0-beta.1` (signed, annotated) points at that commit; the tag-triggered package workflow
+  passed.
+- Dist-tags: `beta` and `latest` both resolve to `0.1.0-beta.1` (see Dist-tag above). `latest` was not moved.
+- The registry tarball is byte-identical to the verified release candidate: same 33 files, same
+  `dist/index.js`, `dist/index.d.ts`, `dist/styles.css`, `package.json`, README and LICENSE; 37,295 B
+  packed, 170,342 B unpacked. No provenance attestation (manual publish).
+- Public consumer proof: `npm run smoke:react-package -- --from-registry 0.1.0-beta.1` installed the
+  package from public npm into a fresh Vite 8 + React 19 app (no `next`, `recharts` or `@vercel/*`),
+  typechecked, built and passed the browser checks: Shape sharp/rounded/pill/squircle, Surface
+  flat/gradient/glass, Dialog portal/focus/Escape/close, label and error relationships, the router
+  provider, and no console errors (41/41).
+- Lesson: `publishConfig.tag` is not enforced by npm 11.12.1; the explicit flag and the guard above
+  exist because of it. The first publish attempt also failed (401) when run from a non-interactive
+  runner, before OTP.
+
 ## Not yet decided or built
 
-Actual publication (MK-2C); guidelines compiler and Make setup (MK-2B); Make Kit assembly
+Guidelines compiler and Make setup are done (MK-2B); Make Kit assembly
 (MK-2D); hashed CSS Module class names; React 18 (post-release investigation); charts and
 wider component coverage (post-release expansion). Trusted-publishing automation for later
 releases.
