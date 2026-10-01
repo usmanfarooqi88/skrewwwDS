@@ -38,6 +38,8 @@
     "generate:guard-facts": "tsx scripts/generate-guard-facts.ts",
     "build:guard-package": "tsx scripts/build-guard-package.ts",
     "build:react-package": "tsx scripts/build-react-package.ts",
+    "build:make-guidelines": "tsx scripts/build-make-kit-guidelines.ts",
+    "check:make-guidelines": "tsx scripts/build-make-kit-guidelines.ts --check",
     "prepublish:react-package": "tsx scripts/prepublish-react-package.ts",
     "generate:agent-eval-prompts": "tsx scripts/generate-agent-eval-prompts.ts",
     "score:agent-eval": "tsx scripts/score-agent-eval.ts",

@@ -75,10 +75,37 @@ export function selectBarrelExports(barrelSource: string, modules: readonly stri
   return statements.join("\n");
 }
 
+export type ModuleExports = { values: string[]; types: string[] };
+
+/**
+ * Public export names per barrel module, in barrel order, split into runtime
+ * values and type-only exports. Reads the same barrel statements the package
+ * entry re-exports, so it is the actual public surface, never a second list.
+ */
+export function readBarrelExportsByModule(
+  barrelSource: string,
+  modules: readonly string[],
+): Record<string, ModuleExports> {
+  const wanted = new Set(modules);
+  const result: Record<string, ModuleExports> = {};
+  for (const match of Array.from(barrelSource.matchAll(BARREL_EXPORT_STATEMENT))) {
+    const moduleName = match[1];
+    if (!wanted.has(moduleName)) continue;
+    const isType = /^export\s+type\s/.test(match[0]);
+    const names = (/\{([^}]*)\}/.exec(match[0])?.[1] ?? "")
+      .split(",")
+      .map((part) => part.trim().split(/\s+as\s+/).pop()?.trim() ?? "")
+      .filter(Boolean);
+    const entry = (result[moduleName] ??= { values: [], types: [] });
+    (isType ? entry.types : entry.values).push(...names);
+  }
+  return result;
+}
+
 export function buildReactPackageEntry(
   registry: readonly ComponentRegistryEntry[],
   barrelSource: string,
-): { source: string; components: PilotComponentFact[] } {
+): { source: string; components: PilotComponentFact[]; exportsByModule: Record<string, ModuleExports> } {
   const components = resolvePilotComponents(registry);
   const modules = [...components.map((component) => component.module), REACT_PACKAGE_ROUTER_MODULE];
   const source = [
@@ -87,5 +114,5 @@ export function buildReactPackageEntry(
     selectBarrelExports(barrelSource, modules),
     "",
   ].join("\n");
-  return { source, components };
+  return { source, components, exportsByModule: readBarrelExportsByModule(barrelSource, modules) };
 }

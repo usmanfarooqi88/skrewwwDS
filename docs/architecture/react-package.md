@@ -73,6 +73,12 @@ built app in Chromium: rendering and tokens, Shape (sharp/rounded/pill/squircle)
 Surface (flat/gradient/glass), Dialog portal/focus/Escape/close, label and error
 relationships, and the router provider.
 
+## Make Kit guidelines (MK-2B)
+
+The guidelines a future Make Kit would carry are compiled from canonical metadata plus this
+package's real public exports by `npm run build:make-guidelines`; see
+[`make-kit-guidelines.md`](make-kit-guidelines.md). Nothing in the package bundle depends on them.
+
 ## Release mechanics (MK-2A)
 
 ### Decisions

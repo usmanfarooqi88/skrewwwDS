@@ -66,3 +66,6 @@ packages/guard/*.tgz
 # @skrewww/react package candidate (scripts/build-react-package.ts) — generated entry and tarballs
 packages/react/.build/
 packages/react/*.tgz
+
+# Make Kit guideline output (scripts/build-make-kit-guidelines.ts) — generated, never hand-edited
+make-kit/dist/

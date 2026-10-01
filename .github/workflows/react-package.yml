@@ -15,6 +15,9 @@ on:
       - "packages/react/**"
       - "components/ui/**"
       - "lib/react-package/**"
+      - "lib/make-kit/**"
+      - "make-kit/**"
+      - "scripts/build-make-kit-guidelines.ts"
       - "lib/cn.ts"
       - "lib/use-controllable.ts"
       - "lib/component-registry*.ts"
@@ -34,6 +37,9 @@ on:
       - "packages/react/**"
       - "components/ui/**"
       - "lib/react-package/**"
+      - "lib/make-kit/**"
+      - "make-kit/**"
+      - "scripts/build-make-kit-guidelines.ts"
       - "lib/cn.ts"
       - "lib/use-controllable.ts"
       - "lib/component-registry*.ts"
@@ -82,6 +88,11 @@ jobs:
       # @vercel/alias leaks, dist integrity, manifest contract and the pack list.
       - name: Package integrity checks
         run: npm run prepublish:react-package
+
+      # Cheap and browser-free: the generated Make guidance must still match the
+      # BUILT package surface (every promised export exists in packages/react/dist).
+      - name: Make Kit guidelines match the built package
+        run: npm run check:make-guidelines -- --verify-dist
 
       # Build -> npm pack -> install the tarball into a fresh Vite app (no next,
       # no recharts) -> typecheck -> production build -> Chromium verification.

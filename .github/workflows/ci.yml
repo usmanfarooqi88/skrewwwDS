@@ -55,6 +55,12 @@ jobs:
         continue-on-error: true
         run: npm run guard -- --internal .
 
+      # Make Kit guideline compiler: deterministic, offline, no Figma. Fails if
+      # a package export, Agent contract, status or the manual setup file drifts.
+      # Writes nothing, so it cannot dirty the tree checked below.
+      - name: Make Kit guidelines check
+        run: npm run check:make-guidelines
+
       - name: Verify generated artifacts are not tracked
         # A contributor accidentally committing public/r or public/agent would
         # make this dirty; generated output must stay gitignored.
