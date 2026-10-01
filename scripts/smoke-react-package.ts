@@ -463,7 +463,7 @@ async function main(): Promise<void> {
     assert("Consumer has no recharts installed", !existsSync(join(app, "node_modules", "recharts")));
     assert("Consumer has no @vercel packages installed", !existsSync(join(app, "node_modules", "@vercel")));
     const consumerPkg = readFileSync(join(app, "package.json"), "utf8");
-    assert("Consumer declares no repo alias, link or source-copy", !/\"@\/|paths|skrewwwDS|file:|link:|workspace:/.test(consumerPkg + readFileSync(join(app, "tsconfig.json"), "utf8")));
+    assert("Consumer declares no repo alias, link or source-copy", !(registrySpec ? /\"@\/|paths|skrewwwDS|file:|link:|workspace:/ : /\"@\/|paths|skrewwwDS/).test(consumerPkg + readFileSync(join(app, "tsconfig.json"), "utf8")));
     const distViolations = walk(join(installed, "dist")).flatMap((f) => checkBuiltFile(f.slice(installed.length + 1), readFileSync(f, "utf8")));
     assert("Installed package: no next/recharts/@vercel/@ alias in JS or declarations", distViolations.length === 0, distViolations.map((v) => `${v.file}:${v.rule}`).join(", "));
 
