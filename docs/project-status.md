@@ -1,6 +1,46 @@
 # Project status
 
-Last verified: **2026-10-01** (**MK-1 ✅ — unpublished `@skrewww/react` package candidate + clean-Vite consumer proof (42/42); canonical components are Next-free (native anchors + optional router provider); nothing published, no Make Kit**; **AP-1 ✅ — returning visitors can reopen Analytics preferences (docs/public shell + /reference); accepted/declined both verified; no gating change**; **OSS-2 ✅ LISTED — Skrewww is listed in the official shadcn community registry directory (shadcn-ui/ui#12059 merged; #11991 superseded); zero-config `npx shadcn@latest add @skrewww/button` verified with shadcn 4.21.0**; **AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 original PR shadcn-ui/ui#11991 closed unmerged — superseded by #12059; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+Last verified: **2026-10-01** (**MK-2A ✅ — `@skrewww/react` release-hardened but still unpublished (`0.1.0-beta.1`, `private: true`, `publishConfig` public/beta, prepublish guard, package-smoke CI); publication is MK-2C**; **MK-1 ✅ — unpublished `@skrewww/react` package candidate + clean-Vite consumer proof (42/42); canonical components are Next-free (native anchors + optional router provider); nothing published, no Make Kit**; **AP-1 ✅ — returning visitors can reopen Analytics preferences (docs/public shell + /reference); accepted/declined both verified; no gating change**; **OSS-2 ✅ LISTED — Skrewww is listed in the official shadcn community registry directory (shadcn-ui/ui#12059 merged; #11991 superseded); zero-config `npx shadcn@latest add @skrewww/button` verified with shadcn 4.21.0**; **AG-1B Figma snapshots ✅ — read-only, versioned snapshots for the 5 pilots; evidence, not authority**; **AG-1A Figma identity map ✅ — P0 cleared for 5 pilots (Button, Text Input, Alert, Dialog, Chart Card); identity ≠ parity**; **AG-0 Agent Readiness Audit ✅ — READY WITH REQUIRED PREWORK; one P0 (machine-readable Figma identity); AG-1 spec in `docs/architecture/agent-readiness.md`**; **Browser-test hygiene ✅ — live previews hydrate in place; Playwright 68 → 4 deterministic failures, all pre-existing nav/consent issues**; **Figma Free/Pro stabilization ✅ CLOSED — Presentation V2 23/23, technical parity, Alert Dark-mode contrast repaired; repo-side facts synced, external Gumroad/Figma Community publication still MANUAL/PENDING**; **Figma ↔ React chart parity sync ✅ — Chart Metric / Chart Card `available`; Bar / Line / Area `partial` static visual references**; **OSS-4C curated-directory audit complete — no additional directory selected**; OSS-4B SUBMITTED — PENDING REVIEW — registry.directory (id `skrewww-com-r-registry-json-2d32f29a`); OSS-4A SUBMITTED — AWAITING REVIEW — birobirobiro/awesome-shadcn-ui#626; OSS-2 original PR shadcn-ui/ui#11991 closed unmerged — superseded by #12059; OSS-2A ✅ COMPLETE — upstream submission dry run green; OSS-1B ✅ COMPLETE — Option B Foundation component-tier transport; OSS-1A historical BLOCKED entry preserved below; NAV-1/2/3 ✅ COMPLETE; CH-3 Chart Card / Dashboard Compositions ✅ COMPLETE; CH-2 Core Cartesian Charts ✅ COMPLETE; CH-1 Chart Foundation Hardening ✅ COMPLETE; Guard CI-1 observe-only ✅ wired; Guard v0.1.0-beta.1 **PUBLISHED**; CI-2/CI-3 **NOT STARTED**)
+
+## 2026-10-01 — MK-2A `@skrewww/react` npm release hardening (COMPLETE — still unpublished)
+
+Follows the MK-2 audit (verdict: READY FOR RELEASE HARDENING). **Nothing was published, no
+npm tag or Git tag/release was created, no Make Kit exists, and `"private": true` is still in
+place.** Mechanics: `docs/architecture/react-package.md` ("Release mechanics").
+
+- **Manifest:** version `0.1.0-beta.1` (the intended first release; kept in the manifest
+  now so the release commit differs from the verified commit only by dropping `private`),
+  `publishConfig: { access: "public", tag: "beta" }`, `engines.node`
+  `>=22.13.0 <23 || >=24 <25` (repo/Guard precedent), release-ready description. Exports,
+  ESM-only, `sideEffects: ["**/*.css"]`, peers `react`/`react-dom` `^19.2.0`, runtime dependency
+  `@phosphor-icons/react` are unchanged. Pilot scope is still the 8 components.
+- **README:** rewritten for a public beta that is not yet published (no npm availability,
+  Make Kit, React 18, full-library or chart claims).
+- **Prepublish protection:** `prepublishOnly` → `npm run prepublish:react-package`
+  (`scripts/prepublish-react-package.ts`): clean rebuild of `dist` every time (no missing/stale
+  dist), output leak checks on JS and declarations, expected-export and declaration-import
+  integrity, manifest contract, and `npm pack --dry-run` allowlist. Rules live once in
+  `lib/react-package/release-checks.ts` (tested, including mutation cases) and are reused by
+  `smoke:react-package`. It deliberately does not run the browser smoke or repo gates.
+- **Release gate:** `npm run release-gate:react-package` = lint, typecheck, unit tests, root build,
+  `guard --internal`, `git diff --check`, tracked-tree-clean/no-generated-tracked
+  (`scripts/verify-clean-tracked-state.mjs`), package integrity checks, `smoke:react-package`.
+  Full Playwright is **not** an npm release blocker while the known unrelated stale-navigation
+  failures remain (package release gate only).
+- **CI:** new `.github/workflows/react-package.yml` — `prepublish:react-package` +
+  `smoke:react-package` (Chromium via `npx playwright install --with-deps chromium`) on pushes
+  to `main` and PRs touching package-relevant paths, and on `react-v*` tags; docs-only changes do
+  not trigger it. The main CI job is unchanged.
+- **`latest` decision:** intent is `beta` only. npm may still set `latest` on the first version
+  (it did for Guard); the manifest cannot prevent it, so verify with `npm view … dist-tags` after
+  publishing. Documented, not enforced.
+- **Manual first release:** procedure documented in the architecture note; **not executed**.
+- **Verified locally:** package build, prepublish guard, `npm pack --dry-run` (33 files, only
+  `package.json`, README, LICENSE and `dist`), `smoke:react-package` 42/42, lint, typecheck,
+  unit tests, root build, `guard --internal`, `git diff --check`.
+- **Remaining:** MK-2B (guidelines compiler / Make setup), MK-2C (actual npm publication),
+  MK-2D (Make Kit assembly + verification); deferred: CSS class-name hashing, React 18, charts and
+  wider component coverage.
 
 ## 2026-10-01 — MK-1 `@skrewww/react` package candidate (COMPLETE — unpublished)
 

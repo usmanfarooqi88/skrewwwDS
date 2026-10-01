@@ -1,10 +1,13 @@
 {
   "name": "@skrewww/react",
-  "version": "0.1.0-candidate.0",
+  "version": "0.1.0-beta.1",
   "private": true,
-  "description": "Unpublished candidate: framework-agnostic Skrewww React components (MK-1 pilot subset) with one stylesheet.",
+  "description": "Framework-agnostic Skrewww React components (Button, Link, Card, Text Input, Form Field, Validation Message, Spinner, Dialog) with one stylesheet and an optional router provider. Beta preparation.",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22.13.0 <23 || >=24 <25"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,6 +28,13 @@
     "README.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public",
+    "tag": "beta"
+  },
+  "scripts": {
+    "prepublishOnly": "npm --prefix ../.. run prepublish:react-package"
+  },
   "peerDependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

@@ -1,16 +1,35 @@
-# @skrewww/react (unpublished candidate)
+# @skrewww/react
 
-> **Status: unpublished candidate (MK-1).** Not on npm. Nothing here is a
-> release, and there is no Figma Make Kit yet. The package is marked
-> `"private": true` until publication is explicitly approved.
+Framework-agnostic Skrewww React components with one stylesheet.
 
-A framework-agnostic distribution of a **pilot subset** of Skrewww's canonical
-React components, built from `components/ui` in this repository — it is not a
-second component library.
+> **Status: beta preparation — not published to npm yet.** `0.1.0-beta.1` is the
+> intended first release, published under the `beta` dist-tag. Until that
+> release happens there is nothing to install from npm, and there is no Figma Make
+> Kit. The manifest still says `"private": true`, which blocks publishing until
+> the release commit removes it.
 
-Pilot surface: Button, Link, Card, Text Input, Form Field, Validation Message,
-Spinner, Dialog, plus the optional `SkrewwwRouterProvider`. Charts and other
-components are not included yet.
+This package is a distribution of Skrewww's canonical components, built from
+`components/ui` in the [Skrewww repository](https://github.com/usmanfarooqi88/skrewwwDS).
+It is not a second component library, and it does not replace the shadcn-style
+`/r/*` distribution (which copies source into your project): both come from the
+same canonical source.
+
+## Current scope
+
+Only these eight components are included. The package does **not** contain the
+rest of the library, and there is no chart support:
+
+Button · Link · Card · Text Input · Form Field · Validation Message · Spinner · Dialog
+
+Plus an optional `SkrewwwRouterProvider` (below). Component maturity is
+whatever the Skrewww registry says; this package does not change it.
+
+## Requirements
+
+- **React 19** — `react` and `react-dom` `^19.2.0`. React 18 is untested and not
+  claimed.
+- **ESM only.** There is no CommonJS build. It is verified with Vite.
+- Node `>=22.13.0 <23 || >=24 <25` is the repository's tooling range, declared in `engines`.
 
 ## Use
 
@@ -21,9 +40,10 @@ import { Button, Card } from "@skrewww/react";
 
 - **One stylesheet.** `@skrewww/react/styles.css` carries the design tokens,
   Foundation utilities (`.sr-only`) and the compiled component styles. Import it
-  once, before your own styles. Tailwind is not required.
+  once, before your own styles. Tailwind is not required. Without it, components
+  render unstyled.
 - **Shape and Surface modes** are data attributes on an ancestor. Put them on
-  `<html>` (Dialog portals to `<body>`, so a wrapper `<div>` would not reach it):
+  `<html>` — Dialog portals to `<body>`, so a wrapper `<div>` would not reach it:
 
   ```html
   <html data-skrewww-shape="rounded" data-skrewww-surface="flat">
@@ -32,11 +52,10 @@ import { Button, Card } from "@skrewww/react";
   Shape: `sharp | rounded | pill | squircle`. Surface: `flat | gradient | glass`.
   Both are optional; defaults render without them.
 - **Fonts are not shipped.** Components inherit the host font.
-- **Peers:** `react` and `react-dom` `^19.2` (the only version verified so far).
 
 ## Links and routing
 
-Link-bearing components render a native `<a href>`. With no setup, a click is
+Link-bearing components render a native `<a href>`. With no setup a click is
 ordinary browser navigation. To keep client-side routing in a router-based app,
 mount **one** optional provider near the root:
 
@@ -53,11 +72,21 @@ Only plain, primary-button, same-window clicks on root-relative paths
 `target` other than `_self`, `download`, prevented events, hash links, relative
 paths and external URLs stay with the browser.
 
-## Build and verify (repository maintainers)
+## Known limits
+
+- CSS Module class names are readable and unhashed (for example `button_button`).
+  Hashing is a planned improvement, not part of the first beta.
+- The stylesheet is one file regardless of which components you import. JavaScript
+  tree-shaking works per component; CSS is not split.
+
+## Maintainers
 
 ```bash
-npm run build:react-package   # build packages/react/dist from canonical source
-npm run smoke:react-package   # build, pack, install into a clean Vite app, typecheck, build, browser-verify
+npm run build:react-package       # build dist from canonical source
+npm run prepublish:react-package  # fast integrity checks (what prepublishOnly runs)
+npm run smoke:react-package       # pack, install into a clean Vite app, typecheck, build, Chromium proof
+npm run release-gate:react-package # the complete pre-publication gate
 ```
 
-Architecture: `docs/architecture/react-package.md`.
+Release mechanics, the gate and the first-release procedure:
+`docs/architecture/react-package.md`.

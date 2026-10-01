@@ -1,7 +1,8 @@
-# `@skrewww/react` package boundary (MK-1 candidate)
+# `@skrewww/react` package boundary and release mechanics
 
-**Status: unpublished candidate.** No npm release exists and no Figma Make Kit
-exists. This note records the package boundary and how it relates to the other
+**Status: release-hardened, unpublished.** No npm release exists and no Figma Make Kit
+exists. The manifest is `0.1.0-beta.1` with `"private": true`; publication is a separate,
+manual step (MK-2C). This note records the package boundary and how it relates to the other
 distribution paths. Current status of the work: `docs/project-status.md`.
 
 ## One canonical source, two distributions
@@ -36,8 +37,8 @@ component's status and existence from the registry.
   rewritten to relative paths, so consumers need no path mapping.
 - **Dependencies:** peers `react`/`react-dom` `^19.2`; runtime dependency
   `@phosphor-icons/react`. Never `next`, `recharts`, `@vercel/*` or docs-app code.
-- **Version:** `0.1.0-candidate.0`, independent of the platform, registry-schema
-  and component versions (`docs/architecture/versioning.md`).
+- **Version:** `0.1.0-beta.1` (the intended first release), independent of the
+  platform, registry-schema and component versions (`docs/architecture/versioning.md`).
 
 ## Framework-agnostic links (router contract)
 
@@ -72,8 +73,91 @@ built app in Chromium: rendering and tokens, Shape (sharp/rounded/pill/squircle)
 Surface (flat/gradient/glass), Dialog portal/focus/Escape/close, label and error
 relationships, and the router provider.
 
+## Release mechanics (MK-2A)
+
+### Decisions
+
+- **First release:** `@skrewww/react@0.1.0-beta.1` on public npm, 8-component pilot only.
+- **Manifest carries the release version now** (rather than keeping `0.1.0-candidate.0`
+  until publication): the release commit should differ from the verified commit only by
+  removing `"private": true`, mirroring how `@skrewww/guard` carried its release version
+  before publication. `private: true` stays until then, so npm refuses to publish.
+- **Dist-tag:** `publishConfig.tag` is `beta` and `publishConfig.access` is `public`
+  (scoped packages default to private). The intent is `beta` only. The registry may still
+  point `latest` at the very first version — it did for Guard
+  (`docs/releases/guard-v0.1.0-beta.1.md`) — and the manifest cannot prevent that. Verify
+  with `npm view @skrewww/react dist-tags` after publishing and tell consumers to use `@beta`.
+  Do not move `latest` deliberately.
+- **Engines:** `>=22.13.0 <23 || >=24 <25`, the repository's own tooling range, same as the
+  root and Guard. Consumers with `engine-strict` on other Node versions would be refused.
+- **Release method:** first publish is manual by the npm scope owner. Later releases may use
+  GitHub Actions trusted publishing (not implemented here).
+
+### Two kinds of checks — keep them separate
+
+| Kind | Command | Runs | Cost |
+|---|---|---|---|
+| **Package integrity** (safe for `prepublishOnly`) | `npm run prepublish:react-package` | on every `npm publish`, by hand, and in package CI | seconds, no network, no browser |
+| **Release gate** (before publication and in CI) | `npm run release-gate:react-package` | by the scope owner before publishing | minutes, needs network and Chromium |
+
+`prepublishOnly` (`npm --prefix ../.. run prepublish:react-package`) always does a **clean
+rebuild** of `dist` from canonical source, so `dist` can never be missing, partial or stale
+(`dist` is generated and gitignored; `files` points at it, so publishing without a build would
+ship only README, LICENSE and `package.json`). It then re-checks the output for
+`next`/`recharts`/`@vercel`/server-only imports and repository `@/` aliases in the JS and
+declarations, verifies every name the generated entry exports exists in the JS and declarations
+and that every declaration import resolves, verifies the manifest contract
+(`lib/react-package/release-checks.ts`), and checks that `npm pack --dry-run` lists only
+package metadata and `dist`. It does not publish, touch the network, run the Vite consumer
+smoke or run the repo gates. Publish from the package directory, not from a pre-built tarball
+(`prepublishOnly` does not run for tarballs).
+
+### Release gate (npm publication)
+
+All must pass on the exact release commit — `npm run release-gate:react-package` runs them in
+order: lint · typecheck · unit tests · root build · `guard --internal` · `git diff --check` ·
+tracked tree clean and no generated output tracked (`scripts/verify-clean-tracked-state.mjs`) ·
+package integrity checks (build, output checks, `npm pack --dry-run`) ·
+`npm run smoke:react-package` (real tarball → clean Vite app → typecheck → build → Chromium).
+
+**Full Playwright is not an npm release blocker** while the known, unrelated stale-navigation
+failures remain (`changelog.spec.ts:26`, `gradient-foundation.spec.ts:202`; see
+`docs/project-status.md`). This applies to the package release gate only; it does not weaken
+product testing in general.
+
+### CI
+
+`.github/workflows/react-package.yml` runs `npm run prepublish:react-package` and
+`npm run smoke:react-package` (Chromium installed with `npx playwright install --with-deps
+chromium`) on pushes to `main` and pull requests that touch package-relevant paths
+(`packages/react/**`, `components/ui/**`, `lib/react-package/**`, the shared `lib/` helpers,
+registry and Foundation sources, `styles/**`, the package scripts, `package.json`,
+`package-lock.json`, `.nvmrc` and the workflow itself), and always for `react-v*` tags. Docs-only
+changes do not trigger it. It never publishes. The main CI job is unchanged.
+
+### First manual release procedure (documented, not executed)
+
+Performed by the npm scope owner; npm authentication and 2FA are the owner's, never stored here.
+
+1. Confirm manually: owner can publish to the `@skrewww` scope, and the account/package 2FA
+   policy (npm Settings → Publishing access). Confirm the Figma library state is irrelevant to
+   this step (it is a separate MK-2D concern).
+2. Release commit (MK-2C): remove `"private": true` and update the README status block; run
+   everything below on that exact commit; CI green.
+3. `git checkout <verified-release-sha>` in a clean checkout, then `npm ci --ignore-scripts`.
+4. `npm run release-gate:react-package` — must pass.
+5. `cd packages/react && npm publish` — `publishConfig` supplies `access: public` and
+   `tag: beta`; `prepublishOnly` rebuilds and re-checks; npm prompts for the 2FA code. Never
+   `--force`, never disable 2FA.
+6. Verify: `npm view @skrewww/react dist-tags version`, then install the published version into a
+   clean Vite app by hand.
+7. Tag the release commit `react-v0.1.0-beta.1` (mirrors `guard-v0.1.0-beta.1`; this also
+   triggers the package workflow) and write release notes, as for Guard.
+8. Rollback is `npm deprecate`, not unpublish. npm's unpublish limits were not verified here.
+
 ## Not yet decided or built
 
-Publication to npm or Figma's private registry; a Make Kit and its guidelines;
-charts or other components in the package; React 18 support; `sideEffects`-aware
-tree shaking measurements; hashed CSS Module class names.
+Actual publication (MK-2C); guidelines compiler and Make setup (MK-2B); Make Kit assembly
+(MK-2D); hashed CSS Module class names; React 18 (post-release investigation); charts and
+wider component coverage (post-release expansion). Trusted-publishing automation for later
+releases.

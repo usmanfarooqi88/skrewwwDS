@@ -22,6 +22,7 @@ import { fileURLToPath } from "node:url";
 import { chromium, type Page } from "@playwright/test";
 import { buildReactPackage } from "./build-react-package";
 import { checkBuiltFile } from "../lib/react-package/output-checks";
+import { checkPackedFiles } from "../lib/react-package/release-checks";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkgRoot = join(root, "packages", "react");
@@ -412,9 +413,8 @@ async function main(): Promise<void> {
     console.log(`  tarball: ${packed.filename} — ${packed.entryCount} files, ${packed.size} B packed, ${packed.unpackedSize} B unpacked`);
     const paths = packed.files.map((f) => f.path);
     assert("npm pack --dry-run and real pack list the same files", JSON.stringify(dry.files.map((f) => f.path).sort()) === JSON.stringify([...paths].sort()));
-    const allowed = (p: string) => p === "package.json" || p === "README.md" || p === "LICENSE" || p.startsWith("dist/");
-    const junk = paths.filter((p) => !allowed(p) || /(^|\/)(app|e2e|evals|docs|\.github|public|scripts|lib|components)\//.test(p.replace(/^dist\/types\/(components|lib)\//, "dist/types/")));
-    assert("Tarball contains only dist/, README, LICENSE, package.json (no app/e2e/evals/.github/docs)", junk.length === 0, junk.slice(0, 5).join(", "));
+    const packIssues = checkPackedFiles(paths);
+    assert("Tarball contains only dist/, README, LICENSE, package.json (no app/e2e/evals/.github/docs)", packIssues.length === 0, packIssues.map((i) => i.message).slice(0, 3).join(", "));
     const tarPkg = JSON.parse(run("tar", ["-xOf", tarball, "package/package.json"], work)) as Record<string, unknown>;
     const depNames = Object.keys({ ...(tarPkg.dependencies as object), ...(tarPkg.peerDependencies as object) });
     assert("Packed manifest has no next/recharts/@vercel dependency", !depNames.some((d) => d === "next" || d === "recharts" || d.startsWith("@vercel/")), depNames.join(", "));

@@ -1,0 +1,89 @@
+name: React package
+
+# Proves the @skrewww/react package candidate end to end: build, release-
+# integrity checks, a real tarball installed into a clean Vite app, then a
+# Chromium proof. It is slower than the main CI job (browser install, network
+# install of the consumer), so it runs only when something that can change the
+# package output changes — never for docs-only edits — and for release tags.
+# This workflow never publishes anything.
+
+on:
+  push:
+    branches: [main]
+    # Path filters are not evaluated for tag pushes, so react-v* always runs.
+    paths:
+      - "packages/react/**"
+      - "components/ui/**"
+      - "lib/react-package/**"
+      - "lib/cn.ts"
+      - "lib/use-controllable.ts"
+      - "lib/component-registry*.ts"
+      - "lib/shadcn-registry-generator.ts"
+      - "styles/**"
+      - "scripts/build-react-package.ts"
+      - "scripts/smoke-react-package.ts"
+      - "scripts/prepublish-react-package.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".nvmrc"
+      - ".github/workflows/react-package.yml"
+    tags:
+      - "react-v*"
+  pull_request:
+    paths:
+      - "packages/react/**"
+      - "components/ui/**"
+      - "lib/react-package/**"
+      - "lib/cn.ts"
+      - "lib/use-controllable.ts"
+      - "lib/component-registry*.ts"
+      - "lib/shadcn-registry-generator.ts"
+      - "styles/**"
+      - "scripts/build-react-package.ts"
+      - "scripts/smoke-react-package.ts"
+      - "scripts/prepublish-react-package.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".nvmrc"
+      - ".github/workflows/react-package.yml"
+
+concurrency:
+  group: react-package-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  package-smoke:
+    name: Package build and clean-Vite smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Install scripts stay blocked deliberately — see docs/contributing.md.
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      # The smoke drives the built consumer in real Chromium via Playwright.
+      # Browsers are not preinstalled by `npm ci --ignore-scripts`; install
+      # only Chromium (the one browser the smoke launches) plus its system deps.
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      # Rebuilds dist from canonical source, re-checks output for next/recharts/
+      # @vercel/alias leaks, dist integrity, manifest contract and the pack list.
+      - name: Package integrity checks
+        run: npm run prepublish:react-package
+
+      # Build -> npm pack -> install the tarball into a fresh Vite app (no next,
+      # no recharts) -> typecheck -> production build -> Chromium verification.
+      - name: Clean-Vite consumer smoke
+        run: npm run smoke:react-package
