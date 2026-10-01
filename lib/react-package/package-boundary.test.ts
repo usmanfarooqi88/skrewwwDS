@@ -35,7 +35,8 @@ describe("@skrewww/react package manifest", () => {
 
   it("is an unpublished, ESM-first candidate with an explicit public surface", () => {
     expect(pkg.name).toBe("@skrewww/react");
-    expect(pkg.private).toBe(true);
+    // Release state (MK-2C): no longer private. Publication is guarded by the prepublish checks.
+    expect(pkg.private).toBeUndefined();
     expect(pkg.version).toMatch(/^\d+\.\d+\.\d+-[0-9A-Za-z.-]+$/);
     expect(pkg.type).toBe("module");
     expect(Object.keys(pkg.exports).sort()).toEqual([".", "./package.json", "./styles.css"]);

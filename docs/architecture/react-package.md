@@ -1,8 +1,8 @@
 # `@skrewww/react` package boundary and release mechanics
 
-**Status: release-hardened, unpublished.** No npm release exists and no Figma Make Kit
-exists. The manifest is `0.1.0-beta.1` with `"private": true`; publication is a separate,
-manual step (MK-2C). This note records the package boundary and how it relates to the other
+**Status: release candidate for `0.1.0-beta.1`.** The manifest is no longer `private`;
+publication to npm (MK-2C) is performed manually from the release commit, and this note is
+updated once it has succeeded and been verified. No Figma Make Kit exists. This note records the package boundary and how it relates to the other
 distribution paths. Current status of the work: `docs/project-status.md`.
 
 ## One canonical source, two distributions
@@ -87,7 +87,7 @@ package's real public exports by `npm run build:make-guidelines`; see
 - **Manifest carries the release version now** (rather than keeping `0.1.0-candidate.0`
   until publication): the release commit should differ from the verified commit only by
   removing `"private": true`, mirroring how `@skrewww/guard` carried its release version
-  before publication. `private: true` stays until then, so npm refuses to publish.
+  before publication. `private: true` was removed in the MK-2C release commit; until then npm refused to publish it.
 - **Dist-tag:** `publishConfig.tag` is `beta` and `publishConfig.access` is `public`
   (scoped packages default to private). The intent is `beta` only. The registry may still
   point `latest` at the very first version — it did for Guard

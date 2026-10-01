@@ -2,11 +2,9 @@
 
 Framework-agnostic Skrewww React components with one stylesheet.
 
-> **Status: beta preparation — not published to npm yet.** `0.1.0-beta.1` is the
-> intended first release, published under the `beta` dist-tag. Until that
-> release happens there is nothing to install from npm, and there is no Figma Make
-> Kit. The manifest still says `"private": true`, which blocks publishing until
-> the release commit removes it.
+> **Status: release candidate for `0.1.0-beta.1`.** Publication to npm, under the
+> `beta` dist-tag, is performed from this exact commit; until it has happened and
+> been verified there is nothing to install from npm. There is no Figma Make Kit.
 
 This package is a distribution of Skrewww's canonical components, built from
 `components/ui` in the [Skrewww repository](https://github.com/usmanfarooqi88/skrewwwDS).

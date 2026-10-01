@@ -18,12 +18,12 @@ describe("@skrewww/react manifest release contract", () => {
     expect(checkManifest(manifest())).toEqual([]);
   });
 
-  it("publishes publicly under an explicit beta tag, with explicit engines, but stays private until the release commit", () => {
+  it("publishes publicly under an explicit beta tag, with explicit engines, and is no longer private (release state)", () => {
     const pkg = manifest();
     expect(pkg.publishConfig).toEqual({ access: "public", tag: "beta" });
     expect(pkg.engines.node).toBeTruthy();
     expect(pkg.version).toBe("0.1.0-beta.1");
-    expect(isPublishBlockedByPrivate(pkg)).toBe(true);
+    expect(isPublishBlockedByPrivate(pkg)).toBe(false);
     expect(pkg.scripts.prepublishOnly).toMatch(/prepublish:react-package/);
   });
 
