@@ -35,6 +35,36 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-10-figma-spacing-release",
+    date: "2026-10-03",
+    displayDate: "October 2026",
+    title: "Figma spacing release (Pro and Free)",
+    summary:
+      "The Pro and Free Figma libraries are updated with a consistent spacing foundation: a 4px base grid with an 8px-preferred macro rhythm. The Free Community file and the Skrewww Pro product are updated too. These are Figma changes and are separate from the @skrewww/react package release.",
+    items: [
+      {
+        type: "improved",
+        text: "Small Button, Text Input and Select now use an explicit 32px height in both Pro and Free; Small Search Field matches in Pro.",
+      },
+      {
+        type: "improved",
+        text: "Button Small and Link icon gaps are aligned with the canonical component rhythm in both Pro and Free.",
+      },
+      {
+        type: "fixed",
+        text: "Tabs: the active indicator no longer changes a tab's height when it is selected, in both Pro and Free.",
+      },
+      {
+        type: "improved",
+        text: "Pro: Split Button Small segments now align at 32px, and the Validation Message icon-to-text gap is refined.",
+      },
+      {
+        type: "new",
+        text: "Pro: Combobox now comes in Small, Medium and Large sizes.",
+      },
+    ],
+  },
+  {
     id: "2026-10-react-beta-2",
     date: "2026-10-03",
     displayDate: "October 2026",

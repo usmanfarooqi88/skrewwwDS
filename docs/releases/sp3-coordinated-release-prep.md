@@ -1,6 +1,6 @@
 # SP-3 coordinated release preparation (REL-1A) — 2026-10-03
 
-**Status:** prepared in REL-1A; **execution in progress (REL-1B)** — see "Execution record" at the end. This note holds the audited release
+**Status:** prepared in REL-1A; **executed (REL-1B)** — see "Execution record" at the end. This note holds the audited release
 state, the notes to publish, the execution order and the future commands for four tracks: `@skrewww/react@0.1.0-beta.2`,
 the Figma Pro library, the Figma Free library and Community file, and the Gumroad Pro product.
 
@@ -110,18 +110,19 @@ gh release create react-v0.1.0-beta.2 --prerelease --title "@skrewww/react 0.1.0
 | Git tag `react-v0.1.0-beta.2` | **PUBLISHED, verified** | signed annotated tag at the release commit (git: Good signature, ED25519; GitHub: verified, valid) |
 | Tag workflow | **PASSED** | React package workflow green on the tag push |
 | GitHub prerelease | **PUBLISHED** | prerelease, non-draft, notes from `docs/releases/react-v0.1.0-beta.2.md` |
-| Figma Pro library | **PENDING_MANUAL** | no library-publish action exists in the available Figma tooling; the owner's completion was not confirmed; working file re-verified unchanged |
-| Figma Free library | **PENDING_MANUAL** | same |
-| Figma Community (Free) | **PENDING_MANUAL** | manual Figma UI |
-| Gumroad (Pro) | **PENDING_MANUAL** | needs the owner's Gumroad session and the published Pro file |
-| Website changelog | **UPDATED (React only)** | October 2026 entry `@skrewww/react 0.1.0-beta.2`; deliberately says nothing about Figma, Community or Gumroad because none is confirmed; a Figma-facing entry is added only after those outcomes are confirmed |
+| Figma Pro library | **PUBLISHED** (owner-confirmed) | published by the owner from the verified working file, label October 2026; no publish action or publish-state check exists in the available Figma tooling, so this is owner-confirmed, not independently verified |
+| Figma Free library | **PUBLISHED** (owner-confirmed) | same; Free notes only (shared fixes) |
+| Figma Community (Free) | **UPDATED** (owner-confirmed) | Community file updated with the Free notes |
+| Gumroad (Pro) | **UPDATED** (owner-confirmed) | Pro product updated with the published Pro file; Free and Pro product descriptions updated; covers intentionally unchanged |
+| Website changelog | **UPDATED** | October 2026 entries: `@skrewww/react 0.1.0-beta.2` and the Figma spacing release (Pro and Free libraries, Community Free file, Pro product), written from confirmed facts only; Vercel and CI green |
 
 Pre-publish gate in a clean worktree of the release commit: 174 test files / 1823 tests, package integrity checks, 42/42 tarball
 smoke, Make Kit check — all passed. The first REL-1A gate attempts hit one hard-coded-version test assertion (fixed) and load-induced timeouts
 (rerun clean).
 
-### Manual-track confirmation status (recorded 2026-10-03)
+### Manual-track confirmation (recorded 2026-10-03)
 
-The handoff message for the manual tracks arrived with its outcome fields unfilled, so Figma Pro, Figma Free, Community and Gumroad are
-recorded as unconfirmed (`PENDING_MANUAL`), not as done. Library publication freshness, the Community listing and Gumroad are not
-verifiable with the available tooling (the Figma library tool lists library names and keys only). No claim about them is public.
+The owner confirmed: Figma Pro library PUBLISHED, Figma Free library PUBLISHED, Figma Community Free UPDATED, Gumroad Pro UPDATED, and the Free and
+Pro product descriptions UPDATED; covers were intentionally left unchanged. These four tracks are owner-confirmed: library publication
+freshness, the Community listing and Gumroad are not verifiable with the available tooling. The verified-by-evidence tracks are npm, the signed
+tag, the tag workflow, the GitHub prerelease and the website.
