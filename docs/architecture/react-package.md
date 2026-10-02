@@ -191,14 +191,18 @@ Performed by the npm scope owner; npm authentication and 2FA are the owner's, ne
   exist because of it. The first publish attempt also failed (401) when run from a non-interactive
   runner, before OTP.
 
-## Second beta (REL-1A) — prepared, not published
+## Second beta (REL-1B) — published
 
-`0.1.0-beta.2` is prepared in the repository: version bump in `packages/react/package.json` (the only version
-source for the package), the matching expectation in `lib/react-package/release-checks.test.ts`, and the README status
-and install text. Consumer-visible change: Validation Message icon-to-text gap 6 → 4px and Form Field vertical gap
-6 → 8px (CSS only, no API change). Publication follows the same procedure as beta.1 (explicit `--tag beta`; `latest` is
-not moved and stays on `0.1.0-beta.1`). Release notes: `docs/releases/react-v0.1.0-beta.2.md`; coordinated plan:
-`docs/releases/sp3-coordinated-release-prep.md`.
+`@skrewww/react@0.1.0-beta.2` is published on public npm from release commit
+`6ea9e0d0a5c0980f88153e998ff5667acc3aab93` (registry `gitHead` matches), by the `skrewww` account with an explicit
+`npm publish --tag beta`. Dist-tags: `beta` → `0.1.0-beta.2`; `latest` was not moved and still points at
+`0.1.0-beta.1`. The registry tarball is byte-identical to the verified candidate (sha512
+`JCJ7K16E…KgyDYA==`, 33 files, 37,483 B packed, 170,845 B unpacked). Consumer-visible change: Validation Message
+icon-to-text gap 6 → 4px and Form Field vertical gap 6 → 8px (CSS only, no API change). Public proof:
+`npm run smoke:react-package -- --from-registry 0.1.0-beta.2` passed 41/41 (registry mode has no local-tarball check; the
+tarball-mode gate was 42/42). Signed annotated tag `react-v0.1.0-beta.2` points at the release commit and its tag workflow
+passed; GitHub prerelease: `releases/tag/react-v0.1.0-beta.2`. Release notes: `docs/releases/react-v0.1.0-beta.2.md`; coordinated
+record: `docs/releases/sp3-coordinated-release-prep.md`.
 
 ## Not yet decided or built
 

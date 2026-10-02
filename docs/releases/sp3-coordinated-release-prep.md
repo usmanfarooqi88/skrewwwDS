@@ -1,6 +1,6 @@
 # SP-3 coordinated release preparation (REL-1A) — 2026-10-03
 
-**Status:** prepared; **nothing published.** Execution is the separate REL-1B task. This note holds the audited release
+**Status:** prepared in REL-1A; **execution in progress (REL-1B)** — see "Execution record" at the end. This note holds the audited release
 state, the notes to publish, the execution order and the future commands for four tracks: `@skrewww/react@0.1.0-beta.2`,
 the Figma Pro library, the Figma Free library and Community file, and the Gumroad Pro product.
 
@@ -101,3 +101,21 @@ cd ../.. && npm run smoke:react-package -- --from-registry 0.1.0-beta.2
 git tag -s react-v0.1.0-beta.2 <release-commit-sha> -m "@skrewww/react 0.1.0-beta.2" && git push origin react-v0.1.0-beta.2
 gh release create react-v0.1.0-beta.2 --prerelease --title "@skrewww/react 0.1.0-beta.2" --notes-file docs/releases/react-v0.1.0-beta.2.md
 ```
+
+## Execution record (REL-1B, 2026-10-03)
+
+| Track | State | Evidence |
+|---|---|---|
+| npm `@skrewww/react@0.1.0-beta.2` | **PUBLISHED, verified** | `npm view`: version resolves, `beta` → `0.1.0-beta.2`, `latest` → `0.1.0-beta.1` (unchanged); registry sha512 and shasum identical to the verified tarball; `gitHead` = `6ea9e0d0a5c0980f88153e998ff5667acc3aab93`; public smoke `--from-registry 0.1.0-beta.2` 41/41; published CSS has Validation Message `0.25rem` and Form Field `0.5rem` |
+| Git tag `react-v0.1.0-beta.2` | **PUBLISHED, verified** | signed annotated tag at the release commit (git: Good signature, ED25519; GitHub: verified, valid) |
+| Tag workflow | **PASSED** | React package workflow green on the tag push |
+| GitHub prerelease | **PUBLISHED** | prerelease, non-draft, notes from `docs/releases/react-v0.1.0-beta.2.md` |
+| Figma Pro library | **PENDING_MANUAL** | no library-publish action exists in the available Figma tooling; working file re-verified unchanged |
+| Figma Free library | **PENDING_MANUAL** | same |
+| Figma Community (Free) | **PENDING_MANUAL** | manual Figma UI |
+| Gumroad (Pro) | **PENDING_MANUAL** | needs the owner's Gumroad session and the published Pro file |
+| Website changelog | **PENDING** | written only after the Figma, Community and Gumroad outcomes are confirmed |
+
+Pre-publish gate in a clean worktree of the release commit: 174 test files / 1823 tests, package integrity checks, 42/42 tarball
+smoke, Make Kit check — all passed. The first REL-1A gate attempts hit one hard-coded-version test assertion (fixed) and load-induced timeouts
+(rerun clean).

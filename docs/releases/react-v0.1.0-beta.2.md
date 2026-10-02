@@ -1,8 +1,7 @@
 # @skrewww/react v0.1.0-beta.2 — release notes
 
-**Status:** **PREPARED — NOT PUBLISHED.** The version is bumped in the release-preparation commit; nothing has been
-published, tagged or released. Current public npm state: `0.1.0-beta.1` (`beta` and `latest` both point at it).
-Execution is the separate REL-1B task.
+**Status:** **PUBLISHED** on public npm under the `beta` dist-tag (`latest` was not moved and still points at
+`0.1.0-beta.1`).
 
 ## Package
 
@@ -11,7 +10,9 @@ Execution is the separate REL-1B task.
 | Name | `@skrewww/react` |
 | Version | `0.1.0-beta.2` |
 | Previous | `0.1.0-beta.1` |
-| Intended dist-tag after publish | `beta` → `0.1.0-beta.2`; `latest` stays on `0.1.0-beta.1` (not moved) |
+| npm dist-tags | `beta` → `0.1.0-beta.2`; `latest` stays on `0.1.0-beta.1` (not moved) |
+| Release commit | `6ea9e0d0a5c0980f88153e998ff5667acc3aab93` |
+| Git tag | `react-v0.1.0-beta.2` (signed, annotated) |
 | Publish command | `npm publish --tag beta` (explicit tag required; npm 11.12.1 ignores `publishConfig.tag`) |
 
 ## What changed for consumers
