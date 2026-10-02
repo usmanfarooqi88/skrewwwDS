@@ -740,7 +740,7 @@ export function Example() {
     documentationSource: "content/forms.ts",
     documentationLastUpdated: DOCS_DATE,
     reactLastUpdated: "2026-08-31",
-    figmaReference: "Forms / Combobox — State (5 variants)",
+    figmaReference: "Forms / Combobox — State × Size (15 variants)",
     figmaSourceUrl: COMBOBOX_FIGMA_FILE_URL,
     figmaNodeId: COMBOBOX_FIGMA_COMPONENT_SET_NODE_ID ?? undefined,
     documentationUrl: getComponentDocumentationUrl("combobox"),

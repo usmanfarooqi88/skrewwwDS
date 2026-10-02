@@ -545,6 +545,58 @@ It is in the Pro file only, so it does not touch the Free file or the Figma Comm
 Figma spacing release or a Gumroad update (it ships unchanged, still single-size), but the `content/forms.ts` "15
 variants (Figma)" wording is already inaccurate for any release.
 
+## SP-3F — Combobox Size variants and SP-3 closure (completed 2026-10-03, Figma-only, Pro-only)
+
+Implements the SP-3E decision `ADD_SIZE_VARIANTS`. Authorised Figma write to the Pro working file; Combobox does not
+exist in Free. React, the registry API (`supportedSizes` already `sm md lg`), `/r/*` and `@skrewww/react` untouched;
+**nothing published.**
+
+**Before:** `Forms/Combobox`, 5 variants (State only), 32px, padding `6/12/6/8` with `spacing/6` top and bottom,
+16px/19 label, 20px chevron — Select-Medium anatomy squeezed into a 32px box. 10 `spacing/6` bindings.
+
+**After:** 15 variants, State (Default, Hover, Focused, Error, Disabled) × Size, built in the same component set (the
+existing 5 masters were renamed to `Size=Medium`, so existing instances keep their identity and resolve to Medium;
+Small and Large are clones). Each size copies the live Select anatomy; no new dimension or variable:
+
+| Size | Height | Vertical padding | Horizontal padding | Label | Chevron |
+|---|---|---|---|---|---|
+| Small | 32 | `spacing/0` + `minHeight` `spacing/32` | `spacing/12` | 14 / 17 | 16 (`semantic/icon-size/sm`) |
+| Medium | 36 | `spacing/8` | `spacing/12` | 16 / 19 | 20 (`semantic/icon-size/md`) |
+| Large | 46 | `spacing/12` | `spacing/16` | 18 / 22 | 20 (`semantic/icon-size/md`) |
+
+The old right padding `spacing/8` became Select's `spacing/12`; gap stays `spacing/8`; fills, strokes, effects, radius
+and state treatments were not touched. Heights are identical across the five states of a size. Cloning dropped the
+`Value` text-property link on the 10 new variants; it was re-linked, and all 15 now expose the same properties
+(`Value`, `State`, `Size`). The Size options list in the property schema reads Medium, Small, Large (Figma kept the
+original order); this is cosmetic and not changed.
+
+**Instances.** 14 instances resolve to Medium (161×36 instead of 157×32); 6 of them carry overrides — five Shape
+panels keep their explicit Shape mode, and the open example had width/height overrides. Documentation fixes, all local:
+the component set is now 186px high, so the documentation column below it (Options set and label, Listbox Panel
+component and label, reference label, open example) moved down 154px and the Combobox section grew from 922 to
+1076; in the open example the trigger is back to hug (180×36) and that example's panel was widened 176 → 180 so
+"Search countries" does not wrap; in the three Surface panels (Flat, Gradient, Glass) the popup moved down 4px to keep
+its 2px gap under the taller trigger. No other frame was changed.
+
+**Verification.** Structural: 15/15 variants carry the table above, 0 `spacing/6` bindings in Combobox. Visual: the full
+set (3 sizes × 5 states), the Control state row, the five Shape panels (Sharp, Rounded, Pill, Squircle, Brand Shape),
+the Flat / Gradient / Glass Surface panels and the open example all render correctly with no clipping. Shape and
+Surface were verified through those existing mode panels, not by toggling a new instance.
+
+**`spacing/6` census (Pro, master level).** Forms 10 → 0 and Feedback measured Badge 12 + Tooltip 8, with Actions,
+Navigation, Containers and Content at 0 from earlier measurements: Pro 30 → **20**. Free unchanged at 12 (Badge; not
+re-read in this task). `spacing/2` unchanged. `spacing/6` still exists.
+
+**Registry wording.** The only stale source line, `figmaReference` "Forms / Combobox — State (5 variants)", now reads
+"State × Size (15 variants)"; `content/forms.ts` already said 15 variants and is now accurate. No API field changed.
+
+**SP-3 closure.** The Figma spacing migration is architecturally complete: the only remaining `spacing/6` uses are the
+two approved scoped exceptions, Badge Small horizontal inset and Tooltip vertical padding. Not solved here: the wider
+Figma-versus-React Medium/Large control height gap (Figma 36 / 46 against React 40 / 48 for Select, Text Input and
+Combobox), the remaining React 6px values (breadcrumb, tag, calendar, menu and others), and the Split Button
+Medium/Large segment mismatch — separate work. Pending releases: `@skrewww/react@0.1.0-beta.2` and the synchronized
+Pro/Free Figma publication (plus Gumroad and Community assessment); none was executed.
+
 ## Status
 
 Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved

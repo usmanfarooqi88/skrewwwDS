@@ -80,6 +80,8 @@ decision, add a new dated entry that says what it supersedes — do not silently
   the state-indicator rule under Figma practices). Full detail and status: [`architecture/spacing-foundation.md`](architecture/spacing-foundation.md).
 - Small interactive controls use explicit tokenized heights with vertically centered content; control height must not be
   derived from deprecated off-grid spacing values (decided 2026-10-02 after the Small-control migration).
+- Figma Combobox follows the shared Small / Medium / Large control-size family and mirrors Select sizing anatomy (decided
+  2026-10-03). The wider gap between Figma Medium/Large control heights and React's is not resolved by this.
 
 ## Release, distribution and git discipline
 
