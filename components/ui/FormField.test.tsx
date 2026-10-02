@@ -77,6 +77,15 @@ describe("FormField", () => {
     expect(screen.getByText("*")).toHaveAttribute("aria-hidden", "true");
   });
 
+  it("spaces label, control and supporting text on the 8px structural gap (Figma Form Field Wrapper spacing/8)", () => {
+    const css = readFileSync(
+      resolve(process.cwd(), "components/ui/form-field.module.css"),
+      "utf8",
+    );
+
+    expect(css).toMatch(/\.field\s*\{[^}]*gap:\s*0\.5rem/);
+  });
+
   it("binds the visible required indicator to semantic-text-danger", () => {
     const css = readFileSync(
       resolve(process.cwd(), "components/ui/form-field.module.css"),

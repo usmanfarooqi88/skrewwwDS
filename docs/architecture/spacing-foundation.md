@@ -431,9 +431,50 @@ instances are Medium and are unaffected, and the change touches only vertical pa
 pages unchanged since the Stage 3 measurement): Badge Small 12, Combobox 10, Tooltip 8, Validation Message 4. Free
 unchanged at 12 (Badge). `spacing/2` unchanged. `spacing/6` still exists.
 
+## SP-3D — Validation Message and Form Field coordinated migration (2026-10-03)
+
+Coordinated Figma + React change (Stage 3 disposition `MIGRATE_COORDINATED`). **Nothing is published:** the npm
+package, `/r/*` consumers and both Figma libraries only change at a later, deliberate release.
+
+**Decision (two different values, on purpose):**
+- **Validation Message icon-to-text gap: 6 → 4px.** Icon and message are one tightly coupled inline unit, so it
+  uses the micro rhythm (`spacing/4`; same family as Link and Badge icon gaps).
+- **Form Field vertical gap between label, control and supporting/error text: 6 → 8px.** It is structural
+  composition and Figma's Form Field Wrapper already uses `spacing/8`.
+These are anatomy decisions, not "all icon/text gaps are 4" or "all form gaps are 8".
+
+**Figma (Pro only — neither component exists in Free).** `Forms/Validation Message`: 4 variants (Error, Warning,
+Success, Info), `itemSpacing` `spacing/6` → `spacing/4` (existing variable); each variant is now 158px wide
+(was 160), 17px high, icon and text alignment unchanged, 4 Matrix instances intact. `Forms/Form Field Wrapper`:
+re-verified already `spacing/8` (Label Row `spacing/4`), so no Figma change. Pro master-level `spacing/6`: 34 → **30**
+(Forms page measured: Combobox 10 only; Actions, Navigation, Containers and Content measured 0; Feedback unchanged from
+Stage 3 at Badge 12 + Tooltip 8). Free unchanged at 12 (Badge). `spacing/6` still exists.
+
+**React (canonical source; the only edits).** `components/ui/validation-message.module.css` `.message`
+`gap: 0.375rem` → `0.25rem`; `components/ui/form-field.module.css` `.field` `gap: 0.375rem` → `0.5rem`. The other
+declarations in those files (`.icon` `margin-top`, `.required` `margin-left`, typography, colours) are different
+relationships and were left alone. Two focused style-contract tests were added in the existing
+`ValidationMessage.test.tsx` and `FormField.test.tsx`.
+
+**Distribution.** Both components flow from the same canonical CSS into the docs build, the `/r/*` manifests
+(generated output, gitignored; regenerated manifests now carry `0.25rem` and `0.5rem`) and the `@skrewww/react`
+package build (the rebuilt local `dist/styles.css` carries `.validation_message_message` 0.25rem and
+`.form_field_field` 0.5rem). `@skrewww/react@0.1.0-beta.1` on npm is unchanged (`beta` and `latest` still point to it),
+so package users only receive this in the next release (expected `0.1.0-beta.2`, prepared separately); no version
+bump, tag or release was made here.
+
+**Remaining public 6px values (not touched):** `--badge-padding-x-sm` and `--tooltip-padding-y` (retained
+exceptions), `--breadcrumb-gap`, `--tag-gap`, `--calendar-grid-week-gap`, `--menu-label-padding`, `select` popup group
+label padding, `credit-card-field` and `phone-number-field` gap and margin-bottom, `list-item` gap, `radio`
+margin-top, and `banking-transaction-row` padding. The 6px radii are a different scale.
+
+**Pending release tracks:** (1) React package `@skrewww/react@0.1.0-beta.2`; (2) the accumulated SP-3 Figma changes in
+the Pro and Free working files, which remain unpublished until a synchronized release that should also assess
+Gumroad and Figma Community.
+
 ## Status
 
 Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved
 the 45 Button/Link gap bindings per file described above; SP-3 Stage 2 moved the Small-control vertical padding
 described above (Pro 58, Free 50 bindings); SP-3B restructured the Tabs indicator and removed the Tabs `spacing/6`
-bindings (15 per file); SP-3C moved the Split Button Small vertical padding (12 Pro bindings), and nothing else.
+bindings (15 per file); SP-3C moved the Split Button Small vertical padding (12 Pro bindings); SP-3D changed Validation Message (Figma + React) and Form Field (React), and nothing else.

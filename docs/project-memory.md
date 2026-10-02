@@ -73,6 +73,9 @@ decision, add a new dated entry that says what it supersedes — do not silently
 - `spacing/2` is a **documented retained exception** for established anatomy (seams, insets, micro gaps).
 - `spacing/6` is **deprecated for new use**, with a staged migration; **no silent token migration is allowed** — each
   stage is an explicit, scoped task with Free/Pro synchronized and nothing published as a side effect.
+- `spacing/6` stays in the scale as a **scoped exception, not a general spacing choice** (decided 2026-10-03); the justified
+  anatomies are the Badge Small horizontal inset and Tooltip vertical padding, where Figma and React agree. It is not
+  to be used elsewhere and is not slated for deletion.
 - Stage 1 (Figma-only parity gaps where React was already compliant) is done; the Tabs 6px was resolved by restructuring the indicator as an overlay (see
   the state-indicator rule under Figma practices). Full detail and status: [`architecture/spacing-foundation.md`](architecture/spacing-foundation.md).
 - Small interactive controls use explicit tokenized heights with vertically centered content; control height must not be

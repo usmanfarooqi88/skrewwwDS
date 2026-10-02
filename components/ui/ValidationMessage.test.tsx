@@ -76,6 +76,10 @@ describe("ValidationMessage", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Live error");
   });
 
+  it("keeps the icon-to-text gap on the 4px micro rhythm (Figma Validation Message spacing/4)", () => {
+    expect(readCss()).toMatch(/\.message\s*\{[^}]*gap:\s*0\.25rem/);
+  });
+
   it("binds typed text tokens independently of icon tokens", () => {
     const css = readCss();
     const tokens = readTokens();
