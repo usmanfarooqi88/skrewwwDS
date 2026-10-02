@@ -175,6 +175,72 @@ Remaining `spacing/6` uses: Small-control vertical padding (Button, Text Input, 
 Split Button, Tooltip), Tabs label-to-indicator gap, Badge Small horizontal padding, Validation Message gap, and the
 public React tokens listed above. Next: SP-3 Stage 2 (height-driven Small-control rebuild), plus a separate Tabs audit.
 
+## Tabs anatomy audit (SP-3A, 2026-10-02) — evidence and recommendation, nothing changed
+
+Read-only audit of the Figma `Navigation/Tabs` component set (same id in Pro and Free) and the React Tabs source.
+
+**Figma anatomy (Pro and Free structurally identical).** 15 variants: State (Default, Hover, Selected, Focused,
+Disabled) × Size (Small, Medium, Large); no Shape/Surface variants. Every variant is `Tab` → `Label` (text) +
+`Indicator` (2px rectangle), vertical auto-layout, hug × hug, no min/fixed height, `itemSpacing` = 6 bound to
+`spacing/6`. Vertical padding is `spacing/8` (Small, Medium) and `spacing/12` (Large); horizontal padding is
+`spacing/12` (Small) and `spacing/16` (Medium, Large). The 6 is a **label-to-indicator gap** (it sits between Label
+and Indicator inside one tab; it is not a tab-to-tab gap). There are no exceptions: all 15 variants carry the same
+binding in both files.
+
+**The indicator is in flow but hidden when unselected.** `Indicator.visible` is false in every non-Selected variant,
+so it takes no space; in Selected it is visible. Consequence — selecting a tab changes its height:
+
+| Size | Label | Unselected (no indicator) | Selected, gap 6 (current) | Selected, gap 4 | Selected, gap 8 |
+|---|---|---|---|---|---|
+| Small | 17 | 8+17+8 = **33** | 8+17+6+2+8 = **41** | 39 | 43 |
+| Medium | 19 | 8+19+8 = **35** | 8+19+6+2+8 = **43** | 41 | 45 |
+| Large | 22 | 12+22+12 = **46** | 12+22+6+2+12 = **54** | 52 | 56 |
+
+Choosing 4, 6 or 8 only changes the jump (6, 8 or 10px); none removes it.
+Selected is also Bold, so it is 3–4px wider than the other states.
+
+**React anatomy.** `Tabs` → `TabsList` (`role=tablist`, `display:flex; gap: var(--tab-gap)` = 0.25rem between
+triggers, `border-bottom:1px`) → `TabsTrigger` (`role=tab` button). The trigger has `min-height: var(--tab-height)`
+(2.5rem = 40px), `padding: 0 var(--tab-padding-x)` (0.75rem), centers its label, and has a single size (no `size`
+prop). The active indicator is `.triggerActive::after`: `position:absolute; bottom:0; left/right: padding-x;
+height: var(--tab-indicator-thickness)` (2px) — **overlaid, not in flow**. Measured live: every trigger is 40px in
+all states; the label-to-indicator distance falls out of centering (about 10px) and is not a token. `--tab-gap`
+corresponds to nothing inside a Figma tab. No React value corresponds to the Figma 6.
+
+**Visual comparison.** Figma tabs are 33/35/46px and become 41/43/54px when selected, with the label pinned to the
+top padding; React tabs are a constant 40px with the underline anchored to the bottom edge of a full-width rule.
+Selected/unselected stability is the visible difference: React is stable, Figma jumps 8px.
+
+**Representative instances.** Pro: 15 instances, all in the frozen Presentation V2 "Matrix" frame (no auto-layout,
+no nesting in other components). Free: 16 — 15 in the "Tabs V2 / State Matrix" frame (no auto-layout) and 1
+Medium/Default in a hug "Tabs cell" frame in the Overview row. Medium/Default height is unaffected by any gap
+choice, so the only affected Free doc content is the Selected cells of the matrices. No instance overrides.
+
+**Accessibility.** The gap is visual spacing only. Hit area and focus outline follow the trigger box (unchanged by
+the gap on unselected tabs); no accessibility requirement is invented or implied.
+
+**Classification.** Not an intentional anatomical rule (no design reason for 6 specifically), not a historical value
+with a documented rationale, and not React-derived. It is a **flow-construction artifact**: a spacer needed only
+because the indicator is an in-flow child that toggles visibility, and that same construction causes the height jump.
+
+| Option | Visual impact | Height impact | React parity | Grid compliance | Migration risk | Rationale |
+|---|---|---|---|---|---|---|
+| Keep 6 (RETAIN_AS_EXCEPTION) | none | selected +8 | none | off-grid, needs exception | none | no concrete anatomy reason to justify an exception |
+| Use 4 | indicator 2px closer | selected +6 | none | on grid | low (≤15 variants/file) | tidies the number, keeps the height jump |
+| Use 8 | indicator 2px farther | selected +10 | none | on grid, macro | low | tidies the number, worsens the height jump |
+| Restructure indicator | removes the gap | selected = unselected | matches overlay model | no spacing token needed | medium (height/layout of 15 variants + doc cells) | fixes the cause and matches React |
+
+**Recommendation: `RESTRUCTURE_TABS_ANATOMY`.** Keep the indicator out of flow (overlay anchored to the bottom, as
+in React) or keep it always present with a transparent fill, so a tab's height no longer depends on selection and
+the label-to-indicator `spacing/6` binding disappears. A separate human choice is needed at execution time: the
+indicator model (absolute overlay vs always-present transparent) and whether Figma tab heights should align to
+React's 40px. This audit changes nothing; it is not an approved decision and `docs/project-memory.md` is unchanged.
+
+**Effect on `spacing/6` removal.** If Tabs is restructured, its 15 bindings per file go away and Tabs stops blocking
+removal. Remaining categories: Small-control vertical padding (SP-3 Stage 2), Badge Small horizontal padding,
+Validation Message gap, Tooltip vertical padding, and the public React tokens / equivalent CSS. `spacing/6` cannot be
+deleted until all of those are resolved.
+
 ## Status
 
 Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved
