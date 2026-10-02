@@ -241,7 +241,56 @@ removal. Remaining categories: Small-control vertical padding (SP-3 Stage 2), Ba
 Validation Message gap, Tooltip vertical padding, and the public React tokens / equivalent CSS. `spacing/6` cannot be
 deleted until all of those are resolved.
 
+## SP-3 Stage 2 — Small-control height migration (completed 2026-10-02, Figma-only)
+
+Authorised Figma write to the Pro and Free working files; React, `@skrewww/react`, `/r/*`, tokens and npm untouched;
+**nothing published**. React authority (read from current source): Button, Text Input, Select, Search Field and
+Combobox each use `min-height: var(--control-height-sm)` (2rem = 32px) with **zero vertical padding**; Split Button
+has no `size` prop (it composes Buttons).
+
+**Old model:** hug height = content line (17px) + `spacing/6` top + `spacing/6` bottom = 29px, so height was
+an accident of an off-grid padding. **New model (existing variables only, no new variable):** `minHeight` bound to
+`spacing/32`, `paddingTop`/`paddingBottom` bound to `spacing/0`, auto-layout cross-axis alignment unchanged
+(`CENTER`), horizontal padding, content gaps and width behaviour unchanged. Result: Small = 32px, content centered
+(Button label frame at y = 7.5 in a 32px box), matching React.
+
+| Family | Pro | Free | Small variants changed (each file) | Before → after |
+|---|---|---|---|---|
+| Button (Small) | yes | yes | 15 | 29 → 32 |
+| Text Input (Small) | yes | yes | 5 | 29 → 32 |
+| Select (Small) | yes | yes | 5 | 29 → 32 |
+| Search Field (Small) | yes | **not in Free** | 4 (Pro only) | 29 → 32 |
+
+State heights are stable (every Small variant of a family reads 32 in Default, Hover, Pressed, Focused, Error and
+Disabled); the Button Focus Ring is stretch-constrained and now reads 32px. Medium and Large were not touched
+(Button 36/48, Text Input 35/46, Select 36/46, Search Field 36/46; React is 40/48 — a pre-existing difference
+recorded for later). The Free Text Input differs from Pro in horizontal sizing only (hug / `MIN` vs fixed /
+`SPACE_BETWEEN`); vertical anatomy was identical, so the vertical migration was applied; the horizontal difference is
+pre-existing and was left alone.
+
+**Not migrated:** Combobox (single-size Figma component, 32px derived from a 20px chevron + 2×6 with 16px text;
+no Small mapping established — human decision needed), Split Button (no React Small; Main Action 29px vs Chevron
+Trigger 28px), Tooltip, Badge, Validation Message, Tabs (still only the SP-3A recommendation), Icon Button, and
+`spacing/2`.
+
+**Verification.** Structural: every changed node reads `spacing/0` / `spacing/0` / `spacing/32` with
+`minHeight` 32 and height 32; Shape and Surface modes do not touch vertical sizing (padding and `minHeight` bind to
+the single-mode Primitive spacing scale), but the Shape/Surface modes were **not** toggled visually. Visual:
+Pro Button/Text Input/Select/Search Field and Free Button/Text Input/Select screenshots — text, icons, chevrons and
+focus/error borders centered, no clipping. Instances: Pro Button Small has 27 (15 in the frozen Presentation V2
+"Matrix", absolutely positioned and growing 3px, plus 8 in hug vertical frames and 4 in slots), Text Input 9, Select 5,
+Search Field 4; none clip or overflow. Free instances were not scanned, and the Free Actions and Navigation pages
+were not re-read after the write (two reads were denied by the permission classifier), so those two Free counts below
+are derived rather than re-measured.
+
+**`spacing/6` master-level census.** Pro 119 → **61** (−58: Button 30, Text Input 10, Select 10, Search Field 8).
+Free 77 → **27** (−50: Button 30, Text Input 10, Select 10). `spacing/2` unchanged (Pro 238). Remaining uses — Pro:
+Tabs 15, Badge Small horizontal padding 12, Split Button 12, Combobox 10, Tooltip 8, Validation Message 4. Free:
+Tabs 15, Badge 12. Plus the public React tokens / equivalent CSS. `spacing/6` still exists and cannot be deleted until
+those are resolved.
+
 ## Status
 
 Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved
-the 45 Button/Link gap bindings per file described above and nothing else.
+the 45 Button/Link gap bindings per file described above; SP-3 Stage 2 moved the Small-control vertical padding
+described above (Pro 58, Free 50 bindings) and nothing else.

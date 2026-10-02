@@ -73,6 +73,8 @@ decision, add a new dated entry that says what it supersedes — do not silently
   stage is an explicit, scoped task with Free/Pro synchronized and nothing published as a side effect.
 - Stage 1 (Figma-only parity gaps where React was already compliant) is done; the Tabs 6px is a separate
   unresolved anatomy case. Full detail and status: [`architecture/spacing-foundation.md`](architecture/spacing-foundation.md).
+- Small interactive controls use explicit tokenized heights with vertically centered content; control height must not be
+  derived from deprecated off-grid spacing values (decided 2026-10-02 after the Small-control migration).
 
 ## Release, distribution and git discipline
 
