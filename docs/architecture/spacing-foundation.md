@@ -472,6 +472,79 @@ margin-top, and `banking-transaction-row` padding. The 6px radii are a different
 the Pro and Free working files, which remain unpublished until a synchronized release that should also assess
 Gumroad and Figma Community.
 
+## SP-3E — Combobox size/parity decision (2026-10-03, read-only)
+
+Audit and recommendation only: no Figma, React, token, registry, package or `/r/*` change; nothing published.
+
+**Figma Combobox (Pro only; not in Free).** `Forms/Combobox`: 5 variants, axis State only (Default, Hover, Focused,
+Error, Disabled) — it has **no Size property**. Hug × hug, horizontal auto-layout, height 32 (chevron 20 + `spacing/6`
+top and bottom), padding `6/12/6/8` (left `spacing/12`, right `spacing/8`), gap `spacing/8`, label 16px/19 line,
+chevron 20px, radius `component/radius/control`; fills, strokes and effects are variable-bound (Shape and Surface
+panels use it). 10 `spacing/6` bindings (5 variants × top/bottom).
+
+| Attribute | Combobox | Select Small | Select Medium | Select Large |
+|---|---|---|---|---|
+| Height | 32 | 32 (`minHeight` `spacing/32`) | 36 | 46 |
+| Vertical padding | `spacing/6` | `spacing/0` | `spacing/8` | `spacing/12` |
+| Horizontal padding | 12 / 8 | 12 / 12 | 12 / 12 | 16 / 16 |
+| Label size / line | 16 / 19 | 14 / 17 | 16 / 19 | 18 / 22 |
+| Chevron | 20 | 16 | 20 | 20 |
+| Gap | `spacing/8` | `spacing/8` | `spacing/8` | `spacing/8` |
+
+**Reading.** Combobox's type and chevron are exactly Select **Medium**'s; only the vertical padding was cut from 8
+to 6 so the control lands on 32. Text Input follows the same S/M/L family (32 / 35 / 46; 14 / 16 / 18px). So it is a
+Medium-anatomy control squeezed to a Small height, not a Small control and not a separate size model.
+
+**React.** `ComboboxSize = "sm" | "md" | "lg"`, default `md`, public API. The input reuses `text-input.module.css`:
+`min-height` 32 / 40 / 48px with zero vertical padding, font 14 / 14 / 16px, caret `CaretDown` 16px at every size.
+Select uses the same classes. Registry: `status` beta, `supportedSizes` `sm md lg`, `figmaReference` "State (5
+variants)", yet `content/forms.ts` still describes "State × Size — 15 variants (Figma)", which Figma does not have —
+the documented intent was a size axis and the Figma component is incomplete, not a deliberate single size.
+
+**Exposure.** `/r/combobox` and the generated Agent contract exist; the component is **not** in the
+`@skrewww/react@0.1.0-beta.1` pilot (8 components, no Combobox). Interaction: native `<input role="combobox">`,
+decorative non-interactive caret, no clear button, focus ring on the input; the size choice is a visual-density
+question, not a hit-target one.
+
+**Usage.** 14 Pro instances, all in the Combobox documentation section (Shape panels, Surface panels, state row, one
+open example), fixed-size parents, 4 with overrides; nothing composes it into a layout where 32px was chosen for
+compactness.
+
+**Is the `spacing/6` legitimate?** No: it is a temporary height derivation (chevron 20 + 12 = 32), not anatomy. The
+exact 32px could be drawn with `minHeight` `spacing/32` + padding `spacing/0`, but that would freeze a 16/20px anatomy
+into a Small box that React and Select Small do not use (14/16), so it is not recommended on its own.
+
+| Option | Figma consistency | React parity | `spacing/6` | Visual change | API impact | Risk |
+|---|---|---|---|---|---|---|
+| Keep as Small | needs type 14/17 and chevron 16 (Select Small) | matches `sm` only | removed | text and icon shrink | none | medium — redesign, not a spacing fix |
+| Keep as Medium | matches Select Medium anatomy | React `md` is 40, Figma Medium 36 | removed | 32 → 36 | none | medium — hardens a single size against a documented size prop |
+| Add sizes | mirrors Select / Text Input exactly | gains `sm md lg`, inherits the family's own parity | removed | default size changes height | none | medium — 5 → 15 variants, same as Select |
+| Defer to broader parity | unchanged | unchanged | stays | none | none | low, but leaves temporary debt |
+
+**Decision: `ADD_SIZE_VARIANTS`**, mirroring the existing Figma Select / Text Input dimensions 1:1 (no new
+dimensions). The wider question — whether Figma Medium/Large (36 / 46) should eventually match React 40 / 48 — is
+separate and not solved here; because Combobox would copy Select's anatomy, whatever that decision becomes applies to
+both together, so this does not harden the wrong architecture. The 10 bindings are **not** an approved exception; they
+are temporary debt until the migration below.
+
+**Smallest future scope (SP-3F, Figma-only, Pro-only):** add a Size axis (Small / Medium / Large × the 5 states = 15
+variants) copying Select's vertical and horizontal padding, type and chevron per size (Small: `minHeight`
+`spacing/32` + padding `spacing/0`, 14/17, chevron 16; Medium: `spacing/8`, 16/19, chevron 20; Large: `spacing/12`,
+18/22, chevron 20; horizontal 12 / 12 / 16 / 16 — the current right padding 8 becomes Select's). One decision remains
+for implementation: which size existing documentation instances keep — Medium (React default, +4px, parents are fixed
+frames and need a check) or Small (keeps 32px). Expected result: Pro `spacing/6` 30 → 20 (Badge 12 + Tooltip 8). No
+React, registry, package or `/r/*` change is needed (React already has the sizes); `content/forms.ts` "15 variants" then
+becomes true.
+
+**Spacing-track closure.** After SP-3F the justified `spacing/6` uses are Badge Small and Tooltip only, so SP-3 is
+architecturally complete; until then Combobox is acknowledged temporary debt. The broader Figma-vs-React Medium/Large
+control height parity is a different architecture track.
+
+**Release impact.** Combobox is not in the npm package, so it does **not** block `@skrewww/react@0.1.0-beta.2`.
+It is in the Pro file only, so it does not touch the Free file or the Figma Community listing; it does not block the
+Figma spacing release or a Gumroad update (it ships unchanged, still single-size), but the `content/forms.ts` "15
+variants (Figma)" wording is already inaccurate for any release.
+
 ## Status
 
 Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved
