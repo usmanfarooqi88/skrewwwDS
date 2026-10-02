@@ -19,6 +19,7 @@ This pass does not rewrite Tailwind to consume CSS variables (Option A) or gener
 | Focus ring | Figma semantic | `--semantic-focus-ring` | — | Alias |
 | Ink neutrals | Figma neutral ramp | — | `theme.colors.ink.*` | Docs-shell Tailwind palette; not used in public component modules |
 | Combobox popup tokens | Unresolved MCP | `--combobox-popup-*` | — | Temporary / alias to Popover |
+| Spacing scale `spacing/<n>` | Figma Primitive variables (Pro and Free identical) | `rem` literals and component-tier tokens in `styles/tokens.css` (no `--primitive-spacing-*`) | — | 4px base grid, 8px-preferred macro rhythm; `spacing/2` and `spacing/6` are documented exceptions — see [`spacing-foundation.md`](spacing-foundation.md) |
 
 ## Rules
 
@@ -26,6 +27,7 @@ This pass does not rewrite Tailwind to consume CSS variables (Option A) or gener
 - Electric Violet brand primary must stay `#6C4CF2` / `#6c4cf2` across Tailwind and tokens until Figma MCP verifies a change.
 - Dark/light semantic usage in components prefers `--semantic-*` tokens, not raw Tailwind palette classes inside `components/ui/`.
 - Tailwind opacity modifiers on duplicated brand tokens must remain valid if Tailwind values change.
+- Spacing: pick an existing `spacing/<n>` token first, then a valid 4px-grid value, then an arbitrary value only with a documented exception. Do not use `spacing/2` or `spacing/6` for new layouts (`spacing-foundation.md`).
 
 ## Future work
 

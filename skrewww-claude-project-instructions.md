@@ -70,6 +70,7 @@ live only in this repository's `components/ui/`.
 - Primitive → Semantic → Component token layers live in `styles/tokens.css`.
 - Prefer semantic aliases over raw primitives in components.
 - Mark temporary tokens explicitly; do not rename temporary tokens to imply Figma verification.
+- Spacing: Skrewww uses a 4px base spacing grid with an 8px-preferred macro rhythm (not a strict 8pt system). Use an existing `spacing/<n>` token, else a valid 4px-grid value, else an arbitrary value only with a documented exception; no one-off spacing tokens. `spacing/2` and `spacing/6` are documented legacy exceptions — do not pick them for new layouts. See `docs/architecture/spacing-foundation.md`.
 - Internal composition under `components/ui/internal/` is not public API.
 - FormField owns label, description, required indication, and validation placement.
 
