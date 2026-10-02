@@ -230,7 +230,7 @@ because the indicator is an in-flow child that toggles visibility, and that same
 | Use 8 | indicator 2px farther | selected +10 | none | on grid, macro | low | tidies the number, worsens the height jump |
 | Restructure indicator | removes the gap | selected = unselected | matches overlay model | no spacing token needed | medium (height/layout of 15 variants + doc cells) | fixes the cause and matches React |
 
-**Recommendation: `RESTRUCTURE_TABS_ANATOMY`.** Keep the indicator out of flow (overlay anchored to the bottom, as
+**Recommendation: `RESTRUCTURE_TABS_ANATOMY`** (approved and implemented in SP-3B below). Keep the indicator out of flow (overlay anchored to the bottom, as
 in React) or keep it always present with a transparent fill, so a tab's height no longer depends on selection and
 the label-to-indicator `spacing/6` binding disappears. A separate human choice is needed at execution time: the
 indicator model (absolute overlay vs always-present transparent) and whether Figma tab heights should align to
@@ -289,8 +289,47 @@ Tabs 15, Badge Small horizontal padding 12, Split Button 12, Combobox 10, Toolti
 Tabs 15, Badge 12. Plus the public React tokens / equivalent CSS. `spacing/6` still exists and cannot be deleted until
 those are resolved.
 
+## SP-3B — Tabs indicator anatomy (completed 2026-10-02, Figma-only)
+
+Implements the approved result of the Tabs anatomy audit above. Authorised Figma write to the Pro and Free working
+files; React, `@skrewww/react`, `/r/*`, tokens and npm untouched; **nothing published**.
+
+**Before:** `Tab` (vertical auto-layout, hug) → `Label` + in-flow `Indicator` (2px), `itemSpacing` `spacing/6`;
+selected tabs were 8px taller than unselected (Small 41/33, Medium 43/35, Large 54/46).
+
+**Approved decision:** the active indicator is an out-of-flow overlay anchored to the bottom of the tab, so selection
+cannot change tab size. Not approved and not done: collapsing the three Figma sizes into one, forcing React's 40px,
+or changing typography or horizontal padding (React's single-size 40px model remains a separate parity decision).
+
+**Implemented (all 15 variants in Pro and in Free — same set, same results):**
+- `Indicator` set to absolute positioning (`layoutPositioning = ABSOLUTE`) in every variant, including the hidden
+  ones, so all states share one anatomy; `Label` stays in normal flow.
+- Constraints: horizontal `STRETCH` (left/right inset equal to the tab's horizontal padding — the same rule as React's
+  `left/right: var(--tab-padding-x)`), vertical `MAX` (bottom). Indicator height stays 2px, `y = tab height − 2`.
+  Resulting indicator width equals the label width in every variant, i.e. unchanged from before.
+- `itemSpacing` rebound `spacing/6` → `spacing/0` (existing variable; no replacement 4 or 8 gap, no new variable).
+  With one flow child it is inert. No fixed or min height was introduced.
+
+**Heights, after (every state in a size is identical):** Small 33, Medium 35, Large 46 — equal to the previous
+unselected heights. Selected tabs shrank 41→33, 43→35, 54→46; the label stays at its previous y in every variant.
+Selected remains Bold (and therefore slightly wider); that was left as is.
+
+**Verification.** Structural, per file: 15/15 variants, indicator absolute and 2px high, bottom-anchored in 15/15,
+label in flow in 15/15, no Tabs variable binding on `spacing/6`. Visual (both files, Small/Medium/Large × Default,
+Hover, Selected, Focused, Disabled): labels do not move, the selected underline sits at the bottom edge without
+overlapping the label or clipping, focus and disabled treatments are unchanged. Instances: Pro 15, all in the frozen
+Presentation V2 matrix; Free 16 (15 matrix + the Medium/Default "Tabs cell", which stays 408×103). No instance
+overrides; every instance reads its variant's new height.
+
+**`spacing/6` master-level census.** Navigation page measured 15 → 0 in both files; other pages were not
+changed since the SP-3 Stage 2 measurements, so the totals are Pro 61 → **46** and Free 27 → **12**
+(measured Navigation page plus unchanged earlier counts). `spacing/2` unchanged. Remaining uses — Pro: Badge Small
+horizontal padding 12, Split Button 12, Combobox 10, Tooltip 8, Validation Message 4. Free: Badge Small 12. Plus the
+public React tokens / equivalent CSS. `spacing/6` still exists.
+
 ## Status
 
 Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved
 the 45 Button/Link gap bindings per file described above; SP-3 Stage 2 moved the Small-control vertical padding
-described above (Pro 58, Free 50 bindings) and nothing else.
+described above (Pro 58, Free 50 bindings); SP-3B restructured the Tabs indicator and removed the Tabs `spacing/6`
+bindings (15 per file), and nothing else.

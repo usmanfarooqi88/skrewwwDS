@@ -39,6 +39,8 @@ decision, add a new dated entry that says what it supersedes — do not silently
 
 - Figma is **read-only unless a task explicitly authorizes a write**. Never publish a library, Figma Community file or
   Gumroad upload without an explicit request.
+- State indicators must not alter control dimensions: a decorative selected-state indicator that would otherwise change
+  component size is overlaid / out-of-flow (decided 2026-10-02; applied to Tabs).
 - Prefer property/variable-tree inspection over screenshots for verification, then confirm the visual result by eye:
   property checks can all pass while a visual defect (for example a missing blur) remains.
 - System-level properties live on **masters**, never as instance-level overrides.
@@ -71,8 +73,8 @@ decision, add a new dated entry that says what it supersedes — do not silently
 - `spacing/2` is a **documented retained exception** for established anatomy (seams, insets, micro gaps).
 - `spacing/6` is **deprecated for new use**, with a staged migration; **no silent token migration is allowed** — each
   stage is an explicit, scoped task with Free/Pro synchronized and nothing published as a side effect.
-- Stage 1 (Figma-only parity gaps where React was already compliant) is done; the Tabs 6px is a separate
-  unresolved anatomy case. Full detail and status: [`architecture/spacing-foundation.md`](architecture/spacing-foundation.md).
+- Stage 1 (Figma-only parity gaps where React was already compliant) is done; the Tabs 6px was resolved by restructuring the indicator as an overlay (see
+  the state-indicator rule under Figma practices). Full detail and status: [`architecture/spacing-foundation.md`](architecture/spacing-foundation.md).
 - Small interactive controls use explicit tokenized heights with vertically centered content; control height must not be
   derived from deprecated off-grid spacing values (decided 2026-10-02 after the Small-control migration).
 
