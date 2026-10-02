@@ -327,6 +327,76 @@ changed since the SP-3 Stage 2 measurements, so the totals are Pro 61 → **46**
 horizontal padding 12, Split Button 12, Combobox 10, Tooltip 8, Validation Message 4. Free: Badge Small 12. Plus the
 public React tokens / equivalent CSS. `spacing/6` still exists.
 
+## SP-3 Stage 3 — remaining `spacing/6` disposition audit (2026-10-03, read-only)
+
+Audit and recommendations only: no Figma, React, token, package or `/r/*` change; nothing published. Figma counts
+were re-measured live (Pro 46, Free 12).
+
+**Fresh census (master level).** Pro 46: Badge Small horizontal padding 12 (6 variants × left/right), Split Button
+12 (Small only: Main Action and Chevron Trigger top/bottom padding), Combobox 10 (top/bottom, 5 variants), Tooltip 8
+(`Content` top/bottom, 4 variants), Validation Message 4 (icon-to-text `itemSpacing`). Free 12: Badge Small only.
+Pages measured: Pro Actions, Forms, Feedback, Navigation, Containers (Content measured at Stage 2); Free all pages.
+
+**Public exposure.** `@skrewww/react@0.1.0-beta.1` exports Button, Card, Dialog, FormField, Link, Spinner, TextInput,
+ValidationMessage; its `styles.css` is the whole token sheet, so every 6px token is present as an inert custom
+property, but only FormField and ValidationMessage consume a 6px value in published components. Everything else
+below is exposed through `/r/*` (badge, split-button, combobox, tooltip, validation-message, form-field, breadcrumb,
+tag, calendar-grid, menu, credit-card-field, phone-number-field, list-item, radio, select).
+
+| Family | Current use | Pro | Free | React equivalent | Public exposure | Candidate | Risk | Decision |
+|---|---|---:|---:|---|---|---|---|---|
+| Badge Small | horizontal padding (pill inset) | 12 | 12 | `--badge-padding-x-sm` 6px (Figma = React; Md 8, Lg 10) | token in `styles.css`; `/r/badge`; not in package exports | keep 6 (4: −4px width, cramped pill; 8: = Medium inset, loses Small/Medium step) | low | RETAIN_AS_EXCEPTION |
+| Split Button Small | segment vertical padding (height derivation) | 12 | — | no `size` prop, but it composes `Button` (`size="sm"` = `--control-height-sm` 32px) | `/r/split-button`; not in package | `minHeight` `spacing/32` + padding `spacing/0` on both Small segments → 32/32 | low | MIGRATE_FIGMA_ONLY |
+| Combobox | vertical padding (height derivation) | 10 | — | `size` sm/md/lg = 32/40/48px, default md | `/r/combobox` | none until a mapping is chosen | medium | DEFER_FOR_PARITY_DECISION |
+| Tooltip | `Content` vertical padding | 8 | — | `--tooltip-padding-y` 6px (Figma = React) | token; `/r/tooltip` | keep 6 (4: 25px tall, 8: 33px tall) | low | RETAIN_AS_EXCEPTION |
+| Validation Message | icon-to-text gap | 4 | — | `gap: 0.375rem` in `validation-message.module.css` | **published beta package** + `/r/validation-message` | 4 (Link icon-gap precedent) or 8 (control icon gaps); needs a human pick | medium | MIGRATE_COORDINATED |
+
+**Badge Small.** Figma Small is 18px high, label 12px Bold, padding `2/6`; Medium is `2/8`. React `sm` is 6px with an
+11px label. 6px is about one third of the pill height; 4px shrinks Small by 4px (39 → 35 for a 27px label) and 8px
+makes it identical to Medium's inset. Figma and React already agree, so a Figma-only change would create parity debt.
+
+**Split Button.** The Figma component duplicates its anatomy (Main Action and Chevron Trigger are frames, not
+`Button` instances) and is Pro-only. Segment heights are accidental: Small 29/28, Medium 35/36, Large 46/48, because
+a 17px label and a 16px icon hug differently. React composes real Buttons inside `ButtonGroupContext`, so a Small
+split button is two Button `sm` controls at 32px. Applying the Stage 2 model to the Small segments fixes the 29/28
+mismatch and matches React; the `spacing/2` seam is untouched. Medium/Large already use compliant padding and are not
+part of this decision. Instances were not scanned.
+
+**Combobox.** Figma Combobox has no Size property and is 32px tall, but its type and icon are Select-Medium's
+(16px / 20px chevron) with padding 6 (Select Medium: 8, 36px high; Select Small: 14px / 16px chevron, 32px).
+So it matches neither React `sm` (14px text, 32px) nor `md` (default, 40px): a parity mismatch, not a Small control.
+Smallest human decision: which size Combobox represents and whether it gains Select's Size variants.
+
+**Tooltip.** Figma `Content` padding is `6/8` (height 29); React is `6/10` — Figma and React agree vertically and
+differ horizontally (pre-existing). 6px is the compact-tooltip vertical padding (14px text): 4 gives 25px, 8 gives 33px.
+A tooltip is a content container, not a Small control, so the Stage 2 height rule does not apply.
+
+**Validation Message.** Figma gap 6, React gap 6, and both are in the published beta. Figma's Form Field Wrapper uses
+`spacing/8` between label, control and helper while React `form-field.module.css` uses 6, so React is the off-grid
+side there. Icon-to-text precedent: Link 4, Badge 4, Button/Select/Search 8; Alert and Toast use 12 for a different
+anatomy. A coordinated change (Figma gap and React `gap`, plus `form-field` 6 → 8 to match the wrapper) needs the
+number chosen first and a new beta release; do not change Figma alone.
+
+**Other 6px values in React (no edit made).** `--breadcrumb-gap` (Figma Breadcrumb Item has no inter-item gap),
+`--tag-gap` (Figma Tag gap is `spacing/4`, so React is off-grid), `--calendar-grid-week-gap` and `--menu-label-padding`
+`6/10/4` (no Figma counterpart: Calendar Day and Menu Item only), `select.module.css` popup group label padding
+`6/10/4`, `form-field`, `credit-card-field`, `phone-number-field` (gap and margin-bottom), `list-item` gap, `radio`
+margin-top, and `banking-transaction-row` vertical padding. All are reachable through `/r/*`; only FormField and
+ValidationMessage ship in the package. `--component-radius-control` and `--shape-radius-control` are 6px radii, a
+different scale. Candidate replacements are 4 or 8 per component, each a visible public change.
+
+**End-state forecast.** Pro 46 → Split Button −12 → 34 → Validation Message −4 → 30 (Badge 12, Tooltip 8,
+Combobox 10); Combobox resolved later −10 → 20 (Badge 12, Tooltip 8). Free stays 12 (Badge). Badge and Tooltip block
+removal of the Figma variable while retained. Figma-variable removal and React/CSS no longer using 6px are separate
+milestones, and the second needs a coordinated public release.
+
+**Should `spacing/6` ever be deleted?** Not recommended. Evidence favours end state 3: keep the variable as a
+documented, scoped exception for anatomies where Figma and React both use 6 (Badge Small inset, Tooltip vertical
+padding), and forbid new general use — the same shape as `spacing/2`. Migrate only the structural cases with a clear
+defect or a compliant counterpart (Split Button Small, Combobox once mapped, Validation Message and Form Field).
+
+**Next implementation slice:** Split Button Small — Figma-only, Pro-only height migration (same model as Stage 2).
+
 ## Status
 
 Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved
