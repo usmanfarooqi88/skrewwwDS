@@ -191,6 +191,15 @@ Performed by the npm scope owner; npm authentication and 2FA are the owner's, ne
   exist because of it. The first publish attempt also failed (401) when run from a non-interactive
   runner, before OTP.
 
+## Second beta (REL-1A) — prepared, not published
+
+`0.1.0-beta.2` is prepared in the repository: version bump in `packages/react/package.json` (the only version
+source for the package), the matching expectation in `lib/react-package/release-checks.test.ts`, and the README status
+and install text. Consumer-visible change: Validation Message icon-to-text gap 6 → 4px and Form Field vertical gap
+6 → 8px (CSS only, no API change). Publication follows the same procedure as beta.1 (explicit `--tag beta`; `latest` is
+not moved and stays on `0.1.0-beta.1`). Release notes: `docs/releases/react-v0.1.0-beta.2.md`; coordinated plan:
+`docs/releases/sp3-coordinated-release-prep.md`.
+
 ## Not yet decided or built
 
 Guidelines compiler and Make setup are done (MK-2B); Make Kit assembly

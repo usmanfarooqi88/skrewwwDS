@@ -2,8 +2,8 @@
 
 Framework-agnostic Skrewww React components with one stylesheet.
 
-> **Status: public beta.** `0.1.0-beta.1` is published on npm under the `beta` dist-tag. It is a
-> beta: the API may still change. There is no Figma Make Kit yet.
+> **Status: public beta.** The current release is `0.1.0-beta.2`, published on npm under the `beta`
+> dist-tag. It is a beta: the API may still change. There is no Figma Make Kit yet.
 
 ## Install
 
@@ -14,11 +14,12 @@ npm install @skrewww/react@beta
 or pin the exact version:
 
 ```bash
-npm install @skrewww/react@0.1.0-beta.1
+npm install @skrewww/react@0.1.0-beta.2
 ```
 
-Because this is the package's first version, npm also points the `latest` tag at it, so a bare
-`npm install @skrewww/react` currently resolves to the same beta. Prefer `@beta` or an exact version.
+npm pointed the `latest` tag at the package's first version (`0.1.0-beta.1`) and it has not been moved,
+so a bare `npm install @skrewww/react` currently resolves to that older beta. Prefer `@beta` or an
+exact version.
 
 This package is a distribution of Skrewww's canonical components, built from
 `components/ui` in the [Skrewww repository](https://github.com/usmanfarooqi88/skrewwwDS).

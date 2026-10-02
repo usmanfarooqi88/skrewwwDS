@@ -1,6 +1,6 @@
 {
   "name": "@skrewww/react",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "Framework-agnostic Skrewww React components (Button, Link, Card, Text Input, Form Field, Validation Message, Spinner, Dialog) with one stylesheet and an optional router provider. Beta preparation.",
   "license": "MIT",
   "type": "module",

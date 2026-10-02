@@ -22,7 +22,7 @@ describe("@skrewww/react manifest release contract", () => {
     const pkg = manifest();
     expect(pkg.publishConfig).toEqual({ access: "public", tag: "beta" });
     expect(pkg.engines.node).toBeTruthy();
-    expect(pkg.version).toBe("0.1.0-beta.1");
+    expect(pkg.version).toBe("0.1.0-beta.2");
     expect(isPublishBlockedByPrivate(pkg)).toBe(false);
     expect(pkg.scripts.prepublishOnly).toMatch(/prepublish:react-package/);
   });

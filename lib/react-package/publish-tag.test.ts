@@ -1,9 +1,12 @@
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { checkPublishTag, expectedPublishTag } from "../../scripts/check-react-publish-tag.mjs";
 
 const script = join(process.cwd(), "scripts/check-react-publish-tag.mjs");
+/** The guard reports the manifest version; derive it so a version bump does not break this test. */
+const manifestVersion: string = JSON.parse(readFileSync(join(process.cwd(), "packages/react/package.json"), "utf8")).version;
 
 /** Runs the real guard script the way npm's prepublishOnly lifecycle would, with a controlled environment. */
 function runGuard(env: Record<string, string>) {
@@ -54,7 +57,7 @@ describe("the real guard script, as npm's prepublishOnly would run it", () => {
   it("fails when no tag is resolved (plain npm publish => latest)", () => {
     const result = runGuard({ npm_lifecycle_event: "prepublishOnly" });
     expect(result.status).toBe(1);
-    expect(result.out).toMatch(/Refusing to publish 0\.1\.0-beta\.1/);
+    expect(result.out).toContain(`Refusing to publish ${manifestVersion}`);
   });
 
   it("fails for a non-beta explicit tag", () => {
