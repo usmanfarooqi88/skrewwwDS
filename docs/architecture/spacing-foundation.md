@@ -397,9 +397,43 @@ defect or a compliant counterpart (Split Button Small, Combobox once mapped, Val
 
 **Next implementation slice:** Split Button Small — Figma-only, Pro-only height migration (same model as Stage 2).
 
+## SP-3C — Split Button Small height migration (completed 2026-10-03, Figma-only, Pro-only)
+
+Implements the Stage 3 disposition `MIGRATE_FIGMA_ONLY` for Split Button Small. Authorised Figma write to the Pro
+working file only (Split Button does not exist in Free); React, `@skrewww/react`, `/r/*`, tokens and npm untouched;
+**nothing published**.
+
+**Before:** `Actions/Split Button` (9 variants: Style Primary/Secondary/Danger × Size Small/Medium/Large) is a
+horizontal outer frame (hug, `spacing/2` seam gap) holding two hug frames, `Main Action` and `Chevron Trigger`. In the
+three Small variants both segments had `spacing/6` top/bottom padding, so height was content-derived: Main Action 29
+(17px label + 12) and Chevron Trigger 28 (16px icon + 12) — a 1px mismatch inside one control. React composes real
+`Button` elements (`size="sm"`: `min-height` 32px, no vertical padding), and Figma Button Small was already on the
+Stage 2 model.
+
+**Changed (Small only, all 3 variants, both segments, 12 `spacing/6` bindings):** `paddingTop` and `paddingBottom`
+`spacing/6` → `spacing/0`, `minHeight` → `spacing/32` (existing variables, no new variable). Cross-axis alignment was
+already `CENTER`, so no alignment change was needed; horizontal padding, gaps, typography, icon sizes and the
+`spacing/2` seam were not touched. **After:** Main Action 32, Chevron Trigger 32, outer 92×32 in every Small variant;
+the label sits at y 7.5 and the chevron at y 8 inside the 32px segments (centered).
+
+**Not changed (separate Split Button height audit):** Medium (Main Action 35, Chevron Trigger 36, outer 36) and Large
+(Main Action 46, Chevron Trigger 48, outer 48) keep their content-derived heights and compliant padding (`spacing/8`
+and `spacing/12`); the same 1–2px segment mismatch exists there and was deliberately left alone.
+
+**Verification.** Structural: 3/3 Small variants, 6/6 segments read `spacing/0` / `spacing/0` / `spacing/32` with
+minHeight 32; every `spacing/2` seam still reads 2 (`spacing/2`); Medium/Large unchanged. Visual: all nine variants
+screenshotted — Small label and chevron centered, divider continuous, no clipping, no state or colour change.
+Instances: 16 exist (3 Small in the Matrix frame, no clipping — the lowest cell bottom is 199.5 of 222; Medium/Large
+instances unchanged at 36/48). Shape and Surface modes were **not** toggled visually; the existing Shape-panel
+instances are Medium and are unaffected, and the change touches only vertical padding and `minHeight`.
+
+**`spacing/6` census (Pro, master level).** Actions page measured 12 → 0. Pro total 46 → **34** (Actions measured; other
+pages unchanged since the Stage 3 measurement): Badge Small 12, Combobox 10, Tooltip 8, Validation Message 4. Free
+unchanged at 12 (Badge). `spacing/2` unchanged. `spacing/6` still exists.
+
 ## Status
 
 Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved
 the 45 Button/Link gap bindings per file described above; SP-3 Stage 2 moved the Small-control vertical padding
 described above (Pro 58, Free 50 bindings); SP-3B restructured the Tabs indicator and removed the Tabs `spacing/6`
-bindings (15 per file), and nothing else.
+bindings (15 per file); SP-3C moved the Split Button Small vertical padding (12 Pro bindings), and nothing else.
