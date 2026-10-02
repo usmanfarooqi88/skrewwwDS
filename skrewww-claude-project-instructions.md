@@ -8,6 +8,13 @@ For the latest React component inventory, test results, implementation
 status, and active roadmap, read [`docs/project-status.md`](docs/project-status.md)
 before making recommendations.
 
+Two companion docs, deliberately separate:
+
+- [`docs/project-memory.md`](docs/project-memory.md) — **durable decisions** (what was decided and should hold).
+- [`docs/project-status.md`](docs/project-status.md) — **current / volatile status** (counts, results, what shipped, blockers, next task).
+
+Put a decision in project-memory and a status fact in project-status; do not duplicate one in the other.
+
 Last instruction sync: 2026-07-25
 
 ---

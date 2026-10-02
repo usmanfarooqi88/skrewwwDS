@@ -60,7 +60,7 @@ proof of visual intent, and unbound raw values are only counted.
 - Masters bound to **spacing/2**: Link (padding on all sides, every size), Switch (track left/right inset),
   Badge (vertical padding, Small and Medium), Button Group and Split Button (joined seam), List Item (text gap).
 - Masters bound to **spacing/6**: Button Small (vertical padding and content gap), Text Input, Select,
-  Search Field and Combobox (vertical padding), Split Button Small (padding), Tabs (gap, all sizes), Badge
+  Search Field and Combobox (vertical padding), Split Button Small (padding), Tabs (label-to-indicator gap, all sizes), Badge
   Small (horizontal padding), Validation Message (gap), Tooltip (vertical padding), Link M/L (content gap).
 - Pro-only masters: Button Group, Split Button, Validation Message, Search Field, Combobox, Tooltip. All
   other bindings are identical in Free. The remaining bindings are documentation/presentation frames
@@ -86,8 +86,9 @@ translation. None of these is a spacing token use.
 
 | Usage | Class |
 |---|---|
-| Small control vertical padding 6 (Figma); React uses `--control-height-sm: 2rem` with no vertical padding | STRUCTURAL_SPACING (height-derived: 20px line + 2×6 = 32) |
-| Inline/label/icon gaps of 6 (Form Field, Validation Message, Tabs, Link, Button, tags, calendar) | STRUCTURAL_SPACING |
+| Small control vertical padding 6 (Figma); React uses `--control-height-sm: 2rem` with no vertical padding | STRUCTURAL_SPACING (height-derived; note Figma Button Small is 29px tall — 17px line + 2×6 — against React's 32px, an existing height difference) |
+| Inline/label/icon gaps of 6 (Form Field, Validation Message, Link, Button, tags, calendar) | STRUCTURAL_SPACING |
+| Tabs: the 6 between a tab's label and its indicator (vertical layout inside each tab) | **UNRESOLVED anatomy case** — not tab-to-tab spacing; see "Corrections" |
 | Badge padding 2 / 6; Tooltip padding 6; List Item gap 2; Menu/Tree/Calendar gaps 2 | STRUCTURAL_SPACING |
 | Switch thumb inset 2; required-asterisk offset 2; icon/checkbox/radio `margin-top` 2; Link padding 2 | OPTICAL_ALIGNMENT |
 | Button/Split/Toggle Group seam 2 | BORDER_OR_STROKE (a seam, not layout rhythm) |
@@ -100,12 +101,12 @@ translation. None of these is a spacing token use.
 - **2 → 0 or 4.** For a seam, 0 removes the divider and 4 doubles it; for badge padding 4 adds 4px to
   Small/Medium height; for the Switch inset it changes the thumb travel (a public token). No compliant
   value preserves the anatomy.
-- **6 → 4 or 8.** Not interchangeable. Several Figma-only 6s already differ from compliant React values:
-  Button content gap (Figma 6, React `--control-gap` 8), Tabs gap (Figma 6, React `--tab-gap` 4), Link content
-  gap (Figma 6, React `--link-icon-gap` 4). Aligning Figma to React there *improves* parity. The Small control
-  vertical padding is different: 6→4/8 changes Small control height (28/36 versus the on-grid 32) unless the control
-  is rebuilt height-driven (fixed min-height, centered content), which is what React already does.
-- Touch targets: control heights are the touch-target driver; any change must keep Small ≥ the current 32px.
+- **6 → 4 or 8.** Not interchangeable. Two Figma-only 6s already differed from compliant React values: Button
+  content gap (Figma Small 6, React `--control-gap` 8) and Link content gap (Figma M/L 6, React `--link-icon-gap` 4).
+  Aligning Figma to React there improves parity (done in SP-3 Stage 1). The Small control vertical padding is
+  different: 6→4/8 changes Small control height unless the control is rebuilt height-driven (fixed min-height,
+  centered content), which is what React already does.
+- Touch targets: control heights are the touch-target driver; any change must preserve the intended Small height.
 
 ### Decisions
 
@@ -117,8 +118,8 @@ translation. None of these is a spacing token use.
 ### Proposed migration order (not executed)
 
 1. Policy and guidance first: this document, then Agent/Make guidance so new work never picks either value.
-2. Figma-only gaps where React is already compliant (Button Small content gap → 8, Link content gap → 4,
-   Tabs gap → 4): parity-improving, no React or package change. Needs Pro and Free sync.
+2. **Done in SP-3 Stage 1:** Figma-only gaps where React is already compliant — Button Small content gap → 8 and
+   Link M/L content gap → 4 (Pro and Free). No React or package change. (Tabs was removed from this stage; see below.)
 3. Small-control vertical padding (Button, Text Input, Select, Search Field, Combobox, Split Button, Tooltip):
    rebuild height-driven in Figma to match React. Needs a visual check at every Small variant.
 4. Public React tokens that equal 6 (`--badge-padding-x-sm`, `--tooltip-padding-y`, `--breadcrumb-gap`,
@@ -137,7 +138,44 @@ translation. None of these is a spacing token use.
   masters (they may serve layout/documentation frames or macro layout); redundancy was not evaluated and no
   removal is proposed.
 
+## Corrections to SP-2 (found during SP-3 Stage 1, 2026-10-02)
+
+- **Tabs.** SP-2 treated the Figma Tabs gap of 6 as comparable to React's `--tab-gap` (4px). Live Figma shows the
+  6 is the vertical gap between a tab's label and its indicator (each tab is a vertical layout of `Label` + a 2px
+  `Indicator`, 15 variants in Pro and in Free). React's `--tab-gap` is the spacing *between* tab triggers, and
+  React has no label-to-indicator gap (the indicator is positioned from the trigger). There is no React counterpart,
+  so changing it would **not** be a parity fix, and it would shrink every tab by 2px. Tabs is therefore a
+  **separate unresolved spacing/anatomy case** that needs its own audit before any migration. It is not assumed to
+  be a height-derived control case.
+- **Small control height.** SP-2 said Small controls derive 32px from a 20px line plus 2×6. Figma Button Small is
+  29px (17px line + 2×6); React's `--control-height-sm` is 32px. That height difference pre-dates the spacing
+  work and is recorded for Stage 2.
+
+## SP-3 Stage 1 — Figma-only parity migration (completed 2026-10-02)
+
+Changed in **both** Pro and Free (the same component sets and variants exist in both; node IDs are identical),
+rebinding the existing `Content` auto-layout gap to existing variables — no new variable, no raw values:
+
+| Family | Variants changed (each file) | Before | After | React authority |
+|---|---|---|---|---|
+| Button — Small (Primary/Secondary/Danger × 5 states) | 15 | gap `spacing/6` (6) | `spacing/8` (8) | `.content { gap: var(--control-gap) }` = 0.5rem, all sizes |
+| Link — Medium (Primary/Secondary/Danger × 5 states) | 15 | gap `spacing/6` (6) | `spacing/4` (4) | `--link-icon-gap` = 0.25rem |
+| Link — Large | 15 | gap `spacing/6` (6) | `spacing/4` (4) | `--link-icon-gap` = 0.25rem |
+
+Link Small already used `spacing/4`, so all three Link sizes now agree. Button Small now matches Medium and Large
+(8). Verified after the change, in both files: every changed node reads the new variable; component heights are
+unchanged (Button Small is 95×29, previously 93×29 — only the width of the visible icon+label content grows);
+Link outer padding (`spacing/2`), all vertical padding, Tabs and every other `spacing/6` binding are untouched.
+Master-level `spacing/6` bindings fell by exactly 45 per file (Pro 164 → 119, Free 122 → 77); `spacing/2` is
+unchanged (Pro 238, Free 222). `spacing/6` still exists and still has other uses. React, `@skrewww/react` and
+`/r/*` were not touched. The Figma libraries were **not published**; the changes live in the working files only.
+Instance-level overrides in documentation frames were not scanned.
+
+Remaining `spacing/6` uses: Small-control vertical padding (Button, Text Input, Select, Search Field, Combobox,
+Split Button, Tooltip), Tabs label-to-indicator gap, Badge Small horizontal padding, Validation Message gap, and the
+public React tokens listed above. Next: SP-3 Stage 2 (height-driven Small-control rebuild), plus a separate Tabs audit.
+
 ## Status
 
-Both exceptions remain in the Primitive scale in Pro and Free; no spacing token, binding, component CSS
-value, package or manifest was changed by SP-2.
+Both exceptions remain in the Primitive scale in Pro and Free. SP-2 itself changed nothing; SP-3 Stage 1 moved
+the 45 Button/Link gap bindings per file described above and nothing else.
