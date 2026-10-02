@@ -110,12 +110,18 @@ gh release create react-v0.1.0-beta.2 --prerelease --title "@skrewww/react 0.1.0
 | Git tag `react-v0.1.0-beta.2` | **PUBLISHED, verified** | signed annotated tag at the release commit (git: Good signature, ED25519; GitHub: verified, valid) |
 | Tag workflow | **PASSED** | React package workflow green on the tag push |
 | GitHub prerelease | **PUBLISHED** | prerelease, non-draft, notes from `docs/releases/react-v0.1.0-beta.2.md` |
-| Figma Pro library | **PENDING_MANUAL** | no library-publish action exists in the available Figma tooling; working file re-verified unchanged |
+| Figma Pro library | **PENDING_MANUAL** | no library-publish action exists in the available Figma tooling; the owner's completion was not confirmed; working file re-verified unchanged |
 | Figma Free library | **PENDING_MANUAL** | same |
 | Figma Community (Free) | **PENDING_MANUAL** | manual Figma UI |
 | Gumroad (Pro) | **PENDING_MANUAL** | needs the owner's Gumroad session and the published Pro file |
-| Website changelog | **PENDING** | written only after the Figma, Community and Gumroad outcomes are confirmed |
+| Website changelog | **UPDATED (React only)** | October 2026 entry `@skrewww/react 0.1.0-beta.2`; deliberately says nothing about Figma, Community or Gumroad because none is confirmed; a Figma-facing entry is added only after those outcomes are confirmed |
 
 Pre-publish gate in a clean worktree of the release commit: 174 test files / 1823 tests, package integrity checks, 42/42 tarball
 smoke, Make Kit check — all passed. The first REL-1A gate attempts hit one hard-coded-version test assertion (fixed) and load-induced timeouts
 (rerun clean).
+
+### Manual-track confirmation status (recorded 2026-10-03)
+
+The handoff message for the manual tracks arrived with its outcome fields unfilled, so Figma Pro, Figma Free, Community and Gumroad are
+recorded as unconfirmed (`PENDING_MANUAL`), not as done. Library publication freshness, the Community listing and Gumroad are not
+verifiable with the available tooling (the Figma library tool lists library names and keys only). No claim about them is public.

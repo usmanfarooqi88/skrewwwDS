@@ -35,6 +35,24 @@ export type ChangelogEntry = {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: "2026-10-react-beta-2",
+    date: "2026-10-03",
+    displayDate: "October 2026",
+    title: "@skrewww/react 0.1.0-beta.2",
+    summary:
+      "Second public beta of the framework-agnostic React package. Install with @skrewww/react@beta, or pin 0.1.0-beta.2. A bare npm install of the package still resolves to the first beta, so prefer the beta tag or an exact version. No public API change and no new dependency.",
+    items: [
+      {
+        type: "fixed",
+        text: "Validation Message icon-to-text spacing now follows the 4px micro rhythm.",
+      },
+      {
+        type: "fixed",
+        text: "Form Field spacing between the label, the control and the supporting or error text now follows the 8px structural rhythm.",
+      },
+    ],
+  },
+  {
     id: "2026-09-shadcn-directory-listing",
     date: "2026-09-30",
     displayDate: "September 2026",
