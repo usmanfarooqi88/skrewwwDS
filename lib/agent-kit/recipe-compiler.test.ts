@@ -143,6 +143,18 @@ describe("Recipe compiler — maturity and installability", () => {
     expect(validated.components.every((c) => c.status === "stable")).toBe(true);
   });
 
+  it("validated-text-field uses Text Input as a complete field, never wrapped or paired with a second message (MK-2E1)", () => {
+    const authored = authoredRecipes.find((r) => r.id === "validated-text-field")!;
+    expect(authored.requiredComponents).toEqual(["text-input"]);
+    expect(authored.optionalComponents).toEqual(["form-field", "validation-message"]);
+    const text = JSON.stringify(authored);
+    expect(text).toMatch(/Do not wrap it in Form Field/);
+    expect(text).toMatch(/Do not render a second Validation Message/);
+    expect(text).toMatch(/Never render assertive on first paint/);
+    expect(text).not.toMatch(/Form Field as the outer shell/);
+    expect(text).not.toMatch(/Pass Text Input as Form Field/);
+  });
+
   it("derives containsBeta when any constituent is Beta", () => {
     const { contracts } = contractsBySlugMap();
     const { recipes } = compileAllRecipes(authoredRecipes, contracts, PROVENANCE);
@@ -271,7 +283,7 @@ describe("Recipe consumption smoke — plumbing only", () => {
     expect(match).toBeDefined();
 
     const recipe = recipes.find((r) => r.id === match!.id)!;
-    expect(recipe.requiredComponents).toEqual(["form-field", "text-input", "validation-message"]);
+    expect(recipe.requiredComponents).toEqual(["text-input"]);
 
     for (const slug of recipe.requiredComponents) {
       const contract = contracts.find((c) => c.slug === slug);

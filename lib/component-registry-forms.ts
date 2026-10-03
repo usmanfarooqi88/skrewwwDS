@@ -82,7 +82,7 @@ export const formsRegistryEntries: ComponentRegistryEntry[] = [
     cssTokens: ["--semantic-text-danger", "--semantic-text-primary", "--semantic-text-secondary"],
     relatedComponents: [
       { label: "Validation Message — typed inline feedback", href: "/components/validation-message" },
-      { label: "Text Input — control composed with FormField", href: "/components/text-input" },
+      { label: "Text Input — complete field that already composes Form Field internally; do not wrap it", href: "/components/text-input" },
       { label: "Textarea — multi-line control composition", href: "/components/textarea" },
       { label: "Select — native dropdown composition", href: "/components/select" },
       { label: "Search Field — search-specific composition", href: "/components/search-field" },
@@ -178,7 +178,7 @@ export function Example() {
     ],
     relatedComponents: [
       { label: "Form Field — positions validation below controls", href: "/components/form-field" },
-      { label: "Text Input — common consumer of validation output", href: "/components/text-input" },
+      { label: "Text Input — renders its own error through Validation Message; do not add a second one", href: "/components/text-input" },
     ],
     relatedTokens: [
       { label: "component/validation-message/error/text", href: "/foundations" },
@@ -201,17 +201,20 @@ export function Example() {
     comparisons: [],
     apiProps: [
       { name: "type", type: '"error" | "warning" | "success" | "info"', default: '"error"', description: "Visual and semantic feedback type." },
-      { name: "announce", type: '"off" | "polite" | "assertive"', default: '"off"', description: "Live region behavior. Use assertive only for dynamically introduced errors." },
+      { name: "announce", type: '"off" | "polite" | "assertive"', default: '"off"', description: "Live region behavior. Keep the default \"off\" for an error that is already on screen at first render; use assertive only for an error introduced after the page is shown, such as after a failed submit." },
       { name: "id", type: "string", description: "Used by aria-describedby on the related control." },
     ],
     reactExample: `import { ValidationMessage } from "@/components/ui/ValidationMessage";
 
-export function Example() {
-  return (
-    <ValidationMessage id="email-error" type="error" announce="assertive">
-      Enter a valid email address.
+export function Example({ submitError }: { submitError?: string }) {
+  // Rendered only after a failed submit, so the error is introduced dynamically
+  // and "assertive" is appropriate. An error already on screen at first render
+  // keeps the default announce="off".
+  return submitError ? (
+    <ValidationMessage id="form-error" type="error" announce="assertive">
+      {submitError}
     </ValidationMessage>
-  );
+  ) : null;
 }`,
   },
   {

@@ -260,7 +260,7 @@ export default function AgentKitPage() {
         </p>
         <p className="font-medium text-ink-700">Pilot set (4, status Beta):</p>
         <ul className="list-disc space-y-1 pl-5 font-mono text-[13px]">
-          <li>validated-text-field — form-field, text-input, validation-message</li>
+          <li>validated-text-field — text-input (a complete field; form-field and validation-message optional)</li>
           <li>destructive-confirmation — dialog, button</li>
           <li>loading-and-inline-feedback — skeleton, spinner, alert</li>
           <li>search-no-results — search-field, empty-state</li>

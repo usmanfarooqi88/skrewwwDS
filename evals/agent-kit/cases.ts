@@ -150,8 +150,8 @@ export const EVAL_CASES: readonly AuthoredEvalCase[] = [
     consumerFixtureId: "configured-rounded-glass",
     relevantComponentSlugs: ["form-field", "text-input", "validation-message"],
     relevantRecipeIds: ["validated-text-field"],
-    requiredComponentSlugs: ["form-field", "text-input"],
-    requiredAccessibilityFactTokens: [["label", "controlid"]],
+    requiredComponentSlugs: ["text-input"],
+    requiredAccessibilityFactTokens: [["label"]],
     forbidInventedInstallCommands: true,
     projectContext: {
       shapeMode: "rounded",
@@ -168,7 +168,7 @@ export const EVAL_CASES: readonly AuthoredEvalCase[] = [
     consumerFixtureId: "configured-rounded-glass",
     relevantComponentSlugs: ["form-field", "text-input", "validation-message"],
     relevantRecipeIds: ["validated-text-field"],
-    requiredComponentSlugs: ["form-field", "text-input", "validation-message"],
+    requiredComponentSlugs: ["text-input"],
     forbidInventedInstallCommands: true,
     projectContext: {
       shapeMode: "rounded",

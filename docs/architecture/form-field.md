@@ -44,6 +44,21 @@ Use FormField when one label wraps multiple related controls:
 
 Do **not** import `TextInputControl`, `TextareaControl`, or `SelectControl` in application or documentation examples — those are internal building blocks.
 
+## Composition rules (verified against source, 2026-10-03)
+
+- **A complete field is the whole field.** `TextInput` renders `FormField` internally (label, supporting text, required indicator, error) and requires its own `label`.
+  Never wrap `TextInput` (or another complete field) in `FormField` — that duplicates the label — and never add a separate label or `ValidationMessage` for the
+  same error. `FormField`'s `children` is a render function, so a JSX child is not valid either.
+- **Do not pass your own `aria-describedby` / `aria-invalid` to a complete field.** The complete field spreads caller props after its own wiring, so they replace it.
+- **A standalone `ValidationMessage` has no supported association with a complete field's input**, so it is not paired with `TextInput`. Use it beside a custom
+  control wired through `FormField`'s render prop, or as a form-level message.
+- **Announcement.** `FormField` renders its `error` through `ValidationMessage` with `announce="off"`; the error reaches assistive technology through
+  `aria-invalid` and `aria-describedby`, not a live region. For a standalone `ValidationMessage`, keep the default `"off"` for an error already on screen at first
+  render and use `"assertive"` only for an error introduced after the page is shown (for example after a failed submit). Never render assertive on first paint.
+- **`FormField` direct use in the public npm pilot.** The pilot (`@skrewww/react`) exports no checkbox, select or textarea, and `TextInputControl` is internal, so
+  `FormField` can only be demonstrated there with a native control you supply through the render prop (it wires `controlId`, `describedBy`, `invalid`).
+  Complete field components for other controls arrive with a wider package.
+
 ## Open questions
 
 - Should FormField support horizontal label layouts? **Unresolved in Figma — not implemented.**

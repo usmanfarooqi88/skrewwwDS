@@ -215,3 +215,71 @@ describe("Make Kit policy statements stay tied to canonical documents", () => {
     expect(deriveModes('[data-skrewww-shape="a"] {}\n  [data-skrewww-shape="nested"] {}\n[data-skrewww-shape="b"] {}\n[data-skrewww-shape="a"] {}', "shape")).toEqual(["a", "b"]);
   });
 });
+
+/**
+ * MK-2E1 regression: the first real Make Kit run generated FormField > TextInput plus a separate,
+ * assertive-on-first-render ValidationMessage, which duplicates the label and announces a static error.
+ * Text Input is a COMPLETE field (it composes Form Field internally; docs/architecture/form-field.md),
+ * and assertive announcement is only for errors introduced after first render. The generated guidance must
+ * never imply otherwise.
+ */
+describe("Make Kit guidance — field composition and announcement rules (MK-2E1)", () => {
+  const out = compileMakeKit(realInput());
+  const composition = content(out, "guidelines/composition.md");
+  const textInput = content(out, "guidelines/components/text-input.md");
+  const formField = content(out, "guidelines/components/form-field.md");
+  const validation = content(out, "guidelines/components/validation-message.md");
+  const accessibility = content(out, "guidelines/accessibility.md");
+  const everything = out.files.map((file) => file.content).join("\n");
+
+  it("never tells the model to wrap Text Input in Form Field or to place it as Form Field children", () => {
+    expect(everything).not.toMatch(/Form Field as the outer shell/i);
+    expect(everything).not.toMatch(/Text Input as (the )?Form Field (child|`children`)/i);
+    expect(everything).not.toMatch(/Pass Text Input as Form Field/i);
+    expect(everything).not.toMatch(/Prefer Text Input's own `label` only when Form Field is not wrapping/i);
+    expect(everything).not.toMatch(/Pair with FormField/i);
+    expect(everything).not.toMatch(/Text Input — control composed with FormField/);
+  });
+
+  it("states that Text Input is a complete field that owns label, supporting text, required and error", () => {
+    expect(textInput).toMatch(/complete field/i);
+    expect(textInput).toMatch(/Do not wrap it in Form Field/);
+    expect(composition).toMatch(/Render Text Input as the complete field/);
+    expect(composition).toMatch(/Do not wrap it in Form Field/);
+  });
+
+  it("makes the validated-text-field composition need only Text Input", () => {
+    const section = composition.slice(composition.indexOf("## Validated text field"));
+    expect(section).toMatch(/Required components: \[Text Input\]\(\.\/components\/text-input\.md\) \(stable\)\./);
+    expect(section).not.toMatch(/Required components:[^\n]*Form Field/);
+    expect(section).not.toMatch(/Required components:[^\n]*Validation Message/);
+  });
+
+  it("scopes Form Field to advanced composition and says not to wrap complete fields", () => {
+    expect(formField).toMatch(/Advanced composition/);
+    expect(formField).toMatch(/do not wrap them in Form Field/i);
+    expect(formField).toMatch(/Wrapping Text Input/);
+    expect(formField).toMatch(/announce="off"/);
+  });
+
+  it("does not recommend a separate Validation Message beside Text Input for an error it already renders", () => {
+    expect(validation).toMatch(/already render their own `error`/);
+    expect(validation).toMatch(/separate Validation Message beside Text Input or Form Field/);
+    expect(composition).toMatch(/Do not render a second Validation Message for the same error/);
+  });
+
+  it("restricts assertive announcement to errors introduced after first render", () => {
+    expect(validation).toMatch(/already on screen at first render/);
+    expect(validation).toMatch(/introduced after the page is shown/);
+    expect(composition).toMatch(/Never render assertive on first paint/);
+    expect(accessibility).toMatch(/never assertive on first paint/i);
+  });
+
+  it("contains no fenced example that nests Text Input in Form Field or renders a static assertive message", () => {
+    const fences = everything.match(/```[\s\S]*?```/g) ?? [];
+    for (const fence of fences) {
+      expect(fence).not.toMatch(/<FormField[\s\S]*<TextInput/);
+      expect(fence).not.toMatch(/announce="assertive"/);
+    }
+  });
+});

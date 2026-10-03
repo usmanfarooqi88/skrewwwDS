@@ -171,10 +171,63 @@ No Make environment was available, so the kit guidance itself is **NOT_TESTABLE*
 Package-level behavior was verified against the real public `0.1.0-beta.2` in a clean Vite + React 19 consumer (41/41): Button and Link
 render real anchors with no provider, Button token height, Card, Form Field and Text Input label/description/error wiring, assertive
 Validation Message, Spinner, Shape and Surface computed behavior, Dialog portal / focus / Escape / mode inheritance from `<html>`, router
-provider behavior and no console errors. Scenarios to run in Make after assembly: Button (action, link, Shape/Surface), form composition
-(FormField + TextInput + ValidationMessage, beta.2 spacing 4px / 8px), Card with a Button, Dialog, routing (native anchors by default),
-accessibility adherence. Classify each PASS / PASS_WITH_GUIDANCE_LIMITATION / FAIL_PACKAGE / FAIL_GUIDELINE / FAIL_MAKE_ENVIRONMENT and
+provider behavior and no console errors. Scenarios to run in Make after assembly: A Button (action, link, Shape/Surface), B form composition (corrected after MK-2E1 — see below; the
+original wording asked for FormField + TextInput + ValidationMessage, which is not a valid composition), C Card with a Button, D Dialog, E routing
+(native anchors by default), F accessibility adherence. Classify each PASS / PASS_WITH_GUIDANCE_LIMITATION / FAIL_PACKAGE / FAIL_GUIDELINE / FAIL_MAKE_ENVIRONMENT and
 do not fix generated output by hand.
 
 **Figma boundary.** Guidelines state only that a verified Figma reference exists; they never claim a Figma-only component is in npm.
 No pixel parity is claimed and no Figma file was changed.
+
+## MK-2E1 — form composition root cause (2026-10-03)
+
+The first real Make Kit run (owner-reported) built `FormField > TextInput` with a separate `ValidationMessage announce="assertive"` present on first render; the
+accessibility audit found a duplicate label for the input and an assertive announcement for a static error.
+
+**Root cause: multiple (A + B + D, with E).** The package runtime is correct; the kit's own canonical guidance prescribed the invalid composition.
+- *A — wrong canonical recipe.* `agent/recipes/validated-text-field.ts` (feeds Agent Kit and Make) told the model to "render Form Field as the outer shell", "pass Text Input as Form
+  Field `children`" and render a Validation Message — impossible against the real API (`FormField` children is a render function; `TextInput` requires its own `label` and
+  already renders `FormField`).
+- *B — missing constraint.* Nothing said that Text Input is a complete field, that Form Field already renders the error, or that a separate message duplicates it.
+- *D — ambiguity.* `content/forms.ts` told readers to "pair" Text Input with Form Field and listed Text Input under Form Field's use cases; related-link text read "control
+  composed with FormField"; a registry example rendered `announce="assertive"` statically and the `announce` description did not say what a static error should use.
+- *E — scenario definition.* The MK-2D scenario (and the owner's prompt) asked for FormField + TextInput + ValidationMessage. That matched the kit's own wrong recipe, so
+  the prompt did not contradict the kit — both were wrong.
+- *F — model behavior* contributed only in rendering assertive on first paint without a rule to follow.
+
+**Package assessment: no defect.** `TextInput` composes `FormField`; `FormField` renders its error through `ValidationMessage announce="off"` linked by `aria-invalid` +
+`aria-describedby`; `ValidationMessage` maps announce to a role as documented. Known property (not changed): complete fields have no built-in live announcement, and
+caller-supplied `aria-describedby` replaces their wiring.
+
+**Fix (canonical sources only; generated outputs regenerated for verification).** Recipe rewritten (`requiredComponents` now `["text-input"]`, optional `form-field` and
+`validation-message`, version 0.2.0); `content/forms.ts` Text Input, Form Field and Validation Message guidance; `lib/component-registry-forms.ts` related-link labels, the
+`announce` description and the Validation Message example; `app/agent-kit/page.tsx` recipe line; two Agent Kit eval cases' expected components. Historical eval run artifacts are
+unchanged evidence. **Regression tests:** `lib/make-kit/compiler.test.ts` (generated guidance never says to wrap Text Input or nest it as `FormField` children, states it is a
+complete field, scopes Form Field, forbids a second message and static assertive output, no fenced example nests them) and `lib/agent-kit/recipe-compiler.test.ts`. The new
+tests fail against the old sources (8 failures) and pass on the fix.
+
+### MK-2E status (owner-reported run; MK-2E is not complete)
+
+| Scenario | Result |
+|---|---|
+| A Button | PASS |
+| B Form composition | FAIL_GUIDELINE — root cause above (fixed in source; Make Kit not yet updated) |
+| C Card | PASS |
+| D Dialog | pending: manual live-runtime confirmation |
+| E Routing | generated-demo limitation: the demo's root-relative destinations do not exist (native anchors are correct) — a demo-quality issue, not a form or package defect |
+| F Accessibility adherence | the audit surfaced the form defects above; re-check after B is re-run |
+
+### Corrected Test B prompt (rerun in the already-created Make Kit after re-importing the regenerated guidelines)
+
+> Build a "Request access" screen with one form, using only the Skrewww Make Kit.
+> 1. Use a single `TextInput` as a complete field for "Work email": `label="Work email"`, `supportingText="We will only use this to contact you."`, `required`, `type="email"`, `name="email"`. Do not wrap it in `FormField`, do not add a separate label element, and do not render a separate `ValidationMessage` for the email error.
+> 2. On first render show no error at all (the `error` prop is undefined) and no `ValidationMessage` in the page.
+> 3. When the form is submitted with an empty or invalid email, set the `TextInput` `error` prop to "Enter a valid work email." Do not pass `aria-describedby` or `aria-invalid` yourself.
+> 4. Also after that failed submit only, render one form-level `ValidationMessage` (`type="error"`, `announce="assertive"`) saying "We could not send your request. Fix the highlighted field and try again." It must not exist in the DOM before the failed submit.
+> 5. Add a `Button` of type submit labelled "Request access". Import only from the `@skrewww/react` package root, import `@skrewww/react/styles.css` once, and do not add custom CSS or Tailwind that changes the spacing between the label, input, helper text or message.
+> 6. When done, report for the email field: the number of `<label>` elements associated with the input, its accessible name, `aria-invalid` and the id that `aria-describedby` points to, before and after a failed submit; which element (if any) has `role="alert"`; and confirm `FormField` does not appear in the code.
+
+Expected result: exactly one label for the input (accessible name "Work email (required)"); before submit `aria-describedby` targets the supporting text and no element has `role="alert"`;
+after a failed submit `aria-invalid="true"` and `aria-describedby` targets the `-error` message (rendered without a live-region role); only the form-level message has `role="alert"` and
+it appears only after the failed submit; spacing is package-native (label, input and message 8px apart; 4px between the message icon and text). If `FormField` itself should be tested,
+make it a separate advanced scenario using `FormField` directly with a native control through its render prop — never around `TextInput`.
