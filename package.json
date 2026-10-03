@@ -37,6 +37,7 @@
     "generate:agent-context": "tsx scripts/generate-agent-context.ts",
     "generate:guard-facts": "tsx scripts/generate-guard-facts.ts",
     "build:guard-package": "tsx scripts/build-guard-package.ts",
+    "audit:compare": "tsx scripts/audit-compare.ts",
     "audit:repo-facts": "tsx scripts/audit-repo-facts.ts",
     "build:react-package": "tsx scripts/build-react-package.ts",
     "build:make-guidelines": "tsx scripts/build-make-kit-guidelines.ts",

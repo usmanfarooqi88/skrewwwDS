@@ -612,3 +612,68 @@ reachable Form Field and Validation Message CSS via its internal `FormField`; Al
 No pilot has unresolved local imports. Tests: `lib/audit/repo-facts.test.ts`.
 
 Next: **AG-1D — comparator + evidence schema.**
+
+## 23. AG-1D — deterministic comparator + audit evidence schema (implemented 2026-10-03)
+
+`compareAuditEvidence({ slug, repoFacts, figmaSnapshot, propertyMap, intentionalDifferences?, notApplicable? })` (`lib/audit/compare-audit-evidence.ts`) compares
+one component's AG-1C `RepoFacts` with its AG-1B snapshot and returns an `AuditComparison`. It is pure: no file reads or writes, no Figma, no network, no model, no global
+state, no `Date.now()`. **Parity is this function's output, never stored metadata.** No suggested fixes or prose reports (AG-1E).
+
+**Schema** (`lib/audit/audit-types.ts`, `schemaVersion` 1.0.0). `AuditFinding` follows §9 — `findingId` (`${slug}:${category}:${claimKey}`), `category`, `claimKey`, `claim`,
+`status`, `expected`/`actual`, `evidence[]` (`sourceType`, stable `sourceRef` such as `figma:<fileKey>/<nodeId>/componentProperties/Style` or `registry:alert/tokensUsed`, concise
+`observed`, `capturedAt`), `basis`, `confidence`, `severity`, `requiresHumanDecision` — plus a mechanical `reasonCode`. `suggestedFix` is deliberately absent. `AuditComparison` adds
+provenance from both inputs (repo SHA, commit timestamp, dirty flag, Figma file/node/type, `capturedAt`, schema versions, property-map version) and a summary of **all five** counts
+(sum = findings; no percentage or score).
+
+**Statuses (locked):** `pass` / `fail` need both sides observed and deterministically comparable, and every pass/fail must cite both sides (enforced in `makeFinding`). `unknown` is
+for a missing, unmapped, unresolved, free-form or only-inferable side and never counts as pass or fail. `not-applicable` needs a by-design reason; `intentional-difference` needs an
+exact structured record. Inferred findings are only ever `unknown`; deterministic ones are `high` confidence. Severity is a small table: identity fail blocker, structure fail
+minor, other fails major (Guard `error` → major), everything else info.
+
+**Input validation, before any rule runs:** slug match → supported schema versions → a recorded `figmaIdentity` and a snapshot (else `FIGMA_EVIDENCE_UNAVAILABLE`) → snapshot
+`fileKey`, `nodeId`, `nodeType`, `role` and observed node id/type equal the registry identity (else `FIGMA_IDENTITY_MISMATCH`; unrelated entities are never compared) → the AG-1B
+validator (`SNAPSHOT_INVALID`) → contract provenance equals the repo SHA (`CONTRACT_PROVENANCE_INVALID`) → property-map schema (`PROPERTY_MAP_INVALID`). Duplicate finding ids abort
+(`DUPLICATE_FINDING_ID`).
+
+**Rules** (`lib/audit/compare-rules.ts`, small functions sharing one classification helper):
+
+| Rule | What it compares | Outcomes |
+|---|---|---|
+| `compareIdentity` | slug ↔ contract; snapshot node ↔ registry identity; node type; contract `figma.nodeId` | pass after validation (identity equality is not parity); contract node mismatch fails, absent is unknown |
+| `compareGuard` | each Guard internal evaluation, one finding per evaluation | mechanical: pass→pass, violation→fail, unknown→unknown, not-applicable→not-applicable; rule id, subject, evidence and evidence SHA kept |
+| `compareFigmaTokenDependencies` | registry `tokensUsed` → Figma bindings (Figma-name domain only) | bound (directly or within a nested instance) → pass; only a one-hop alias target → unknown; not observed while alias chains are truncated → unknown; not observed with a fully captured alias closure → fail. Figma bindings missing from `tokensUsed` → one unknown (R1 allows a narrower registry set) |
+| `compareMappedProperties` | Figma component properties through the explicit pilot map | unmapped → unknown; mapped property missing from Figma → structure fail; documented representation → pass, undocumented → unknown (truth deferred to TypeScript, never "nonexistent prop"); compound child → pass if publicly exported, else fail; css-state → unknown (requires rendering); mapping `unknown` → unknown; option sets compared only through an explicit `optionMap` (no implicit case folding) |
+| `compareDarkMode` | Figma bound Light/Dark collection ↔ recorded "React has no Dark theme" source | not-applicable only when the record exists and RepoFacts has no dark-context declaration; contradicted → unknown |
+| `compareImplementationEvidence` | CSS custom properties actually rendered | always unknown (`no-figma-css-map`) — no Figma-variable ↔ CSS-variable map is invented; carries the parity-labelled declarations and alias chains as evidence |
+| `compareDocumentationEvidence` | `figmaReference` prose; free-form documented API names | unknown evidence; stale prose is never "fixed" and free-form names never become props |
+
+**R1 direction.** R1 (agent-kit.md) promises `content.tokensUsed ⊆ registry.tokensUsed` and allows the registry to be narrower than what is rendered. So the comparable direction
+is registry → Figma (is each registry token a binding of the master?), never set equality. **Parity labels are evidence only:** `VERIFIED` never yields pass, `TEMPORARY` never
+yields intentional-difference, `EXPERIMENTAL` never yields fail, `UNRESOLVED` properties produce an unknown; no pass/fail finding is based on CSS evidence.
+
+**Property maps** (`lib/audit/pilot-property-maps.ts`, version 1.0.0) — audit interpretation metadata, pilot-only, schema-validated, verified against the snapshots and named React
+source, not canonical and not in Agent contracts. Button: Style → `variant` and Size → `size` (explicit option maps), State → CSS state (`:hover`, `:active`, `:focus-visible`,
+`:disabled`), Label → children, Show leading/trailing icon → presence of `leadingIcon`/`trailingIcon`, Leading/Trailing Icon → those props. Text Input: Size → `size`, State → CSS
+state (Error is `[aria-invalid="true"]` set from `error`), Value → **unknown** (value / defaultValue / placeholder not determinable), icons as Button. Alert: Type → `type`, Title →
+`title`, Description → `description`, Show close → `dismissible` (FeedbackSurface renders the close button only when true). Dialog: Title → compound `DialogTitle`, Body → compound
+`DialogBody`. Chart Card: empty — the master has no component properties.
+
+**Intentional differences** (`lib/audit/audit-records.ts`) need an exact slug + claimKey record; the shipped list is **empty** (no structured source records one for any pilot) and
+the mechanism is proven with fixtures. The one not-applicable record is React's absent Dark theme (§14 P2-3).
+
+**Pilot results** (orientation only, not a ranking; counts are not a contract): no pilot has a `fail`; every pilot has identity passes, the Dark-mode not-applicable, the CSS-parity
+unknown and the prose unknown. Button and Text Input option sets pass through their maps; Dialog's Title/Body pass as compound exports; Chart Card's missing properties are
+not-applicable with no invented findings; Alert's Type options and Title/Show close pass, Description is undocumented (unknown).
+
+**Alert calibration.** Detected deterministically: identity, the five bound feedback/surface tokens, and `component/radius/feedback` listed among Figma bindings outside the registry
+set; the repo radius chain (`--feedback-radius` → `--shape-radius-container` → `--component-radius-container`, `[TEMPORARY]`) is attached as evidence. **Left unknown:** registry
+`component/radius/container` is not bound in Figma, but the snapshot records alias values one hop deep, so its absence is not provable and the comparator does not claim a fail.
+Making it a deterministic fail needs fuller alias capture (an AG-1B extension) or the calibrated cross-domain case in AG-1F; nothing is hard-coded to reproduce the §17 example.
+
+**Determinism and CLI.** `serializeAuditComparison` sorts keys; findings are sorted by id; same inputs produce byte-identical JSON. `npm run audit:compare -- <slug>` collects
+RepoFacts, loads the committed snapshot named by the registry identity and the pilot map, and prints JSON (no `audit/` output; FAIL findings exit 0, invalid input exits 1 or 2).
+Tests: `lib/audit/compare-audit-evidence.test.ts`.
+
+**Remaining:** AG-1E — explanation layer (non-pass findings explained with cited evidence, suggested fixes, Markdown report); AG-1F — pilot calibration and golden cases.
+
+Next: **AG-1E — explanation layer.**
