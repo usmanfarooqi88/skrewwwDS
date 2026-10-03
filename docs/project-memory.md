@@ -34,6 +34,8 @@ decision, add a new dated entry that says what it supersedes — do not silently
 - When code and Figma diverge, prefer fixing the real thing to match verified reality over documenting the gap as
   absent — but through an explicit, scoped task, not as a side effect.
 - Unknown is not pass and not error: name the authority that would resolve it and stop when the decision depends on it.
+- Audit Agent explanation providers may interpret deterministic findings but cannot alter statuses or introduce evidence, and no model
+  vendor is a canonical dependency: explanations cross a provider-neutral boundary and are validated against the cited evidence (decided 2026-10-03).
 
 ## Figma practices
 
