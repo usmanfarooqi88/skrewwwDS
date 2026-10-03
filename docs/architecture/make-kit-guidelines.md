@@ -1,9 +1,9 @@
 # Make Kit guidelines (MK-2B)
 
-**Status:** compiler and setup contract implemented (MK-2B); the package is published (MK-2C, now
-`@skrewww/react@0.1.0-beta.2`) and the October 2026 Figma libraries are published. **No Make Kit exists yet.**
-Repository preparation for assembly (MK-2D) is done and verified; creating the kit is a manual Figma Make UI step —
-see "Assembly readiness (MK-2D)" at the end.
+**Status:** **the first Make Kit is published (privately, to the owner's team) and validated — MK-2E complete with guidance limitations.**
+The kit is assembled from the published runtime package `@skrewww/react@0.1.0-beta.2` plus the generated guidelines produced by this compiler,
+with no attached Figma library. The compiler and setup contract were built in MK-2B; see "Assembly readiness (MK-2D)", "MK-2E1" and
+"MK-2E — first Make Kit published and validated" at the end.
 
 ## What this is
 
@@ -231,3 +231,56 @@ Expected result: exactly one label for the input (accessible name "Work email (r
 after a failed submit `aria-invalid="true"` and `aria-describedby` targets the `-error` message (rendered without a live-region role); only the form-level message has `role="alert"` and
 it appears only after the failed submit; spacing is package-native (label, input and message 8px apart; 4px between the message icon and text). If `FormField` itself should be tested,
 make it a separate advanced scenario using `FormField` directly with a native control through its render prop — never around `TextInput`.
+
+## MK-2E — first Make Kit published and validated (2026-10-03)
+
+**Verdict: MK-2E COMPLETE WITH GUIDANCE LIMITATIONS.** The first real Skrewww Make Kit was assembled, tested in the real Make environment, corrected through
+MK-2E1, revalidated, and published privately to the team. The facts below are **owner-confirmed**; Make and its published kits are not visible to repository tooling.
+
+### Published Kit 1
+
+| Item | Value |
+|---|---|
+| Kit name | Skrewww Make Kit |
+| Published / scope | yes — team/private (not public) |
+| Make Kit's own package identity | `@make-kits/skrewww-make-kit@1.0.0` — assigned by Make; **not** the runtime package |
+| Runtime dependency | `@skrewww/react` pinned to the exact published version `0.1.0-beta.2` (not a tag or range) |
+| Guidelines | the 13 generated Markdown files (regenerated after MK-2E1); `manifest.json` was not imported |
+| Attached Figma library | **none** |
+
+Keep the two identities apart: **`@make-kits/skrewww-make-kit@1.0.0`** is the Make Kit wrapper Make created; **`@skrewww/react@0.1.0-beta.2`** is the runtime
+dependency that renders Skrewww components. Only the second is the package this repository builds and publishes.
+
+### Validated Kit 1 architecture
+
+`published @skrewww/react (exact pinned version)` + `generated Make guidelines` + `no attached Figma library`. This architecture is now proven in the real Make
+environment. The no-library decision (see "Figma library decision" above) is not to be reopened until the npm package surface expands enough to justify attaching one.
+
+### Validation matrix (final)
+
+| Scenario | Result | Notes |
+|---|---|---|
+| A Button / Link / Shape / Surface | PASS | |
+| B Form composition | PASS (after MK-2E1) | one label, accessible name "Work email (required)", no `FormField` around `TextInput`, supporting-text `aria-describedby` initially, error `aria-describedby` and `aria-invalid` only after a failed submit, no static `role="alert"`, only the dynamically introduced form-level `ValidationMessage` has `role="alert"`, package-native spacing, build passes |
+| C Card | PASS | |
+| D Dialog | PASS_WITH_GUIDANCE_LIMITATION | initial focus, Tab and Shift+Tab containment, Escape, focus return to the trigger, Cancel and X all pass; limitation is `MAKE_ENVIRONMENT` (below) |
+| E Routing | PASS_WITH_GUIDANCE_LIMITATION | native anchors, no `SkrewwwRouterProvider`, no `preventDefault` or custom interception, modified-click, external/new-tab and hash behavior preserved; limitation is `GENERATED_IMPLEMENTATION` (below) |
+| F Accessibility | PASS with demo/environment limitation | corrected field semantics, Dialog semantics and portal behavior, focus behavior, package-root imports, stylesheet imported once, document language, build passes; no package defect, no guideline defect |
+
+### Accessibility conclusion
+
+No Skrewww package defect and no remaining guideline defect. The one form failure found in the first run was a guideline defect (the recipe and field guidance), fixed at the canonical
+source in MK-2E1 and revalidated. The remaining items are environment or generated-demo limitations, not Skrewww behavior.
+
+### Limitations
+
+- **`MAKE_ENVIRONMENT` — host-shell focus escape.** After excessive Tab navigation, keyboard focus can leave the embedded Make preview into Figma's surrounding host UI, and Shift+Tab may not
+  reliably bring it back. This is Make's embedding, not Skrewww Dialog behavior: inside the preview the Dialog traps focus and restores it correctly. Do not treat it as a package-level
+  Dialog defect, and do not fix it in the package.
+- **`GENERATED_IMPLEMENTATION` — demo quality.** An earlier generated demo linked to root-relative destinations that did not exist. The links themselves were correct native anchors; the
+  missing pages are a property of the generated demo, not of the package or the guidelines.
+
+### Boundary
+
+Kit 1 attaches no Figma library, so it makes no claim that any Figma-only component is available in npm; Figma references in the guidelines stay reference-only. Updating the kit means
+republishing it from newly regenerated guidelines and, when the package changes, an exact new `@skrewww/react` version.

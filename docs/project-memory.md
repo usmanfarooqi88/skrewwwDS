@@ -89,6 +89,9 @@ decision, add a new dated entry that says what it supersedes — do not silently
   with an **explicit `--tag beta`** (npm ignores `publishConfig.tag`; `prepublishOnly` enforces it).
 - Make Kit guidelines are **generated** from canonical metadata plus one short manual setup file; a Make Kit never
   replaces Agent Kit, and Figma snapshots are evidence, not authority.
+- Skrewww Make Kit v1 uses the published React package plus generated guidelines with no attached Figma library while the npm package remains a pilot subset of the Figma libraries (validated in
+  the real Make environment, 2026-10-03). The kit pins an exact published `@skrewww/react` version; the Make-assigned kit package (`@make-kits/…`) is not the runtime package.
+- Make host-shell keyboard focus can escape the embedded preview; that is a Make environment limitation and must not be confused with the package-level Dialog focus behavior.
 - Commits are SSH-signed and selectively staged — never `git add .`/`-A`, never force-push or rewrite published history,
   and never stage generated output (`public/r`, `public/agent`, `dist`, tarballs, `make-kit/dist`) or unrelated untracked paths.
 - Do not start the next roadmap task after a task's stop point; surface it and wait.
