@@ -37,6 +37,7 @@ decision, add a new dated entry that says what it supersedes — do not silently
 - Audit Agent explanation providers may interpret deterministic findings but cannot alter statuses or introduce evidence, and no model
   vendor is a canonical dependency: explanations cross a provider-neutral boundary and are validated against the cited evidence (decided 2026-10-03).
 - Audit Agent golden cases are calibration tests, never canonical metadata, and a Figma ↔ CSS token correspondence is only ever established by an explicit, pilot-scoped, human-verified, source-cited role map — never by name similarity — while statuses stay computed from observed evidence (decided 2026-10-03).
+- Consumer Contract Verification validates real installed artifacts in a clean external consumer and stays separate from Guard's canonical-fact validation: its expectations are derived from canonical sources, its output is verification evidence and never canonical, and local-canonical and public-registry (likewise local-tarball and public-npm) runs are never substituted for each other (decided 2026-10-04).
 
 ## Figma practices
 
