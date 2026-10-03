@@ -551,3 +551,64 @@ have no identity yet); Button's per-variant scopes make it the largest file
 (~99 KB) — expressing scopes as axis predicates is a later optimization;
 capture requires a human-run plugin step until an automated transport exists.
 Next: **AG-1C — repo facts collector.**
+
+## 22. AG-1C — repo facts collector (implemented 2026-10-03)
+
+`lib/audit/` turns a canonical component slug into normalized **repository evidence** (`RepoFacts`) for the Audit Agent. It is read-only,
+deterministic, makes no Figma call, performs no comparison, emits no parity verdict and calls no model. **`RepoFacts` is a collected snapshot of
+canonical repository evidence at one git SHA — evidence for an audit run, never a source of truth.** Authority is unchanged: the registry, React
+source, token source, content and Guard rules decide their own claim types (`source-of-truth.md`).
+
+**Pipeline** (`collectRepoFacts({ repoRoot, slug })`, code in `lib/audit/collect-repo-facts.ts`):
+
+```
+slug → registry entry → compiled Agent contract → React sources + public exports → own / internal / reachable CSS
+     → token declarations + parity labels → Guard internal evaluations filtered to the slug → RepoFacts
+```
+
+**Schema** (`lib/audit/repo-facts-types.ts`, `schemaVersion` 1.0.0): `component`, `provenance`, `registry`, `contract`, `react`, `css`, `tokens`, `guard`. Registry
+and contract evidence are separate sections. Documented API property names are copied verbatim and classified `identifier` / `free-form` / `unknown-structure`;
+free-form names such as `DialogBody children` are never parsed into props, and no "nonexistent prop" judgement is made (`api/nonexistent-prop` stays deferred).
+
+**Identity and provenance.** Slug lookup is exact — unknown slugs return a typed `UNKNOWN_SLUG` error, no fuzzy matching. Facts record the current `HEAD`, its commit
+timestamp and whether tracked files are dirty. The contract is compiled in memory from canonical sources at that SHA (or a supplied one is checked): its slug must match
+and its `provenance.sourceGitSha` must equal the observed SHA, otherwise `CONTRACT_MISMATCH` / `STALE_CONTRACT`. A recorded `figmaIdentity` is copied as evidence only
+(`verified` means a node is recorded, not parity).
+
+**React facts.** Public exports come from the actual barrel `components/ui/index.ts` (TypeScript Compiler API), grouped by source file, split into values and types —
+never derived from the slug. Dialog therefore reports all nine compound exports. Names an own source file declares but the barrel does not export are listed as
+`notInPublicBarrel`; internal modules (for example `TextInputControl`) never appear in `publicExports`.
+
+**CSS facts.** A conservative local import resolver (`@/…` and relative; TypeScript API parsing, cycle-safe) walks from the registry's own files and declared internal
+dependencies. Every reached CSS file is classified `own`, `internal` or `reachable` (for example CSS of components a pilot composes) with its first importer, and every
+`var(--…)` it references is recorded with the files that use it. Unresolved imports are listed explicitly; `node_modules`, `public/`, `dist/`, `packages/`, build
+output and the public barrel are never traversed. This closes the P1-4 gap: Alert's registry `cssTokens` is empty while its internal CSS references 36 properties.
+
+**Token facts.** Four domains are kept apart: `tokensUsed` (Figma-named dependency set), `cssTokens` (declared own-CSS set), observed custom-property usage, and
+declarations resolved from `styles/tokens.css` (or component-local CSS) with file, line, selector context, raw value, direct alias target, a shallow exact-`var()` alias
+chain and the parity label (`VERIFIED`, `TEMPORARY`, `EXPERIMENTAL`, plus the `ALIASED` and `UNRESOLVED` labels the file also uses) with where it was read from (inline
+comment, preceding comment, or section header). `[TEMPORARY]` is preserved as an acknowledged gap; it is not classified here. No Figma-token ↔ CSS-variable map is invented.
+
+**Guard.** `runGuard()` returns diagnostics for violations only, so the collector calls the evaluation layer it uses (`evaluateInternalRegistryRules`) to keep every state
+(`violation`, `pass`, `not-applicable`, `unknown`). Inputs are generated in memory (contracts via the compiler, manifests via the registry generator), so nothing depends on
+gitignored `public/` output. Evaluations are filtered to the slug by subject (component id, `<slug>.json` for manifest/contract) or by the quoted slug in evidence text, with the
+attribution recorded; `unknown` stays `unknown`. The evidence SHA is recorded.
+
+**Determinism.** Same slug at the same SHA serializes byte-identically (`serializeRepoFacts`: sorted keys, sorted arrays where order is meaningless; no wall-clock field).
+Debug CLI: `npm run audit:repo-facts -- <slug>` prints JSON to stdout, writes nothing, exits 1 for an unknown slug and 2 for other failures. The `audit/<slug>.<sha>.json`
+writer belongs to the later pipeline.
+
+**Ref support.** Current checkout only. A requested `gitSha` that is not `HEAD` returns `REF_NOT_CHECKED_OUT`; the collector never checks out another ref. Historical-ref
+collection is deferred (it would need a git-object reader or a separate worktree).
+
+**Property map — deferred to AG-1D.** The Figma-property ↔ React-prop map (P1-2) is not collected here. The AG-1B snapshots show why it is interpretation, not collection:
+Chart Card has no Figma component properties (composition only), Dialog's `Title`/`Body` map to compound children rather than props, and Button mixes variant axes,
+presence booleans and instance swaps. Each pilot needs a judged, human-verified mapping consumed by the comparator, so it belongs with AG-1D.
+
+**Pilot verification** (all five collect cleanly; counts are for orientation, not a contract): Button — export `Button`, 1 own CSS file; Text Input — own CSS plus
+reachable Form Field and Validation Message CSS via its internal `FormField`; Alert — no own CSS, internal `feedback-surface.module.css`, `--feedback-radius` → `--shape-radius-container` →
+`--component-radius-container` with a `[TEMPORARY]` section label and Shape-mode overrides of `--shape-radius-control`; Dialog — 9 compound exports, 14 internal files, free-form names
+`DialogBody children` / `DialogFooter children`, stale `figmaReference` prose kept as evidence; Chart Card — 13 reachable files from composed components, 116 observed custom properties.
+No pilot has unresolved local imports. Tests: `lib/audit/repo-facts.test.ts`.
+
+Next: **AG-1D — comparator + evidence schema.**
