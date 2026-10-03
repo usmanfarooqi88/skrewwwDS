@@ -15,6 +15,7 @@ import {
 import { makeFinding } from "@/lib/audit/compare-rules";
 import { snapshotPathFor } from "@/lib/audit/load-audit-inputs";
 import { PILOT_PROPERTY_MAPS, validatePropertyMap } from "@/lib/audit/pilot-property-maps";
+import { PILOT_TOKEN_ROLE_MAPS } from "@/lib/audit/pilot-token-role-maps";
 import type { RepoFacts } from "@/lib/audit/repo-facts-types";
 import { evaluateInternalGuard } from "@/lib/audit/repo-guard";
 import type { FigmaSnapshot } from "@/lib/figma-snapshot/schema";
@@ -35,6 +36,7 @@ function input(slug: Pilot, overrides: Partial<CompareAuditEvidenceInput> = {}):
     repoFacts: clone(facts[slug]),
     figmaSnapshot: clone(snapshots[slug]),
     propertyMap: clone(PILOT_PROPERTY_MAPS[slug]),
+    tokenRoleMap: PILOT_TOKEN_ROLE_MAPS[slug] ? clone(PILOT_TOKEN_ROLE_MAPS[slug]) : null,
     ...overrides,
   };
 }
@@ -96,9 +98,10 @@ describe("AG-1D comparator — statuses and summary", () => {
     expect(provenance.figmaFileKey).toBe(snapshots.alert.identity.fileKey);
     expect(provenance.figmaNodeId).toBe(snapshots.alert.identity.nodeId);
     expect(provenance.figmaCapturedAt).toBe(snapshots.alert.capturedAt);
-    expect(provenance.repoFactsSchemaVersion).toBe("1.0.0");
-    expect(provenance.figmaSnapshotSchemaVersion).toBe("1.0.0");
+    expect(provenance.repoFactsSchemaVersion).toBe("1.1.0");
+    expect(provenance.figmaSnapshotSchemaVersion).toBe("1.1.0");
     expect(provenance.propertyMapVersion).toBe("1.0.0");
+    expect(provenance.tokenRoleMapVersion).toBe("1.0.0");
   });
 });
 
@@ -214,11 +217,12 @@ describe("AG-1D comparator — unknown, temporary and intentional-difference saf
     expect(INTENTIONAL_DIFFERENCE_RECORDS).toEqual([]);
   });
 
-  it("VERIFIED never yields pass and EXPERIMENTAL never yields fail: CSS-side evidence is never a pass/fail basis", () => {
+  it("CSS evidence is a pass/fail basis only through an explicit token-role map; parity labels never decide", () => {
     for (const slug of PILOTS) {
       for (const finding of comparisons[slug].findings) {
-        if (finding.status === "pass" || finding.status === "fail") {
-          expect(finding.evidence.every((entry) => entry.sourceType !== "css")).toBe(true);
+        if ((finding.status === "pass" || finding.status === "fail") && finding.evidence.some((entry) => entry.sourceType === "css")) {
+          expect(finding.claimKey.startsWith("role-")).toBe(true);
+          expect(finding.evidence.some((entry) => entry.sourceType === "audit-map")).toBe(true);
         }
       }
     }
@@ -292,22 +296,42 @@ describe("AG-1D comparator — token dependencies (Figma-name domain)", () => {
     expect(find(comparisons.alert, "figma-binding-component-feedback-info-surface")).toMatchObject({ status: "pass", reasonCode: "bound-directly" });
     expect(find(comparisons.alert, "figma-binding-component-surface-content-muted")).toMatchObject({ status: "pass", reasonCode: "bound-within-instance" });
     expect(find(comparisons.button, "figma-binding-semantic-action-primary")).toMatchObject({ status: "unknown", reasonCode: "alias-target-only" });
-    expect(find(comparisons.alert, "figma-binding-component-radius-container")).toMatchObject({ status: "unknown", reasonCode: "not-observed-alias-chain-truncated" });
+    // With the complete alias closure (snapshot 1.1.0) absence from the master's whole dependency graph is provable.
+    expect(find(comparisons.alert, "figma-binding-component-radius-container")).toMatchObject({ status: "fail", reasonCode: "not-observed" });
   });
 
   it("fails an unbound registry token only when the alias closure is fully captured", () => {
-    const value = input("alert");
-    for (const variable of value.figmaSnapshot!.observed.variables) {
-      for (const mode of Object.keys(variable.valuesByMode)) variable.valuesByMode[mode] = 4;
-    }
-    const finding = find(run(value), "figma-binding-component-radius-container")!;
-    expect(finding).toMatchObject({ status: "fail", reasonCode: "not-observed", severity: "major" });
+    const radius = "figma-binding-component-radius-container";
+    // Complete closure (the committed 1.1.0 snapshot): absence is provable.
+    expect(find(comparisons.alert, radius)).toMatchObject({ status: "fail", reasonCode: "not-observed", severity: "major" });
+
+    // A 1.0.0 snapshot has no closure: alias chains past one hop stay open, so no fail.
+    const legacy = input("alert");
+    const snapshot = legacy.figmaSnapshot!;
+    snapshot.schemaVersion = "1.0.0";
+    delete snapshot.observed.aliasClosure;
+    delete snapshot.derived.aliasClosureComplete;
+    expect(find(run(legacy), radius)).toMatchObject({ status: "unknown", reasonCode: "not-observed-alias-chain-truncated" });
+
+    // A 1.1.0 closure with an unresolved alias target is incomplete: still unknown.
+    const incomplete = input("alert");
+    const closure = incomplete.figmaSnapshot!.observed.aliasClosure!;
+    const dropped = closure.variables.find((variable) => variable.name === "radius/lg")!;
+    closure.variables = closure.variables.filter((variable) => variable.id !== dropped.id);
+    closure.unresolvedIds = [dropped.id];
+    incomplete.figmaSnapshot!.derived.aliasClosureComplete = false;
+    expect(find(run(incomplete), radius)).toMatchObject({ status: "unknown", reasonCode: "not-observed-alias-chain-truncated" });
+
+    const finding = find(comparisons.alert, radius)!;
     expect(finding.evidence.map((entry) => entry.sourceType).sort()).toEqual(["figma", "registry"]);
   });
 
   it("never compares Figma variable names with CSS custom-property names", () => {
     for (const slug of PILOTS) {
-      const tokenFindings = comparisons[slug].findings.filter((finding) => finding.category === "tokens" && (finding.status === "pass" || finding.status === "fail"));
+      // Only an explicit token-role map (AG-1F, `role-…` findings) may pair a Figma variable with a CSS custom property.
+      const tokenFindings = comparisons[slug].findings.filter(
+        (finding) => finding.category === "tokens" && (finding.status === "pass" || finding.status === "fail") && !finding.claimKey.startsWith("role-"),
+      );
       for (const finding of tokenFindings) expect(finding.evidence.every((entry) => entry.sourceType === "figma" || entry.sourceType === "registry")).toBe(true);
       expect(find(comparisons[slug], "css-implementation-parity")).toMatchObject({ status: "unknown", reasonCode: "no-figma-css-map" });
     }
@@ -329,7 +353,8 @@ describe("AG-1D comparator — property maps", () => {
     expect(map.verifiedAgainst.figmaCapturedAt).toBe(snapshots[slug].capturedAt);
     const names = snapshots[slug].observed.componentProperties.map((property) => property.name).sort();
     expect(map.mappings.map((mapping) => mapping.figmaProperty).sort()).toEqual(names);
-    expect(comparisons[slug].findings.filter((finding) => finding.reasonCode === "unmapped")).toEqual([]);
+    // Property mapping is complete. (`role-…-unmapped-modes` is a token-role finding about CSS-less Figma modes, not a property.)
+    expect(comparisons[slug].findings.filter((finding) => finding.reasonCode === "unmapped" && !finding.claimKey.startsWith("role-"))).toEqual([]);
   });
 
   it("Button: Style and Size compare through explicit option maps; State is a CSS state, not a prop", () => {
@@ -376,7 +401,11 @@ describe("AG-1D comparator — property maps", () => {
     const prose = find(comparisons.dialog, "figma-reference-prose")!;
     expect(prose).toMatchObject({ status: "unknown", reasonCode: "prose-only" });
     expect(prose.actual).toBe(facts.dialog.registry.figmaReference);
-    expect(comparisons.dialog.findings.filter((finding) => finding.status === "fail")).toEqual([]);
+    // The only Dialog fails are the stale-reference contradiction and the registry radius token — nothing from compound architecture.
+    expect(comparisons.dialog.findings.filter((finding) => finding.status === "fail").map((finding) => finding.claimKey)).toEqual([
+      "figma-reference-negative-master-claim",
+      "figma-binding-component-radius-container",
+    ]);
     expect(comparisons.dialog.findings.some((finding) => finding.claimKey.includes("children") && finding.status === "fail")).toBe(false);
   });
 
@@ -398,8 +427,7 @@ describe("AG-1D comparator — Alert calibration (semantic, not hard-coded)", ()
     const alert = comparisons.alert;
     expect(find(alert, "figma-node")).toMatchObject({ status: "pass", expected: "U6KUuNf7DF4CP9QBOkLSUx/2034:25402" });
     const container = find(alert, "figma-binding-component-radius-container")!;
-    expect(container.status).not.toBe("pass");
-    expect(["unknown", "fail"]).toContain(container.status);
+    expect(container.status).toBe("fail");
     const parity = find(alert, "css-implementation-parity")!;
     expect(parity.evidence.some((entry) => entry.observed.includes("--feedback-radius") && entry.observed.includes("--shape-radius-container"))).toBe(true);
     expect(alert.findings.some((finding) => finding.status === "intentional-difference")).toBe(false);

@@ -15,7 +15,13 @@
  * identically.
  */
 
-export const REPO_FACTS_SCHEMA_VERSION = "1.0.0";
+/**
+ * 1.1.0 adds `TokenResolution.chainDeclarations`: the declarations, in every
+ * context, of each custom property the alias chain passes through. It lets a
+ * comparator read a Shape-mode override that lives on an intermediate alias
+ * (for example `--shape-radius-container`) without re-reading CSS.
+ */
+export const REPO_FACTS_SCHEMA_VERSION = "1.1.0";
 
 /** Documented-API property names are free text in the registry; classify, never parse. */
 export type ApiNameKind =
@@ -112,6 +118,8 @@ export type TokenResolution = {
   declarations: RuntimeDeclaration[];
   /** Shallow chain following exact `var(--x)` aliases from the first `:root` declaration. Not a computed-style evaluation. */
   aliasChain: AliasHop[];
+  /** Declarations (all contexts) of each custom property in `aliasChain` after the first; the first is `declarations`. */
+  chainDeclarations: Array<{ name: string; declarations: RuntimeDeclaration[] }>;
   chainEnd: "literal" | "unresolved" | "cycle" | "depth-limit" | "none";
 };
 

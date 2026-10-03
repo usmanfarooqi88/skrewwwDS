@@ -8,9 +8,11 @@ import type {
   IntentionalDifferenceRecord,
   NotApplicableRecord,
   PilotPropertyMap,
+  PilotTokenRoleMap,
+  TokenRoleMapping,
 } from "@/lib/audit/audit-types";
-import type { GuardEvaluationFact, RepoFacts } from "@/lib/audit/repo-facts-types";
-import type { FigmaSnapshot, SnapshotBinding } from "@/lib/figma-snapshot/schema";
+import type { GuardEvaluationFact, RepoFacts, RuntimeDeclaration } from "@/lib/audit/repo-facts-types";
+import type { FigmaSnapshot, SnapshotBinding, SnapshotVariable } from "@/lib/figma-snapshot/schema";
 
 /**
  * AG-1D — small deterministic comparison rules. Each rule reads structured
@@ -25,6 +27,8 @@ export type RuleContext = {
   facts: RepoFacts;
   snapshot: FigmaSnapshot;
   map: PilotPropertyMap | null;
+  /** Explicit token-role calibration map; `null` when the pilot has none (role parity is then not compared). */
+  roleMap: PilotTokenRoleMap | null;
   intentionalDifferences: readonly IntentionalDifferenceRecord[];
   notApplicable: readonly NotApplicableRecord[];
 };
@@ -46,7 +50,7 @@ const HUMAN_DECISION_REASONS: ReadonlySet<AuditReasonCode> = new Set<AuditReason
 function severityFor(category: AuditCategory, status: AuditStatus): AuditFinding["severity"] {
   if (status !== "fail") return "info";
   if (category === "identity") return "blocker";
-  if (category === "figma-structure") return "minor";
+  if (category === "figma-structure" || category === "documentation") return "minor";
   return "major";
 }
 
@@ -257,13 +261,21 @@ type BindingIndex = {
   byName: Map<string, SnapshotBinding[]>;
   direct: Set<string>;
   nested: Set<string>;
+  /** Variables that are an alias target (any hop) of a bound or closure variable → the variables that alias them. */
   aliasTargets: Map<string, string[]>;
+  /** True when some alias target could not be resolved, so absence from the graph is not provable. */
   aliasChainsOpen: boolean;
+  boundCount: number;
+  closureCount: number;
+  closureCaptured: boolean;
+  unresolvedAliasIds: string[];
 };
 
 function indexBindings(snapshot: FigmaSnapshot): BindingIndex {
+  const closure = snapshot.observed.aliasClosure;
+  const graph = [...snapshot.observed.variables, ...(closure?.variables ?? [])];
   const nameById = new Map(snapshot.observed.variables.map((variable) => [variable.id, variable.name]));
-  const capturedNames = new Set(snapshot.observed.variables.map((variable) => variable.name));
+  const capturedNames = new Set(graph.map((variable) => variable.name));
   const byName = new Map<string, SnapshotBinding[]>();
   const direct = new Set<string>();
   const nested = new Set<string>();
@@ -276,18 +288,31 @@ function indexBindings(snapshot: FigmaSnapshot): BindingIndex {
     (binding.withinInstance === null ? direct : nested).add(name);
   }
   const aliasTargets = new Map<string, string[]>();
-  let aliasChainsOpen = false;
-  for (const variable of snapshot.observed.variables) {
+  let aliasChainsOpen = (closure?.unresolvedIds.length ?? 0) > 0;
+  for (const variable of graph) {
     for (const value of Object.values(variable.valuesByMode)) {
-      if (value && typeof value === "object" && "alias" in value && value.alias) {
+      if (value && typeof value === "object" && "alias" in value) {
+        if (!value.alias || !capturedNames.has(value.alias)) {
+          aliasChainsOpen = true;
+          continue;
+        }
         const sources = aliasTargets.get(value.alias) ?? [];
         if (!sources.includes(variable.name)) sources.push(variable.name);
         aliasTargets.set(value.alias, sources.sort());
-        if (!capturedNames.has(value.alias)) aliasChainsOpen = true;
       }
     }
   }
-  return { byName, direct, nested, aliasTargets, aliasChainsOpen };
+  return {
+    byName,
+    direct,
+    nested,
+    aliasTargets,
+    aliasChainsOpen,
+    boundCount: snapshot.observed.variables.length,
+    closureCount: closure?.variables.length ?? 0,
+    closureCaptured: closure !== undefined,
+    unresolvedAliasIds: closure?.unresolvedIds ?? [],
+  };
 }
 
 function describeBinding(binding: SnapshotBinding): string {
@@ -302,9 +327,9 @@ function describeBinding(binding: SnapshotBinding): string {
  * registry → Figma: is each registry token a binding of this master?
  *
  * - bound in the master subtree                 → pass
- * - only a captured one-hop alias target         → unknown (dependency set vs resolution chain is not specified)
- * - not observed, alias chains truncated         → unknown (absence is not provable)
- * - not observed, alias closure fully captured   → fail
+ * - only an alias target (any hop)               → unknown (dependency set vs resolution chain is not specified)
+ * - not observed, alias chains unresolved        → unknown (absence is not provable)
+ * - not observed, alias closure fully captured   → fail (the token is absent from the master's whole dependency graph)
  *
  * Figma bindings missing from `tokensUsed` are reported once as unknown — R1
  * allows a narrower registry, so omission is not a violation. Nothing here
@@ -343,17 +368,25 @@ export function compareFigmaTokenDependencies(ctx: RuleContext): AuditFinding[] 
           ...base,
           status: "unknown",
           reasonCode: "alias-target-only",
-          actual: "not bound; reached as a one-hop alias target",
+          actual: "not bound; reached as an alias target",
           expectedEvidence: [figmaEvidence(ctx, "variables", `${token} is the alias target of ${aliasSources.join(", ")}`)],
         }),
       );
       continue;
     }
-    const absence = figmaEvidence(
-      ctx,
-      "variableBindings",
-      `${token} is not among ${index.direct.size} directly bound and ${index.nested.size} nested-only variables, nor a captured alias target`,
-    );
+    const absence = index.closureCaptured
+      ? figmaEvidence(
+          ctx,
+          "aliasClosure",
+          `${token} is not among the ${index.boundCount} bound variables nor the ${index.closureCount} variables reachable through their alias chains${
+            index.aliasChainsOpen ? " (closure incomplete)" : " (closure complete)"
+          }`,
+        )
+      : figmaEvidence(
+          ctx,
+          "variableBindings",
+          `${token} is not among ${index.direct.size} directly bound and ${index.nested.size} nested-only variables, nor a captured alias target`,
+        );
     if (index.aliasChainsOpen) {
       findings.push(
         makeFinding(ctx.slug, {
@@ -361,11 +394,16 @@ export function compareFigmaTokenDependencies(ctx: RuleContext): AuditFinding[] 
           status: "unknown",
           reasonCode: "not-observed-alias-chain-truncated",
           actual: "not observed in the captured binding graph",
-          expectedEvidence: [absence, figmaEvidence(ctx, "unknowns/renderedValues", "variable values are captured one alias hop deep; deeper alias chains are not resolved")],
+          expectedEvidence: [
+            absence,
+            index.closureCaptured
+              ? figmaEvidence(ctx, "aliasClosure/unresolvedIds", `${index.unresolvedAliasIds.length} alias target(s) could not be resolved: ${index.unresolvedAliasIds.join(", ") || "(unnamed)"}`)
+              : figmaEvidence(ctx, "unknowns/renderedValues", "no alias closure was captured (schema 1.0.0); alias chains past one hop are not resolved"),
+          ],
         }),
       );
     } else {
-      findings.push(differenceFinding(ctx, { ...base, reasonCode: "not-observed", actual: "not bound in the Figma master", expectedEvidence: [absence] }));
+      findings.push(differenceFinding(ctx, { ...base, reasonCode: "not-observed", actual: "not bound in the Figma master and not in its alias closure", expectedEvidence: [absence] }));
     }
   }
   const registrySet = new Set(registryTokens);
@@ -756,6 +794,284 @@ export function compareDocumentationEvidence(ctx: RuleContext): AuditFinding[] {
   return findings;
 }
 
+// ── token roles (explicit calibration map) ──────────────────────────────────
+
+const LENGTH = /^(-?\d+(?:\.\d+)?)(?:px)?$/;
+const RESOLUTION_DEPTH = 8;
+
+function roleMapEvidence(ctx: RuleContext, role: TokenRoleMapping): AuditEvidence {
+  return {
+    sourceType: "audit-map",
+    sourceRef: `audit-map:${ctx.slug}/token-roles/${role.claimKey}`,
+    observed: `${role.description}: Figma ${role.figma.path || "(root)"} ${role.figma.properties.join("/")} ↔ registry ${role.registry.tokens.join(", ")} ↔ CSS ${role.css.customProperty}`,
+  };
+}
+
+/** Names of the variables bound on the role's Figma properties (root-level facts that hold in every variant). */
+function roleBoundNames(ctx: RuleContext, role: TokenRoleMapping): { names: string[]; boundProperties: string[] } {
+  const nameById = new Map(ctx.snapshot.observed.variables.map((variable) => [variable.id, variable.name]));
+  const names = new Set<string>();
+  const boundProperties = new Set<string>();
+  for (const binding of ctx.snapshot.observed.variableBindings) {
+    if (binding.withinInstance !== null || binding.scope !== "all" || binding.path !== role.figma.path) continue;
+    if (!role.figma.properties.includes(binding.property)) continue;
+    const name = nameById.get(binding.variableId);
+    if (!name) continue;
+    names.add(name);
+    boundProperties.add(binding.property);
+  }
+  return { names: Array.from(names).sort(), boundProperties: Array.from(boundProperties).sort() };
+}
+
+type NumericResolution = { ok: true; value: number; steps: string[] } | { ok: false; reason: string };
+
+/** Follows a Figma variable to a numeric literal for one mode: through single-mode alias targets only. */
+function resolveFigmaNumber(ctx: RuleContext, variable: SnapshotVariable, mode: string): NumericResolution {
+  const byId = new Map<string, SnapshotVariable>(
+    [...ctx.snapshot.observed.variables, ...(ctx.snapshot.observed.aliasClosure?.variables ?? [])].map((candidate) => [candidate.id, candidate]),
+  );
+  let current = variable;
+  let modeKey = mode;
+  const steps = [`${variable.name} [${mode}]`];
+  for (let depth = 0; depth < RESOLUTION_DEPTH; depth += 1) {
+    const value = current.valuesByMode[modeKey];
+    if (typeof value === "number") return { ok: true, value, steps: [...steps, String(value)] };
+    if (value && typeof value === "object" && "aliasId" in value) {
+      const target = byId.get(value.aliasId);
+      if (!target) return { ok: false, reason: `alias target ${value.alias ?? value.aliasId} was not captured` };
+      const modes = Object.keys(target.valuesByMode);
+      if (modes.length !== 1) return { ok: false, reason: `alias target ${target.name} has ${modes.length} modes; the mode that applies is not determinable` };
+      current = target;
+      modeKey = modes[0];
+      steps.push(target.name);
+      continue;
+    }
+    return { ok: false, reason: `${current.name} [${modeKey}] is not a numeric value` };
+  }
+  return { ok: false, reason: "alias depth limit reached" };
+}
+
+/** Statically resolves the role's custom property to a length under one mode selector, then `:root`. */
+function resolveCssNumber(ctx: RuleContext, role: TokenRoleMapping, attributeValue: string): (NumericResolution & { evidence: AuditEvidence[] }) | { ok: false; reason: string; evidence: AuditEvidence[] } {
+  const resolution = ctx.facts.tokens.runtimeDeclarations.find((token) => token.name === role.css.customProperty);
+  if (!resolution) return { ok: false, reason: `${role.css.customProperty} is not among the observed custom properties`, evidence: [] };
+  const modeContext = `[${role.css.modeAttribute}="${attributeValue}"]`;
+  const evidence: AuditEvidence[] = [];
+  const steps: string[] = [];
+  const seen = new Set<string>();
+  let name = resolution.name;
+  let declarations: RuntimeDeclaration[] = resolution.declarations;
+  for (let depth = 0; depth < RESOLUTION_DEPTH; depth += 1) {
+    if (seen.has(name)) return { ok: false, reason: `alias cycle at ${name}`, evidence };
+    seen.add(name);
+    const chosen = declarations.find((declaration) => declaration.context === modeContext) ?? declarations.find((declaration) => declaration.context === ":root");
+    if (!chosen) return { ok: false, reason: `${name} has no ${modeContext} or :root declaration`, evidence };
+    evidence.push(
+      repoEvidence(ctx, "css", `css:${chosen.file}:${chosen.line}`, `${name} [${chosen.context}] = ${chosen.value}${chosen.parityLabel ? ` [${chosen.parityLabel}${chosen.labelSource ? `, ${chosen.labelSource}` : ""}]` : ""}`),
+    );
+    const literal = LENGTH.exec(chosen.value);
+    if (literal) return { ok: true, value: Number(literal[1]), steps: [...steps, chosen.value], evidence };
+    if (!chosen.aliasTarget) return { ok: false, reason: `${name} = ${chosen.value} is not a plain length`, evidence };
+    steps.push(`${name} → ${chosen.aliasTarget}`);
+    name = chosen.aliasTarget;
+    declarations = resolution.chainDeclarations.find((entry) => entry.name === name)?.declarations ?? [];
+  }
+  return { ok: false, reason: "alias depth limit reached", evidence };
+}
+
+function roleFinding(finding: AuditFinding): AuditFinding {
+  // Which side is right (design or implementation) is a human decision.
+  if (finding.status === "fail" || finding.status === "intentional-difference") finding.requiresHumanDecision = true;
+  return finding;
+}
+
+/**
+ * Explicit token-role comparison (pilot-scoped; see pilot-token-role-maps.ts).
+ * Only roles named in the map are compared; nothing is inferred from names.
+ *
+ * - `role-<key>-token`: the registry token that implements the role must be a
+ *   token the Figma master binds on the role's properties → pass / fail.
+ * - `role-<key>-value-<mode>`: the Figma value (alias chain followed to a
+ *   number through the captured closure) against the CSS value (static
+ *   resolution of the role's custom property under the mode selector) → pass /
+ *   fail when both resolve, unknown otherwise.
+ * - Figma modes the map does not pair with a CSS selector → one unknown.
+ */
+export function compareTokenRoles(ctx: RuleContext): AuditFinding[] {
+  const findings: AuditFinding[] = [];
+  for (const role of ctx.roleMap?.roles ?? []) {
+    const mapEvidence_ = roleMapEvidence(ctx, role);
+    const { names, boundProperties } = roleBoundNames(ctx, role);
+    const registryRole = role.registry.tokens.filter((token) => ctx.facts.registry.tokensUsed.includes(token));
+    const registryEvidence = repoEvidence(ctx, "registry", `registry:${ctx.slug}/tokensUsed`, registryRole.join(", ") || `none of ${role.registry.tokens.join(", ")}`);
+
+    // 1. token identity
+    const tokenBase = {
+      category: "tokens" as const,
+      claimKey: `role-${role.claimKey}-token`,
+      claim: `${role.description}: the registry token that implements it is the token the Figma master binds`,
+    };
+    if (names.length === 0) {
+      findings.push(
+        makeFinding(ctx.slug, {
+          ...tokenBase,
+          status: "unknown",
+          reasonCode: "missing-figma-side",
+          actual: `no variable is bound on ${role.figma.properties.join("/")} at ${role.figma.path || "(root)"}`,
+          expectedEvidence: [mapEvidence_],
+          actualEvidence: [registryEvidence],
+        }),
+      );
+    } else if (registryRole.length === 0) {
+      findings.push(
+        makeFinding(ctx.slug, {
+          ...tokenBase,
+          status: "unknown",
+          reasonCode: "missing-repo-side",
+          actual: `registry tokensUsed lists none of ${role.registry.tokens.join(", ")}`,
+          expectedEvidence: [figmaEvidence(ctx, "variableBindings", `${role.figma.path || "(root)"} ${boundProperties.join("/")} bound to ${names.join(", ")}`)],
+          actualEvidence: [mapEvidence_],
+        }),
+      );
+    } else {
+      const missing = registryRole.filter((token) => !names.includes(token));
+      const input = {
+        ...tokenBase,
+        expected: names.join(", "),
+        actual: registryRole.join(", "),
+        expectedEvidence: [figmaEvidence(ctx, "variableBindings", `${role.figma.path || "(root)"} ${boundProperties.join("/")} bound to ${names.join(", ")}`)],
+        actualEvidence: [registryEvidence, mapEvidence_],
+      };
+      findings.push(
+        roleFinding(
+          missing.length === 0
+            ? makeFinding(ctx.slug, { ...input, status: "pass", reasonCode: "equal" })
+            : differenceFinding(ctx, { ...input, reasonCode: "different" }),
+        ),
+      );
+    }
+
+    // 2. per-mode values
+    const roleVariable = names.length === 1 ? ctx.snapshot.observed.variables.find((variable) => variable.name === names[0]) : undefined;
+    if (!roleVariable) continue;
+    const mappedModes = new Set(role.css.modes.map((mode) => mode.figmaMode));
+    for (const mode of role.css.modes) {
+      const base = {
+        category: "tokens" as const,
+        claimKey: `role-${role.claimKey}-value-${claimKeyPart(mode.figmaMode)}`,
+        claim: `${role.description}: Figma ${roleVariable.name} in ${mode.figmaMode} mode equals the CSS value of ${role.css.customProperty} under ${role.css.modeAttribute}="${mode.attributeValue}"`,
+      };
+      if (!(mode.figmaMode in roleVariable.valuesByMode)) {
+        findings.push(
+          makeFinding(ctx.slug, {
+            ...base,
+            status: "unknown",
+            reasonCode: "missing-figma-side",
+            actual: `${roleVariable.name} has no ${mode.figmaMode} mode`,
+            expectedEvidence: [figmaEvidence(ctx, `variables/${roleVariable.name}`, `modes: ${Object.keys(roleVariable.valuesByMode).join(", ")}`)],
+            actualEvidence: [mapEvidence_],
+          }),
+        );
+        continue;
+      }
+      const figma = resolveFigmaNumber(ctx, roleVariable, mode.figmaMode);
+      const css = resolveCssNumber(ctx, role, mode.attributeValue);
+      const figmaSide = figma.ok
+        ? figmaEvidence(ctx, `variables/${roleVariable.name}/${mode.figmaMode}`, `${figma.steps.join(" → ")}`)
+        : figmaEvidence(ctx, `variables/${roleVariable.name}/${mode.figmaMode}`, `unresolved: ${figma.reason}`);
+      const cssSide = [...css.evidence, mapEvidence_];
+      if (!figma.ok || !css.ok) {
+        findings.push(
+          makeFinding(ctx.slug, {
+            ...base,
+            status: "unknown",
+            reasonCode: "unresolved-value",
+            actual: !figma.ok ? `Figma side: ${figma.reason}` : `CSS side: ${(css as { reason: string }).reason}`,
+            expectedEvidence: [figmaSide],
+            actualEvidence: cssSide,
+          }),
+        );
+        continue;
+      }
+      const input = { ...base, expected: String(figma.value), actual: String(css.value), expectedEvidence: [figmaSide], actualEvidence: cssSide };
+      findings.push(
+        roleFinding(
+          figma.value === css.value
+            ? makeFinding(ctx.slug, { ...input, status: "pass", reasonCode: "equal" })
+            : differenceFinding(ctx, { ...input, reasonCode: "different" }),
+        ),
+      );
+    }
+    const unmapped = Object.keys(roleVariable.valuesByMode).filter((mode) => !mappedModes.has(mode));
+    if (unmapped.length > 0) {
+      findings.push(
+        makeFinding(ctx.slug, {
+          category: "tokens",
+          claimKey: `role-${role.claimKey}-unmapped-modes`,
+          claim: `${role.description}: Figma ${roleVariable.name} modes with no mapped CSS selector`,
+          status: "unknown",
+          reasonCode: "unmapped",
+          actual: unmapped.join(", "),
+          expectedEvidence: [figmaEvidence(ctx, `variables/${roleVariable.name}`, `modes: ${Object.keys(roleVariable.valuesByMode).join(", ")}`)],
+          actualEvidence: [mapEvidence_],
+        }),
+      );
+    }
+  }
+  return findings;
+}
+
+// ── documentation consistency (generic) ─────────────────────────────────────
+
+/**
+ * Scope (deliberately narrow): sentences of the exact shape
+ * `No [canonical] <Subject> [COMPONENT_SET/]master` where <Subject> contains the
+ * component's own name. Such a sentence is an unequivocal negative claim about
+ * the existence of a canonical master. Anything else — hedged, conditional or
+ * about another component — is not parsed (it stays covered by the prose-only
+ * unknown). The compared side is the STRUCTURED identity, never other prose.
+ */
+const NEGATIVE_MASTER_CLAIM = /^no\s+(?:canonical\s+)?([A-Za-z0-9 _-]*?)\s*(?:COMPONENT_SET\s*\/\s*)?master\b/i;
+
+function squash(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+export function findNegativeMasterClaim(reference: string, componentName: string): string | null {
+  for (const raw of reference.split(/(?<=[.;])\s+|\n+/)) {
+    const sentence = raw.trim();
+    const match = NEGATIVE_MASTER_CLAIM.exec(sentence);
+    if (match && squash(match[1]).includes(squash(componentName))) return sentence;
+  }
+  return null;
+}
+
+export function compareFigmaReferenceClaims(ctx: RuleContext): AuditFinding[] {
+  const reference = ctx.facts.registry.figmaReference;
+  const identity = ctx.facts.registry.figmaIdentity;
+  if (!reference || !identity) return [];
+  const sentence = findNegativeMasterClaim(reference, ctx.facts.component.name);
+  if (!sentence) return [];
+  const identityText = `${identity.nodeType} ${identity.nodeId}, role ${identity.role}`;
+  const input = {
+    category: "documentation" as const,
+    claimKey: "figma-reference-negative-master-claim",
+    claim: "Registry figmaReference's explicit statement about a canonical Figma master agrees with the structured Figma identity",
+    expected: identityText,
+    actual: sentence.slice(0, 300),
+    expectedEvidence: [
+      repoEvidence(ctx, "registry", `registry:${ctx.slug}/figmaIdentity`, identityText),
+      figmaEvidence(ctx, "node", `${ctx.snapshot.observed.node.type} "${ctx.snapshot.observed.node.name}" (${ctx.snapshot.observed.node.id}) observed in the snapshot`),
+    ],
+    actualEvidence: [repoEvidence(ctx, "registry", `registry:${ctx.slug}/figmaReference`, sentence.slice(0, 300))],
+  };
+  return [
+    identity.role === "master"
+      ? differenceFinding(ctx, { ...input, reasonCode: "documentation-contradicts-identity" })
+      : makeFinding(ctx.slug, { ...input, status: "pass", reasonCode: "equal" }),
+  ];
+}
+
 export const COMPARISON_RULES: ReadonlyArray<(ctx: RuleContext) => AuditFinding[]> = [
   compareIdentity,
   compareGuard,
@@ -763,5 +1079,7 @@ export const COMPARISON_RULES: ReadonlyArray<(ctx: RuleContext) => AuditFinding[
   compareMappedProperties,
   compareDarkMode,
   compareImplementationEvidence,
+  compareTokenRoles,
   compareDocumentationEvidence,
+  compareFigmaReferenceClaims,
 ];

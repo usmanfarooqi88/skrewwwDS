@@ -4,6 +4,7 @@ import { collectRepoFacts } from "@/lib/audit/collect-repo-facts";
 import { compareAuditEvidence } from "@/lib/audit/compare-audit-evidence";
 import type { CompareAuditResult } from "@/lib/audit/audit-types";
 import { PILOT_PROPERTY_MAPS } from "@/lib/audit/pilot-property-maps";
+import { PILOT_TOKEN_ROLE_MAPS } from "@/lib/audit/pilot-token-role-maps";
 import type { CollectRepoFactsErrorCode } from "@/lib/audit/repo-facts-types";
 import type { FigmaSnapshot } from "@/lib/figma-snapshot/schema";
 
@@ -32,5 +33,7 @@ export function loadAndCompare(repoRoot: string, slug: string): LoadAndCompareRe
     const path = snapshotPathFor(repoRoot, identity.fileKey, slug);
     if (existsSync(path)) snapshot = JSON.parse(readFileSync(path, "utf8")) as FigmaSnapshot;
   }
-  return compareAuditEvidence({ slug, repoFacts: collected.facts, figmaSnapshot: snapshot, propertyMap: PILOT_PROPERTY_MAPS[slug] ?? null });
+  return compareAuditEvidence({ slug, repoFacts: collected.facts, figmaSnapshot: snapshot, propertyMap: PILOT_PROPERTY_MAPS[slug] ?? null,
+    tokenRoleMap: PILOT_TOKEN_ROLE_MAPS[slug] ?? null,
+  });
 }

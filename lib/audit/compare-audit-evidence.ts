@@ -8,12 +8,14 @@ import {
   type IntentionalDifferenceRecord,
   type NotApplicableRecord,
   type PilotPropertyMap,
+  type PilotTokenRoleMap,
 } from "@/lib/audit/audit-types";
 import { COMPARISON_RULES, type RuleContext } from "@/lib/audit/compare-rules";
 import { validatePropertyMap } from "@/lib/audit/pilot-property-maps";
+import { validateTokenRoleMap } from "@/lib/audit/pilot-token-role-maps";
 import { REPO_FACTS_SCHEMA_VERSION, type RepoFacts } from "@/lib/audit/repo-facts-types";
 import type { FigmaIdentity } from "@/lib/figma-identity";
-import { FIGMA_SNAPSHOT_SCHEMA_VERSION, type FigmaSnapshot } from "@/lib/figma-snapshot/schema";
+import { SUPPORTED_FIGMA_SNAPSHOT_SCHEMA_VERSIONS, type FigmaSnapshot } from "@/lib/figma-snapshot/schema";
 import { validateFigmaSnapshot } from "@/lib/figma-snapshot/validate";
 
 /**
@@ -36,6 +38,8 @@ export type CompareAuditEvidenceInput = {
   figmaSnapshot: FigmaSnapshot | null;
   /** `null` when no explicit map exists: every Figma property is then `unknown` (unmapped). */
   propertyMap: PilotPropertyMap | null;
+  /** Explicit token-role calibration map. `null`/omitted: no role-based comparison is made. */
+  tokenRoleMap?: PilotTokenRoleMap | null;
   /** Defaults to the shipped (empty) record set. */
   intentionalDifferences?: readonly IntentionalDifferenceRecord[];
   /** Defaults to the shipped records. */
@@ -83,8 +87,14 @@ export function compareAuditEvidence(input: CompareAuditEvidenceInput): CompareA
       },
     };
   }
-  if (figmaSnapshot.schemaVersion !== FIGMA_SNAPSHOT_SCHEMA_VERSION) {
-    return { ok: false, error: { code: "UNSUPPORTED_SCHEMA", message: `snapshot schema ${figmaSnapshot.schemaVersion} is not ${FIGMA_SNAPSHOT_SCHEMA_VERSION}` } };
+  if (!SUPPORTED_FIGMA_SNAPSHOT_SCHEMA_VERSIONS.includes(figmaSnapshot.schemaVersion)) {
+    return {
+      ok: false,
+      error: {
+        code: "UNSUPPORTED_SCHEMA",
+        message: `snapshot schema ${figmaSnapshot.schemaVersion} is not one of ${SUPPORTED_FIGMA_SNAPSHOT_SCHEMA_VERSIONS.join(", ")}`,
+      },
+    };
   }
 
   // Identity first: never compare unrelated entities.
@@ -125,11 +135,20 @@ export function compareAuditEvidence(input: CompareAuditEvidenceInput): CompareA
     }
   }
 
+  const tokenRoleMap = input.tokenRoleMap ?? null;
+  if (tokenRoleMap) {
+    const roleProblems = validateTokenRoleMap(tokenRoleMap, slug);
+    if (roleProblems.length > 0) {
+      return { ok: false, error: { code: "PROPERTY_MAP_INVALID", message: `the token-role map for "${slug}" is invalid`, problems: roleProblems } };
+    }
+  }
+
   const ctx: RuleContext = {
     slug,
     facts: repoFacts,
     snapshot: figmaSnapshot,
     map: propertyMap,
+    roleMap: tokenRoleMap,
     intentionalDifferences: (input.intentionalDifferences ?? INTENTIONAL_DIFFERENCE_RECORDS).filter((record) => record.componentSlug === slug),
     notApplicable: input.notApplicable ?? NOT_APPLICABLE_RECORDS,
   };
@@ -155,6 +174,7 @@ export function compareAuditEvidence(input: CompareAuditEvidenceInput): CompareA
       figmaCapturedAt: figmaSnapshot.capturedAt,
       figmaSnapshotSchemaVersion: figmaSnapshot.schemaVersion,
       propertyMapVersion: propertyMap?.version ?? null,
+      tokenRoleMapVersion: tokenRoleMap?.version ?? null,
     },
     summary: summarizeFindings(findings),
     findings,

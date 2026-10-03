@@ -19,7 +19,7 @@ export type RawVariable = {
   resolvedType: string;
   collectionId: string;
   collectionName: string | null;
-  /** Keyed by mode NAME; one alias hop only. */
+  /** Keyed by mode NAME. An alias is a reference (name + id); the capture script also records each alias target as its own `variables` entry. */
   valuesByMode: Record<string, RawVariableValue>;
 };
 

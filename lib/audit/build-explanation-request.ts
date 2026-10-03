@@ -35,10 +35,11 @@ export const REASON_MEANINGS: Record<AuditReasonCode, string> = {
   "bound-directly": "The registry token is bound directly on the Figma master.",
   "bound-within-instance": "The registry token is bound inside a nested instance of the Figma master.",
   "alias-target-only":
-    "The registry token is not bound; it appears only as the one-hop alias target of a bound variable. Whether tokensUsed means bindings or resolution targets is not specified, so the comparator does not decide.",
+    "The registry token is not bound; it appears only as an alias target in the captured alias chains of bound variables. Whether tokensUsed means bindings or resolution targets is not specified, so the comparator does not decide.",
   "not-observed-alias-chain-truncated":
-    "The registry token is not among the captured Figma bindings or one-hop alias targets. The snapshot records alias values one hop deep, so its absence further down an alias chain cannot be proven.",
-  "not-observed": "The registry token is not bound in the Figma master and the captured alias graph is complete, so its absence is proven.",
+    "The registry token is not among the captured Figma bindings or alias targets, and the captured alias chains are incomplete (a 1.0.0 snapshot has no alias closure, or some alias targets could not be resolved), so its absence cannot be proven.",
+  "not-observed":
+    "The registry token is neither bound in the Figma master nor reachable through the alias chains of its bound variables, and the captured alias closure is complete, so its absence from the master's dependency graph is proven.",
   "missing-repo-side": "The repository side of the comparison is missing.",
   "missing-figma-side": "The Figma side of the comparison is missing.",
   unmapped: "No explicit audit mapping exists, so the comparator does not guess a correspondence.",
@@ -56,6 +57,10 @@ export const REASON_MEANINGS: Record<AuditReasonCode, string> = {
   "not-applicable-observed": "The dimension does not exist on the Figma side (observed).",
   "not-applicable-record-contradicted": "A not-applicable record exists, but repository evidence contradicts it.",
   "recorded-intentional-difference": "The sides differ and an exact structured record marks the difference as intentional.",
+  "unresolved-value":
+    "At least one side could not be resolved to a comparable literal value (for example an alias target was not captured, or the CSS value is not a plain length), so the comparator does not decide.",
+  "documentation-contradicts-identity":
+    "An explicit, unequivocal negative statement in documentation prose contradicts the structured Figma identity, which is the authoritative side of this comparison. Which of the two should change is a human decision.",
   "guard-pass": "Guard evaluated this rule and it passed.",
   "guard-violation": "Guard evaluated this rule and found a violation.",
   "guard-unknown": "Guard could not evaluate this rule; unknown is not a violation.",

@@ -14,7 +14,7 @@
  *   <paste this file>
  *   return await captureSkrewwwFigmaNodes([{ slug, fileKey, nodeId }, ...]);
  */
-const SKREWWW_FIGMA_CAPTURE_VERSION = "1.0.0";
+const SKREWWW_FIGMA_CAPTURE_VERSION = "1.1.0";
 
 // Invoked from the plugin runtime — see usage above.
 async function captureSkrewwwFigmaNodes(targets) {
@@ -50,6 +50,9 @@ async function captureSkrewwwFigmaNodes(targets) {
       if (value && typeof value === "object" && value.type === "VARIABLE_ALIAS") {
         const target = await figma.variables.getVariableByIdAsync(value.id);
         valuesByMode[mode.name] = { alias: target ? target.name : null, aliasId: value.id };
+        // 1.1.0: follow alias targets transitively (read-only). Each id is visited once
+        // (`variables[id] = null` is set before the lookup), so cycles terminate.
+        await describeVariable(value.id);
       } else {
         valuesByMode[mode.name] = literal(value);
       }

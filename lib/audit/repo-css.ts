@@ -182,6 +182,7 @@ export function resolveToken(
   const resolution: TokenResolution["resolution"] = declared.length > 0 ? "declared" : local.length > 0 ? "declared-locally" : "unresolved";
 
   const aliasChain: AliasHop[] = [];
+  const chainDeclarations: TokenResolution["chainDeclarations"] = [];
   let chainEnd: TokenResolution["chainEnd"] = declarations.length === 0 ? "none" : "literal";
   const seen = new Set<string>();
   let current = name;
@@ -192,6 +193,7 @@ export function resolveToken(
       break;
     }
     const chosen = candidates.find((candidate) => candidate.context === ":root") ?? candidates[0];
+    if (depth > 0) chainDeclarations.push({ name: current, declarations: candidates });
     aliasChain.push({ name: current, value: chosen.value });
     seen.add(current);
     if (!chosen.aliasTarget) {
@@ -205,5 +207,5 @@ export function resolveToken(
     current = chosen.aliasTarget;
     if (depth === ALIAS_DEPTH_LIMIT - 1) chainEnd = "depth-limit";
   }
-  return { name, resolution, declarations, aliasChain, chainEnd };
+  return { name, resolution, declarations, aliasChain, chainDeclarations, chainEnd };
 }

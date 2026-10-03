@@ -20,6 +20,10 @@ public/agent/
 # Generated AK-5 OFF/ON prompt bundles (scripts/generate-agent-eval-prompts.ts)
 evals/agent-kit/generated/
 
+# Audit Agent run output (scripts/audit-run.ts) — audit/<slug>.<sha>.json + .md.
+# Local, regenerable evidence; never committed. See docs/architecture/agent-readiness.md §25.
+/audit/
+
 # Production
 build/
 dist/

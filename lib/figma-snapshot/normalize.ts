@@ -5,6 +5,7 @@
  * order) yields byte-identical output.
  */
 import type { FigmaIdentity } from "@/lib/figma-identity";
+import { computeAliasClosure } from "@/lib/figma-snapshot/alias-closure";
 import type { RawFigmaCapture, RawRoot } from "@/lib/figma-snapshot/raw-capture";
 import {
   FIGMA_SNAPSHOT_SCHEMA_VERSION,
@@ -50,7 +51,7 @@ const DESCRIPTION_SECTION = /^([A-Z][A-Z ]+[A-Z]):/gm;
 const STANDARD_UNKNOWNS: FigmaSnapshot["unknowns"] = [
   { fact: "reactMapping", reason: "Snapshots never map Figma names to React props, CSS variables or registry fields; that is comparison work (AG-1D)." },
   { fact: "parity", reason: "A snapshot records what Figma contains; it is not a verdict on whether any other source matches it." },
-  { fact: "renderedValues", reason: "Variable bindings are captured, not rendered output; variable values are recorded one alias hop deep and full alias chains are not resolved." },
+  { fact: "renderedValues", reason: "Variable bindings and their alias closure are captured, not rendered output; mode selection, fallbacks and rendered values are not evaluated." },
   { fact: "modeSupport", reason: "Collections and explicit modes are recorded as observed; which Light/Dark, Shape or Surface modes the component is designed for is not inferred." },
   { fact: "nestedInstanceOverrides", reason: "Nested instances record their variant selections only; text, boolean and instance-swap override values are not captured." },
   { fact: "nestedInstanceRole", reason: "Whether a nested component is public, an internal helper or decorative is not determinable from Figma beyond the Icon/ naming convention." },
@@ -106,6 +107,11 @@ export function normalizeFigmaSnapshot(
     }))
     .sort((a, b) => byString(a.name, b.name) || byString(a.id, b.id));
 
+  const aliasClosure = computeAliasClosure(variables, (id) => {
+    const raw = capture.variables[id];
+    return raw ? { name: raw.name, resolvedType: raw.resolvedType, collection: raw.collectionName, valuesByMode: raw.valuesByMode } : null;
+  });
+
   const collectionIds = new Set([
     ...variables.map((v) => capture.variables[v.id]!.collectionId),
     ...roots.flatMap((r) => Object.keys(r.explicitVariableModes)),
@@ -144,6 +150,7 @@ export function normalizeFigmaSnapshot(
     ).map(({ fact, scope }) => ({ scope, ...fact })),
     variables,
     collections,
+    aliasClosure,
   };
 
   const variantAxes = componentProperties.filter((p) => p.type === "VARIANT" && p.variantOptions);
@@ -167,6 +174,7 @@ export function normalizeFigmaSnapshot(
     propertyCounts: Object.fromEntries(Object.entries(propertyCounts).sort(([a], [b]) => byString(a, b))),
     variantCount: variants.length,
     variantCombinationsComplete: variantAxes.length ? expectedCombinations === variants.length : null,
+    aliasClosureComplete: aliasClosure.unresolvedIds.length === 0,
     boundCollections: Array.from(new Set(variables.map((v) => v.collection).filter((c): c is string => Boolean(c)))).sort(byString),
     nestedComponents: Array.from(nestedByMain.values()).sort((a, b) =>
       byString(a.componentSetName ?? a.mainComponentName ?? "", b.componentSetName ?? b.mainComponentName ?? ""),

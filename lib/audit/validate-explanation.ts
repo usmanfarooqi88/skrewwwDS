@@ -71,6 +71,16 @@ const STATUS_CLAIMS: Array<{ pattern: RegExp; claims: "pass" | "fail" }> = [
 /** On an `unknown`, a provider may not assert a proven defect or mismatch. */
 const UNKNOWN_OVERCLAIM = /\b(definitely|certainly|clearly|confirmed|proven|obviously)\b[^.]{0,60}\b(broken|wrong|mismatch(ed)?|fail(s|ed|ure)?|incorrect|defect(ive)?|stale)\b|\b(is|are)\s+(definitely\s+)?(broken|wrong|incorrect)\b/i;
 
+/** On a `fail`, a provider may explain the difference but not soften it into a non-problem. */
+const FAIL_SOFTENING =
+  /\b(?:not|isn't|is not|aren't|are not)\s+(?:really\s+|actually\s+|truly\s+)?(?:an?\s+)?(?:real\s+|true\s+|genuine\s+)?(?:fail(?:ure)?|defect|mismatch|problem|drift|error|violation|issue|discrepancy)\b|\b(?:harmless|safe to ignore|can be ignored|can safely be ignored|no real (?:problem|issue)|nothing to (?:fix|change)|merely cosmetic|only cosmetic|just cosmetic|negligible|insignificant)\b/i;
+
+/** On a `fail` or `unknown`, a provider may not claim the sides agree. */
+const AGREEMENT_CLAIM = /(?<!whether\s)(?<!if\s)(?<!not\s)(?<!whether the )(?<!if the )\b(?:both sides|the two sides|the sides|these|they)\s+(?:agree|match|are (?:equal|equivalent|consistent|in sync|aligned))\b/i;
+
+/** Intent can only come from an exact structured record (an `intentional-difference` finding), never from provider prose. */
+const INTENT_CLAIM = /\b(?:is|are|was|were)\s+(?:an?\s+)?(?:intentional(?:ly)?|deliberate(?:ly)?|by design|expected behaviou?r)\b|\bintended\s+(?:difference|behaviou?r)\b/i;
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -179,6 +189,15 @@ function validateExplanation(item: Record<string, unknown>, finding: Explanation
       if (claim.pattern.test(value) && claim.claims !== finding.status) {
         add("STATUS_CONTRADICTION", `${where} claims "${claim.claims}" but the deterministic status is "${finding.status}"`, id);
       }
+    }
+    if (finding.status === "fail" && FAIL_SOFTENING.test(value)) {
+      add("STATUS_CONTRADICTION", `${where} softens a deterministic fail`, id);
+    }
+    if ((finding.status === "fail" || finding.status === "unknown") && AGREEMENT_CLAIM.test(value)) {
+      add("STATUS_CONTRADICTION", `${where} claims the compared sides agree on a ${finding.status} finding`, id);
+    }
+    if (finding.status !== "intentional-difference" && INTENT_CLAIM.test(value)) {
+      add("STATUS_CONTRADICTION", `${where} claims intent, but no structured intentional-difference record exists for this finding`, id);
     }
     if (finding.status === "unknown" && UNKNOWN_OVERCLAIM.test(value)) {
       add("STATUS_CONTRADICTION", `${where} asserts a proven defect on an unknown finding`, id);

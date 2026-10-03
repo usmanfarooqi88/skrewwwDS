@@ -10,6 +10,10 @@ parity verdict.
   `figmaIdentity` for that slug — a snapshot cannot choose its own node.
 - Blocks: `observed` (read from Figma, names exact), `derived` (deterministic
   from `observed` only), `unknowns` (deliberately not captured).
+- Schema `1.1.0` adds `observed.aliasClosure`: every variable reachable from the
+  bound variables through alias values in any mode, so absence from the master's
+  dependency graph is provable when `unresolvedIds` is empty. `capture.aliasClosureCapturedAt`
+  is present when the closure was read in a later read-only pass than the node.
 - Only `capturedAt` changes between captures of an unchanged node.
 - Committed because it cannot be regenerated from the repo alone (it needs live
   Figma). The build never writes here.
@@ -29,6 +33,11 @@ parity verdict.
 
    Identities come from the registry; nothing is written unless every
    snapshot validates (`lib/figma-snapshot/validate.ts`).
+
+The capture script (version 1.1.0) follows alias targets transitively, so a fresh
+capture carries its own closure. `scripts/figma-snapshot/add-alias-closure.ts`
+upgrades existing 1.0.0 snapshots in place from a read-only capture of the
+alias-target variables (idempotent; refuses an incomplete closure).
 
 Schema: `lib/figma-snapshot/schema.ts`. Architecture:
 `docs/architecture/agent-readiness.md` §21.

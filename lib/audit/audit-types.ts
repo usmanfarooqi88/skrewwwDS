@@ -63,6 +63,8 @@ export type AuditReasonCode =
   | "no-figma-css-map"
   | "free-form-api-name"
   | "registry-subset-allowed"
+  | "unresolved-value"
+  | "documentation-contradicts-identity"
   | "not-applicable-recorded"
   | "not-applicable-observed"
   | "not-applicable-record-contradicted"
@@ -112,6 +114,7 @@ export type AuditComparison = {
     figmaCapturedAt: string;
     figmaSnapshotSchemaVersion: string;
     propertyMapVersion: string | null;
+    tokenRoleMapVersion: string | null;
   };
   summary: AuditSummary;
   findings: AuditFinding[];
@@ -151,6 +154,49 @@ export type PilotPropertyMap = {
   /** What the mapping was verified against: the snapshot capture and the React source files read. */
   verifiedAgainst: { figmaCapturedAt: string; sources: string[] };
   mappings: FigmaPropertyMapping[];
+};
+
+/**
+ * One token role: the same design responsibility seen from three sources —
+ * where Figma binds its token, which registry `tokensUsed` entry implements it,
+ * and which CSS custom property the component's stylesheet reads. The mapping
+ * only says WHICH properties correspond; it never says whether they agree.
+ */
+export type TokenRoleMapping = {
+  /** Used in finding ids: `role-<claimKey>-token`, `role-<claimKey>-value-<mode>`. */
+  claimKey: string;
+  description: string;
+  figma: {
+    /** Layer path from the analysed root ("" is the root itself). */
+    path: string;
+    /** Bound properties that carry the role, e.g. the four corner radii. */
+    properties: string[];
+  };
+  registry: {
+    /** Registry `tokensUsed` entries (Figma-name domain) that implement the role. */
+    tokens: string[];
+  };
+  css: {
+    /** The custom property the component CSS reads for this role. */
+    customProperty: string;
+    /** Attribute that selects the mode in CSS, e.g. `data-skrewww-shape`. */
+    modeAttribute: string;
+    /** Explicit Figma mode name → attribute value. A Figma mode absent here is left unmapped (unknown). */
+    modes: Array<{ figmaMode: string; attributeValue: string }>;
+    /** What the static resolution assumes about where the attribute is applied. */
+    cascadeAssumption: string;
+  };
+  rationale: string;
+  /** Source files / lines read when the mapping was verified. */
+  sources: string[];
+};
+
+/** Pilot-only, human-verified audit metadata. Not canonical product metadata; never prescribes a status. */
+export type PilotTokenRoleMap = {
+  version: string;
+  componentSlug: string;
+  verifiedAgainst: { figmaCapturedAt: string; sources: string[] };
+  roles: TokenRoleMapping[];
 };
 
 /** The only input that can turn a deterministic difference into `intentional-difference`. */

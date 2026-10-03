@@ -5,6 +5,7 @@ import { compileComponentContract } from "@/lib/agent-kit/contract-compiler";
 import { componentRegistry, getRegistryEntry } from "@/lib/component-registry";
 import { allComponents } from "@/lib/data";
 import { figmaIdentityKey, SKREWWW_PRO_FIGMA_FILE_KEY, type FigmaIdentity } from "@/lib/figma-identity";
+import { computeAliasClosure, type ClosureVariableSource } from "@/lib/figma-snapshot/alias-closure";
 import { FigmaSnapshotError, normalizeFigmaSnapshot } from "@/lib/figma-snapshot/normalize";
 import type { RawFigmaCapture } from "@/lib/figma-snapshot/raw-capture";
 import { FIGMA_SNAPSHOT_SCHEMA_VERSION, type FigmaSnapshot } from "@/lib/figma-snapshot/schema";
@@ -274,5 +275,120 @@ describe("AG-1B — normalization", () => {
     expect(snapshot.observed.variableBindings.some((b) => b.variableId === "V:radius")).toBe(true);
     expect(snapshot.unknowns.map((u) => u.fact)).toContain("variables");
     expect(validateFigmaSnapshot(snapshot, SYNTHETIC_IDENTITY)).toEqual([]);
+  });
+});
+
+// ── 1.1.0: transitive alias closure ─────────────────────────────────────────
+
+const variable = (id: string, name: string, valuesByMode: ClosureVariableSource["valuesByMode"]) => ({ id, name, resolvedType: "FLOAT", collection: "C", valuesByMode });
+const source = (name: string, valuesByMode: ClosureVariableSource["valuesByMode"]): ClosureVariableSource => ({ name, resolvedType: "FLOAT", collection: "C", valuesByMode });
+const ref = (name: string, id: string) => ({ alias: name, aliasId: id });
+
+describe("AG-1B 1.1.0 — alias closure (generic, read-only, cycle-safe)", () => {
+  it("separates bound variables, transitive alias targets and unresolved references", () => {
+    const bound = [variable("B", "bound", { Light: ref("mid", "M"), Dark: ref("other", "O") })];
+    const table = new Map<string, ClosureVariableSource>([
+      ["M", source("mid", { Value: ref("leaf", "L") })],
+      ["L", source("leaf", { Value: 12 })],
+      ["O", source("other", { Value: ref("missing", "X") })],
+    ]);
+    const closure = computeAliasClosure(bound, (id) => table.get(id));
+    expect(closure.variables.map((v) => v.name)).toEqual(["leaf", "mid", "other"]); // sorted, bound excluded
+    expect(closure.unresolvedIds).toEqual(["X"]); // the chain past `other` cannot be proven
+  });
+
+  it("terminates on alias cycles and counts each variable once", () => {
+    const bound = [variable("B", "bound", { Value: ref("a", "A") })];
+    const table = new Map<string, ClosureVariableSource>([
+      ["A", source("a", { Value: ref("b", "B2") })],
+      ["B2", source("b", { Value: ref("a", "A") })],
+    ]);
+    const closure = computeAliasClosure(bound, (id) => table.get(id));
+    expect(closure.variables.map((v) => v.name)).toEqual(["a", "b"]);
+    expect(closure.unresolvedIds).toEqual([]);
+    // a cycle that returns to a bound variable does not duplicate it either
+    const loop = computeAliasClosure(bound, (id) => (id === "A" ? source("a", { Value: ref("bound", "B") }) : undefined));
+    expect(loop.variables.map((v) => v.name)).toEqual(["a"]);
+  });
+
+  it("follows aliases in every mode, and is independent of input order", () => {
+    const bound = [variable("B1", "x", { Light: ref("p", "P"), Dark: ref("q", "Q") }), variable("B2", "y", { Value: ref("q", "Q") })];
+    const table = new Map<string, ClosureVariableSource>([
+      ["P", source("p", { Value: 1 })],
+      ["Q", source("q", { Value: 2 })],
+    ]);
+    const a = computeAliasClosure(bound, (id) => table.get(id));
+    const b = computeAliasClosure([...bound].reverse(), (id) => table.get(id));
+    expect(JSON.stringify(b)).toBe(JSON.stringify(a));
+    expect(a.variables.map((v) => v.name)).toEqual(["p", "q"]);
+  });
+
+  it("normalization records a complete closure when every alias target was captured", () => {
+    const capture = syntheticCapture();
+    capture.variables["V:x"] = { name: "semantic/x", resolvedType: "COLOR", collectionId: "C:semantic", collectionName: "Semantic", valuesByMode: { Light: { alias: "color/y", aliasId: "V:y" } } };
+    capture.variables["V:y"] = { name: "color/y", resolvedType: "COLOR", collectionId: "C:primitive", collectionName: "Primitive", valuesByMode: { Value: { r: 1, g: 0, b: 0, a: 1 } } };
+    const snapshot = normalizeFigmaSnapshot(capture, "synthetic", SYNTHETIC_IDENTITY, "2026-10-03T00:00:00Z");
+    expect(snapshot.schemaVersion).toBe("1.1.0");
+    expect(snapshot.observed.aliasClosure!.variables.map((v) => v.name)).toEqual(["color/y", "semantic/x"]);
+    expect(snapshot.observed.aliasClosure!.unresolvedIds).toEqual([]);
+    expect(snapshot.derived.aliasClosureComplete).toBe(true);
+    expect(validateFigmaSnapshot(snapshot, SYNTHETIC_IDENTITY)).toEqual([]);
+  });
+
+  it("normalization marks the closure incomplete when an alias target was not captured", () => {
+    const snapshot = normalizeFigmaSnapshot(syntheticCapture(), "synthetic", SYNTHETIC_IDENTITY, "2026-10-03T00:00:00Z");
+    expect(snapshot.observed.aliasClosure!.variables).toEqual([]);
+    expect(snapshot.observed.aliasClosure!.unresolvedIds).toEqual(["V:x"]);
+    expect(snapshot.derived.aliasClosureComplete).toBe(false);
+    expect(validateFigmaSnapshot(snapshot, SYNTHETIC_IDENTITY)).toEqual([]);
+  });
+
+  it("the validator rejects a closure that is missing, padded, inconsistent or mis-versioned", () => {
+    const base = normalizeFigmaSnapshot(syntheticCapture(), "synthetic", SYNTHETIC_IDENTITY, "2026-10-03T00:00:00Z");
+    const mutate = (fn: (s: FigmaSnapshot) => void) => {
+      const copy = JSON.parse(JSON.stringify(base)) as FigmaSnapshot;
+      fn(copy);
+      return validateFigmaSnapshot(copy, SYNTHETIC_IDENTITY).join("\n");
+    };
+    expect(mutate((s) => delete s.observed.aliasClosure)).toMatch(/aliasClosure is required/);
+    expect(mutate((s) => (s.observed.aliasClosure!.unresolvedIds = []))).toMatch(/unresolvedIds do not match/);
+    expect(mutate((s) => s.observed.aliasClosure!.variables.push(variable("Z", "orphan", { Value: 1 })))).toMatch(/not reachable/);
+    expect(mutate((s) => s.observed.aliasClosure!.variables.push(variable("V:bg", "dup", { Value: 1 })))).toMatch(/also a bound variable/);
+    expect(mutate((s) => (s.derived.aliasClosureComplete = true))).toMatch(/aliasClosureComplete does not follow/);
+    expect(mutate((s) => (s.schemaVersion = "1.0.0"))).toMatch(/1\.0\.0 snapshot cannot carry/);
+    expect(mutate((s) => (s.schemaVersion = "9.9.9"))).toMatch(/is not one of/);
+  });
+
+  it("capture stays read-only and follows aliases transitively", () => {
+    const script = readFileSync(join(root, "scripts/figma-snapshot/capture-in-figma.js"), "utf8");
+    expect(script).toContain('const SKREWWW_FIGMA_CAPTURE_VERSION = "1.1.0"');
+    expect(script).toMatch(/await describeVariable\(value\.id\)/);
+    expect(script).toMatch(/variables\[id\] = null;\s*\n\s*const v = await/); // visited-before-lookup: cycle safety
+    expect(script).not.toMatch(/\.(create[A-Z]\w*|setValueForMode|remove\(\)|setBoundVariable\w*)\(/);
+  });
+
+  it("every committed pilot snapshot is 1.1.0 with a complete, reproducible alias closure", () => {
+    for (const slug of PILOTS) {
+      const snapshot = loadSnapshot(slug);
+      expect(snapshot.schemaVersion).toBe(FIGMA_SNAPSHOT_SCHEMA_VERSION);
+      expect(snapshot.schemaVersion).toBe("1.1.0");
+      const closure = snapshot.observed.aliasClosure!;
+      expect(closure.unresolvedIds, slug).toEqual([]);
+      expect(snapshot.derived.aliasClosureComplete, slug).toBe(true);
+      expect(snapshot.capture.aliasClosureCapturedAt, slug).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+      // reproducible: the closure is exactly what the aliases of bound ∪ closure variables reach
+      const known = new Map([...snapshot.observed.variables, ...closure.variables].map((v) => [v.id, v]));
+      const recomputed = computeAliasClosure(snapshot.observed.variables, (id) => known.get(id));
+      expect(JSON.stringify(recomputed), slug).toBe(JSON.stringify(closure));
+      expect(isSorted(closure.variables.map((v) => v.name)), slug).toBe(true);
+    }
+  });
+
+  it("closure variables carry their own literal values, so alias chains resolve to numbers", () => {
+    const alert = loadSnapshot("alert");
+    const full = alert.observed.aliasClosure!.variables.find((v) => v.name === "radius/full")!;
+    expect(full.valuesByMode).toEqual({ Value: 9999 });
+    const feedback = alert.observed.variables.find((v) => v.name === "component/radius/feedback")!;
+    expect(feedback.valuesByMode.Pill).toMatchObject({ alias: "radius/full" });
   });
 });

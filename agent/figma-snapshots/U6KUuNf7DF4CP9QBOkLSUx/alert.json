@@ -1,10 +1,11 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "capturedAt": "2026-09-29T10:14:52Z",
   "capture": {
     "method": "figma-plugin-api",
     "captureVersion": "1.0.0",
-    "fileName": "Skrewww - Design System"
+    "fileName": "Skrewww - Design System",
+    "aliasClosureCapturedAt": "2026-10-03T15:57:00Z"
   },
   "identity": {
     "fileKey": "U6KUuNf7DF4CP9QBOkLSUx",
@@ -931,7 +932,469 @@
           "Glass"
         ]
       }
-    ]
+    ],
+    "aliasClosure": {
+      "variables": [
+        {
+          "id": "VariableID:2002:2396",
+          "name": "color/danger/100",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.9922,
+              "g": 0.8863,
+              "b": 0.8824,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2397",
+          "name": "color/danger/500",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.898,
+              "g": 0.2824,
+              "b": 0.302,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:3247:11534",
+          "name": "color/danger/900",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.3373,
+              "g": 0.0706,
+              "b": 0.0549,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2405",
+          "name": "color/info/100",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.8627,
+              "g": 0.9333,
+              "b": 0.9961,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2406",
+          "name": "color/info/500",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.2314,
+              "g": 0.5098,
+              "b": 0.9647,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:3247:11535",
+          "name": "color/info/900",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.0471,
+              "g": 0.1255,
+              "b": 0.3451,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2374",
+          "name": "color/neutral/0",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2378",
+          "name": "color/neutral/300",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.7765,
+              "g": 0.7843,
+              "b": 0.8078,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2379",
+          "name": "color/neutral/400",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.6275,
+              "g": 0.6392,
+              "b": 0.6745,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2380",
+          "name": "color/neutral/500",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.4745,
+              "g": 0.4902,
+              "b": 0.5294,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2381",
+          "name": "color/neutral/600",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.3569,
+              "g": 0.3725,
+              "b": 0.4078,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2384",
+          "name": "color/neutral/900",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.0902,
+              "g": 0.0941,
+              "b": 0.1059,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2399",
+          "name": "color/success/100",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.8745,
+              "g": 0.9608,
+              "b": 0.902,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2400",
+          "name": "color/success/500",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.1882,
+              "g": 0.6431,
+              "b": 0.4235,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:3247:11536",
+          "name": "color/success/900",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.0784,
+              "g": 0.3137,
+              "b": 0.1961,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2402",
+          "name": "color/warning/100",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.9961,
+              "g": 0.9529,
+              "b": 0.8392,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2403",
+          "name": "color/warning/500",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.9608,
+              "g": 0.6471,
+              "b": 0.1412,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:3247:11537",
+          "name": "color/warning/900",
+          "resolvedType": "COLOR",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": {
+              "r": 0.3922,
+              "g": 0.2235,
+              "b": 0,
+              "a": 1
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2432",
+          "name": "radius/full",
+          "resolvedType": "FLOAT",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": 9999
+          }
+        },
+        {
+          "id": "VariableID:2002:2428",
+          "name": "radius/lg",
+          "resolvedType": "FLOAT",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": 12
+          }
+        },
+        {
+          "id": "VariableID:2002:2424",
+          "name": "radius/none",
+          "resolvedType": "FLOAT",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": 0
+          }
+        },
+        {
+          "id": "VariableID:2002:2429",
+          "name": "radius/xl",
+          "resolvedType": "FLOAT",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": 16
+          }
+        },
+        {
+          "id": "VariableID:3247:11474",
+          "name": "semantic/feedback/danger-glass",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "r": 0.9922,
+              "g": 0.8863,
+              "b": 0.8824,
+              "a": 0.45
+            },
+            "Dark": {
+              "r": 0.702,
+              "g": 0.149,
+              "b": 0.1176,
+              "a": 0.45
+            }
+          }
+        },
+        {
+          "id": "VariableID:3245:11378",
+          "name": "semantic/feedback/danger-surface",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "alias": "color/danger/100",
+              "aliasId": "VariableID:2002:2396"
+            },
+            "Dark": {
+              "alias": "color/danger/900",
+              "aliasId": "VariableID:3247:11534"
+            }
+          }
+        },
+        {
+          "id": "VariableID:3247:11475",
+          "name": "semantic/feedback/info-glass",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "r": 0.8627,
+              "g": 0.9333,
+              "b": 0.9961,
+              "a": 0.45
+            },
+            "Dark": {
+              "r": 0.1137,
+              "g": 0.3059,
+              "b": 0.8471,
+              "a": 0.45
+            }
+          }
+        },
+        {
+          "id": "VariableID:3245:11379",
+          "name": "semantic/feedback/info-surface",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "alias": "color/info/100",
+              "aliasId": "VariableID:2002:2405"
+            },
+            "Dark": {
+              "alias": "color/info/900",
+              "aliasId": "VariableID:3247:11535"
+            }
+          }
+        },
+        {
+          "id": "VariableID:3247:11476",
+          "name": "semantic/feedback/success-glass",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "r": 0.8745,
+              "g": 0.9608,
+              "b": 0.902,
+              "a": 0.45
+            },
+            "Dark": {
+              "r": 0.1216,
+              "g": 0.4784,
+              "b": 0.302,
+              "a": 0.45
+            }
+          }
+        },
+        {
+          "id": "VariableID:3245:11380",
+          "name": "semantic/feedback/success-surface",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "alias": "color/success/100",
+              "aliasId": "VariableID:2002:2399"
+            },
+            "Dark": {
+              "alias": "color/success/900",
+              "aliasId": "VariableID:3247:11536"
+            }
+          }
+        },
+        {
+          "id": "VariableID:3247:11477",
+          "name": "semantic/feedback/warning-glass",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "r": 0.9961,
+              "g": 0.9529,
+              "b": 0.8392,
+              "a": 0.45
+            },
+            "Dark": {
+              "r": 0.5412,
+              "g": 0.3098,
+              "b": 0,
+              "a": 0.45
+            }
+          }
+        },
+        {
+          "id": "VariableID:3245:11381",
+          "name": "semantic/feedback/warning-surface",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "alias": "color/warning/100",
+              "aliasId": "VariableID:2002:2402"
+            },
+            "Dark": {
+              "alias": "color/warning/900",
+              "aliasId": "VariableID:3247:11537"
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2475",
+          "name": "semantic/icon/muted",
+          "resolvedType": "COLOR",
+          "collection": "Semantic",
+          "valuesByMode": {
+            "Light": {
+              "alias": "color/neutral/400",
+              "aliasId": "VariableID:2002:2379"
+            },
+            "Dark": {
+              "alias": "color/neutral/500",
+              "aliasId": "VariableID:2002:2380"
+            }
+          }
+        },
+        {
+          "id": "VariableID:2002:2415",
+          "name": "spacing/20",
+          "resolvedType": "FLOAT",
+          "collection": "Primitive",
+          "valuesByMode": {
+            "Value": 20
+          }
+        }
+      ],
+      "unresolvedIds": []
+    }
   },
   "derived": {
     "descriptionSections": [
@@ -982,7 +1445,8 @@
         "componentSetName": null,
         "kind": "icon"
       }
-    ]
+    ],
+    "aliasClosureComplete": true
   },
   "unknowns": [
     {
@@ -1015,7 +1479,7 @@
     },
     {
       "fact": "renderedValues",
-      "reason": "Variable bindings are captured, not rendered output; variable values are recorded one alias hop deep and full alias chains are not resolved."
+      "reason": "Variable bindings and their alias closure are captured, not rendered output; mode selection, fallbacks and rendered values are not evaluated."
     }
   ]
 }

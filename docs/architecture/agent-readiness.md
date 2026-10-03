@@ -363,7 +363,7 @@ vars) → gather token facts (`tokensUsed`, bindings, CSS vars) → run
 fixes for non-pass findings → emit report for human review.
 
 **Output:** `audit/<slug>.<sha>.json` (findings + counts + provenance) and a
-Markdown summary. Nothing else is written.
+Markdown summary. Nothing else is written. *(Implemented by `npm run audit:run` in AG-1F — §25. The abbreviated Alert example below predates AG-1D–F; its numbers are illustrative, and the real pilot results are in §25.)*
 
 **Example (Alert, real current semantics, abbreviated):**
 
@@ -395,7 +395,7 @@ Markdown summary. Nothing else is written.
 }
 ```
 
-## 18. AG-1 implementation slices (not implemented)
+## 18. AG-1 implementation slices (all implemented — §20–§25)
 
 | Slice | Goal | Likely affected | Output | Acceptance | Stop boundary |
 |---|---|---|---|---|---|
@@ -405,6 +405,8 @@ Markdown summary. Nothing else is written.
 | **AG-1D** Comparator + evidence schema | Deterministic comparisons, five-status classification | `lib/audit/` + tests | findings JSON | `unknown` never counted as pass; free-form prop names → unknown | no model calls |
 | **AG-1E** Explanation layer | Model explains non-pass findings, suggests fixes | thin CLI wrapper | Markdown report | every statement cites evidence; inferred vs observed labeled | no writes, no auto-fix |
 | **AG-1F** Pilot calibration | Golden cases | tests | acceptance suite | detects Alert radius drift, Alert `tokensUsed` staleness, Dialog `figmaReference` staleness; no false fail on Dark mode | Pro only |
+
+*Slice status: AG-1A–AG-1F are all implemented (§20–§25); AG-1 Audit Agent MVP complete, 2026-10-03.*
 
 ## 19. Out of scope for AG-0 / AG-1
 
@@ -503,14 +505,14 @@ figmaIdentity (registry)
 | Component properties (VARIANT/TEXT/BOOLEAN/INSTANCE_SWAP, keys, defaults, options) | structured |
 | Variants and their values | structured |
 | Variable bindings (radius, padding, gap, size, fills, strokes, gradient stops, effects, fontFamily, opacity) incl. inside nested instances | structured, with variable names |
-| Variable collections, modes, per-mode values (one alias hop) | structured |
+| Variable collections, modes, per-mode values; alias values as references, plus the transitive alias closure (schema 1.1.0, §25) | structured |
 | Explicit variable modes set on a variant | structured |
 | Text styles on text layers | structured (style name) |
 | Nested instances → main component / component set, variant selections | structured |
 | Auto-layout (mode, gap, padding, sizing, alignment), radius, stroke, size | structured |
 | Description | prose (section headings derived) |
 | Nested instance text/boolean/swap override values | not captured |
-| Rendered per-mode output, full alias chains | not captured |
+| Rendered per-mode output | not captured |
 | Documentation links | not captured |
 | Whether a nested component is public/helper/decorative | not determinable (Icon/ naming only) |
 
@@ -668,7 +670,7 @@ not-applicable with no invented findings; Alert's Type options and Title/Show cl
 **Alert calibration.** Detected deterministically: identity, the five bound feedback/surface tokens, and `component/radius/feedback` listed among Figma bindings outside the registry
 set; the repo radius chain (`--feedback-radius` → `--shape-radius-container` → `--component-radius-container`, `[TEMPORARY]`) is attached as evidence. **Left unknown:** registry
 `component/radius/container` is not bound in Figma, but the snapshot records alias values one hop deep, so its absence is not provable and the comparator does not claim a fail.
-Making it a deterministic fail needs fuller alias capture (an AG-1B extension) or the calibrated cross-domain case in AG-1F; nothing is hard-coded to reproduce the §17 example.
+Making it a deterministic fail needs fuller alias capture (an AG-1B extension) or the calibrated cross-domain case in AG-1F; nothing is hard-coded to reproduce the §17 example. **Superseded by §25:** AG-1F added the alias closure (snapshot 1.1.0) and an explicit token-role map, and Alert's radius is now a deterministic fail.
 
 **Determinism and CLI.** `serializeAuditComparison` sorts keys; findings are sorted by id; same inputs produce byte-identical JSON. `npm run audit:compare -- <slug>` collects
 RepoFacts, loads the committed snapshot named by the registry identity and the pilot map, and prints JSON (no `audit/` output; FAIL findings exit 0, invalid input exits 1 or 2).
@@ -737,3 +739,106 @@ free-form names and stale prose stay unknown. Chart Card: missing properties app
 CSS state, no FormField composition. Tests: `lib/audit/explain-audit.test.ts`.
 
 Next: **AG-1F — pilot calibration + golden audit cases.**
+
+## 25. AG-1F — pilot calibration, golden cases and output contract (implemented 2026-10-03)
+
+The final AG-1 slice. It proves the Audit Agent on the five real Pro pilots (Button, Text Input, Alert, Dialog, Chart Card), resolves the §17 output contract, and
+closes AG-1. **No component, registry product fact, token, package, Figma or Make Kit fact was changed to make an audit pass; nothing was published.** The two
+documented drifts below are *findings the audit now reports*, not facts anyone adjusted.
+
+**§17 contract audit (done before implementing).** Input (slug, registry identity, committed snapshot, current checkout), identity resolution (`UNKNOWN_SLUG`,
+`FIGMA_EVIDENCE_UNAVAILABLE`, snapshot ↔ identity ↔ validator), contract provenance (compiled in memory, SHA-checked), Figma facts, React facts, token facts, internal
+Guard filtered by slug, deterministic comparison, five statuses, explanation boundary and read-only behaviour were all satisfied by AG-1A–E. Two gaps remained:
+**(1)** the documented `audit/<slug>.<sha>.json` + Markdown output existed only as stdout from separate debug CLIs, and `audit/` was not gitignored; **(2)** the three
+golden detections were not yet derivable from evidence (Alert radius and `tokensUsed` were `unknown` because alias chains were one hop deep; Dialog's stale
+`figmaReference` was only recorded as prose). Both are resolved below.
+
+**AG-1B 1.1.0 — alias closure (generic, read-only, cycle-safe).** `observed.aliasClosure` lists every variable reachable from the bound set through alias values in any
+mode (excluding the bound variables), each with its own per-mode values, plus `unresolvedIds`; `derived.aliasClosureComplete` follows from it
+(`lib/figma-snapshot/alias-closure.ts`, `computeAliasClosure`: each id visited once, so cycles terminate). It distinguishes *bound*, *transitive alias target*, *provably
+absent* (closure complete) and *absent but unprovable* (unresolved ids). Schema `1.0.0` stays readable and carries no closure (alias chains past one hop stay open). The
+capture script now follows alias targets transitively (still read-only; `variables[id] = null` is set before the lookup). The validator recomputes the closure from the
+snapshot itself and rejects a missing, padded, unreachable or inconsistent one. **All five committed pilot snapshots were upgraded in place** with
+`scripts/figma-snapshot/add-alias-closure.ts` (additive: version, `capture.aliasClosureCapturedAt`, the closure block and one `unknowns` sentence; no existing observed
+fact changed). The closure was read from the live Pro file with a read-only Figma call (109 variables reached, 0 unresolved); a further read-only hash comparison found all
+58 already-bound variable definitions identical to the committed snapshots. The node facts (`capturedAt` 2026-09-29) were **not** re-captured — see limitations.
+
+**AG-1C 1.1.0.** `TokenResolution.chainDeclarations` records the declarations, in every context, of each custom property the alias chain passes through, so a Shape-mode
+override on an intermediate alias (`--shape-radius-container`) is readable without re-reading CSS.
+
+**Comparator changes (AG-1D rules, same evidence model).**
+
+- *Registry token dependencies* now use the closure: bound → pass; only an alias target (any hop) → unknown (`alias-target-only`, unchanged semantics); absent while the
+  closure is incomplete or missing → unknown; absent from bound ∪ closure with a **complete** closure → **fail** (`not-observed`). Registry-narrower-than-Figma remains
+  allowed (R1): a Figma binding the registry omits is never a failure on its own.
+- *Token roles* (`lib/audit/pilot-token-role-maps.ts`, version 1.0.0): an explicit, pilot-scoped, human-verified map saying that one responsibility is seen in three
+  places — the Figma properties that carry it, the registry `tokensUsed` entry meant to implement it, and the CSS custom property + mode attribute the stylesheet reads. It
+  cites the exact source lines it was verified against, is not canonical metadata, is never in a contract and **never prescribes a status**. Only Alert's surface corner radius
+  is mapped. The rule emits `role-<key>-token` (does the registry's role token equal the token Figma binds?) and `role-<key>-value-<mode>` per explicitly mapped mode (Figma
+  value — alias chain followed through the closure to a number — against the CSS value, statically resolved through the chain under `[data-skrewww-shape="<mode>"]`, then
+  `:root`). Unresolvable on either side → `unknown` (`unresolved-value`); unmapped Figma modes (Brand Shape) → one `unknown` (`unmapped`). Static resolution assumes the shape
+  attribute is on the root element (`app/layout.tsx` does that); a descendant wrapper is not evaluated.
+- *Documentation consistency* (`compareFigmaReferenceClaims`, generic): a sentence of the exact shape `No [canonical] <Subject> [COMPONENT_SET/]master` whose subject contains
+  the component's own name is an unequivocal negative claim; the compared side is the **structured identity**. Identity role `master` contradicts it → fail
+  (`documentation-contradicts-identity`, severity minor); a non-master role passes. Hedged, conditional or other-component prose is not parsed and stays in the existing
+  prose-only unknown. There is no per-slug rule anywhere (a test scans the comparator sources for slug conditions).
+- *AG-1E validator*: a fail may not be softened ("not really a mismatch", "harmless", "can be ignored"), a fail or unknown may not claim the sides agree, and intent cannot be
+  claimed without an `intentional-difference` record. Hedged mentions ("whether the sides agree") are not flagged.
+
+**Golden cases** (`lib/audit/golden-cases.ts`, tests `lib/audit/golden-audit.test.ts`). Calibration expectations, **not** canonical metadata, public contracts, Figma authority or
+a substitute for source evidence. Each is semantic — a claim key, the acceptable statuses and reason codes, and evidence it must cite — never a count. Seven cross-pilot
+invariants hold on every pilot: an undecided reason is never pass/fail; Dark mode never fails; TEMPORARY/EXPERIMENTAL/VERIFIED labels never decide a status or yield
+intent; no intentional difference exists without a docs record; every pass/fail cites at least two evidence entries; no finding is evidence-free.
+
+**Known drifts now detected, from real evidence:**
+
+| Case | Evidence | Result |
+|---|---|---|
+| Alert radius drift | Figma `component/radius/feedback` Pill → `radius/full` → 9999 (closure); CSS `--feedback-radius` → `--shape-radius-container` = `16px` under `[data-skrewww-shape="pill"]` (`[TEMPORARY]`) | `role-surface-corner-radius-value-pill` **fail**; Rounded 12=12, Sharp 0=0, Squircle 16=16 **pass**; Brand Shape **unknown** (no CSS counterpart) |
+| Alert `tokensUsed` staleness | live master binds `component/radius/feedback` on its corners; registry names `component/radius/container` for that role; container is absent from the master's complete alias closure | `role-surface-corner-radius-token` **fail**; `figma-binding-component-radius-container` **fail** (`not-observed`) |
+| Dialog `figmaReference` staleness | prose: "No canonical Dialog COMPONENT_SET/master."; structured identity: `COMPONENT 2044:25869`, role `master` | `figma-reference-negative-master-claim` **fail** (documentation) |
+
+The complete closure also proves four more Alert registry tokens (`semantic/action/danger`, `semantic/feedback/info|success|warning`) absent from the master's dependency graph, and that
+Dialog's master binds the primitive `radius/lg` directly rather than the registry's `component/radius/container` (**fail**, `not-observed`). These are deterministic registry-vs-Figma
+differences; which side should change is a human decision, and nothing was changed. The failing radius findings are flagged "Human decision required".
+
+**Still `unknown`, and why:** CSS-side parity outside the one mapped role (no Figma↔CSS map; TEMPORARY stays evidence); Button/Text Input State (needs rendering); Text Input Value
+(value / defaultValue / placeholder not determinable); Alert Description and Button Label (representation not in the documented API — TypeScript decides); registry-subset omissions (R1);
+registry tokens that are only alias targets (bindings vs resolution targets unspecified); free-form documented names; the remaining figmaReference prose.
+
+**Dark mode (mandatory negative case).** All five pilots report `states:dark-mode` as **not-applicable** (`not-applicable-recorded`) because Figma binds Light/Dark collections, a recorded
+architecture source says React has no Dark theme, and no dark-context declaration exists. A contradicting declaration yields `unknown`, never `fail`; an invariant fails the suite if any
+comparator change makes Dark mode fail.
+
+**Pilot matrix** (orientation, not a ranking or score; counts are not a contract): Button — no fail; State and Label unknown, Style/Size options pass. Text Input — no fail; Value and State
+unknown. Alert — fails: the radius token, the Pill radius value and five registry tokens; Rounded/Sharp/Squircle radius pass. Dialog — fails: the stale reference and the registry radius token;
+Title/Body pass as compound exports; free-form names unknown. Chart Card — no fail; empty property set is not-applicable; Guard and token checks ran.
+
+**End-to-end pipeline.** `slug → collectRepoFacts → committed snapshot → compareAuditEvidence → buildExplanationRequest → validated static response → renderAuditReport → audit artifacts`,
+tested for every pilot: same slug and provenance throughout, report FAIL/UNKNOWN heading counts equal the comparison's, every `[E#]` resolves, no repository file written.
+
+**Output contract decision.** Not satisfied by the debug CLIs alone, so `npm run audit:run -- <slug> [--response <file|->] [--out-dir <dir>] [--overwrite] [--include-not-applicable]` was added.
+It writes exactly `<out-dir>/<slug>.<sha>.json` (the sorted-key `AuditComparison`: findings, five counts, provenance) and `<slug>.<sha>.md` (the report), where `<sha>` is the full repo
+commit the evidence was collected at (also in the JSON provenance; `repoWorkingTreeDirty` is recorded). The output directory must be `audit/…` (default, now gitignored) or outside the
+repository; any other in-repo path is refused. Identical existing content is `unchanged`; different content is refused (exit 3) unless `--overwrite`; both files are checked before either
+is written; each is written to a temporary name and renamed. The optional explanation response is external and provider-neutral; a rejected response writes nothing. No model, network or Figma
+call, no vendor SDK, no source edit. Exit codes: 0 ok, 1 usage/unknown slug, 2 invalid input or rejected response, 3 would overwrite.
+
+**Mutation testing.** Besides in-memory fixture mutations (stale token swapped in, registry or CSS "fixed", reference corrected, identity removed, Dark forced to fail, unknown turned into pass,
+free-form names treated as props, a property invented for Chart Card, intent claimed from TEMPORARY), the comparator and validator were temporarily broken in source (role values always equal,
+stale-reference rule disabled, alias chains always open, Dark mode N/A turned into fail, fail-softening check removed); each made the suite fail, and the files were restored byte-identical.
+
+**AG-1 closure — AG-1 Audit Agent MVP ✅ COMPLETE (2026-10-03).** Supported scope: the Pro file only; local, read-only analysis of the five pilots; committed, versioned Figma snapshots (schema 1.1.0);
+current-checkout repository evidence at an exact SHA; deterministic comparison with five statuses; an evidence-grounded explanation boundary with an external provider; human review; no auto-fix;
+no autonomous Figma or repository edits; no hosted service, auth, database or background job; no Free-file audit; no model-vendor dependency.
+
+**Limitations (explicit, not hidden):**
+
+- *Current checkout only.* The optional git-ref input from §17 is narrowed to `HEAD`; another ref returns `REF_NOT_CHECKED_OUT` (AG-1C). Historical-ref audits need a git-object reader or a worktree.
+- *Snapshots are point-in-time.* Node facts were captured 2026-09-29; the alias closure on 2026-10-03. Button and Text Input masters were edited in Figma afterwards (SP-3 spacing work), so their node
+  facts (not variable definitions — verified identical) may lag live Figma. Refresh with the documented capture + `write-snapshots` procedure when it matters.
+- *Capture needs a Figma plugin runtime or a read-only Figma tool;* there is no automated transport.
+- *Only Alert's corner radius is a mapped token role;* the CSS-side parity of every other role stays unknown by design. Adding a role needs a human-verified, source-cited map entry.
+- *Static CSS resolution* assumes the mode attribute is on the root element and evaluates plain lengths only (no `calc`, no rendering).
+- *Explanations come from an external provider* through the validated boundary; no model is invoked by the repository. Validator checks on prose are pattern-based; the hard guarantees are structural.
+- *Pilots only:* 53 registry entries have no Figma identity or snapshot and cannot be audited.

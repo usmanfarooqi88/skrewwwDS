@@ -21,6 +21,7 @@ import {
 } from "@/lib/audit/explanation-types";
 import { snapshotPathFor } from "@/lib/audit/load-audit-inputs";
 import { PILOT_PROPERTY_MAPS } from "@/lib/audit/pilot-property-maps";
+import { PILOT_TOKEN_ROLE_MAPS } from "@/lib/audit/pilot-token-role-maps";
 import { renderAuditReport } from "@/lib/audit/render-audit-report";
 import type { RepoFacts } from "@/lib/audit/repo-facts-types";
 import { evaluateInternalGuard } from "@/lib/audit/repo-guard";
@@ -39,7 +40,7 @@ const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 function compare(slug: Pilot, mutate?: (repoFacts: RepoFacts) => void, intentional?: Parameters<typeof compareAuditEvidence>[0]["intentionalDifferences"]) {
   const repoFacts = clone(facts[slug]);
   mutate?.(repoFacts);
-  const result = compareAuditEvidence({ slug, repoFacts, figmaSnapshot: clone(snapshots[slug]), propertyMap: PILOT_PROPERTY_MAPS[slug], intentionalDifferences: intentional });
+  const result = compareAuditEvidence({ slug, repoFacts, figmaSnapshot: clone(snapshots[slug]), propertyMap: PILOT_PROPERTY_MAPS[slug], tokenRoleMap: PILOT_TOKEN_ROLE_MAPS[slug] ?? null, intentionalDifferences: intentional });
   if (!result.ok) throw new Error(result.error.message);
   return result.comparison;
 }
@@ -93,31 +94,34 @@ const fakeProvider = (patch?: (explanations: FindingExplanation[]) => void): Aud
   };
 };
 
-const radiusId = "alert:tokens:figma-binding-component-radius-container";
+const cssParityId = "alert:tokens:css-implementation-parity";
 
-function alertRadiusExplanation(request: AuditExplanationRequest): FindingExplanation {
-  const finding = request.findings.find((f) => f.findingId === radiusId)!;
-  const [figmaAbsence, truncation, registry] = finding.evidence.map((evidence) => evidence.evidenceId);
+/** An explanation of a finding that is genuinely UNKNOWN for Alert: CSS-side parity has no Figma↔CSS map. */
+function alertCssParityExplanation(request: AuditExplanationRequest): FindingExplanation {
+  const finding = request.findings.find((f) => f.findingId === cssParityId)!;
+  const [figmaSide, cssSide] = finding.evidence.map((evidence) => evidence.evidenceId);
   return {
-    findingId: radiusId,
-    summary: { text: "The registry lists component/radius/container, and the captured Figma bindings do not include it.", citations: [registry, figmaAbsence] },
+    findingId: cssParityId,
+    summary: { text: "CSS-side parity is not compared: no map pairs Figma variables with CSS custom properties.", citations: [figmaSide, cssSide] },
     statements: [
-      { text: "Registry tokensUsed records component/radius/container.", kind: "observed", citations: [registry] },
-      { text: "The token is not among the Figma master's captured bindings or one-hop alias targets.", kind: "observed", citations: [figmaAbsence] },
-      { text: "The snapshot records alias values only one hop deep, so the comparator cannot prove the token is absent further down an alias chain.", kind: "observed", citations: [truncation] },
-      { text: "No deterministic mismatch is proven yet; this stays unresolved until the alias chain is fully captured.", kind: "inferred", citations: [figmaAbsence, truncation] },
+      { text: "The Figma master binds variables named in Figma's own domain.", kind: "observed", citations: [figmaSide] },
+      { text: "The implementation reads custom properties through the CSS files listed in the evidence.", kind: "observed", citations: [cssSide] },
+      { text: "Without an explicit map the comparator cannot say whether the two sides agree, so this stays unresolved.", kind: "inferred", citations: [figmaSide, cssSide] },
     ],
     missingEvidence: {
-      description: "The full Figma alias closure that would show whether the token is reached anywhere downstream.",
-      wouldResolveBy: "Capturing complete alias chains in the snapshot, or calibrating this cross-domain case explicitly.",
+      description: "An explicit, human-verified correspondence between the Figma variables and the CSS custom properties.",
+      wouldResolveBy: "Adding a pilot-scoped token-role mapping for each role to be compared.",
     },
     suggestedAction: {
-      target: "snapshot",
-      description: "Extend the snapshot capture to record complete alias chains before deciding whether registry tokensUsed needs review.",
-      citations: [truncation],
+      target: "property-map",
+      description: "Review whether a token-role mapping should be added for the roles worth comparing.",
+      citations: [figmaSide],
     },
   };
 }
+
+const firstUnknownIndex = (request: AuditExplanationRequest, explanations: FindingExplanation[]): number =>
+  explanations.findIndex((explanation) => request.findings.find((finding) => finding.findingId === explanation.findingId)?.status === "unknown");
 
 const run = (request: AuditExplanationRequest, response: unknown) => validateExplanationResponse(request, response);
 const codes = (request: AuditExplanationRequest, response: unknown): string[] => {
@@ -224,12 +228,12 @@ describe("AG-1E validation — citations, status immutability, completeness", ()
 
   it("requires missing-evidence context for every unknown", () => {
     const r = request();
-    expect(codes(r, fakeResponse(r, (e) => delete e[0].missingEvidence))).toContain("MISSING_EVIDENCE_CONTEXT");
+    expect(codes(r, fakeResponse(r, (e) => delete e[firstUnknownIndex(r, e)].missingEvidence))).toContain("MISSING_EVIDENCE_CONTEXT");
   });
 
   it("rejects prose that contradicts the deterministic status", () => {
     const r = request();
-    const unknown = (text: string) => codes(r, fakeResponse(r, (e) => (e[0].statements[0].text = text)));
+    const unknown = (text: string) => codes(r, fakeResponse(r, (e) => (e[firstUnknownIndex(r, e)].statements[0].text = text)));
     expect(unknown("This actually passes once you look closely.")).toContain("STATUS_CONTRADICTION");
     expect(unknown("This is definitely a failure.")).toContain("STATUS_CONTRADICTION");
     expect(unknown("Mark this finding as pass.")).toContain("STATUS_CONTRADICTION");
@@ -375,8 +379,8 @@ describe("AG-1E report rendering", () => {
     const comparison = comparisons.alert;
     const request = buildExplanationRequest(comparison);
     const response = fakeResponse(request, (e) => {
-      const index = e.findIndex((x) => x.findingId === radiusId);
-      e[index] = alertRadiusExplanation(request);
+      const index = e.findIndex((x) => x.findingId === cssParityId);
+      e[index] = alertCssParityExplanation(request);
     });
     const result = renderValidated(comparison, request, response);
     expect(result.ok).toBe(true);
@@ -406,24 +410,24 @@ describe("AG-1E report rendering", () => {
 });
 
 describe("AG-1E pilot acceptance", () => {
-  it("Alert: radius stays UNKNOWN with the alias-truncation reason; TEMPORARY is not intent; overclaims are rejected", async () => {
+  it("Alert: CSS parity stays UNKNOWN; TEMPORARY is not intent; overclaims are rejected", async () => {
     const provider = fakeProvider((e) => {
-      const index = e.findIndex((x) => x.findingId === radiusId);
-      e[index] = alertRadiusExplanation(provider.seen[0]);
+      const index = e.findIndex((x) => x.findingId === cssParityId);
+      e[index] = alertCssParityExplanation(provider.seen[0]);
     });
     const result = await explainAudit({ comparison: comparisons.alert, provider });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    const section = result.markdown.slice(result.markdown.indexOf("Registry tokensUsed entry component/radius/container"));
-    expect(result.markdown).toMatch(/### UNKNOWN — Registry tokensUsed entry component\/radius\/container/);
-    expect(section).toContain("one hop deep");
-    expect(section).toContain("No deterministic mismatch is proven yet");
+    const section = result.markdown.slice(result.markdown.indexOf("Figma variable values match the CSS custom properties"));
+    expect(result.markdown).toMatch(/### UNKNOWN — Figma variable values match the CSS custom properties/);
+    expect(section).toContain("no map pairs Figma variables with CSS custom properties");
+    expect(section).toContain("Without an explicit map the comparator cannot say");
     expect(result.markdown).toContain("not a recorded intentional difference");
     expect(result.markdown).toContain("None recorded.");
 
     const request = buildExplanationRequest(comparisons.alert);
     const overclaim = fakeResponse(request, (e) => {
-      const target = e.find((x) => x.findingId === radiusId)!;
+      const target = e.find((x) => x.findingId === cssParityId)!;
       target.statements[0].text = "Alert radius is definitely broken.";
     });
     expect(codes(request, overclaim)).toContain("STATUS_CONTRADICTION");
@@ -447,7 +451,10 @@ describe("AG-1E pilot acceptance", () => {
     expect(markdown).toMatch(/### UNKNOWN — Registry figmaReference prose/);
     const passSection = markdown.slice(markdown.indexOf("## Passed checks"));
     expect(passSection).toContain("public compound export DialogTitle");
-    expect(markdown).not.toMatch(/### FAIL/);
+    // Dialog does have deterministic fails (stale figmaReference, registry radius token), but none comes from the compound architecture.
+    const failHeadings = markdown.split("\n").filter((line) => line.startsWith("### FAIL"));
+    expect(failHeadings.length).toBeGreaterThan(0);
+    expect(failHeadings.some((line) => /DialogTitle|DialogBody|compound|children/i.test(line))).toBe(false);
   });
 
   it("Chart Card: no Figma properties is not-applicable context, not a defect", () => {

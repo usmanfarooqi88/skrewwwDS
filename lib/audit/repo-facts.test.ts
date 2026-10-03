@@ -52,7 +52,7 @@ describe("AG-1C repo facts — identity, provenance and contract", () => {
   it("resolves a canonical pilot slug", () => {
     for (const slug of PILOTS) {
       expect(facts[slug].component.slug).toBe(slug);
-      expect(facts[slug].schemaVersion).toBe("1.0.0");
+      expect(facts[slug].schemaVersion).toBe("1.1.0");
     }
   });
 

@@ -36,6 +36,7 @@ decision, add a new dated entry that says what it supersedes — do not silently
 - Unknown is not pass and not error: name the authority that would resolve it and stop when the decision depends on it.
 - Audit Agent explanation providers may interpret deterministic findings but cannot alter statuses or introduce evidence, and no model
   vendor is a canonical dependency: explanations cross a provider-neutral boundary and are validated against the cited evidence (decided 2026-10-03).
+- Audit Agent golden cases are calibration tests, never canonical metadata, and a Figma ↔ CSS token correspondence is only ever established by an explicit, pilot-scoped, human-verified, source-cited role map — never by name similarity — while statuses stay computed from observed evidence (decided 2026-10-03).
 
 ## Figma practices
 

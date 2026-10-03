@@ -13,7 +13,13 @@
 import type { FigmaIdentity } from "@/lib/figma-identity";
 import type { RawLayout, RawVariableValue } from "@/lib/figma-snapshot/raw-capture";
 
-export const FIGMA_SNAPSHOT_SCHEMA_VERSION = "1.0.0";
+/**
+ * 1.1.0 adds `observed.aliasClosure` (transitive alias targets of the bound
+ * variables) and `derived.aliasClosureComplete`. 1.0.0 snapshots remain
+ * readable: they carry no closure, so alias chains beyond one hop stay open.
+ */
+export const FIGMA_SNAPSHOT_SCHEMA_VERSION = "1.1.0";
+export const SUPPORTED_FIGMA_SNAPSHOT_SCHEMA_VERSIONS: readonly string[] = ["1.0.0", "1.1.0"];
 
 /** Which variants a fact applies to: every analysed root, or the named variants. */
 export type SnapshotScope = "all" | string[];
@@ -68,7 +74,7 @@ export type SnapshotVariable = {
   name: string;
   resolvedType: string;
   collection: string | null;
-  /** Keyed by mode name; aliases recorded one hop deep, never resolved further. */
+  /** Keyed by mode name. An alias is recorded as a reference (name + id); follow it through `aliasClosure`. */
   valuesByMode: Record<string, RawVariableValue>;
 };
 
@@ -80,6 +86,8 @@ export type FigmaSnapshot = {
     method: "figma-plugin-api";
     captureVersion: string;
     fileName: string;
+    /** Present only when the alias closure was read in a later read-only pass than the node (`capturedAt`). */
+    aliasClosureCapturedAt?: string;
   };
   /** Copied from the registry's `figmaIdentity`; must match it exactly. */
   identity: FigmaIdentity;
@@ -103,6 +111,11 @@ export type FigmaSnapshot = {
     explicitVariableModes: Array<{ scope: SnapshotScope; collection: string | null; mode: string | null }>;
     variables: SnapshotVariable[];
     collections: Array<{ name: string; modes: string[] }>;
+    /**
+     * Variables reachable from `variables` through alias values in any mode
+     * (excluding the bound variables). Absent in 1.0.0 snapshots.
+     */
+    aliasClosure?: { variables: SnapshotVariable[]; unresolvedIds: string[] };
   };
   derived: {
     /** Section headings found in the description ("PURPOSE", "TOKENS USED", …), in order. */
@@ -111,8 +124,10 @@ export type FigmaSnapshot = {
     variantCount: number;
     /** True when every combination of the variant axes exists as a variant. */
     variantCombinationsComplete: boolean | null;
-    /** Collections of directly bound variables (one hop; not a full mode-sensitivity analysis). */
+    /** Collections of directly bound variables (not a full mode-sensitivity analysis). */
     boundCollections: string[];
+    /** True when every alias target was resolved (the dependency graph is closed). Absent in 1.0.0 snapshots. */
+    aliasClosureComplete?: boolean;
     /** Distinct nested masters; `kind` "icon" follows the Figma "Icon/" naming convention only. */
     nestedComponents: Array<{ mainComponentName: string | null; componentSetName: string | null; kind: "icon" | "component" }>;
   };
