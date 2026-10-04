@@ -24,6 +24,9 @@ evals/agent-kit/generated/
 # Local, regenerable evidence; never committed. See docs/architecture/agent-readiness.md §25.
 /audit/
 
+# Consumer Contract Verification results (scripts/ccv-*.ts) — local evidence, never committed.
+/ccv-out/
+
 # Production
 build/
 dist/

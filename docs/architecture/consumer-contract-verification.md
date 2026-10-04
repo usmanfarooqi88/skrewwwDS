@@ -1,8 +1,8 @@
 # Consumer Contract Verification (CCV)
 
 **Status: CCV-0 ✅ COMPLETE (2026-10-04) — architecture and baseline audit. CCV-1 ✅ COMPLETE (2026-10-04) — contract derivation, evidence schema and failure taxonomy (§22).
-CCV-2 … CCV-7 NOT STARTED: nothing installs a consumer, runs a verifier, wires CI or checks an installed result yet.** This document locks the scope, boundaries, authorities,
-modes, environment, evidence model and slice plan. The probes in §3 and §4 were run to establish facts and left the repository unchanged.
+CCV-2 — shadcn installed-result verifier (LOCAL_CANONICAL): IMPLEMENTED and run for real (§23); its two-run reproducibility criterion is OPEN (one more full run needed).
+CCV-3 … CCV-7 NOT STARTED.** This document locks the scope, boundaries, authorities, modes, environment, evidence model and slice plan.
 
 Baseline: `b6bbc6578d14ea4bf21e23300c8dcf0cb3bf674a`. Roadmap entry: `docs/project-status.md` → "Consumer Contract Verification".
 
@@ -177,7 +177,7 @@ type ConsumerContract = {
 | delivered CSS declared set / used set / fallbacks | the delivered CSS itself (Foundation + module CSS, or `styles.css`) | no |
 | Shape/Surface selectors, Foundation signature | Foundation extraction markers in the generator | no |
 | scenarios | existing `COMPONENT_DESCRIPTORS` and `smoke-react-package` browser checks | yes (already exist) |
-| CLI-transform allowlist | observed upstream behavior, versioned per CLI pin | yes (small, exceptional, with an issue reference) |
+| accepted-installer-transform list | transformations proven to have **no** Skrewww contract consequence, keyed by the CLI pin | yes (small, exceptional, with an issue reference) — **empty** (§23); F1 can never be on it |
 | token-removal allowlist | an explicit changelog decision | yes (small, exceptional) |
 
 ## 7. Authority map
@@ -214,7 +214,7 @@ CCV never edits any of these.
 | Tool | Policy |
 |---|---|
 | `create-next-app` | **exact**; bumped deliberately in a reviewed change that re-runs CCV (verified-current candidate: 16.3.7) |
-| `shadcn` CLI | **exact**; bumped deliberately; the CLI-transform allowlist is keyed by this version |
+| `shadcn` CLI | **exact**; bumped deliberately; any accepted-transform entry would be keyed by this version (the list is empty) |
 | Next, React | derived from the pinned `create-next-app`; **recorded**, not independently pinned (no committed lockfile in v1) |
 | Vite, `@vitejs/plugin-react`, TypeScript, `@types/react*` | **exact**, replacing today's ranges |
 | `@skrewww/react` | **exact** — release-derived: version from `packages/react/package.json` at the expected SHA (PUBLIC_NPM) or the local tarball (LOCAL_TARBALL) |
@@ -266,8 +266,8 @@ Undefined variables in some contexts (SVG attributes) compute silently to black/
 
 ### 10.5 Manifest ↔ installed filesystem (shadcn)
 
-For every file of every installed item: the installed file must equal the manifest `content` **byte for byte**, except for transformations in a *closed, versioned CLI-transform allowlist* (keyed by the pinned CLI version, each entry with an issue reference). Also: installed target set == expected set; `registryDependencies` closure resolved; npm dependency delta == declared `dependencies`; no added, removed or modified file outside the expected targets (including no file written outside `components/`, `lib/`, `styles/`); shared targets (e.g. `lib/cn.ts`, declared by several manifests) exist exactly once with content equal to every contributing manifest; internal-dependency flattening (a private helper such as `internal/Portal.tsx` appears as a plain installed file).
-**The F1 marker drop is a `MANIFEST_MISMATCH`.** It must not be added to the allowlist merely to turn the run green; the allowlist is for upstream behavior with *no Skrewww contract consequence*.
+For every file of every installed item: the installed file must equal the manifest `content` **byte for byte**. Expected hashes are never changed and installed bytes are never normalized. Also: installed target set == expected set; `registryDependencies` closure resolved; npm dependency delta == declared `dependencies`; no added, removed or modified file outside the expected targets (including no file written outside `components/`, `lib/`, `styles/`); shared targets (e.g. `lib/cn.ts`, declared by several manifests) exist exactly once with content equal to every contributing manifest; internal-dependency flattening (a private helper such as `internal/Portal.tsx` appears as a plain installed file).
+**F1 classification (single rule, reconciled in CCV-2):** a byte difference is `UPSTREAM_TRANSFORM` (attribution *upstream*) only when applying a known installer transformation to the expected content reproduces the installed bytes **exactly**; any other difference is `FILE_CONTENT_MISMATCH`; `MANIFEST_MISMATCH` is reserved for manifest-level disagreement (contributing manifests that embed different bytes for one target, or a resolved closure the manifests do not justify). The F1 marker drop is therefore `UPSTREAM_TRANSFORM` — and it is still a **FAIL**: the attribution says who transformed the bytes, not that the result is acceptable, because Guard's public provenance contract reads the marker. A marker drop combined with any other change is `FILE_CONTENT_MISMATCH`. The accepted-transform list (transformations with no contract consequence) is empty, and F1 can never be added to it.
 
 ### 10.6 Manifest ↔ export surface (check 6) — two different invariants
 
@@ -339,24 +339,11 @@ Deprecated tokens have no machine-readable marker today; the removal allowlist i
 
 ## 13. Failure taxonomy
 
-Deterministic categories; no scores. `ENVIRONMENT_ERROR` is a *result status*, never a contract failure, so flakes do not masquerade as drift.
-
-| Code | Meaning |
-|---|---|
-| `INSTALL_FAILED` | the installer ran and refused/failed because of the Skrewww payload or package |
-| `MANIFEST_MISMATCH` | installed content/targets differ from the manifest (includes a dropped origin marker) |
-| `FILE_MISSING` / `UNEXPECTED_FILE` | expected target absent / file added or changed outside the target set |
-| `DEPENDENCY_MISMATCH` | npm dependency delta ≠ declared, or peer/dependency policy violated |
-| `EXPORT_MISSING` / `EXPORT_UNEXPECTED` | an expected export absent / an unexpected export (or a denied deep import resolved) |
-| `UNRESOLVED_IMPORT` | the import closure has an unresolved specifier |
-| `TYPECHECK_FAILED` / `BUILD_FAILED` | consumer `tsc` / production build failed |
-| `CSS_TOKEN_MISSING` | a delivered `var()` has no declaration, no fallback and is not host-provided; or an alias chain is unresolved |
-| `RUNTIME_TOKEN_UNRESOLVED` | a representative computed style did not resolve in the browser |
-| `INTERACTION_FAILED` | a scenario assertion failed |
-| `UNEXPECTED_POSTINSTALL` | an install-time script or side effect not on the allowlist |
-| `PROVENANCE_MISMATCH` | artifact ≠ expected commit (hash, `gitHead`, tag, registry equivalence) |
-| `COMPATIBILITY_BREAK` | a consumer-visible token (or export) was removed/renamed against the baseline |
-| `ENVIRONMENT_ERROR` (status) | network unavailable, upstream tool crashed, timeout, disk — no contract conclusion |
+Deterministic categories; no scores. The canonical, closed set is the one implemented in CCV-1 (`lib/ccv/failure-codes.ts`, §22) — 23 codes, each with an attribution
+(`skrewww`, `upstream` or `environment`). `ENVIRONMENT_ERROR` is never a contract failure: a check it affects is `unknown`, so flakes cannot masquerade as drift.
+`UPSTREAM_TRANSFORM` is the only upstream code and is only ever a `fail`. The F1 rule is stated in §10.5. *(The CCV-0 draft of this table used provisional names —
+`UNEXPECTED_FILE`, `UNRESOLVED_IMPORT`, `CSS_TOKEN_MISSING`, `RUNTIME_TOKEN_UNRESOLVED`, `UNEXPECTED_POSTINSTALL` — and filed the marker drop under `MANIFEST_MISMATCH`;
+both are superseded by `FILE_UNEXPECTED`, `IMPORT_UNRESOLVED`, `CSS_DECLARATION_MISSING`, `CSS_RUNTIME_UNRESOLVED`, `LIFECYCLE_SCRIPT_UNEXPECTED` / `POSTINSTALL_SIDE_EFFECT` and `UPSTREAM_TRANSFORM`.)*
 
 ## 14. Result / evidence model
 
@@ -427,7 +414,7 @@ Legend: ✅ ALREADY SUFFICIENT · ◐ REUSABLE BUT INCOMPLETE · ✖ MISSING · 
 | real registry install (shadcn) | ✖ manual 2026-08-09 only | automated `PUBLIC_REGISTRY` mode + payload equivalence | **high** (deployment drift undetected) | CCV-5 |
 | real registry install (npm) | ◐ `--from-registry` manual | exact-artifact equality, `gitHead`, signature | medium | CCV-5 |
 | distributed exports importable | ◐ implicit via render | enumerated value/type equality, denied deep imports, Node ESM | medium | CCV-3 (npm), CCV-2 (shadcn) |
-| per-file content ↔ manifest | ◐ shared targets only | every file, closed CLI-transform allowlist; **F1** | **high** | CCV-2 |
+| per-file content ↔ manifest | ◐ shared targets only | every file, exact bytes, proven-transform classification; **F1** | **high** | CCV-2 |
 | unresolved imports | ◐ implicit via build | import-closure + attributable diagnostics | medium | CCV-2/CCV-3 |
 | CSS static delivery | ✖ | declared/used/fallback/alias analyzer on delivered CSS | medium | CCV-4 |
 | CSS runtime resolution | ◐ 22 of 38 descriptors; package browser checks | representative common checks, tier derivation | medium | CCV-4 |
@@ -444,7 +431,7 @@ Legend: ✅ ALREADY SUFFICIENT · ◐ REUSABLE BUT INCOMPLETE · ✖ MISSING · 
 
 ## 18. CCV v1 — the smallest credible scope
 
-**Included:** both distributions (**shadcn source** and **`@skrewww/react`**); the four modes (`LOCAL_CANONICAL`, `PUBLIC_REGISTRY`, `LOCAL_TARBALL`, `PUBLIC_NPM`); one pinned Next consumer (Tailwind-free, batch of all distributed items) and one pinned Vite consumer; derived contracts; per-file byte equivalence with a closed CLI-transform allowlist; dependency and file-set equality; import closure + `tsc` + production build; installed export equality (values, types, denied deep imports); static CSS delivery including fallbacks; representative runtime via the existing descriptors/browser checks; postinstall and payload audits; provenance (`gitHead`, integrity, signature, rebuild-hash, registry equivalence); npm compatibility against the previous published version (report-only, blocking only in the release workflow); structured evidence and the failure taxonomy.
+**Included:** both distributions (**shadcn source** and **`@skrewww/react`**); the four modes (`LOCAL_CANONICAL`, `PUBLIC_REGISTRY`, `LOCAL_TARBALL`, `PUBLIC_NPM`); one pinned Next consumer (Tailwind-free, batch of all distributed items) and one pinned Vite consumer; derived contracts; per-file byte equivalence (installer transforms classified, never accepted); dependency and file-set equality; import closure + `tsc` + production build; installed export equality (values, types, denied deep imports); static CSS delivery including fallbacks; representative runtime via the existing descriptors/browser checks; postinstall and payload audits; provenance (`gitHead`, integrity, signature, rebuild-hash, registry equivalence); npm compatibility against the previous published version (report-only, blocking only in the release workflow); structured evidence and the failure taxonomy.
 
 **Not in v1:** other frameworks/bundlers for shadcn; Tailwind consumers; Windows or case-sensitive-FS matrices; visual regression; accessibility certification; browser interaction for every component; shadcn compatibility beyond "current production vs candidate"; multi-release compatibility; cryptographic attestation or new public metadata; Figma, Make Kit, Guard changes; any hosted service; any fix to product defects found (F1 is reported, not fixed).
 
@@ -455,7 +442,7 @@ Decomposition chosen from the audit: derive and structure first (offline, cheap)
 | Slice | Goal | Inputs | Outputs | Acceptance | Stop boundary |
 |---|---|---|---|---|---|
 | **CCV-1 — contract derivation, evidence schema, taxonomy** *(✅ implemented — §22)* | Pure, offline derivation of every expectation in §6, plus `CcvResult`, the failure codes, a gitignored evidence writer | registry, generator, `pilot-entry`, barrel, `packages/react/package.json` | `lib/ccv/` (types, `deriveShadcnContract`, `deriveNpmContract`, payload/manifest allowlist checks, CSS-surface extractor, result builder, writer) + tests; `ccv-out/` in `.gitignore` | deterministic contracts for all 56 items and the package; payload-key/file-type and package-lifecycle checks pass on the real generator output and manifest; schema validated; no network, no install; works with `npm test` offline | no consumer runs, no CI, no Guard change |
-| **CCV-2 — clean-consumer runner + shadcn installed-result verifier (`LOCAL_CANONICAL`)** | One sandboxed batch consumer; verify the installed result of all items | CCV-1 contracts; pins | shared runner (workspace, env allowlist, HOME/cache redirect, timeouts, cleanup, version recording, `ENVIRONMENT_ERROR`); batch Next consumer; per-file byte check with CLI-transform allowlist; set/dep/shared-target checks; import closure; `tsc`; build; installed export check; evidence JSON | all 55 items install in one consumer; **F1 reported as `MANIFEST_MISMATCH` for every marked file** (or fixed upstream of CCV by a separate slice first); builder list derived (F5); temp dirs not leaked (F3); results reproducible across two runs | `smoke:consumer` retained as-is until CCV-2 supersedes it; no public mode; no runtime token checks beyond existing descriptors |
+| **CCV-2 — clean-consumer runner + shadcn installed-result verifier (`LOCAL_CANONICAL`)** *(implemented — §23; reproducibility open)* | One sandboxed batch consumer; verify the installed result of all items | CCV-1 contracts; pins | shared runner (workspace, env allowlist, HOME/cache redirect, timeouts, cleanup, version recording, `ENVIRONMENT_ERROR`); batch Next consumer; per-file byte check (proven installer transforms classified as `UPSTREAM_TRANSFORM`, never accepted); set/dep/shared-target checks; import closure; `tsc`; build; installed export check; evidence JSON | all 55 items install in one consumer; **F1 reported as `UPSTREAM_TRANSFORM` (a FAIL) for every affected file**; builder list derived (F5); temp dirs not leaked (F3); results reproducible across two runs | `smoke:consumer` retained as-is until CCV-2 supersedes it; no public mode; no runtime token checks beyond existing descriptors |
 | **CCV-3 — npm installed-result verifier (`LOCAL_TARBALL`)** | Prove the candidate tarball's installed result | CCV-1 npm contract; `smoke-react-package` | extends the existing smoke: exact export equality (Node `import()` and `tsc`), denied deep imports, `exports` map, declarations without aliases, lifecycle audit (`--ignore-scripts` consumer), peer/dependency policy, exact tool pins, evidence JSON | all checks pass on beta.2's candidate; mutation checks (extra export, removed export, added `postinstall`) fail with the right code | no public mode, no CI change |
 | **CCV-4 — CSS/token delivery + representative runtime** | Static delivery analyzer and a derived tier assignment | delivered CSS of both paths; descriptors | analyzer (declared/used/fallback/alias, mode selectors, Foundation order); tier function; common representative browser checks (Foundation, Shape, Surface, focus-visible) | analyzer reproduces the measured 505-property surface and the F7 fallback; a deliberately removed token fails `CSS_TOKEN_MISSING`; tiers computed, no new inventory | no per-token browser tests, no visual regression |
 | **CCV-5 — public modes + provenance** | `PUBLIC_REGISTRY` and `PUBLIC_NPM` with expected-SHA proof | expected commit/tag; production URLs; npm registry | modes; payload equivalence (`PROVENANCE_MISMATCH` with diff list); `gitHead`/integrity/signature/dist-tag checks; rebuild-at-`gitHead` hash comparison; network-failure classification | beta.2 passes `PUBLIC_NPM`; production passes `PUBLIC_REGISTRY` at the release SHA; **rebuild determinism proven in CI (Linux), not just locally** | no new public metadata; no publishing; read-only network |
@@ -550,3 +537,89 @@ entry expectations: 17 value exports and 29 type exports (Dialog's nine compound
 extra test (skipped on a clean checkout) confirms the derived CSS surface equals the built stylesheet's.
 
 **Next:** CCV-2 — shadcn installed-result verifier (clean-consumer runner plus per-file byte comparison). It is expected to surface the F1 marker transform as a real finding rather than accept it.
+
+## 23. CCV-2 — clean-consumer runner and shadcn installed-result verifier (implemented 2026-10-05)
+
+CCV-1 says what a consumer *should* receive; CCV-2 checks what a clean shadcn consumer *did* receive, in `LOCAL_CANONICAL` mode only (the registry payload is the canonical
+generator output served on loopback). `PUBLIC_REGISTRY`, `LOCAL_TARBALL` and `PUBLIC_NPM` are rejected by the CLI (later slices). **F1 is detected, kept as a FAIL with
+`UPSTREAM_TRANSFORM`, and neither fixed nor allowlisted.** `scripts/smoke-test-consumer.ts` is unchanged.
+
+```
+CCV-1 contracts ─► workspace (OS temp, isolated env) ─► loopback registry (generator items)
+  ─► create-next-app@16.3.7 (Tailwind-free) + hand-written components.json ─► snapshot
+  ─► shadcn@4.21.1 add <every subject> (one consumer) ─► snapshot ─► file set · per-file bytes · dependencies · registry closure · imports
+  ─► export harness ─► next typegen · tsc ─► next build ─► cleanup ─► validated CcvResult
+```
+
+**Code.** `lib/ccv/runner/` — `pins.ts` (exact pins, time limits, Node range), `env.ts` (allowlisted child environment, evidence redaction), `process.ts` (bounded commands,
+environment-vs-contract classification), `workspace.ts` (create / clean up), `registry-server.ts` (loopback registry with a request log). `lib/ccv/shadcn/` — `expected.ts` (batch
+expectation from contracts), `fs-snapshot.ts`, `compare-files.ts` (byte comparison and transform proof), `dependencies.ts`, `closure.ts`, `imports.ts`, `exports-harness.ts`,
+`tsc-diagnostics.ts`, `result.ts` (result, exit codes, summary, stable comparison) and `verify.ts` (thin orchestration with an injectable command runner). CLI:
+`npm run ccv:shadcn` (`scripts/ccv-shadcn.ts`). Results go to the gitignored `ccv-out/` (or a directory outside the repository).
+
+**Isolation.** One `mkdtemp` workspace under the OS temp directory, refused if it overlaps the repository. It holds the consumer, `HOME`, XDG config, `TMPDIR`, the npm cache and an
+empty npm user config, so the user's `~/.npmrc`, `~/.config` and npm cache are never read or written. The child environment is an allowlist (`PATH`, locale, proxy variables)
+plus those redirections; no token or other secret-bearing variable is forwarded, and secret values, the workspace path and the registry port are redacted from evidence. The
+registry binds `127.0.0.1` on an ephemeral port and serves only `/r/<name>.json` for the generator items; nothing is written to `public/r`, and the production registry is never contacted.
+
+**Pins (never `latest`).** `create-next-app` **16.3.7** (the known-good zero-config version; replaces smoke:consumer's 16.3.0) and `shadcn` **4.21.1** (the version CCV-0 reproduced
+F1 on with a Tailwind-free components.json; replaces 4.16.2); Node from the repository's engines range; npm recorded. Resolved Next / React / TypeScript and the CLI's
+self-reported version are recorded in `environment.tools`. A floating-`latest` canary remains CCV-7.
+
+**Timeouts.** Scaffold and install 15 min each, `next typegen` 5 min, `tsc` and `next build` 15 min each, version probes 2 min; every command is also clamped to what remains of a
+30-minute run budget. On timeout the whole process group is terminated (SIGTERM, then SIGKILL). Output is kept in memory as a bounded tail — no capture files. There is no retry
+loop: only a scaffold that fails with a recognisable network error is retried, once; a timeout is never retried. A timeout, a process that cannot start, a signal kill or a network/disk
+error is `ENVIRONMENT_ERROR`: the affected check and every check that could not run become `unknown`, never `fail`.
+
+**Subjects and install.** The subjects are every distributed item of type `registry:ui`, in generator order, read from `buildDistributedRegistryItems()` (no second list); Foundation
+is not requested — it must arrive through `registryDependencies`. All subjects are installed into ONE consumer with ONE `shadcn add … --yes` invocation (`--install sequential` runs one
+invocation per subject inside the same consumer). The order is recorded in the install check.
+
+**File comparison.** The expected install paths are the union of the subjects' CCV-1 closures. After the install: every expected path must exist (`FILE_MISSING`), nothing outside
+those paths may be added, removed or modified — package manifests only when npm dependencies are declared (`FILE_UNEXPECTED`), and every installed file is hashed and compared with
+its contract SHA-256. Hashes are never changed and installed bytes are never normalized. A difference is classified by trying to PROVE an installer transformation: each known
+transformation is applied to the expected content (the generator output whose hash the contract records — verified before use) and only an exact match with the installed bytes
+counts. Proven → `UPSTREAM_TRANSFORM`; otherwise → `FILE_CONTENT_MISMATCH`; contributing manifests that disagree about one target → `MANIFEST_MISMATCH`. All three are FAIL. The
+accepted-transform list (transformations with no contract consequence) is **empty**. Known transformations: `origin-marker-line-removed` and `leading-block-comments-removed`.
+
+**Dependencies, closure, imports, exports.** The direct-dependency delta of `package.json` must equal the union of declared npm dependencies (`DEPENDENCY_MISMATCH` for a missing,
+extra, removed or changed one); the scaffold's own dependencies are the baseline and host requirements are never expected to be installed. The local registry's request log must show
+exactly the derived closure (missing → `INSTALL_FAILED`; extra or unknown → `MANIFEST_MISMATCH`). Every installed TS/TSX file is parsed with the TypeScript API: relative and `@/` imports
+must resolve to a transported installed file, and bare imports to a package that is both installed and declared (npm dependency or documented host requirement) by the items that install
+the file (`IMPORT_UNRESOLVED` / `DEPENDENCY_MISMATCH`). A generated harness (`ccv/exports-harness.tsx`) imports every value and type CCV-1 attributes to each installed source file, from
+that file through the consumer's `@/` alias, one name per line, so a `tsc` diagnostic maps to one export (`EXPORT_MISSING`). Then `next typegen` and `tsc --noEmit` (the scaffold's
+`strict: true`, `skipLibCheck: true`, `isolatedModules: true` are recorded; nothing is relaxed) and `next build`, with `app/page.tsx` importing the Foundation stylesheet and the harness so every
+installed module is compiled. The build is additional proof, never a substitute for the other checks. No browser, computed-style or interaction checks (CCV-4).
+
+**Result and exit codes.** A validated CCV-1 `CcvResult` with stable check ids (`shadcn:<subject>:<area>:<key>` — workspace, tools, registry, scaffold, install, one per file,
+file-set, one per declared dependency, dependencies, registry-closure, one per TS file for imports, one per exporting file, typecheck, build, cleanup); every check names its authority; timestamps
+and durations live only in `volatile`. Exit **0** — all contract checks pass; **1** — usage error; **2** — environment/tooling failure, no trustworthy verdict; **3** — the verifier completed and
+found contract failures (the expected outcome while F1 is open). The summary says separately whether the *verifier* completed and what the *contract result* is. A run never overwrites an
+earlier result: each is written to the next `….run-<n>.json`, and the CLI compares the new stable sections with the previous result; `npm run ccv:shadcn -- --compare <a> <b>` does the same
+offline (exit 0 identical, 3 different).
+
+**Real runs (owner's terminal; the agent sandbox cannot resolve `ui.shadcn.com`, from which the shadcn CLI fetches its base-color data).** Commit `5431180`, Node 24.14.0, npm 11.12.1,
+macOS x64; create-next-app 16.3.7 → Next 16.3.7, React 19.2.8, TypeScript 5.9.3; shadcn 4.21.1.
+
+| Run | Subjects | Pass | Fail | Unknown | Failures (all `UPSTREAM_TRANSFORM`) | Skrewww-attributed |
+|---|---|---|---|---|---|---|
+| Button probe | 1 (closure: button + foundation) | 25 | 2 | 0 | `Button.tsx` origin marker removed; `internal/link-utils.ts` leading comment removed | 0 |
+| Full batch | 55 (closure: all 56 items) | 278 | 67 | 0 | 55 origin-marker removals (every marked file) + 12 leading-comment removals | 0 |
+
+Full batch detail: one `shadcn add` of 55 subjects succeeded; the CLI requested exactly the 56-item closure (Foundation through `registryDependencies`); 166 files added, exactly the 166
+expected install paths, plus `package.json` / `package-lock.json`; dependency delta exactly `@phosphor-icons/react` and `recharts`; 110 import checks and 55 export checks pass; `tsc` and
+`next build` pass; the workspace was removed. 99 installed files are byte-identical to the generator output. Every one of the 55 files that carries `@skrewww-component <slug>` lost
+exactly that line (the rest of each file is byte-identical); 12 unmarked files lost exactly their leading block comment (for example `internal/link-utils.ts`, `internal/calendar-date.ts`,
+`internal/chart-format.ts`, two CSS modules). Both are shadcn 4.21.1 behavior; both remain FAIL. The marker loss has a real consequence (Guard's public provenance contract reads the marker);
+the comment loss has no runtime consequence but is not accepted either — the accepted list stays empty.
+
+**Reproducibility — OPEN.** Two full batches were run, but the CLI at that point wrote every run to the same file name, so the second run overwrote the first and the stable sections
+of the two runs cannot be compared from artifacts. The CLI now never overwrites (see above). Available evidence: the saved full-batch result compares identical to itself, contains no
+temp path, port or cache path in its stable sections, and the 15 file/import/export checks the independent Button run shares with it are identical in status, failure code, expected
+and actual hashes. Closing the criterion needs one more full run; the CLI will compare it with the saved result automatically.
+
+**Limitations.** LOCAL_CANONICAL only; one Next/Tailwind-free consumer on one OS; the CLI needs `ui.shadcn.com` (base-color data) besides the npm registry; static import resolution covers
+static `import`/`export … from` (not dynamic `import()`); no runtime/CSS checks (CCV-4); no public-registry or provenance checks (CCV-5); a full run takes about two minutes on an idle
+machine and much longer under load.
+
+**Stop boundary.** No Guard, product, registry, Figma, Make Kit or package change; F1 not fixed; no CI wiring. Next: **CCV-3 — npm installed-result verifier**.

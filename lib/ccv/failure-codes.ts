@@ -29,12 +29,12 @@ export const CCV_FAILURES = {
   ENVIRONMENT_ERROR: { area: "environment", attribution: "environment", meaning: "The run could not reach a conclusion (network unavailable, upstream tool crashed, timeout, disk). Not a contract failure." },
 
   INSTALL_FAILED: { area: "install", attribution: "skrewww", meaning: "The installer ran and refused or failed because of the Skrewww payload or package." },
-  MANIFEST_MISMATCH: { area: "files", attribution: "skrewww", meaning: "The served manifest or installed result disagrees with the manifest the generator produces at the expected commit." },
+  MANIFEST_MISMATCH: { area: "files", attribution: "skrewww", meaning: "A manifest-level disagreement: a served manifest differs from the generator output at the expected commit, contributing manifests embed different bytes for one target, or the installer resolved items the manifests do not justify." },
 
   FILE_MISSING: { area: "files", attribution: "skrewww", meaning: "An expected file is absent from the installed result." },
   FILE_UNEXPECTED: { area: "files", attribution: "skrewww", meaning: "A file was added, removed or modified outside the expected target set." },
-  FILE_CONTENT_MISMATCH: { area: "files", attribution: "skrewww", meaning: "An installed file's bytes differ from the expected bytes and no upstream transformation explains it." },
-  UPSTREAM_TRANSFORM: { area: "files", attribution: "upstream", meaning: "An installer or tool transformed the payload. Observable evidence that stays a finding; never an acceptance of parity." },
+  FILE_CONTENT_MISMATCH: { area: "files", attribution: "skrewww", meaning: "An installed file's bytes differ from the expected bytes and no known installer transformation reproduces the installed bytes exactly." },
+  UPSTREAM_TRANSFORM: { area: "files", attribution: "upstream", meaning: "A known installer transformation applied to the expected bytes reproduces the installed bytes exactly. Still a contract FAIL: the attribution names who changed the bytes, never that the change is acceptable." },
 
   EXPORT_MISSING: { area: "exports", attribution: "skrewww", meaning: "An expected value or type export is not importable from the installed result." },
   EXPORT_UNEXPECTED: { area: "exports", attribution: "skrewww", meaning: "The installed result exports a name the contract does not expect." },
