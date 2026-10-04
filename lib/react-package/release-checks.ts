@@ -63,8 +63,12 @@ export function isPublishBlockedByPrivate(pkg: PackageManifest): boolean {
   return pkg.private === true;
 }
 
-const ALLOWED_PACKED = (path: string) =>
-  path === "package.json" || path === "README.md" || path === "LICENSE" || path.startsWith("dist/");
+/** The tarball contract, exported so other verification layers (CCV) read the same rule instead of re-stating it. */
+export const PACKED_ALLOWED_EXACT: readonly string[] = ["package.json", "README.md", "LICENSE"];
+export const PACKED_ALLOWED_PREFIXES: readonly string[] = ["dist/"];
+export const REQUIRED_PACKED_FILES: readonly string[] = ["package.json", "README.md", "LICENSE", "dist/index.js", "dist/index.d.ts", "dist/styles.css"];
+
+const ALLOWED_PACKED = (path: string) => PACKED_ALLOWED_EXACT.includes(path) || PACKED_ALLOWED_PREFIXES.some((prefix) => path.startsWith(prefix));
 
 /** The tarball may contain only package metadata and the built output. */
 export function checkPackedFiles(paths: readonly string[]): ReleaseIssue[] {
@@ -72,7 +76,7 @@ export function checkPackedFiles(paths: readonly string[]): ReleaseIssue[] {
   for (const path of paths) {
     if (!ALLOWED_PACKED(path)) issues.push({ area: "tarball", message: `unexpected file in tarball: ${path}` });
   }
-  for (const required of ["package.json", "README.md", "LICENSE", "dist/index.js", "dist/index.d.ts", "dist/styles.css"]) {
+  for (const required of REQUIRED_PACKED_FILES) {
     if (!paths.includes(required)) issues.push({ area: "tarball", message: `required file missing from tarball: ${required}` });
   }
   return issues;
