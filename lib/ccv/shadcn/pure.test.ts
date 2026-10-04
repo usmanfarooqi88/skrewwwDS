@@ -230,6 +230,10 @@ describe("CCV-2 result helpers", () => {
     expect(compareStableResults(a, base([pass]))).toMatchObject({ identical: false, onlyInFirst: ["shadcn:all:file:b.ts"] });
     expect(compareStableResults(a, { ...base([pass, fail]), environment: { tools: { shadcn: "4.22.0" } } })).toMatchObject({ identical: false, otherDifferences: ["environment"] });
     expect(compareStableResults(a, base([fail, pass]))).toMatchObject({ identical: false, otherDifferences: ["check order"] });
+    const otherCommit = { ...base([pass, fail]), source: { expectedGitSha: "f".repeat(40) } };
+    expect(compareStableResults(a, otherCommit)).toMatchObject({ identical: false, otherDifferences: ["source"] });
+    expect(compareStableResults(a, otherCommit, { acrossCommits: true }).identical).toBe(true);
+    expect(compareStableResults(a, { ...otherCommit, checks: [{ ...pass, actual: "x" }, fail] }, { acrossCommits: true })).toMatchObject({ identical: false, differingChecks: ["shadcn:all:file:a.ts"] });
   });
 });
 

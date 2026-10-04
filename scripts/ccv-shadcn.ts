@@ -7,7 +7,8 @@
  *   npm run ccv:shadcn -- --keep                    keep the workspace for inspection (path printed)
  *   npm run ccv:shadcn -- --out <dir>               result directory: ccv-out/… (default, gitignored) or outside the repo
  *   npm run ccv:shadcn -- --no-write                print the summary only
- *   npm run ccv:shadcn -- --compare <a.json> <b.json>   offline: compare the stable sections of two saved results
+ *   npm run ccv:shadcn -- --compare <a.json> <b.json> [--across-commits]   offline: compare the stable sections of two saved
+ *       results; --across-commits neutralises only the commit label (use it only when the canonical inputs did not change)
  *
  * A run never overwrites an earlier result: each run is written to the next free
  * `….run-<n>.json`, and when an earlier result for the same subject and commit
@@ -47,8 +48,9 @@ const describeComparison = (comparison: StableComparison, label: string): string
       ];
 
 if (args[0] === "--compare") {
-  if (args.length !== 3) {
-    process.stderr.write("usage: npm run ccv:shadcn -- --compare <a.json> <b.json>\n");
+  const acrossCommits = args.includes("--across-commits");
+  if (args.length !== (acrossCommits ? 4 : 3) || (acrossCommits && args[3] !== "--across-commits")) {
+    process.stderr.write("usage: npm run ccv:shadcn -- --compare <a.json> <b.json> [--across-commits]\n");
     process.exit(1);
   }
   const load = (path: string): CcvResult => {
@@ -60,7 +62,9 @@ if (args[0] === "--compare") {
     }
     return parsed;
   };
-  const comparison = compareStableResults(load(args[1]), load(args[2]));
+  const [first, second] = [load(args[1]), load(args[2])];
+  const comparison = compareStableResults(first, second, { acrossCommits });
+  if (acrossCommits) process.stdout.write(`Across commits: ${first.source.expectedGitSha} → ${second.source.expectedGitSha} (commit label neutralised; every check must still match)\n`);
   for (const line of describeComparison(comparison, args[1])) process.stdout.write(`${line}\n`);
   process.exit(comparison.identical ? 0 : 3);
 }

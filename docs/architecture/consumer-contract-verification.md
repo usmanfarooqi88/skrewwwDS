@@ -1,7 +1,7 @@
 # Consumer Contract Verification (CCV)
 
 **Status: CCV-0 ✅ COMPLETE (2026-10-04) — architecture and baseline audit. CCV-1 ✅ COMPLETE (2026-10-04) — contract derivation, evidence schema and failure taxonomy (§22).
-CCV-2 — shadcn installed-result verifier (LOCAL_CANONICAL): IMPLEMENTED and run for real (§23); its two-run reproducibility criterion is OPEN (one more full run needed).
+CCV-2 ✅ COMPLETE (2026-10-05) — shadcn installed-result verifier (LOCAL_CANONICAL), run for real and reproduced (§23); the verifier is complete, the current shadcn distribution is NOT contract-clean (F1).
 CCV-3 … CCV-7 NOT STARTED.** This document locks the scope, boundaries, authorities, modes, environment, evidence model and slice plan.
 
 Baseline: `b6bbc6578d14ea4bf21e23300c8dcf0cb3bf674a`. Roadmap entry: `docs/project-status.md` → "Consumer Contract Verification".
@@ -442,7 +442,7 @@ Decomposition chosen from the audit: derive and structure first (offline, cheap)
 | Slice | Goal | Inputs | Outputs | Acceptance | Stop boundary |
 |---|---|---|---|---|---|
 | **CCV-1 — contract derivation, evidence schema, taxonomy** *(✅ implemented — §22)* | Pure, offline derivation of every expectation in §6, plus `CcvResult`, the failure codes, a gitignored evidence writer | registry, generator, `pilot-entry`, barrel, `packages/react/package.json` | `lib/ccv/` (types, `deriveShadcnContract`, `deriveNpmContract`, payload/manifest allowlist checks, CSS-surface extractor, result builder, writer) + tests; `ccv-out/` in `.gitignore` | deterministic contracts for all 56 items and the package; payload-key/file-type and package-lifecycle checks pass on the real generator output and manifest; schema validated; no network, no install; works with `npm test` offline | no consumer runs, no CI, no Guard change |
-| **CCV-2 — clean-consumer runner + shadcn installed-result verifier (`LOCAL_CANONICAL`)** *(implemented — §23; reproducibility open)* | One sandboxed batch consumer; verify the installed result of all items | CCV-1 contracts; pins | shared runner (workspace, env allowlist, HOME/cache redirect, timeouts, cleanup, version recording, `ENVIRONMENT_ERROR`); batch Next consumer; per-file byte check (proven installer transforms classified as `UPSTREAM_TRANSFORM`, never accepted); set/dep/shared-target checks; import closure; `tsc`; build; installed export check; evidence JSON | all 55 items install in one consumer; **F1 reported as `UPSTREAM_TRANSFORM` (a FAIL) for every affected file**; builder list derived (F5); temp dirs not leaked (F3); results reproducible across two runs | `smoke:consumer` retained as-is until CCV-2 supersedes it; no public mode; no runtime token checks beyond existing descriptors |
+| **CCV-2 — clean-consumer runner + shadcn installed-result verifier (`LOCAL_CANONICAL`)** *(✅ implemented — §23)* | One sandboxed batch consumer; verify the installed result of all items | CCV-1 contracts; pins | shared runner (workspace, env allowlist, HOME/cache redirect, timeouts, cleanup, version recording, `ENVIRONMENT_ERROR`); batch Next consumer; per-file byte check (proven installer transforms classified as `UPSTREAM_TRANSFORM`, never accepted); set/dep/shared-target checks; import closure; `tsc`; build; installed export check; evidence JSON | all 55 items install in one consumer; **F1 reported as `UPSTREAM_TRANSFORM` (a FAIL) for every affected file**; builder list derived (F5); temp dirs not leaked (F3); results reproducible across two runs | `smoke:consumer` retained as-is until CCV-2 supersedes it; no public mode; no runtime token checks beyond existing descriptors |
 | **CCV-3 — npm installed-result verifier (`LOCAL_TARBALL`)** | Prove the candidate tarball's installed result | CCV-1 npm contract; `smoke-react-package` | extends the existing smoke: exact export equality (Node `import()` and `tsc`), denied deep imports, `exports` map, declarations without aliases, lifecycle audit (`--ignore-scripts` consumer), peer/dependency policy, exact tool pins, evidence JSON | all checks pass on beta.2's candidate; mutation checks (extra export, removed export, added `postinstall`) fail with the right code | no public mode, no CI change |
 | **CCV-4 — CSS/token delivery + representative runtime** | Static delivery analyzer and a derived tier assignment | delivered CSS of both paths; descriptors | analyzer (declared/used/fallback/alias, mode selectors, Foundation order); tier function; common representative browser checks (Foundation, Shape, Surface, focus-visible) | analyzer reproduces the measured 505-property surface and the F7 fallback; a deliberately removed token fails `CSS_TOKEN_MISSING`; tiers computed, no new inventory | no per-token browser tests, no visual regression |
 | **CCV-5 — public modes + provenance** | `PUBLIC_REGISTRY` and `PUBLIC_NPM` with expected-SHA proof | expected commit/tag; production URLs; npm registry | modes; payload equivalence (`PROVENANCE_MISMATCH` with diff list); `gitHead`/integrity/signature/dist-tag checks; rebuild-at-`gitHead` hash comparison; network-failure classification | beta.2 passes `PUBLIC_NPM`; production passes `PUBLIC_REGISTRY` at the release SHA; **rebuild determinism proven in CI (Linux), not just locally** | no new public metadata; no publishing; read-only network |
@@ -538,7 +538,7 @@ extra test (skipped on a clean checkout) confirms the derived CSS surface equals
 
 **Next:** CCV-2 — shadcn installed-result verifier (clean-consumer runner plus per-file byte comparison). It is expected to surface the F1 marker transform as a real finding rather than accept it.
 
-## 23. CCV-2 — clean-consumer runner and shadcn installed-result verifier (implemented 2026-10-05)
+## 23. CCV-2 — clean-consumer runner and shadcn installed-result verifier (✅ COMPLETE 2026-10-05)
 
 CCV-1 says what a consumer *should* receive; CCV-2 checks what a clean shadcn consumer *did* receive, in `LOCAL_CANONICAL` mode only (the registry payload is the canonical
 generator output served on loopback). `PUBLIC_REGISTRY`, `LOCAL_TARBALL` and `PUBLIC_NPM` are rejected by the CLI (later slices). **F1 is detected, kept as a FAIL with
@@ -596,7 +596,7 @@ file-set, one per declared dependency, dependencies, registry-closure, one per T
 and durations live only in `volatile`. Exit **0** — all contract checks pass; **1** — usage error; **2** — environment/tooling failure, no trustworthy verdict; **3** — the verifier completed and
 found contract failures (the expected outcome while F1 is open). The summary says separately whether the *verifier* completed and what the *contract result* is. A run never overwrites an
 earlier result: each is written to the next `….run-<n>.json`, and the CLI compares the new stable sections with the previous result; `npm run ccv:shadcn -- --compare <a> <b>` does the same
-offline (exit 0 identical, 3 different).
+offline (exit 0 identical, 3 different); `--across-commits` neutralises only the commit label, for runs taken at different commits whose canonical inputs are unchanged — every check, including every expected hash, must still match.
 
 **Real runs (owner's terminal; the agent sandbox cannot resolve `ui.shadcn.com`, from which the shadcn CLI fetches its base-color data).** Commit `5431180`, Node 24.14.0, npm 11.12.1,
 macOS x64; create-next-app 16.3.7 → Next 16.3.7, React 19.2.8, TypeScript 5.9.3; shadcn 4.21.1.
@@ -613,13 +613,27 @@ exactly that line (the rest of each file is byte-identical); 12 unmarked files l
 `internal/chart-format.ts`, two CSS modules). Both are shadcn 4.21.1 behavior; both remain FAIL. The marker loss has a real consequence (Guard's public provenance contract reads the marker);
 the comment loss has no runtime consequence but is not accepted either — the accepted list stays empty.
 
-**Reproducibility — OPEN.** Two full batches were run, but the CLI at that point wrote every run to the same file name, so the second run overwrote the first and the stable sections
-of the two runs cannot be compared from artifacts. The CLI now never overwrites (see above). Available evidence: the saved full-batch result compares identical to itself, contains no
-temp path, port or cache path in its stable sections, and the 15 file/import/export checks the independent Button run shares with it are identical in status, failure code, expected
-and actual hashes. Closing the criterion needs one more full run; the CLI will compare it with the saved result automatically.
+**Reproducibility — CLOSED.** The first two full batches could not be compared (the second overwrote the first; the CLI now writes `….run-<n>.json` and never overwrites).
+A third, independent full batch was then run in a fresh workspace and compared with the saved batch **from the artifacts**:
+
+| | Earlier saved batch | Reproducibility batch |
+|---|---|---|
+| commit | `5431180` | `095f74b` |
+| subjects / closure | 55 / 56 | 55 / 56 |
+| pass · fail · unknown | 278 · 67 · 0 | 278 · 67 · 0 |
+| failure codes | 67 × `UPSTREAM_TRANSFORM` (55 marker, 12 comment) | identical |
+| Skrewww-attributed failures | 0 | 0 |
+
+`npm run ccv:shadcn -- --compare <earlier> <reproducibility> --across-commits` → **IDENTICAL** (exit 0): the same 345 check ids in the same order, the same statuses, failure codes,
+expected and installed hashes and evidence; with the commit label neutralised the stable serialisations are byte-identical. The only stable field that differs is
+`source.expectedGitSha`, and it differs legitimately: between `5431180` and `095f74b` no canonical input of the contracts changed (no change under `components/`, `styles/`, the
+registry, the generator, the provenance marker or the CCV-1 derivation — `095f74b` added the CCV-2 verifier and docs only), which the identical expected hashes confirm independently.
+Neither result's stable sections contain a temp path, home path, cache path, port, duration or timestamp; those live only in `volatile` (durations 119 s and 151 s).
 
 **Limitations.** LOCAL_CANONICAL only; one Next/Tailwind-free consumer on one OS; the CLI needs `ui.shadcn.com` (base-color data) besides the npm registry; static import resolution covers
 static `import`/`export … from` (not dynamic `import()`); no runtime/CSS checks (CCV-4); no public-registry or provenance checks (CCV-5); a full run takes about two minutes on an idle
 machine and much longer under load.
+
+**Closure.** Tool complete: every CCV-2 acceptance criterion is met, including two-run reproducibility. Product not clean: the current shadcn distribution fails 67 file checks, all upstream-attributed (F1 plus leading-comment removal); F1 stays a FAIL until a separate distribution decision addresses it.
 
 **Stop boundary.** No Guard, product, registry, Figma, Make Kit or package change; F1 not fixed; no CI wiring. Next: **CCV-3 — npm installed-result verifier**.

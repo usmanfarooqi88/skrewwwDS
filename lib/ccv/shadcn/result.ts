@@ -109,8 +109,11 @@ export type StableComparison = { identical: boolean; differingChecks: string[]; 
  * (timestamp, duration). Temp paths, ports and timings never reach the stable
  * sections, so two runs against identical installed bytes compare identical.
  */
-export function compareStableResults(first: CcvResult, second: CcvResult): StableComparison {
-  const strip = ({ volatile: _volatile, checks: _checks, ...rest }: CcvResult) => rest;
+export function compareStableResults(first: CcvResult, second: CcvResult, options: { acrossCommits?: boolean } = {}): StableComparison {
+  // acrossCommits: the two runs were taken at different commits whose canonical inputs are known to be unchanged;
+  // only the commit label is neutralised — every check (including every expected hash) must still be identical.
+  const strip = ({ volatile: _volatile, checks: _checks, ...rest }: CcvResult) =>
+    options.acrossCommits ? { ...rest, source: { ...rest.source, expectedGitSha: "<commit>" } } : rest;
   const a = new Map(first.checks.map((check) => [check.checkId, JSON.stringify(check)]));
   const b = new Map(second.checks.map((check) => [check.checkId, JSON.stringify(check)]));
   const differingChecks = Array.from(a.keys()).filter((key) => b.has(key) && a.get(key) !== b.get(key));
