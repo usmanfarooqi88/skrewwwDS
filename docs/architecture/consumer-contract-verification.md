@@ -2,7 +2,8 @@
 
 **Status: CCV-0 ✅ COMPLETE (2026-10-04) — architecture and baseline audit. CCV-1 ✅ COMPLETE (2026-10-04) — contract derivation, evidence schema and failure taxonomy (§22).
 CCV-2 ✅ COMPLETE (2026-10-05) — shadcn installed-result verifier (LOCAL_CANONICAL), run for real and reproduced (§23); the verifier is complete, the current shadcn distribution is NOT contract-clean (F1).
-CCV-3 … CCV-7 NOT STARTED.** This document locks the scope, boundaries, authorities, modes, environment, evidence model and slice plan.
+CCV-3 ✅ COMPLETE (2026-10-05) — npm installed-package verifier (LOCAL_TARBALL), run for real and reproduced (§24); the `@skrewww/react` candidate is contract-clean.
+CCV-4 … CCV-7 NOT STARTED.** This document locks the scope, boundaries, authorities, modes, environment, evidence model and slice plan.
 
 Baseline: `b6bbc6578d14ea4bf21e23300c8dcf0cb3bf674a`. Roadmap entry: `docs/project-status.md` → "Consumer Contract Verification".
 
@@ -443,7 +444,7 @@ Decomposition chosen from the audit: derive and structure first (offline, cheap)
 |---|---|---|---|---|---|
 | **CCV-1 — contract derivation, evidence schema, taxonomy** *(✅ implemented — §22)* | Pure, offline derivation of every expectation in §6, plus `CcvResult`, the failure codes, a gitignored evidence writer | registry, generator, `pilot-entry`, barrel, `packages/react/package.json` | `lib/ccv/` (types, `deriveShadcnContract`, `deriveNpmContract`, payload/manifest allowlist checks, CSS-surface extractor, result builder, writer) + tests; `ccv-out/` in `.gitignore` | deterministic contracts for all 56 items and the package; payload-key/file-type and package-lifecycle checks pass on the real generator output and manifest; schema validated; no network, no install; works with `npm test` offline | no consumer runs, no CI, no Guard change |
 | **CCV-2 — clean-consumer runner + shadcn installed-result verifier (`LOCAL_CANONICAL`)** *(✅ implemented — §23)* | One sandboxed batch consumer; verify the installed result of all items | CCV-1 contracts; pins | shared runner (workspace, env allowlist, HOME/cache redirect, timeouts, cleanup, version recording, `ENVIRONMENT_ERROR`); batch Next consumer; per-file byte check (proven installer transforms classified as `UPSTREAM_TRANSFORM`, never accepted); set/dep/shared-target checks; import closure; `tsc`; build; installed export check; evidence JSON | all 55 items install in one consumer; **F1 reported as `UPSTREAM_TRANSFORM` (a FAIL) for every affected file**; builder list derived (F5); temp dirs not leaked (F3); results reproducible across two runs | `smoke:consumer` retained as-is until CCV-2 supersedes it; no public mode; no runtime token checks beyond existing descriptors |
-| **CCV-3 — npm installed-result verifier (`LOCAL_TARBALL`)** | Prove the candidate tarball's installed result | CCV-1 npm contract; `smoke-react-package` | extends the existing smoke: exact export equality (Node `import()` and `tsc`), denied deep imports, `exports` map, declarations without aliases, lifecycle audit (`--ignore-scripts` consumer), peer/dependency policy, exact tool pins, evidence JSON | all checks pass on beta.2's candidate; mutation checks (extra export, removed export, added `postinstall`) fail with the right code | no public mode, no CI change |
+| **CCV-3 — npm installed-result verifier (`LOCAL_TARBALL`)** *(✅ implemented — §24)* | Prove the candidate tarball's installed result | CCV-1 npm contract; `smoke-react-package` | extends the existing smoke: exact export equality (Node `import()` and `tsc`), denied deep imports, `exports` map, declarations without aliases, lifecycle audit (`--ignore-scripts` consumer), peer/dependency policy, exact tool pins, evidence JSON | all checks pass on beta.2's candidate; mutation checks (extra export, removed export, added `postinstall`) fail with the right code | no public mode, no CI change |
 | **CCV-4 — CSS/token delivery + representative runtime** | Static delivery analyzer and a derived tier assignment | delivered CSS of both paths; descriptors | analyzer (declared/used/fallback/alias, mode selectors, Foundation order); tier function; common representative browser checks (Foundation, Shape, Surface, focus-visible) | analyzer reproduces the measured 505-property surface and the F7 fallback; a deliberately removed token fails `CSS_TOKEN_MISSING`; tiers computed, no new inventory | no per-token browser tests, no visual regression |
 | **CCV-5 — public modes + provenance** | `PUBLIC_REGISTRY` and `PUBLIC_NPM` with expected-SHA proof | expected commit/tag; production URLs; npm registry | modes; payload equivalence (`PROVENANCE_MISMATCH` with diff list); `gitHead`/integrity/signature/dist-tag checks; rebuild-at-`gitHead` hash comparison; network-failure classification | beta.2 passes `PUBLIC_NPM`; production passes `PUBLIC_REGISTRY` at the release SHA; **rebuild determinism proven in CI (Linux), not just locally** | no new public metadata; no publishing; read-only network |
 | **CCV-6 — compatibility baseline** | Token/export removal detection | previous published npm; current production registry | diff reports; `COMPATIBILITY_BREAK`; empty allowlist mechanism | beta.1 → beta.2 reports no break; a synthetic removal is caught; report-only by default | no value comparison, no multi-release history |
@@ -637,3 +638,75 @@ machine and much longer under load.
 **Closure.** Tool complete: every CCV-2 acceptance criterion is met, including two-run reproducibility. Product not clean: the current shadcn distribution fails 67 file checks, all upstream-attributed (F1 plus leading-comment removal); F1 stays a FAIL until a separate distribution decision addresses it.
 
 **Stop boundary.** No Guard, product, registry, Figma, Make Kit or package change; F1 not fixed; no CI wiring. Next: **CCV-3 — npm installed-result verifier**.
+
+## 24. CCV-3 — npm installed-package verifier (✅ COMPLETE 2026-10-05)
+
+CCV-3 asks: *if a consumer installs the local `@skrewww/react` candidate tarball, does the INSTALLED package exactly satisfy the CCV-1 npm contract?* `LOCAL_TARBALL` only — `PUBLIC_NPM`
+is CCV-5 and the CLI rejects it; nothing is published and public npm is never queried for the package. The package, its API, Figma, Guard and Make Kit are unchanged.
+
+```
+CCV-1 npm contract ─► workspace (shared CCV-2 runner) ─► buildReactPackage() (the existing build) ─► npm pack --pack-destination <workspace>
+  ─► tarball read in-process (ustar + pax) and checked with the canonical pack rules
+  ─► fresh Vite + React + TS consumer (exact pins) ─► npm install file:<tarball> (a real copy)
+  ─► installed files vs packed files · installed manifest vs contract · peers satisfied · lifecycle (package + runtime dependency tree) · side effects
+  ─► plain Node ESM probe: import("<pkg>") export names; import.meta.resolve of every public and denied specifier
+  ─► installed declarations (release-checks + output-checks rules on the INSTALLED files) ─► strict tsc over a surface harness ─► vite build ─► bundled stylesheet
+  ─► second consumer installed with --ignore-scripts: import · tsc · build ─► cleanup ─► validated CcvResult
+```
+
+**Code.** `lib/ccv/npm/` — `tarball.ts` (dependency-free `.tgz` reader), `package-files.ts` (packed vs installed hashes), `manifest.ts` (identity, dependency names and ranges,
+range satisfaction), `lifecycle.ts` (consumer-run vs publisher-only scripts, implicit node-gyp install, runtime dependency tree), `consumer.ts` (pins, generated consumer, surface harness, Node
+probe, specifier judgement, export-set equality), `verify.ts` (thin orchestration; every check is planned from the contract up front, so one that cannot run is `unknown`, never absent).
+Shared with CCV-2: `lib/ccv/runner/` (workspace, environment, process, pins) plus two modules generalised in this slice — `runner/result.ts` (result assembly for any distribution, exit codes,
+human summary, stable comparison) and `runner/artifacts.ts` (result directory, never-overwrite run files, `--compare`). Additive edit: `lib/react-package/release-checks.ts` exports its
+forbidden-dependency rule (`FORBIDDEN_DEPENDENCIES`, `FORBIDDEN_DEPENDENCY_PREFIXES`, `forbiddenDependencyNames`) which `checkManifest` now uses, so CCV applies the same rule. CLI: `npm run ccv:npm`.
+
+**Pins.** The consumer pins are exactly the versions the repository lockfile already resolves (a test enforces it): Vite 8.1.4, @vitejs/plugin-react 6.0.3, TypeScript 5.9.3, React and ReactDOM
+19.2.7, @types/react 19.2.17, @types/react-dom 19.2.3. Node from the repository range; npm recorded. The package's own peer ranges are untouched. Resolved versions are recorded in `environment.tools`.
+
+**What is checked (all derived from the contract — no export, type or specifier name appears in the verifier).**
+
+- *Artifact:* the candidate is built by `buildReactPackage()` at the expected commit; `npm pack` writes the tarball into the workspace; its name, version, SHA-256, npm integrity and file list
+  are recorded; the archive's file list must equal npm's; `checkPackedFiles` (`REQUIRED_PACKED_FILES`, `PACKED_ALLOWED_*`) must hold.
+- *Install:* a real copy (not a link) in `node_modules`; every installed file's hash equals the packed file's; nothing extra, nothing missing; nothing written in the consumer outside
+  `node_modules` and the lockfile (`POSTINSTALL_SIDE_EFFECT` = a consumer-visible write outside dependency state during the install).
+- *Manifest:* the INSTALLED `package.json` — name, version, type, engines, exports map, sideEffects — equals the contract; dependency, peer and optional names and declared ranges match in both
+  directions; no forbidden dependency; each peer is satisfied by the consumer's installed version.
+- *Lifecycle:* consumer-run scripts (`preinstall`, `install`, `postinstall`, `prepare` — and the implicit `node-gyp rebuild` a `binding.gyp` triggers) are classified apart from publisher-only
+  scripts (`prepublishOnly`); none may be present (the contract's allowed set is empty). The package's runtime dependency tree (dependencies and optional dependencies, resolved like Node,
+  not peers) must declare no install-time script (`prepare` in a registry dependency is informational: npm does not run it). A second consumer installed with `--ignore-scripts` must still
+  import, type-check and build; a failure that appears only without scripts is attributed to Skrewww only when its own tree declares install-time scripts, otherwise it is consumer tooling (`unknown`).
+- *Exports:* plain Node ESM (`node ccv-probe.mjs`, no bundler, no path mapping) imports the package root, and its runtime export names must EQUAL the contract value exports
+  (`EXPORT_MISSING` / `EXPORT_UNEXPECTED`). A surface harness imports every value and every type (`import type`) from the root, one name per line, under strict `tsc` with `skipLibCheck: false`,
+  so each type export is proven by a real consumer and a diagnostic maps to one name. Dialog's compound parts are covered because the contract lists them.
+- *Specifiers:* every public specifier must resolve inside the installed package (`import.meta.resolve`; CSS is resolved, never imported); every denied specifier must be refused with
+  `ERR_PACKAGE_PATH_NOT_EXPORTED` — a resolution is `DEEP_IMPORT_EXPOSED`; any other refusal is recorded and left `unknown` because exports-map denial is not proven by it.
+- *Declarations and leaks:* `checkDistIntegrity` and `checkBuiltFile` run on the INSTALLED files (contract exports present in JS and declarations, relative declaration imports resolve, no
+  `@/` alias, Next, Recharts, server-only or `@vercel` import). The probe's success with no forbidden package in the consumer lockfile proves the root needs none of them.
+- *Typecheck and build:* strict `tsc` and `vite build` (additional proof, never a substitute); the bundled CSS must contain the stylesheet's custom-property declarations (delivery only — token
+  correctness is CCV-4). No browser: `npm run smoke:react-package` keeps the Chromium proof.
+
+**Result and exit codes** — the CCV-1 `CcvResult` (distribution `npm-package`, mode `LOCAL_TARBALL`, `source.packageVersion` and the tarball's npm `integrity`), stable ids
+`npm:@skrewww/react:<area>:<key>`, the same exit codes as CCV-2 (0 pass · 1 usage · 2 environment / undecided · 3 contract failures). An `unknown` without a failure code now also yields 2: an undecided
+check is never reported as a pass. Results are written to `ccv-out/` (or outside the repository) as `npm.LOCAL_TARBALL.skrewww-react.<sha>.run-<n>.json`, never overwritten, and compared automatically.
+
+**Fix found while reproducing.** The automatic comparison in CCV-2's CLI compared a saved (sorted-key) result with an in-memory one using plain `JSON.stringify`, so it would have reported every
+check as different. `compareStableResults` now uses the stable serializer (key-order independent; regression test added). The CCV-2 closure verdict is unaffected: it compared two saved files.
+
+**Real runs** (commit `1cfbb61`, Node 24.14.0, npm 11.12.1, macOS x64, idle machine, ~60 s each).
+
+| Run | Pass | Fail | Unknown | Notes |
+|---|---|---|---|---|
+| 1 | 131 | 0 | 0 | tarball `skrewww-react-0.1.0-beta.2.tgz`, 33 files, 37,483 bytes, integrity `sha512-JCJ7K16E…KgyDYA==` — identical to the published beta.2 tarball |
+| 2 | 131 | 0 | 0 | `--compare run-1 run-2` → **IDENTICAL** |
+
+Detail: 33 installed files = 33 packed files, byte-identical; manifest identity, 1 dependency, 2 peers (both satisfied by React 19.2.7) as contracted; no consumer-run script (`prepublishOnly` is
+publisher-only); runtime tree `@phosphor-icons/react@2.1.10` with no install-time script; no install side effect; plain Node import returns exactly the 17 contract runtime exports; all 29 type
+exports compile; 3 public specifiers resolve; all 14 denied specifiers are refused with `ERR_PACKAGE_PATH_NOT_EXPORTED`; installed declarations intact with no leak; strict tsc and vite build pass;
+505/505 stylesheet declarations reach the bundle; the `--ignore-scripts` consumer imports, type-checks and builds. **No contract finding: Skrewww 0, upstream 0, environment 0.** The existing
+`npm run smoke:react-package` still passes (42/42) and `prepublish:react-package` passes.
+
+**Limitations.** LOCAL_TARBALL only (the published artifact is CCV-5); one Vite consumer on one OS; Node ESM proof covers the package root (CSS is resolved, not executed); the lifecycle audit reads
+manifests, it does not trace process behaviour; no runtime/CSS-token checks (CCV-4).
+
+**Stop boundary.** No package, API, component, Figma, Guard or Make Kit change; nothing published; no CI wiring. Next: **CCV-4 — CSS/token delivery + representative runtime**.

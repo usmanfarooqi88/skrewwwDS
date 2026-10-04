@@ -225,6 +225,9 @@ describe("CCV-2 result helpers", () => {
     const a = { ...base([pass, fail]), volatile: { startedAt: "2026-10-04T21:00:00Z", durationMs: 1 } };
     const b = { ...base([pass, fail]), volatile: { startedAt: "2026-10-05T09:00:00Z", durationMs: 999 } };
     expect(compareStableResults(a, b)).toEqual({ identical: true, differingChecks: [], onlyInFirst: [], onlyInSecond: [], otherDifferences: [] });
+    // key order never matters: a saved (sorted-key) result equals the same in-memory result
+    const reordered = JSON.parse(JSON.stringify(b, (_key, value) => (value && typeof value === "object" && !Array.isArray(value) ? Object.fromEntries(Object.entries(value).reverse()) : value)));
+    expect(compareStableResults(a, reordered).identical).toBe(true);
     const changed = base([{ ...pass, actual: "other-hash" }, fail]);
     expect(compareStableResults(a, changed)).toMatchObject({ identical: false, differingChecks: ["shadcn:all:file:a.ts"] });
     expect(compareStableResults(a, base([pass]))).toMatchObject({ identical: false, onlyInFirst: ["shadcn:all:file:b.ts"] });

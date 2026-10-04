@@ -20,53 +20,23 @@
  * environment/tooling failure (no trustworthy verdict) · 3 the verifier
  * completed and found contract failures.
  */
-import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
-import { isAbsolute, join, relative, resolve } from "node:path";
+import { relative } from "node:path";
 import { readGitInfo } from "../lib/audit/collect-repo-facts";
 import { deriveAllShadcnContracts } from "../lib/ccv/derive-shadcn-contract";
 import { runCommand } from "../lib/ccv/runner/process";
 import { deriveBatchSubjects } from "../lib/ccv/shadcn/expected";
-import { compareStableResults, humanSummary, type StableComparison } from "../lib/ccv/shadcn/result";
-import type { CcvResult } from "../lib/ccv/types";
-import { validateCcvResult } from "../lib/ccv/validate";
+import { compareCommand, describeComparison, resolveResultDir, resultStem, writeRunArtifact } from "../lib/ccv/runner/artifacts";
+import { humanSummary } from "../lib/ccv/shadcn/result";
 import { verifyShadcnLocalCanonical, type InstallStrategy } from "../lib/ccv/shadcn/verify";
-import { serializeCcvResult } from "../lib/ccv/serialize";
 import { buildDistributedRegistryItems } from "../lib/shadcn-registry-generator";
 
-const DEFAULT_OUT = "ccv-out";
 const args = process.argv.slice(2);
 
-const describeComparison = (comparison: StableComparison, label: string): string[] =>
-  comparison.identical
-    ? [`Reproducibility: stable sections IDENTICAL to ${label}`]
-    : [
-        `Reproducibility: stable sections DIFFER from ${label}`,
-        ...comparison.differingChecks.slice(0, 20).map((id) => `  differs: ${id}`),
-        ...comparison.onlyInFirst.slice(0, 20).map((id) => `  only in earlier: ${id}`),
-        ...comparison.onlyInSecond.slice(0, 20).map((id) => `  only in this run: ${id}`),
-        ...comparison.otherDifferences.map((key) => `  section differs: ${key}`),
-      ];
-
 if (args[0] === "--compare") {
-  const acrossCommits = args.includes("--across-commits");
-  if (args.length !== (acrossCommits ? 4 : 3) || (acrossCommits && args[3] !== "--across-commits")) {
-    process.stderr.write("usage: npm run ccv:shadcn -- --compare <a.json> <b.json> [--across-commits]\n");
-    process.exit(1);
-  }
-  const load = (path: string): CcvResult => {
-    const parsed = JSON.parse(readFileSync(path, "utf8")) as CcvResult;
-    const validation = validateCcvResult(parsed);
-    if (!validation.ok) {
-      process.stderr.write(`${path} is not a valid CcvResult:\n  - ${validation.problems.join("\n  - ")}\n`);
-      process.exit(1);
-    }
-    return parsed;
-  };
-  const [first, second] = [load(args[1]), load(args[2])];
-  const comparison = compareStableResults(first, second, { acrossCommits });
-  if (acrossCommits) process.stdout.write(`Across commits: ${first.source.expectedGitSha} → ${second.source.expectedGitSha} (commit label neutralised; every check must still match)\n`);
-  for (const line of describeComparison(comparison, args[1])) process.stdout.write(`${line}\n`);
-  process.exit(comparison.identical ? 0 : 3);
+  const outcome = compareCommand(args);
+  for (const line of outcome.out) process.stdout.write(`${line}\n`);
+  for (const line of outcome.err) process.stderr.write(`${line}\n`);
+  process.exit(outcome.code);
 }
 const usage = () => {
   process.stderr.write("usage: npm run ccv:shadcn -- [--mode LOCAL_CANONICAL] [--item <name>]... [--install single|sequential] [--keep] [--out <dir>] [--no-write]\n");
@@ -100,17 +70,12 @@ const subjectLabel = requested.length === 1 ? requested[0] : requested.length > 
 
 let outDir: string | undefined;
 if (!args.includes("--no-write")) {
-  outDir = resolve(repoRoot, values("--out")[0] ?? DEFAULT_OUT);
-  const rel = relative(repoRoot, outDir);
-  const insideRepo = rel === "" || (!rel.startsWith("..") && !isAbsolute(rel));
-  const insideDefault = (() => {
-    const r = relative(resolve(repoRoot, DEFAULT_OUT), outDir);
-    return r === "" || (!r.startsWith("..") && !isAbsolute(r));
-  })();
-  if (insideRepo && !insideDefault) {
-    process.stderr.write(`refusing to write inside the repository outside ${DEFAULT_OUT}/\n`);
+  const resolved = resolveResultDir(repoRoot, values("--out")[0]);
+  if (!resolved.ok) {
+    process.stderr.write(`${resolved.message}\n`);
     process.exit(1);
   }
+  outDir = resolved.dir;
 }
 
 async function main(): Promise<void> {
@@ -133,27 +98,9 @@ async function main(): Promise<void> {
   for (const line of humanSummary(output.result)) process.stdout.write(`${line}\n`);
   if (output.kept) process.stdout.write(`Workspace kept: ${output.workspaceRoot}\n`);
   if (outDir) {
-    mkdirSync(outDir, { recursive: true });
-    const stem = `shadcn.${output.result.mode}.${subjectLabel}.${git.sha}`;
-    const earlier = readdirSync(outDir)
-      .filter((name) => name === `${stem}.json` || new RegExp(`^${stem.replace(/[.+]/g, "\\$&")}\\.run-(\\d+)\\.json$`).test(name))
-      .sort((a, b) => Number(/run-(\d+)/.exec(a)?.[1] ?? 0) - Number(/run-(\d+)/.exec(b)?.[1] ?? 0));
-    const previous = earlier.at(-1);
-    if (previous) {
-      const comparison = compareStableResults(JSON.parse(readFileSync(join(outDir, previous), "utf8")) as CcvResult, output.result);
-      for (const line of describeComparison(comparison, previous)) process.stdout.write(`${line}\n`);
-    }
-    let run = earlier.length + 1;
-    let file = join(outDir, `${stem}.run-${run}.json`);
-    while (existsSync(file)) file = join(outDir, `${stem}.run-${(run += 1)}.json`);
-    const temporary = `${file}.tmp-${process.pid}`;
-    try {
-      writeFileSync(temporary, serializeCcvResult(output.result), { flag: "wx" });
-      renameSync(temporary, file);
-    } finally {
-      rmSync(temporary, { force: true });
-    }
-    process.stdout.write(`Result: ${relative(repoRoot, file) || file}\n`);
+    const written = writeRunArtifact(outDir, resultStem(["shadcn", output.result.mode, subjectLabel, git.sha]), output.result);
+    if (written.previous) for (const line of describeComparison(written.previous.comparison, written.previous.name)) process.stdout.write(`${line}\n`);
+    process.stdout.write(`Result: ${relative(repoRoot, written.file) || written.file}\n`);
   }
   process.exit(output.exitCode);
 }

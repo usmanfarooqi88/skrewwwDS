@@ -9,7 +9,7 @@ import { dirname, join, resolve } from "node:path";
 
 export type ReleaseIssue = { area: string; message: string };
 
-type PackageManifest = {
+export type PackageManifest = {
   name?: string;
   version?: string;
   private?: boolean;
@@ -25,7 +25,16 @@ type PackageManifest = {
   scripts?: Record<string, string>;
 };
 
-const FORBIDDEN_DEPENDENCIES = ["next", "recharts", "server-only", "@next/third-parties"];
+/** The package boundary, exported so other verification layers (CCV) apply the same rule instead of restating it. */
+export const FORBIDDEN_DEPENDENCIES: readonly string[] = ["next", "recharts", "server-only", "@next/third-parties"];
+export const FORBIDDEN_DEPENDENCY_PREFIXES: readonly string[] = ["@vercel/"];
+
+/** Names among a manifest's runtime, peer and optional dependencies that break the package boundary. */
+export function forbiddenDependencyNames(pkg: Pick<PackageManifest, "dependencies" | "peerDependencies" | "optionalDependencies">): string[] {
+  return Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies, ...pkg.optionalDependencies }).filter(
+    (name) => FORBIDDEN_DEPENDENCIES.includes(name) || FORBIDDEN_DEPENDENCY_PREFIXES.some((prefix) => name.startsWith(prefix)),
+  );
+}
 
 /** Manifest rules that must hold before this package can be published. `private` is reported separately. */
 export function checkManifest(pkg: PackageManifest): ReleaseIssue[] {
@@ -49,10 +58,7 @@ export function checkManifest(pkg: PackageManifest): ReleaseIssue[] {
   if (JSON.stringify(peers) !== JSON.stringify(["react", "react-dom"])) add("peerDependencies must be exactly react and react-dom");
   if (!/^\^19\./.test(pkg.peerDependencies?.react ?? "")) add("react peer range must stay on the verified React 19 line");
   if (JSON.stringify(Object.keys(pkg.dependencies ?? {})) !== JSON.stringify(["@phosphor-icons/react"])) add("the only runtime dependency must be @phosphor-icons/react");
-  const all = Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies, ...pkg.optionalDependencies });
-  for (const name of all) {
-    if (FORBIDDEN_DEPENDENCIES.includes(name) || name.startsWith("@vercel/")) add(`forbidden dependency: ${name}`);
-  }
+  for (const name of forbiddenDependencyNames(pkg)) add(`forbidden dependency: ${name}`);
   if (!pkg.scripts?.prepublishOnly) add("prepublishOnly guard is missing");
   else if (!pkg.scripts.prepublishOnly.includes("check-react-publish-tag")) add("prepublishOnly must run the resolved-publish-tag guard (npm 11.12.1 ignores publishConfig.tag)");
   return issues;
