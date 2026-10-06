@@ -10,10 +10,14 @@ import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
 type JsonLd = Record<string, unknown>;
 
+const organizationId = "https://skrewww.com/#organization";
+
 export function organizationJsonLd(): JsonLd {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": organizationId,
+    logo: "https://skrewww.com/logo.svg",
     name: siteConfig.organizationName,
     url: siteConfig.origin,
     ...(siteConfig.repositoryUrl ? { sameAs: [siteConfig.repositoryUrl] } : {}),
@@ -27,10 +31,7 @@ export function websiteJsonLd(): JsonLd {
     name: siteConfig.name,
     url: siteConfig.origin,
     description: siteConfig.description,
-    publisher: {
-      "@type": "Organization",
-      name: siteConfig.organizationName,
-    },
+    publisher: organizationJsonLd(),
   };
 }
 
@@ -106,14 +107,8 @@ export function componentPageJsonLd(slug: string): JsonLd[] {
     inLanguage: "en",
     isAccessibleForFree: true,
     keywords: [registry.industry ?? doc.category, ...registry.supportedVariants, registry.status].join(", "),
-    author: {
-      "@type": "Organization",
-      name: siteConfig.organizationName,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: siteConfig.organizationName,
-    },
+    author: { "@id": organizationId },
+    publisher: organizationJsonLd(),
     mainEntityOfPage: pageUrl,
   };
 
@@ -221,5 +216,9 @@ export function industryPageJsonLd(industry: IndustryName): JsonLd[] {
 }
 
 export function siteStructuredData(): JsonLd[] {
-  return [organizationJsonLd(), websiteJsonLd(), softwareApplicationJsonLd()];
+  return [
+    organizationJsonLd(),
+    { ...websiteJsonLd(), publisher: { "@id": organizationId } },
+    softwareApplicationJsonLd(),
+  ];
 }

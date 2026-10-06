@@ -209,7 +209,7 @@ export function Example() {
     name: "Progress Bar",
     category: "Feedback",
     summary:
-      "Progress Bar is determinate or indeterminate progress toward a known or unknown completion point.",
+      "React progress bar for uploads and background tasks, with measured value/max progress, an indeterminate mode, a visible label, and optional percentage text.",
     status: "stable",
     version: "1.0.0",
     reactAvailability: "available",
@@ -217,7 +217,7 @@ export function Example() {
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/feedback.ts",
-    documentationLastUpdated: DOCS_DATE,
+    documentationLastUpdated: "2026-10-06",
     reactLastUpdated: REACT_DATE,
     figmaReference: "Feedback / Progress Bar — Style (Default/Success/Warning/Danger)",
     documentationUrl: getComponentDocumentationUrl("progress-bar"),
@@ -251,6 +251,8 @@ export function Example() {
     ],
     relatedComponents: [
       { label: "Spinner — indeterminate loading without measurable progress", href: "/components/spinner" },
+      { label: "File Upload — file selection; your application owns upload progress", href: "/components/file-upload" },
+      { label: "Stepper — named workflow stages rather than a numeric total", href: "/components/stepper" },
     ],
     relatedTokens: [
       { label: "semantic/action/primary", href: "/foundations" },
@@ -264,24 +266,42 @@ export function Example() {
     indexing: "index",
     announcementBehavior: "No live region by default. Do not announce every percentage change.",
     anatomy: "Progress Bar = label + native progress or indeterminate track + optional value text.",
-    keyboardBehavior: "Not focusable unless paired with a control that owns the operation.",
+    keyboardBehavior: "Read-only and not focusable. Put pause or cancel actions in separate controls owned by the application.",
     comparisons: [
       {
+        title: "Determinate vs indeterminate progress",
+        body: "Use value and max when completed work and its total are known. For 30 of 80 records, showValue displays 38%: the rounded value/max ratio. Values are clamped between zero and max; a non-positive max falls back to 100. Set indeterminate when the total is unknown; numeric progress and percentage text are then omitted. Switch back when the application has a reliable total.",
+      },
+      {
         title: "What is the difference between Progress Bar and Spinner?",
-        body: "Use Progress Bar when completion is measurable or indeterminate progress must be communicated semantically. Spinner covers decorative or standalone loading indicators.",
+        body: "Progress Bar keeps a visible task label and track, with a percentage when progress is measurable. Its indeterminate mode can keep that same layout while waiting for a total. Spinner is a compact indicator for waiting without a percentage. Neither component performs the work or estimates time remaining.",
+      },
+      {
+        title: "Using Progress Bar with File Upload",
+        body: "File Upload selects files; it does not transfer them. Your upload code must supply real completed and total values to Progress Bar. If the transport cannot report a total, use indeterminate rather than an invented percentage. In the example, completed and total come from the application; leaving total undefined selects indeterminate mode.",
       },
     ],
     apiProps: [
-      { name: "value", type: "number", description: "Current progress value." },
-      { name: "max", type: "number", default: "100", description: "Maximum progress value." },
-      { name: "label", type: "string", description: "Accessible name." },
-      { name: "indeterminate", type: "boolean", default: "false", description: "Unknown-duration progress." },
+      { name: "value", type: "number", default: "0", description: "Completed work, clamped between zero and max." },
+      { name: "max", type: "number", default: "100", description: "Total work; non-positive values fall back to 100." },
+      { name: "label", type: "string", description: "Required visible task label and accessible name." },
+      { name: "showValue", type: "boolean", default: "false", description: "Shows the rounded percentage in determinate mode only." },
+      { name: "indeterminate", type: "boolean", default: "false", description: "Unknown total; omits numeric progress and percentage text." },
       { name: "variant", type: '"default" | "success" | "warning" | "danger"', default: '"default"', description: "Semantic style." },
+      { name: "className", type: "string", description: "Additional class on the outer wrapper." },
     ],
     reactExample: `import { ProgressBar } from "@/components/ui/ProgressBar";
 
-export function Example() {
-  return <ProgressBar label="Uploading files" value={42} max={100} showValue />;
+export function UploadProgress({ completed, total }: { completed: number; total?: number }) {
+  return (
+    <ProgressBar
+      label="Uploading files"
+      value={completed}
+      max={total}
+      indeterminate={total === undefined}
+      showValue
+    />
+  );
 }`,
   },
   {

@@ -1751,7 +1751,7 @@ export function Example() {
     category: "Content & Data",
     industry: "Banking",
     summary:
-      "Banking Account Card is a summary card for one financial account — account type, current balance, a compact balance-history sparkline, and an action button.",
+      "React bank account summary card for banking dashboards: show one account's balance, balance-history sparkline, account type, and action to view transactions.",
     status: "beta",
     version: "0.1.0-beta",
     reactAvailability: "available",
@@ -1759,7 +1759,7 @@ export function Example() {
     documentationCompleteness: "partial",
     accessibilityLevel: "WCAG 2.2 AA (target)",
     documentationSource: "content/content-data.ts",
-    documentationLastUpdated: "2026-07-25",
+    documentationLastUpdated: "2026-10-06",
     reactLastUpdated: "2026-07-25",
     figmaReference:
       "Layer 4 Industry Systems (Banking pilot) — no Figma reference exists. Confirmed via a full Figma file search (every page checked) on 2026-07-25 (see lib/banking-figma-metadata.ts, BANKING_FIGMA_AUDIT_STATUS = \"confirmed-no-reference-2026-07-25\").",
@@ -1773,7 +1773,8 @@ export function Example() {
       { label: "Tag — the account-type indicator this composes", href: "/components/tag" },
       { label: "Button — the action trigger this composes", href: "/components/button" },
       { label: "Line Chart — the balance-history sparkline this composes", href: "/components/line-chart" },
-      { label: "Banking Transaction Row — sibling Layer 4 Banking pilot component", href: "/components/banking-transaction-row" },
+      { label: "Banking Transaction Row — individual entries in the account's activity list", href: "/components/banking-transaction-row" },
+      { label: "Banking Balance Summary — spending or income totals by time range", href: "/components/banking-balance-summary" },
     ],
     relatedTokens: [
       { label: "semantic/text/primary", href: "/foundations" },
@@ -1792,12 +1793,12 @@ export function Example() {
       "Composes: Card (surface shell, title + footer slots) + Tag (account type) + Button (action trigger, in Card's footer slot) + Line Chart in sparkline mode (balance history).",
     comparisons: [
       {
-        title: "Does Account Card need its own Surface/Shape handling?",
-        body: "No — it inherits Card's `--surface-fill-default` and `--shape-radius-container` custom properties entirely through the CSS cascade. Verified live in Glass Surface + Pill Shape mode rather than assumed from Card's own behavior.",
+        title: "Account Card vs Transaction Row vs Balance Summary",
+        body: "Account Card answers which account this is and what its current balance and recent trend look like. Transaction Row describes one movement of money, with status and a detail popover. Balance Summary compares spending or income over selectable time ranges. Use them together for account overview, activity, and period analysis; Account Card does not provide a transaction list or a time-range selector.",
       },
       {
-        title: "Why does Line Chart need a sparkline prop instead of just a small height?",
-        body: "Line Chart's base design already has no axes, gridlines, or legend, so a small height alone gets most of the way there — but its hollow-ring point-marker dots are unconditional in the base design and dominate the visual at sparkline scale. The additive `sparkline` prop suppresses them and uses a thinner stroke.",
+        title: "Supplying account data and connecting the action",
+        body: "Format balance for the user's locale before passing it in. Pass balanceHistory as ordered { label, value } entries in the same currency, and state that currency in balanceHistoryLabel because the card does not expose chart value-formatting props. Bind onAction to your application's account navigation or detail view; the component has no built-in destination. In Next.js, the example belongs in a client component tree because it accepts an event handler.",
       },
     ],
     apiProps: [
@@ -1809,9 +1810,11 @@ export function Example() {
       { name: "actionLabel", type: "string", description: "Label for the footer action button." },
       { name: "onAction", type: "() => void", description: "Called when the action button is activated." },
     ],
-    reactExample: `import { BankingAccountCard } from "@/components/ui/BankingAccountCard";
+    reactExample: `"use client";
 
-export function Example() {
+import { BankingAccountCard } from "@/components/ui/BankingAccountCard";
+
+export function AccountOverview({ onViewTransactions }: { onViewTransactions: () => void }) {
   return (
     <BankingAccountCard
       accountName="Everyday Checking"
@@ -1823,9 +1826,9 @@ export function Example() {
         { label: "Week 3", value: 4050 },
         { label: "Week 4", value: 4231 },
       ]}
-      balanceHistoryLabel="30-day balance history for Everyday Checking"
-      actionLabel="View transactions"
-      onAction={() => undefined}
+      balanceHistoryLabel="30-day balance history for Everyday Checking in USD"
+      actionLabel="View Everyday Checking transactions"
+      onAction={onViewTransactions}
     />
   );
 }`,

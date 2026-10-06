@@ -4,7 +4,9 @@ import { describe, expect, it } from "vitest";
 import robots from "@/app/robots";
 import { getImplementedRegistryEntries } from "@/lib/component-registry";
 import { getSitemapUrls } from "@/lib/sitemap-data";
-import { componentPageJsonLd, siteStructuredData } from "@/lib/structured-data";
+import { categoryPageJsonLd, industryPageJsonLd, componentPageJsonLd, siteStructuredData } from "@/lib/structured-data";
+import { categories } from "@/lib/types";
+import { industries } from "@/lib/industry-content";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
 const root = process.cwd();
@@ -62,6 +64,41 @@ describe("SEO-1B — structured data scope", () => {
     }
     // Free and paid surfaces coexist (registry vs Figma Pro): no truthful single Offer.
     expect(first).not.toMatch(/"offers"|"price"|aggregateRating/);
+  });
+
+  it("uses one complete Organization per document with the official production logo", () => {
+    const documents = [
+      siteStructuredData(),
+      ...categories.map(categoryPageJsonLd),
+      ...industries.map(industryPageJsonLd),
+      ...getImplementedRegistryEntries().map((entry) => componentPageJsonLd(entry.slug)),
+    ];
+    const objects = (value: unknown): Array<Record<string, unknown>> => {
+      if (!value || typeof value !== "object") return [];
+      if (Array.isArray(value)) return value.flatMap(objects);
+      return [value as Record<string, unknown>, ...Object.values(value).flatMap(objects)];
+    };
+    for (const document of documents) {
+      const nodes = objects(JSON.parse(JSON.stringify(document)));
+      const organizations = nodes.filter((node) => node["@type"] === "Organization");
+      expect(organizations).toHaveLength(1);
+      expect(organizations[0]).toMatchObject({
+        "@context": "https://schema.org",
+        "@id": "https://skrewww.com/#organization",
+        name: siteConfig.organizationName,
+        url: siteConfig.origin,
+        logo: "https://skrewww.com/logo.svg",
+      });
+      const logo = new URL(String(organizations[0].logo));
+      expect(logo.origin).toBe("https://skrewww.com");
+      expect(existsSync(join(root, "public", logo.pathname))).toBe(true);
+      for (const type of ["WebSite", "WebPage"]) {
+        expect(nodes.filter((node) => node["@type"] === type).length).toBeLessThanOrEqual(1);
+      }
+      for (const node of nodes.filter((node) => node["@id"])) {
+        expect(node["@id"]).toBe(organizations[0]["@id"]);
+      }
+    }
   });
 
   it("changelog is a listing page and does not claim to be a TechArticle", () => {

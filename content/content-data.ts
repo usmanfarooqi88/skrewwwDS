@@ -341,17 +341,17 @@ export const contentDataComponents: ComponentDoc[] = [
     name: "Banking Account Card",
     category: "Content & Data",
     industry: "Banking",
-    variants: "No top-level variants of its own — inherits Card's elevation and Layer 3 Shape/Surface modes",
+    variants: "One account summary — inherits Card's Shape/Surface modes",
     purpose:
-      "Banking Account Card is a summary card for one financial account — account type, current balance, a compact balance-history sparkline, and an action button. The second Layer 4 Industry Systems pilot component; React-first, no Figma reference exists yet.",
+      "Use Banking Account Card as an account overview in a React banking dashboard: identify one checking or savings account, show its current balance and recent balance history, then offer an action such as viewing transactions. It presents data supplied by your application; it does not fetch balances or calculate them from transactions.",
     whenToUse:
-      "Dashboards or account-list views showing one account's current state and short-term balance trend at a glance.",
+      "Account-list views with one card per account, or a dashboard summary that leads to an account's activity. Supply a pre-formatted balance and an ordered series of numeric balance-history values for that same account and currency.",
     whenNotToUse:
-      "Detailed transaction history for an account — compose Banking Transaction Row items in a list instead; Account Card is a summary, not a ledger.",
+      "Individual payments, transfers, and deposits belong in a Banking Transaction Row list. Spending or income totals with selectable time ranges belong in Banking Balance Summary. Use Card directly for a general content surface without account data.",
     accessibility:
-      "The balance-history chart is exposed via role=\"img\" with an accessible name plus a visually-hidden data table (Line Chart's own accessibility model) — sparkline mode changes only the visual density, not the accessibility tree.",
+      "Name the account in accountName and include the account, time period, and currency in balanceHistoryLabel. Line Chart exposes the sparkline as role=\"img\" with a visually hidden data table. The footer action is a native button; use a specific actionLabel to distinguish repeated cards. The card itself is not a clickable control.",
     commonMistakes:
-      "Hardcoding the card's background or border-radius instead of leaving Card's own --surface-fill-default / --shape-radius-container custom properties untouched, which is what makes Glass Surface and Pill Shape modes repaint automatically.",
+      "Passing currency-formatted strings as history values, mixing accounts or currencies in one series, or leaving onAction as a no-op. Format the displayed balance in the application and keep history values numeric; the card does not reconcile the two. Preserve Card's surface and shape tokens instead of hardcoding a background or radius.",
     tokensUsed: ["semantic/text/primary", "semantic/text/secondary"],
     properties:
       "accountName, accountType, balance, balanceHistory (LineChartDatum[]), balanceHistoryLabel, actionLabel, onAction.",
