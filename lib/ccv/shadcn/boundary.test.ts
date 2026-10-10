@@ -41,8 +41,14 @@ describe("CCV-2 boundaries", () => {
     }
   });
 
-  it("leaves the existing smoke:consumer harness untouched", () => {
-    expect(spawnSync("git", ["diff", "--quiet", "HEAD", "--", "scripts/smoke-test-consumer.ts"], { cwd: root }).status).toBe(0);
+  it("keeps smoke:consumer, which now consumes the shared import-safe scenario module (CCV-4) instead of owning a copy", () => {
+    const smoke = readFileSync(join(root, "scripts/smoke-test-consumer.ts"), "utf8");
+    expect(smoke).toMatch(/import \{ COMPONENT_DESCRIPTORS \} from "\.\.\/lib\/consumer-scenarios\/shadcn-component-scenarios";/);
+    expect(smoke).not.toMatch(/const COMPONENT_DESCRIPTORS\b/);
+    const shared = readFileSync(join(root, "lib/consumer-scenarios/shadcn-component-scenarios.ts"), "utf8");
+    expect(shared).toMatch(/export const COMPONENT_DESCRIPTORS\b/);
+    // import-safe: no top-level side effects (no process/argv use, no chromium launch at module scope)
+    expect(shared).not.toMatch(/process\.argv|^await |^main\(/m);
     expect(JSON.parse(readFileSync(join(root, "package.json"), "utf8")).scripts["smoke:consumer"]).toBe("tsx scripts/smoke-test-consumer.ts");
   });
 });

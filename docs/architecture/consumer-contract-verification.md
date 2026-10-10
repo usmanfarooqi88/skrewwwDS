@@ -3,7 +3,7 @@
 **Status: CCV-0 ✅ COMPLETE (2026-10-04) — architecture and baseline audit. CCV-1 ✅ COMPLETE (2026-10-04) — contract derivation, evidence schema and failure taxonomy (§22).
 CCV-2 ✅ COMPLETE (2026-10-05) — shadcn installed-result verifier (LOCAL_CANONICAL), run for real and reproduced (§23); the verifier is complete, the current shadcn distribution is NOT contract-clean (F1).
 CCV-3 ✅ COMPLETE (2026-10-05) — npm installed-package verifier (LOCAL_TARBALL), run for real and reproduced (§24); the `@skrewww/react` candidate is contract-clean.
-CCV-4 … CCV-7 NOT STARTED.** This document locks the scope, boundaries, authorities, modes, environment, evidence model and slice plan.
+CCV-4 ✅ COMPLETE (2026-10-11) — CSS/token delivery and representative runtime, run for real on both distributions and reproduced (§25); the npm candidate is contract-clean, the shadcn distribution still fails only on the known installer transforms (F1). CCV-5 … CCV-7 NOT STARTED.** This document locks the scope, boundaries, authorities, modes, environment, evidence model and slice plan.
 
 Baseline: `b6bbc6578d14ea4bf21e23300c8dcf0cb3bf674a`. Roadmap entry: `docs/project-status.md` → "Consumer Contract Verification".
 
@@ -445,7 +445,7 @@ Decomposition chosen from the audit: derive and structure first (offline, cheap)
 | **CCV-1 — contract derivation, evidence schema, taxonomy** *(✅ implemented — §22)* | Pure, offline derivation of every expectation in §6, plus `CcvResult`, the failure codes, a gitignored evidence writer | registry, generator, `pilot-entry`, barrel, `packages/react/package.json` | `lib/ccv/` (types, `deriveShadcnContract`, `deriveNpmContract`, payload/manifest allowlist checks, CSS-surface extractor, result builder, writer) + tests; `ccv-out/` in `.gitignore` | deterministic contracts for all 56 items and the package; payload-key/file-type and package-lifecycle checks pass on the real generator output and manifest; schema validated; no network, no install; works with `npm test` offline | no consumer runs, no CI, no Guard change |
 | **CCV-2 — clean-consumer runner + shadcn installed-result verifier (`LOCAL_CANONICAL`)** *(✅ implemented — §23)* | One sandboxed batch consumer; verify the installed result of all items | CCV-1 contracts; pins | shared runner (workspace, env allowlist, HOME/cache redirect, timeouts, cleanup, version recording, `ENVIRONMENT_ERROR`); batch Next consumer; per-file byte check (proven installer transforms classified as `UPSTREAM_TRANSFORM`, never accepted); set/dep/shared-target checks; import closure; `tsc`; build; installed export check; evidence JSON | all 55 items install in one consumer; **F1 reported as `UPSTREAM_TRANSFORM` (a FAIL) for every affected file**; builder list derived (F5); temp dirs not leaked (F3); results reproducible across two runs | `smoke:consumer` retained as-is until CCV-2 supersedes it; no public mode; no runtime token checks beyond existing descriptors |
 | **CCV-3 — npm installed-result verifier (`LOCAL_TARBALL`)** *(✅ implemented — §24)* | Prove the candidate tarball's installed result | CCV-1 npm contract; `smoke-react-package` | extends the existing smoke: exact export equality (Node `import()` and `tsc`), denied deep imports, `exports` map, declarations without aliases, lifecycle audit (`--ignore-scripts` consumer), peer/dependency policy, exact tool pins, evidence JSON | all checks pass on beta.2's candidate; mutation checks (extra export, removed export, added `postinstall`) fail with the right code | no public mode, no CI change |
-| **CCV-4 — CSS/token delivery + representative runtime** | Static delivery analyzer and a derived tier assignment | delivered CSS of both paths; descriptors | analyzer (declared/used/fallback/alias, mode selectors, Foundation order); tier function; common representative browser checks (Foundation, Shape, Surface, focus-visible) | analyzer reproduces the measured 505-property surface and the F7 fallback; a deliberately removed token fails `CSS_TOKEN_MISSING`; tiers computed, no new inventory | no per-token browser tests, no visual regression |
+| **CCV-4 — CSS/token delivery + representative runtime** *(✅ implemented and proven — §25)* | Static delivery analyzer and a derived tier assignment | delivered CSS of both paths; descriptors | analyzer (declared/used/fallback/alias, mode selectors, Foundation order); tier function; common representative browser checks (Foundation, Shape, Surface, focus-visible) | analyzer reproduces the measured 505-property surface and the F7 fallback; a deliberately removed token fails `CSS_DECLARATION_MISSING`; tiers computed, no new inventory | no per-token browser tests, no visual regression |
 | **CCV-5 — public modes + provenance** | `PUBLIC_REGISTRY` and `PUBLIC_NPM` with expected-SHA proof | expected commit/tag; production URLs; npm registry | modes; payload equivalence (`PROVENANCE_MISMATCH` with diff list); `gitHead`/integrity/signature/dist-tag checks; rebuild-at-`gitHead` hash comparison; network-failure classification | beta.2 passes `PUBLIC_NPM`; production passes `PUBLIC_REGISTRY` at the release SHA; **rebuild determinism proven in CI (Linux), not just locally** | no new public metadata; no publishing; read-only network |
 | **CCV-6 — compatibility baseline** | Token/export removal detection | previous published npm; current production registry | diff reports; `COMPATIBILITY_BREAK`; empty allowlist mechanism | beta.1 → beta.2 reports no break; a synthetic removal is caught; report-only by default | no value comparison, no multi-release history |
 | **CCV-7 — CI and release integration** | Place the modes in the lifecycle (§16) | CCV-2…6 | `consumer-contract.yml` (non-required, path-filtered, no secrets); release-gate and post-publish hooks; weekly canary; docs | green on `main`; documented runtimes; failures classified | no required-check enforcement without owner approval |
@@ -710,3 +710,119 @@ exports compile; 3 public specifiers resolve; all 14 denied specifiers are refus
 manifests, it does not trace process behaviour; no runtime/CSS-token checks (CCV-4).
 
 **Stop boundary.** No package, API, component, Figma, Guard or Make Kit change; nothing published; no CI wiring. Next: **CCV-4 — CSS/token delivery + representative runtime**.
+
+## 25. CCV-4 — CSS/token delivery and representative runtime (✅ COMPLETE 2026-10-11)
+
+**What it adds.** Every CCV-2/CCV-3 run now judges the CSS that was **actually installed**, against the CCV-1 contract. A runtime run (`--runtime`) also
+proves representative computed styles and interactions in real Chromium. The verifiers reuse the installed workspaces: there is no second consumer and no
+new inventory.
+
+**Static delivery (always on, no browser).** All of it lives in `lib/ccv/css/`:
+
+- `static-delivery.ts` reuses the CCV-1 `analyzeCssSurface`, so there is no second `var()` parser.
+- `alias-chains.ts` follows each alias as follows:
+  - It looks the target up in the declaration's own selector context first, then in `:root`.
+  - An absent target falls through to its fallback, lazily, as CSS does. A `var()` fallback is followed in turn; this is the
+    `var(--component-surface-content, var(--semantic-text-inverse))` pattern.
+  - It reports an unresolved target that has no fallback, a cycle, or a chain longer than 16 links.
+- `foundation.ts` records stylesheet order, and `checks.ts` turns the results into checks.
+
+Per subject (one shadcn item, or the npm package), each check is pass or `CSS_DECLARATION_MISSING`:
+
+| Check id (`…:<category>:<key>`) | Claim |
+|---|---|
+| `css:declarations` | Every used custom property resolves to a delivered declaration, a literal fallback, or a runtime assignment in installed source. |
+| `css:contract-surface` | The installed declared, used, unresolved, fallback-backed, mode-selector and script-supplied sets equal the contract. |
+| `css-fallback:<name>` | A contract fallback-backed use stays resolvable. **F7: `--color-neutral-900` stays fallback-backed, so it passes and is never a declaration failure.** The Foundation item is the only one that declares it, so the shadcn verifier judges Foundation statically alongside the batch subjects (`css:foundation/…`, `css-fallback:foundation/--color-neutral-900`); the npm verifier judges it on the installed package stylesheet. |
+| `css:alias-chains` | Every alias chain terminates. |
+| `css:mode-selectors` | Every contract mode selector is present. |
+| shadcn `css:foundation` | The installed Foundation declares the Foundation contract's set. |
+| shadcn `css:foundation-order` | Foundation is wired into `app/layout.tsx` exactly once, before `./globals.css`. CCV-2 imported it in `app/page.tsx`; it now sits in the layout, which is the documented setup and what `smoke:consumer` does. |
+| npm `css:consumer-order` | In the built bundle, the package stylesheet precedes a consumer `src/consumer.css` imported after it. |
+
+For shadcn, an item's CSS is resolved against the installed CSS of its CCV-1 closure (`resolvedAgainst`). Its scripts are the installed `.ts`/`.tsx` of that item.
+
+**Script-supplied properties are never subtracted.** A property used without a declaration or fallback is one of two things:
+
+- **A runtime candidate,** when installed source assigns it, for example Slider's six `--slider-*` properties. The check is
+  `css-runtime-supplied:<item>/<prop>`:
+  - with no runtime run, it is `unknown`;
+  - in a runtime run, it passes only if a rendered element carries the value;
+  - otherwise it is `CSS_RUNTIME_UNRESOLVED`.
+- **Missing** (`CSS_DECLARATION_MISSING`), when no installed source assigns it.
+
+**Representative runtime (`--runtime`).** The CLI is `npm run ccv:runtime -- npm|shadcn|all`, or `ccv:npm --runtime` / `ccv:shadcn --runtime`. The run works like this:
+
+- The consumer is served on a random `127.0.0.1` port by `lib/ccv/runner/server.ts` (`vite preview` / `next start`). Readiness is polled with a hard
+  timeout, and the process group is killed afterwards.
+- One Chromium is launched with the contained child environment, with one context per scenario and `console`/`pageerror` capture (favicon noise filtered).
+- Evidence collection is in `runtime-browser.ts`. Every verdict comes from the pure `runtime-judge.ts`.
+
+The checks it adds:
+
+- **Common checks** use the representative control, scenario input `REPRESENTATIVE_CONTROL` (Button "Action", the same control the package smoke uses):
+  - `runtime:foundation-active`: every `:root`-declared Foundation property has a computed value on `<html>`.
+  - `runtime:focus-visible`: real keyboard `Tab`, `:focus-visible` matches, and a non-transparent outline or a box-shadow.
+  - Shape `sharp|rounded|pill|squircle` and Surface `flat|gradient|glass`, with glass checked through `backdrop-filter: blur(`. These use the shared
+    `assertShapeAndSurface` with the smoke's assertion names.
+- **shadcn scenarios:** deterministic routes `app/ccv-scenarios/<descriptor>/page.tsx` are generated from each subject descriptor's `renderHarness()`, plus
+  `app/ccv-scenarios/common`, which imports the control from the contract's install path.
+  - T3 runs that descriptor's existing `browserAssert` unchanged.
+  - T2 proves the page renders without critical console or page errors.
+  - T1 gets no invented scenario.
+  - The check is `runtime:scenario-<name>`.
+- **npm:** the consumer entry is the **existing package smoke app** (`MAIN_TSX`) plus the CCV-3 surface harness. The existing
+  `runReactPackageBrowserChecks` runs unchanged, and each recorded assertion becomes `runtime:smoke-<assertion>` with its smoke name kept.
+- **Codes:**
+  - a style assertion that fails is `CSS_RUNTIME_UNRESOLVED`;
+  - a behavioural one is `INTERACTION_FAILED`;
+  - a browser or server that cannot start is `unknown` / `ENVIRONMENT_ERROR`;
+  - a build that failed on the contract leaves the runtime `unknown` with no environment code, because the build check already carries the FAIL.
+
+**Shared scenarios (import-safe extraction).** The descriptors moved verbatim (2,712 lines) from `scripts/smoke-test-consumer.ts` into
+`lib/consumer-scenarios/shadcn-component-scenarios.ts`. The package app and browser checks moved from `scripts/smoke-react-package.ts` into
+`lib/consumer-scenarios/react-package-scenario.ts`. Both smokes import them, so their semantics are unchanged. Boundary tests assert that the smokes
+consume the shared modules and that the modules have no top-level side effects.
+
+**Coverage tiers (derived; `coverage-tiers.ts`).** There is no slug or tier table:
+
+- T1 is every distributed non-Foundation item.
+- T2 is an item whose descriptor has a `renderHarness`.
+- T3 is an item whose descriptor has a `browserAssert`.
+- T4 is a risk flag, from a third-party npm dependency or a registry dependency other than Foundation.
+- A composed descriptor that is not a distributed item (`spinner-divider-link`) is reported separately.
+
+Measured: **T1 18 · T2 15 · T3 22 · T4 34 of 55**. Slider is T2, so its runtime-supplied properties get a render scenario.
+
+**Tests.** All of these are offline, except the gated browser fixture.
+
+- `css-delivery.test.ts`: static mutations covering a removed declaration, a dropped fallback, a removed mode selector, a renamed token, a removed script
+  assignment, and an unresolved, cyclic or over-deep alias; plus context-first and lazy-fallback resolution, Foundation wiring, and coverage tiers.
+- `runtime-judge.test.ts`: runtime mutations covering an empty `:root` token, Foundation absent, the control unreachable, no outline, no supplied value,
+  HTTP 500, a console error, style versus behaviour assertion errors, a failed Shape assertion, and a browser that will not launch.
+- Verifier tests with fake browser evidence, for shadcn and npm.
+- `runtime-browser.test.ts`: real Chromium against loopback fixture pages, gated by `CCV_BROWSER_TESTS=1` because `npm test` in CI has no browser.
+
+**Real runs (2026-10-11, working tree on top of `9de5ef0`; artifacts in the gitignored `ccv-out/`).**
+
+| Run | Command | Result |
+|---|---|---|
+| npm `LOCAL_TARBALL` + runtime | `npm run ccv:npm -- --runtime` | **PASS, 171 pass / 0 fail / 0 unknown** (Chromium: Foundation active, focus-visible, 30 recorded `smoke:react-package` assertions incl. Shape ×4 and Surface ×3). Repeated at the same commit: stable sections IDENTICAL. Against the `cab4f892` run the only difference is `artifact:build`, whose evidence text embeds the commit SHA. |
+| shadcn `LOCAL_CANONICAL` + runtime | `npm run ccv:runtime -- shadcn` | 55 subjects in one consumer: **558 pass / 67 fail / 0 unknown**. All 67 failures are `UPSTREAM_TRANSFORM` file checks (55 origin-marker removals = F1, 12 leading-comment removals); **0 Skrewww-attributed, 0 environment errors, and every non-file check passes**: 233 CSS checks (item, Foundation and `css-runtime-supplied`), Foundation present with all 497 declarations, imported once before `globals.css`, 474 `:root` properties active in Chromium, focus-visible, Shape ×4 / Surface ×3, 37 of 37 scenario routes (T3 `browserAssert` and T2 render), `tsc` and `next build`. Slider's six script-supplied properties are runtime-proven (an element carries the value), not subtracted. Two runs at the final code: stable sections IDENTICAL. |
+| `smoke:consumer -- slider` | existing smoke, shadcn 4.16.2 | All assertions passed (a representative T2 descriptor with script-supplied properties). |
+
+The first shadcn runtime attempt (2026-10-05, `cab4f892`) was UNKNOWN throughout (`ENOTFOUND ui.shadcn.com`): environment, not a verdict. CCV-4 was not marked complete on it; the run above is the proof. The run that added the Foundation fallback checks differs from the previous run only by the five new `foundation/…` checks.
+
+**Scope notes.** The generated root index `/r/registry.json` (56 items) comes from the same distribution source as the item manifests; CCV-4 neither changes nor verifies it. Production-index equivalence belongs to CCV-5 (`PUBLIC_REGISTRY`).
+
+**Deferred (recorded, not fixed here).**
+- `react-package.yml` path filters do not list `lib/consumer-scenarios/**`. This commit still triggers the workflow through `package.json` and `scripts/smoke-react-package.ts`, but a future edit to only the shared scenarios would not. Owner: CCV-7.
+- `smoke:consumer` pins shadcn 4.16.2 while CCV pins 4.21.1 (latest 4.21.4). Owner: CCV-5/CCV-7.
+- CCV-2 can classify a network failure whose DNS line falls outside the captured stderr tail as `INSTALL_FAILED` (a contract fail) instead of `ENVIRONMENT_ERROR`; seen once in a sandbox Button pilot. Existing CCV-2 behaviour.
+
+**Limits (by design).** There are no per-token browser assertions and no visual regression. A computed value is proven to resolve, not to equal a design value.
+Alias resolution is not a cascade engine: it uses the same context first, then `:root`. The runtime-supply proof reads inline style values on rendered
+elements.
+
+**Stop boundary.** No product, component styling, token value, API, Figma, Guard or Make Kit change. F1 is neither fixed nor allowlisted. Nothing is
+published, and no PUBLIC modes exist. Next: **CCV-5 — public modes + provenance**.

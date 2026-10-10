@@ -315,3 +315,84 @@ describe("CCV-2 verifier — environment failures stay UNKNOWN and clean up", ()
     expect(readdirSync(base)).toEqual([]);
   });
 });
+
+describe("CCV-4 — installed CSS delivery and representative runtime (fake browser evidence)", () => {
+  const keepCF = (_path: string, content: string) => content;
+  type Collect = NonNullable<NonNullable<VerifyShadcnInput["runtime"]>["collect"]>;
+  const fakeCollect = (tweak: { suppliedValue?: number; throws?: string; focusOutline?: string } = {}): Collect => async (options) => {
+    if (tweak.throws) throw new Error(tweak.throws);
+    return {
+      foundation: { checked: options.rootDeclared.length, empty: [] },
+      focus: { reached: true, tabPresses: 1, matchesFocusVisible: true, outlineStyle: tweak.focusOutline ?? "solid", outlineWidth: "2px", outlineColor: "rgb(108, 76, 242)", boxShadow: "none" },
+      modes: ["sharp", "rounded", "pill", "squircle"].map((mode) => ({ name: `Shape ${mode}: computed behavior`, ok: true })),
+      scenarios: options.scenarios.map((scenario) => ({ name: scenario.name, kind: scenario.kind, httpStatus: 200, renderedElements: 4, consoleErrors: [] })),
+      supplied: options.scenarios.flatMap((scenario) => (scenario.supplied ?? []).map((prop) => ({ prop, scenario: scenario.name, elementsWithValue: tweak.suppliedValue ?? 1, sample: "40%" }))),
+    };
+  };
+  const server = { startServer: async () => ({ ok: true as const, origin: "http://127.0.0.1:1", stop: async () => undefined }) };
+
+  it("static: per-item CSS checks pass on the installed bytes; Foundation is wired once in app/layout.tsx before globals.css", async () => {
+    const { result, workspaceRoot } = await verify(["button"], fakeRunner({ transform: keepCF }), { keep: true });
+    expect(failures(result)).toEqual([]);
+    for (const suffix of [":css:button/declarations", ":css:button/contract-surface", ":css:button/alias-chains", ":css:button/mode-selectors", ":css:foundation", ":css:foundation-order"]) expect(check(result, suffix).status, suffix).toBe("pass");
+    const layout = readFileSync(join(workspaceRoot, "consumer", "app", "layout.tsx"), "utf8");
+    expect(layout.indexOf('import "@/styles/skrewww-foundation.css";')).toBeLessThan(layout.indexOf('import "./globals.css";'));
+    expect(readFileSync(join(workspaceRoot, "consumer", "app", "page.tsx"), "utf8")).not.toMatch(/skrewww-foundation/);
+  });
+
+  it("F7: Foundation is judged statically with its fallback-backed property, even though it is not a batch subject", async () => {
+    const { result } = await verify(["button"], fakeRunner({ transform: keepCF }));
+    expect(failures(result)).toEqual([]);
+    const fallback = check(result, ":css-fallback:foundation/--color-neutral-900");
+    expect(fallback.status).toBe("pass");
+    expect(fallback.evidence.map((e) => e.observed).join(" ")).toMatch(/fallback-backed, as the contract records/);
+    for (const suffix of [":css:foundation/declarations", ":css:foundation/contract-surface", ":css:foundation/alias-chains", ":css:foundation/mode-selectors"]) expect(check(result, suffix).status, suffix).toBe("pass");
+  });
+
+  it("mutation: --color-neutral-900 gains a use without a fallback in the installed Foundation → CSS_DECLARATION_MISSING", async () => {
+    const strip = (path: string, content: string) => (path === "styles/skrewww-foundation.css" ? `${content}\n.ccv-x { color: var(--color-neutral-900); }\n` : content);
+    const { result } = await verify(["button"], fakeRunner({ transform: strip }));
+    expect(check(result, ":css-fallback:foundation/--color-neutral-900")).toMatchObject({ status: "fail", failureCode: "CSS_DECLARATION_MISSING" });
+  });
+
+  it("mutation: a Foundation declaration removed from the installed CSS → CSS_DECLARATION_MISSING (item and Foundation)", async () => {
+    const strip = (path: string, content: string) => (path === "styles/skrewww-foundation.css" ? content.replace(/^\s*--semantic-focus-ring:[^;]*;[^\n]*\n/m, "") : content);
+    const { result } = await verify(["button"], fakeRunner({ transform: strip }));
+    expect(failures(result)).toEqual(expect.arrayContaining(["shadcn:button:css:button/declarations=CSS_DECLARATION_MISSING", "shadcn:button:css:foundation=CSS_DECLARATION_MISSING"]));
+  });
+
+  it("slider: script-supplied properties are runtime candidates — unknown without --runtime, never subtracted", async () => {
+    const { result } = await verify(["slider"], fakeRunner({ transform: keepCF }));
+    const supplied = result.checks.filter((c) => c.checkId.includes(":css-runtime-supplied:"));
+    expect(supplied.map((c) => c.checkId.split(":").pop())).toEqual(contracts.find((c) => c.subject === "slider")!.expectations.css.scriptSuppliedCustomProperties.map((p) => `slider/${p}`));
+    expect(supplied.every((c) => c.status === "unknown")).toBe(true);
+    expect(check(result, ":css:slider/declarations").status).toBe("pass");
+  });
+
+  it("runtime: scenario routes are generated from the shared descriptors; T2 render, common checks and runtime supply pass", async () => {
+    const { result, workspaceRoot } = await verify(["button", "slider"], fakeRunner({ transform: keepCF }), { keep: true, runtime: { ...server, collect: fakeCollect() } });
+    expect(failures(result)).toEqual([]);
+    expect(result.summary.unknown).toBe(0);
+    const routes = join(workspaceRoot, "consumer", "app", "ccv-scenarios");
+    expect(readdirSync(routes).sort()).toEqual(["button", "common", "slider"]);
+    expect(readFileSync(join(routes, "common", "page.tsx"), "utf8")).toMatch(/import \{ Button \} from "@\/components\/ui\/Button";/);
+    for (const suffix of [":runtime:server", ":runtime:foundation-active", ":runtime:focus-visible", ":runtime:common-shape-pill", ":runtime:scenario-slider", ":runtime:scenario-button"]) expect(check(result, suffix).status, suffix).toBe("pass");
+    expect(result.checks.filter((c) => c.checkId.includes(":css-runtime-supplied:")).every((c) => c.status === "pass")).toBe(true);
+  });
+
+  it("runtime mutations: no element carries a supplied value / no focus outline → CSS_RUNTIME_UNRESOLVED", async () => {
+    const { result } = await verify(["button", "slider"], fakeRunner({ transform: keepCF }), { runtime: { ...server, collect: fakeCollect({ suppliedValue: 0, focusOutline: "none" }) } });
+    expect(check(result, ":runtime:focus-visible")).toMatchObject({ status: "fail", failureCode: "CSS_RUNTIME_UNRESOLVED" });
+    expect(result.checks.filter((c) => c.checkId.includes(":css-runtime-supplied:")).every((c) => c.status === "fail" && c.failureCode === "CSS_RUNTIME_UNRESOLVED")).toBe(true);
+  });
+
+  it("a browser or server that cannot start is UNKNOWN / ENVIRONMENT_ERROR, never a pass", async () => {
+    const crashed = await verify(["button"], fakeRunner({ transform: keepCF }), { runtime: { ...server, collect: fakeCollect({ throws: "browserType.launch: Executable doesn't exist" }) } });
+    expect(check(crashed.result, ":runtime:scenario-button")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
+    expect(check(crashed.result, ":runtime:foundation-active")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
+    expect(crashed.exitCode).toBe(2);
+    const noServer = await verify(["button"], fakeRunner({ transform: keepCF }), { runtime: { startServer: async () => ({ ok: false as const, reason: "next-start did not become ready" }), collect: fakeCollect() } });
+    expect(check(noServer.result, ":runtime:server")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
+    expect(validateCcvResult(noServer.result)).toEqual({ ok: true });
+  });
+});

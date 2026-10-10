@@ -2,6 +2,7 @@
  * CCV-3 — npm installed-package verifier (LOCAL_TARBALL only).
  *
  *   npm run ccv:npm                                  build → real tarball → fresh Vite consumer → verify
+ *   npm run ccv:npm -- --runtime                     CCV-4: also run the representative browser runtime (real Chromium)
  *   npm run ccv:npm -- --keep                        keep the workspace for inspection (path printed)
  *   npm run ccv:npm -- --out <dir>                   result directory: ccv-out/… (default, gitignored) or outside the repo
  *   npm run ccv:npm -- --no-write                    print the summary only
@@ -29,13 +30,13 @@ if (args[0] === "--compare") {
   process.exit(outcome.code);
 }
 const usage = () => {
-  process.stderr.write("usage: npm run ccv:npm -- [--mode LOCAL_TARBALL] [--keep] [--out <dir>] [--no-write] | --compare <a.json> <b.json> [--across-commits]\n");
+  process.stderr.write("usage: npm run ccv:npm -- [--mode LOCAL_TARBALL] [--runtime] [--keep] [--out <dir>] [--no-write] | --compare <a.json> <b.json> [--across-commits]\n");
   process.exit(1);
 };
 const VALUE_FLAGS = ["--mode", "--out"];
 args.forEach((arg, index) => {
   if (VALUE_FLAGS.includes(arg) && (args[index + 1] === undefined || args[index + 1].startsWith("--"))) usage();
-  if (arg.startsWith("--") && !VALUE_FLAGS.includes(arg) && !["--keep", "--no-write"].includes(arg)) usage();
+  if (arg.startsWith("--") && !VALUE_FLAGS.includes(arg) && !["--keep", "--no-write", "--runtime"].includes(arg)) usage();
   if (!arg.startsWith("--") && !VALUE_FLAGS.includes(args[index - 1] ?? "")) usage();
 });
 const valueOf = (flag: string) => {
@@ -58,10 +59,12 @@ if (!args.includes("--no-write")) {
   outDir = resolved.dir;
 }
 
+const runtime = args.includes("--runtime");
+
 async function main(): Promise<void> {
   const git = readGitInfo(repoRoot);
   const contract = deriveNpmContract({ gitSha: git.sha, mode: "LOCAL_TARBALL" });
-  process.stdout.write(`CCV-3 npm LOCAL_TARBALL — ${contract.subject}@${contract.expectations.package.version}, expected commit ${git.sha}${git.workingTreeDirty ? " (working tree dirty)" : ""}\n`);
+  process.stdout.write(`CCV npm LOCAL_TARBALL${runtime ? " + runtime" : ""} — ${contract.subject}@${contract.expectations.package.version}, expected commit ${git.sha}${git.workingTreeDirty ? " (working tree dirty)" : ""}\n`);
   const output = await verifyNpmLocalTarball({
     repoRoot,
     gitSha: git.sha,
@@ -71,12 +74,13 @@ async function main(): Promise<void> {
     run: runCommand,
     parentEnv: process.env,
     keep: args.includes("--keep"),
+    ...(runtime ? { runtime: {} } : {}),
     log: (line) => process.stdout.write(`${line}\n`),
   });
   for (const line of humanSummary(output.result)) process.stdout.write(`${line}\n`);
   if (output.kept) process.stdout.write(`Workspace kept: ${output.workspaceRoot}\n`);
   if (outDir) {
-    const written = writeRunArtifact(outDir, resultStem(["npm", output.result.mode, contract.subject, git.sha]), output.result);
+    const written = writeRunArtifact(outDir, resultStem(["npm", output.result.mode, contract.subject, git.sha, ...(runtime ? ["runtime"] : [])]), output.result);
     if (written.previous) for (const line of describeComparison(written.previous.comparison, written.previous.name)) process.stdout.write(`${line}\n`);
     process.stdout.write(`Result: ${relative(repoRoot, written.file) || written.file}\n`);
   }

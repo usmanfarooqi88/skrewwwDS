@@ -1,3 +1,4 @@
+import { MAIN_TSX } from "@/lib/consumer-scenarios/react-package-scenario";
 import type { HarnessLine } from "@/lib/ccv/shadcn/exports-harness";
 
 /**
@@ -67,19 +68,19 @@ export const VITE_CONFIG = 'import react from "@vitejs/plugin-react";\nimport { 
 
 export const INDEX_HTML = '<!doctype html>\n<html lang="en">\n  <head><meta charset="UTF-8" /><title>ccv npm consumer</title></head>\n  <body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body>\n</html>\n';
 
-export function mainTsx(stylesheetSpecifier: string): string {
-  return [
-    `import "${stylesheetSpecifier}";`,
-    'import { createRoot } from "react-dom/client";',
-    'import { ccvRuntimeExports } from "./ccv-surface";',
-    "",
-    "function App() {",
-    "  return <main data-ccv-exports={ccvRuntimeExports.length} />;",
-    "}",
-    "",
-    'createRoot(document.getElementById("root")!).render(<App />);',
-    "",
-  ].join("\n");
+/** CCV-4 — the consumer's own CSS, imported AFTER the package stylesheet; its marker proves bundle order. */
+export const CONSUMER_CSS_MARKER = "--ccv-consumer-order";
+export const CONSUMER_CSS = `:root {\n  ${CONSUMER_CSS_MARKER}: 1;\n}\n`;
+
+/**
+ * CCV-4 — the consumer entry: the EXISTING package smoke app (`MAIN_TSX`, shared
+ * with smoke:react-package) importing the contract stylesheet, then the consumer's
+ * own CSS, plus the CCV-3 surface harness (so tsc and the bundle still cover every export).
+ */
+export function runtimeMainTsx(stylesheetSpecifier: string): string {
+  const [first, ...rest] = MAIN_TSX.split("\n");
+  if (!/^import "[^"]+\.css";$/.test(first)) throw new Error("MAIN_TSX no longer starts with its stylesheet import");
+  return [`import "${stylesheetSpecifier}";`, 'import "./consumer.css";', 'import { ccvRuntimeExports } from "./ccv-surface";', ...rest, "", "// CCV-3 surface: every contract runtime export is referenced by the bundle.", "(globalThis as { ccvRuntimeExports?: readonly unknown[] }).ccvRuntimeExports = ccvRuntimeExports;", ""].join("\n");
 }
 
 export type SurfaceHarness = { path: string; source: string; lines: Map<number, HarnessLine> };

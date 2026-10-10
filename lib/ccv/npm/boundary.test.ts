@@ -37,9 +37,10 @@ describe("CCV-3 boundaries", () => {
       const imports = Array.from(code(file).matchAll(/from\s+"([^"]+)"/g), (match) => match[1]);
       for (const specifier of imports) expect(specifier, `${file} imports ${specifier}`).not.toMatch(/lib\/guard|figma|make-kit|shadcn\/verify|smoke-react-package|smoke-test-consumer/i);
     }
-    for (const file of ["scripts/smoke-react-package.ts", "scripts/smoke-test-consumer.ts", "packages/react/package.json"]) {
-      expect(spawnSync("git", ["diff", "--quiet", "HEAD", "--", file], { cwd: root }).status, file).toBe(0);
-    }
+    expect(spawnSync("git", ["diff", "--quiet", "HEAD", "--", "packages/react/package.json"], { cwd: root }).status).toBe(0);
+    // CCV-4 extracted the smoke scenarios into import-safe modules; the smokes now consume them instead of owning copies.
+    expect(code("scripts/smoke-react-package.ts")).toMatch(/from "(?:@|\.\.)\/lib\/consumer-scenarios\/react-package-scenario"/);
+    expect(code("scripts/smoke-test-consumer.ts")).toMatch(/from "(?:@|\.\.)\/lib\/consumer-scenarios\/shadcn-component-scenarios"/);
   });
 });
 

@@ -17,6 +17,17 @@ import { assembleResult, evidence, exitCodeFor, listEvidence, truncate } from "@
 import { classifyDiagnostics, parseTscOutput } from "@/lib/ccv/shadcn/tsc-diagnostics";
 import type { CcvAuthority, CcvCheck, CcvResult, ShadcnConsumerContract } from "@/lib/ccv/types";
 import type { ShadcnRegistryItem } from "@/lib/shadcn-registry-generator";
+import type { LaunchOptions } from "@playwright/test";
+import { resolveAliasChains, rootDeclaredCustomProperties } from "@/lib/ccv/css/alias-chains";
+import { environmentJudgement, recordedChecks, runtimeSuppliedCheck, staticCssChecks, toCheck, type IdFn } from "@/lib/ccv/css/checks";
+import { analyzeCssSurface } from "@/lib/ccv/css-surface";
+import { stylesheetOrder, wireFoundationImport } from "@/lib/ccv/css/foundation";
+import { runShadcnRuntime, type ScenarioRun } from "@/lib/ccv/css/runtime-browser";
+import { judgeFocusVisible, judgeFoundationActive, judgeRuntimeSupplied, judgeScenario, type Judgement } from "@/lib/ccv/css/runtime-judge";
+import { verifyStaticCss } from "@/lib/ccv/css/static-delivery";
+import { startServer as defaultStartServer, type ServerStarter } from "@/lib/ccv/runner/server";
+import { REPRESENTATIVE_CONTROL, commonScenarioPage } from "@/lib/consumer-scenarios/common-runtime";
+import { COMPONENT_DESCRIPTORS, type ComponentSmokeDescriptor } from "@/lib/consumer-scenarios/shadcn-component-scenarios";
 
 /**
  * CCV-2 — orchestration of one LOCAL_CANONICAL shadcn verification run.
@@ -55,7 +66,17 @@ export type VerifyShadcnInput = {
   log?: (line: string) => void;
   nodeVersion?: string;
   platform?: string;
+  /** CCV-4 representative runtime (real Chromium). Absent = static CSS only; runtime-supply checks stay `unknown`. */
+  runtime?: ShadcnRuntimeHooks;
 };
+
+export type ShadcnRuntimeHooks = {
+  startServer?: ServerStarter;
+  collect?: typeof runShadcnRuntime;
+  descriptors?: Record<string, ComponentSmokeDescriptor>;
+};
+
+export const SCENARIO_ROUTE_ROOT = "app/ccv-scenarios";
 
 export type VerifyShadcnOutput = { result: CcvResult; exitCode: 0 | 2 | 3; workspaceRoot: string; kept: boolean; installOrder: string[] };
 
@@ -94,12 +115,16 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
   const id = (category: string, key: string) => shadcnId(input.subjectLabel, category, key);
   const checks: CcvCheck[] = [];
   const add = (check: CcvCheck) => checks.push(check);
+  const itemId = (item: string): IdFn => (category, key) => id(category, `${item}/${key}`);
 
   const distributed = input.items.map((item) => item.name);
   const unknownSubjects = input.subjects.filter((subject) => !distributed.includes(subject));
   if (unknownSubjects.length > 0 || input.subjects.length === 0) throw new Error(`invalid subjects: ${unknownSubjects.join(", ") || "(none)"}`);
   const expectation: BatchExpectation = buildBatchExpectation(input.subjects, input.contracts);
   const expectedPaths = new Set(expectation.files.map((file) => file.installPath));
+  // CCV-4: Foundation is judged statically alongside the batch subjects — it is the only item that declares the fallback-backed property (F7).
+  const foundationSubject = input.contracts.find((contract) => contract.expectations.files.length > 0 && contract.expectations.files.every((file) => file.kind === "foundation"))?.subject;
+  const cssSubjects = Array.from(new Set([...input.subjects, ...(foundationSubject ? [foundationSubject] : [])]));
   const contentByPath = new Map<string, string>();
   for (const item of input.items.filter((candidate) => expectation.closureItems.includes(candidate.name))) {
     for (const file of item.files) contentByPath.set(file.target.replace(/^~\//, ""), file.content);
@@ -133,6 +158,15 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
       [id("registry-closure", "resolved"), "the installer resolves exactly the derived registry-dependency closure", "", "generator"],
       [id("typecheck", "tsc"), "the consumer type-checks with the installed result", "", "ccv-scenario"],
       [id("build", "next-build"), "the consumer production build succeeds", "", "ccv-scenario"],
+      ...cssSubjects.flatMap((subject): Array<[string, string, string, CcvAuthority]> => [
+        [itemId(subject)("css", "declarations"), `every custom property the installed CSS of ${subject} uses resolves`, "", "delivered-css"],
+        [itemId(subject)("css", "contract-surface"), `the installed CSS surface of ${subject} equals the CCV-1 contract`, "", "delivered-css"],
+        [itemId(subject)("css", "alias-chains"), `every alias chain in the delivered CSS of ${subject} terminates`, "", "delivered-css"],
+        [itemId(subject)("css", "mode-selectors"), `every contract mode selector of ${subject} is present`, "", "delivered-css"],
+        ...(input.contracts.find((candidate) => candidate.subject === subject)?.expectations.css.fallbackBackedUses ?? []).map((name): [string, string, string, CcvAuthority] => [itemId(subject)("css-fallback", name), `${name} remains resolvable through its literal fallback in the installed CSS of ${subject}`, "", "delivered-css"]),
+      ]),
+      [id("css", "foundation"), "the Foundation stylesheet is installed with the contract declarations", "", "delivered-css"],
+      [id("css", "foundation-order"), "the consumer imports Foundation exactly once, before its own CSS", "", "delivered-css"],
     ];
     for (const [checkId, claim, , authority] of pending) {
       if (checks.some((check) => check.checkId === checkId)) continue;
@@ -405,13 +439,84 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
       });
     }
 
+    // ── CCV-4: static delivery of the INSTALLED CSS, per subject ─────────
+    const installedText = (path: string) => (after.has(path) ? readFileSync(join(workspace.consumer, path), "utf8") : "");
+    const itemByName = new Map(input.items.map((item) => [item.name, item]));
+    const installPathsOf = (name: string, pattern: RegExp) => (itemByName.get(name)?.files ?? []).map((file) => file.target.replace(/^~\//, "")).filter((path) => pattern.test(path));
+    const installedCssOf = (name: string) => installPathsOf(name, /\.css$/).map(installedText);
+    const runtimeCandidates = new Map<string, string[]>();
+    for (const subject of cssSubjects) {
+      const contract = input.contracts.find((candidate) => candidate.subject === subject);
+      if (!contract) continue;
+      const closureNames = contract.expectations.css.resolvedAgainst.filter((name) => name !== subject);
+      const own = installedCssOf(subject);
+      const alsoDeclared = closureNames.flatMap((name) => analyzeCssSurface(installedCssOf(name)).declaredCustomProperties);
+      const verdict = verifyStaticCss({ cssTexts: own, alsoDeclared, scriptSources: installPathsOf(subject, /\.tsx?$/).map(installedText), expected: contract.expectations.css });
+      const aliases = resolveAliasChains([...own, ...closureNames.flatMap(installedCssOf)]);
+      for (const check of staticCssChecks({ id: itemId(subject), label: subject, verdict, expected: contract.expectations.css, aliases })) add(check);
+      if (verdict.runtimeSupplyCandidates.length > 0) runtimeCandidates.set(subject, verdict.runtimeSupplyCandidates);
+    }
+
+    // ── CCV-4: Foundation present, wired once and before consumer CSS ────
+    const foundationPath = expectation.files.find((file) => file.kinds.includes("foundation"))?.installPath;
+    const foundationContract = input.contracts.find((contract) => contract.expectations.files.length > 0 && contract.expectations.files.every((file) => file.kind === "foundation"));
+    const foundationCss = foundationPath ? installedText(foundationPath) : "";
+    const foundationDeclared = analyzeCssSurface([foundationCss]).declaredCustomProperties;
+    const foundationMissing = (foundationContract?.expectations.css.declaredCustomProperties ?? []).filter((name) => !foundationDeclared.includes(name));
+    const foundationOk = Boolean(foundationPath && foundationCss) && foundationMissing.length === 0;
+    add({
+      checkId: id("css", "foundation"),
+      status: foundationOk ? "pass" : "fail",
+      ...(foundationOk ? {} : { failureCode: foundationCss ? ("CSS_DECLARATION_MISSING" as const) : ("FILE_MISSING" as const) }),
+      claim: "the Foundation stylesheet is installed with the contract declarations",
+      authority: "delivered-css",
+      evidence: foundationOk ? [evidence("css", foundationPath ?? "foundation", `${foundationDeclared.length} custom properties declared (contract ${foundationContract?.expectations.css.declaredCustomProperties.length ?? 0})`)] : foundationCss ? listEvidence("css", "missing", foundationMissing) : [evidence("file", foundationPath ?? "foundation", "not installed")],
+    });
+    const layoutPath = join(workspace.consumer, "app", "layout.tsx");
+    let orderEvidence = "Foundation not installed; nothing to wire";
+    let orderOk = false;
+    if (foundationPath && existsSync(layoutPath)) {
+      try {
+        const wired = wireFoundationImport(readFileSync(layoutPath, "utf8"), foundationPath);
+        writeFileSync(layoutPath, wired, "utf8");
+        const foundationOrder = stylesheetOrder(wired, `@/${foundationPath}`);
+        const globalsIndex = foundationOrder.imports.indexOf("./globals.css");
+        orderOk = foundationOrder.count === 1 && foundationOrder.index >= 0 && (globalsIndex === -1 || foundationOrder.index < globalsIndex);
+        orderEvidence = `app/layout.tsx stylesheet imports: ${foundationOrder.imports.join(" → ")}; Foundation imported ${foundationOrder.count}×`;
+      } catch (error) {
+        orderEvidence = error instanceof Error ? error.message : String(error);
+      }
+    }
+    add({
+      checkId: id("css", "foundation-order"),
+      status: orderOk ? "pass" : "fail",
+      ...(orderOk ? {} : { failureCode: "CSS_DECLARATION_MISSING" as const }),
+      claim: "the consumer imports Foundation exactly once, before its own CSS (the documented setup, in app/layout.tsx)",
+      authority: "delivered-css",
+      evidence: [evidence("source", "app/layout.tsx", orderEvidence)],
+    });
+
     // ── exports, typecheck and build ─────────────────────────────────────
     const exportEntries = expectation.exports.filter((entry) => after.has(entry.installPath));
     const harness = generateExportsHarness(exportEntries);
     mkdirSync(join(workspace.consumer, "ccv"), { recursive: true });
     writeFileSync(join(workspace.consumer, harness.path), harness.source, "utf8");
-    const foundationPath = expectation.files.find((file) => file.kinds.includes("foundation"))?.installPath;
-    writeFileSync(join(workspace.consumer, CONSUMER_PAGE_PATH), generateConsumerPage(foundationPath), "utf8");
+    writeFileSync(join(workspace.consumer, CONSUMER_PAGE_PATH), generateConsumerPage(undefined), "utf8");
+
+    // ── CCV-4: deterministic scenario routes (runtime only) ──────────────
+    const descriptors = input.runtime?.descriptors ?? COMPONENT_DESCRIPTORS;
+    const scenarioNames = input.runtime ? input.subjects.filter((subject) => Object.prototype.hasOwnProperty.call(descriptors, subject)) : [];
+    const controlEntry = expectation.exports.find((entry) => entry.values.includes(REPRESENTATIVE_CONTROL.exportName) && after.has(entry.installPath) && input.subjects.includes(REPRESENTATIVE_CONTROL.item));
+    if (input.runtime) {
+      for (const name of scenarioNames) {
+        mkdirSync(join(workspace.consumer, SCENARIO_ROUTE_ROOT, name), { recursive: true });
+        writeFileSync(join(workspace.consumer, SCENARIO_ROUTE_ROOT, name, "page.tsx"), descriptors[name].renderHarness(), "utf8");
+      }
+      if (controlEntry) {
+        mkdirSync(join(workspace.consumer, SCENARIO_ROUTE_ROOT, "common"), { recursive: true });
+        writeFileSync(join(workspace.consumer, SCENARIO_ROUTE_ROOT, "common", "page.tsx"), commonScenarioPage(`@/${controlEntry.installPath.replace(/\.tsx?$/, "")}`), "utf8");
+      }
+    }
 
     const bin = (name: string) => join(workspace.consumer, "node_modules", ".bin", name);
     const typegen = await step({ phase: "next-typegen", command: bin("next"), args: ["typegen"], cwd: workspace.consumer, limitMs: limits.typegenMs });
@@ -463,8 +568,55 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
       ...(buildClass === "ok" ? {} : { failureCode: buildClass === "environment" ? ("ENVIRONMENT_ERROR" as const) : ("BUILD_FAILED" as const) }),
       claim: "the consumer production build succeeds with every installed module imported (additional proof; not a substitute for the checks above)",
       authority: "ccv-scenario",
-      evidence: [evidence("command", "next build", buildClass === "ok" ? `succeeded; ${CONSUMER_PAGE_PATH} imports the Foundation stylesheet and the export harness` : `${describeOutcome(build)} — ${tail(build, 20)}`)],
+      evidence: [evidence("command", "next build", buildClass === "ok" ? `succeeded; app/layout.tsx imports the Foundation stylesheet, ${CONSUMER_PAGE_PATH} the export harness${input.runtime ? `; ${scenarioNames.length} scenario route(s) under ${SCENARIO_ROUTE_ROOT}` : ""}` : `${describeOutcome(build)} — ${tail(build, 20)}`)],
     });
+
+    // ── CCV-4: representative runtime (opt-in) ───────────────────────────
+    const suppliedJudgements = new Map<string, Judgement>();
+    if (input.runtime) {
+      const runtimeIds = {
+        server: id("runtime", "server"),
+        foundation: id("runtime", "foundation-active"),
+        focus: id("runtime", "focus-visible"),
+      };
+      const scenarioClaim = (name: string) => (descriptors[name].browserAssert ? `the existing smoke browserAssert for ${name} passes against the installed consumer (T3)` : `the ${name} smoke harness renders without console or page errors (T2)`);
+      const notRunAll = (judgement: Judgement) => {
+        add(toCheck(runtimeIds.foundation, "Foundation custom properties are active in the browser", "ccv-scenario", judgement));
+        add(toCheck(runtimeIds.focus, `keyboard focus on the representative control shows a visible focus indicator`, "ccv-scenario", judgement));
+        for (const name of scenarioNames) add(toCheck(id("runtime", `scenario-${name}`), scenarioClaim(name), "ccv-scenario", judgement));
+      };
+      const environmentAll = (detail: string) => notRunAll(environmentJudgement(detail));
+      if (buildClass !== "ok") {
+        // A build that failed on the contract is already a FAIL above; the runtime is then simply not evaluated (not an environment error).
+        const notRun: Judgement = buildClass === "environment" ? environmentJudgement("the consumer build did not complete (environment)") : { status: "unknown", detail: "not evaluated: the consumer build failed (see build:next-build)" };
+        add(toCheck(runtimeIds.server, "the built consumer is served on loopback for the runtime scenarios", "ccv-scenario", notRun));
+        notRunAll(notRun);
+      } else {
+        const server = await (input.runtime.startServer ?? defaultStartServer)({ command: bin("next"), args: (port) => ["start", "-p", String(port), "-H", "127.0.0.1"], cwd: workspace.consumer, env, readyTimeoutMs: limits.probeMs, phase: "next-start" });
+        add(toCheck(runtimeIds.server, "the built consumer is served on loopback for the runtime scenarios", "ccv-scenario", server.ok ? { status: "pass", detail: "next start on a random 127.0.0.1 port (process group killed after the run)" } : environmentJudgement(redact(server.reason))));
+        if (!server.ok) environmentAll(redact(server.reason));
+        else {
+          const launchOptions: LaunchOptions = { env, timeout: 60_000 };
+          const scenarios: ScenarioRun[] = scenarioNames.map((name) => ({ name, kind: descriptors[name].browserAssert ? "runtime" : "render", url: `${server.origin}/${SCENARIO_ROUTE_ROOT.replace(/^app\//, "")}/${name}`, ...(descriptors[name].browserAssert ? { browserAssert: descriptors[name].browserAssert as ScenarioRun["browserAssert"] } : {}), ...(runtimeCandidates.has(name) ? { supplied: runtimeCandidates.get(name) } : {}) }));
+          try {
+            const evidenceRun = await (input.runtime.collect ?? runShadcnRuntime)({ commonUrl: `${server.origin}/${controlEntry ? `${SCENARIO_ROUTE_ROOT.replace(/^app\//, "")}/common` : ""}`, controlLabel: REPRESENTATIVE_CONTROL.label, rootDeclared: rootDeclaredCustomProperties([foundationCss]), scenarios, launchOptions });
+            add(toCheck(runtimeIds.foundation, "Foundation custom properties are active in the browser", "ccv-scenario", judgeFoundationActive(evidenceRun.foundation)));
+            add(toCheck(runtimeIds.focus, `keyboard focus on the representative control (${REPRESENTATIVE_CONTROL.label}) shows a visible focus indicator`, "ccv-scenario", controlEntry ? judgeFocusVisible(evidenceRun.focus) : { status: "unknown", detail: `the representative control (${REPRESENTATIVE_CONTROL.item}) is not among the subjects` }));
+            if (controlEntry) for (const check of recordedChecks(id, "common", evidenceRun.modes)) add(check);
+            for (const scenario of evidenceRun.scenarios) add(toCheck(id("runtime", `scenario-${scenario.name}`), scenarioClaim(scenario.name), "ccv-scenario", judgeScenario(scenario)));
+            for (const supplied of evidenceRun.supplied) suppliedJudgements.set(`${supplied.scenario}/${supplied.prop}`, judgeRuntimeSupplied(supplied));
+          } catch (error) {
+            environmentAll(`browser unavailable: ${redact(error instanceof Error ? error.message.split("\n")[0] : String(error))}`);
+          } finally {
+            await server.stop();
+          }
+        }
+      }
+    }
+    const runtimeOff = input.runtime ? "no scenario of this item reached the property in the runtime run" : "runtime not requested (run with --runtime for browser proof)";
+    for (const [subject, props] of Array.from(runtimeCandidates)) {
+      for (const prop of props) add(runtimeSuppliedCheck(itemId(subject), subject, prop, suppliedJudgements.get(`${subject}/${prop}`) ?? (input.runtime && !scenarioNames.includes(subject) ? judgeRuntimeSupplied({ prop, elementsWithValue: 0 }) : undefined), runtimeOff));
+    }
 
     for (const pkg of ["next", "react", "react-dom", "typescript"]) {
       const version = installedVersion(workspace.consumer, pkg);

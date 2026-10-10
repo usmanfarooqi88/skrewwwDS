@@ -4,6 +4,7 @@
  *   npm run ccv:shadcn                              full distribution in ONE clean consumer
  *   npm run ccv:shadcn -- --item button             one item (its registry closure is installed too); repeatable
  *   npm run ccv:shadcn -- --install sequential      one `shadcn add` per subject inside the same consumer
+ *   npm run ccv:shadcn -- --runtime                 CCV-4: also run the representative browser runtime (next start + real Chromium)
  *   npm run ccv:shadcn -- --keep                    keep the workspace for inspection (path printed)
  *   npm run ccv:shadcn -- --out <dir>               result directory: ccv-out/… (default, gitignored) or outside the repo
  *   npm run ccv:shadcn -- --no-write                print the summary only
@@ -39,14 +40,14 @@ if (args[0] === "--compare") {
   process.exit(outcome.code);
 }
 const usage = () => {
-  process.stderr.write("usage: npm run ccv:shadcn -- [--mode LOCAL_CANONICAL] [--item <name>]... [--install single|sequential] [--keep] [--out <dir>] [--no-write]\n");
+  process.stderr.write("usage: npm run ccv:shadcn -- [--mode LOCAL_CANONICAL] [--item <name>]... [--install single|sequential] [--runtime] [--keep] [--out <dir>] [--no-write]\n");
   process.exit(1);
 };
 const values = (flag: string) => args.flatMap((arg, index) => (arg === flag ? [args[index + 1]] : []));
 const VALUE_FLAGS = ["--mode", "--item", "--install", "--out"];
 args.forEach((arg, index) => {
   if (VALUE_FLAGS.includes(arg) && (args[index + 1] === undefined || args[index + 1].startsWith("--"))) usage();
-  if (arg.startsWith("--") && !VALUE_FLAGS.includes(arg) && !["--keep", "--no-write"].includes(arg)) usage();
+  if (arg.startsWith("--") && !VALUE_FLAGS.includes(arg) && !["--keep", "--no-write", "--runtime"].includes(arg)) usage();
   if (!arg.startsWith("--") && !VALUE_FLAGS.includes(args[index - 1] ?? "")) usage();
 });
 const mode = values("--mode")[0] ?? "LOCAL_CANONICAL";
@@ -78,10 +79,12 @@ if (!args.includes("--no-write")) {
   outDir = resolved.dir;
 }
 
+const runtime = args.includes("--runtime");
+
 async function main(): Promise<void> {
   const git = readGitInfo(repoRoot);
   const contracts = deriveAllShadcnContracts({ gitSha: git.sha, items });
-  process.stdout.write(`CCV-2 shadcn LOCAL_CANONICAL — ${subjects.length} subject(s), expected commit ${git.sha}${git.workingTreeDirty ? " (working tree dirty)" : ""}\n`);
+  process.stdout.write(`CCV shadcn LOCAL_CANONICAL${runtime ? " + runtime" : ""} — ${subjects.length} subject(s), expected commit ${git.sha}${git.workingTreeDirty ? " (working tree dirty)" : ""}\n`);
   const output = await verifyShadcnLocalCanonical({
     repoRoot,
     gitSha: git.sha,
@@ -93,12 +96,13 @@ async function main(): Promise<void> {
     parentEnv: process.env,
     keep: args.includes("--keep"),
     installStrategy: strategy,
+    ...(runtime ? { runtime: {} } : {}),
     log: (line) => process.stdout.write(`${line}\n`),
   });
   for (const line of humanSummary(output.result)) process.stdout.write(`${line}\n`);
   if (output.kept) process.stdout.write(`Workspace kept: ${output.workspaceRoot}\n`);
   if (outDir) {
-    const written = writeRunArtifact(outDir, resultStem(["shadcn", output.result.mode, subjectLabel, git.sha]), output.result);
+    const written = writeRunArtifact(outDir, resultStem(["shadcn", output.result.mode, subjectLabel, git.sha, ...(runtime ? ["runtime"] : [])]), output.result);
     if (written.previous) for (const line of describeComparison(written.previous.comparison, written.previous.name)) process.stdout.write(`${line}\n`);
     process.stdout.write(`Result: ${relative(repoRoot, written.file) || written.file}\n`);
   }

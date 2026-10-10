@@ -12,8 +12,10 @@ import {
   generateProbe,
   generateSurfaceHarness,
   judgeSpecifier,
-  mainTsx,
+  CONSUMER_CSS,
+  CONSUMER_CSS_MARKER,
   parseProbeOutput,
+  runtimeMainTsx,
   type ProbeOutput,
   type VitePins,
 } from "@/lib/ccv/npm/consumer";
@@ -28,6 +30,15 @@ import { assembleResult, evidence, exitCodeFor, listEvidence, truncate } from "@
 import { cleanupWorkspace, createWorkspace, type Remover } from "@/lib/ccv/runner/workspace";
 import { diffSnapshots, sha256OfBytes, snapshotTree } from "@/lib/ccv/shadcn/fs-snapshot";
 import { classifyDiagnostics, parseTscOutput } from "@/lib/ccv/shadcn/tsc-diagnostics";
+import { resolveAliasChains, rootDeclaredCustomProperties } from "@/lib/ccv/css/alias-chains";
+import { environmentJudgement, recordedChecks, runtimeSuppliedCheck, staticCssChecks, toCheck } from "@/lib/ccv/css/checks";
+import { runCommonChecks } from "@/lib/ccv/css/runtime-browser";
+import { judgeFocusVisible, judgeFoundationActive, type RecordedAssertion } from "@/lib/ccv/css/runtime-judge";
+import { verifyStaticCss } from "@/lib/ccv/css/static-delivery";
+import { startServer as defaultStartServer, type ServerStarter } from "@/lib/ccv/runner/server";
+import { REPRESENTATIVE_CONTROL } from "@/lib/consumer-scenarios/common-runtime";
+import { runReactPackageBrowserChecks } from "@/lib/consumer-scenarios/react-package-scenario";
+import type { LaunchOptions } from "@playwright/test";
 import type { CcvFailureCode } from "@/lib/ccv/failure-codes";
 import type { CcvAuthority, CcvCheck, CcvResult, NpmConsumerContract } from "@/lib/ccv/types";
 import { checkBuiltFile } from "@/lib/react-package/output-checks";
@@ -70,6 +81,14 @@ export type VerifyNpmInput = {
   log?: (line: string) => void;
   nodeVersion?: string;
   platform?: string;
+  /** CCV-4 representative runtime (real Chromium). Absent = static CSS only; runtime-supply checks stay `unknown`. */
+  runtime?: NpmRuntimeHooks;
+};
+
+export type NpmRuntimeHooks = {
+  startServer?: ServerStarter;
+  browserChecks?: (origin: string, assert: (name: string, ok: boolean, detail?: string) => void, launchOptions: LaunchOptions) => Promise<void>;
+  commonChecks?: typeof runCommonChecks;
 };
 
 export type VerifyNpmOutput = { result: CcvResult; exitCode: 0 | 2 | 3; workspaceRoot: string; kept: boolean };
@@ -120,6 +139,20 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
     { id: id("typecheck", "consumer"), claim: "the consumer type-checks strictly (skipLibCheck off) against the installed package", authority: "ccv-scenario" },
     { id: id("build", "vite"), claim: "the consumer production build succeeds", authority: "ccv-scenario" },
     { id: id("stylesheet", "bundled"), claim: `the public stylesheet ${e.css.stylesheetSpecifier} reaches the consumer bundle`, authority: "delivered-css" },
+    { id: id("css", "declarations"), claim: "every custom property the installed stylesheet uses resolves to a delivered declaration, a literal fallback, or a runtime assignment", authority: "delivered-css" },
+    { id: id("css", "contract-surface"), claim: "the installed CSS surface equals the CCV-1 contract", authority: "delivered-css" },
+    ...e.css.fallbackBackedUses.map((name) => ({ id: id("css-fallback", name), claim: `${name} remains resolvable through its literal fallback`, authority: "delivered-css" as const })),
+    { id: id("css", "alias-chains"), claim: "every custom-property alias chain in the installed stylesheet terminates", authority: "delivered-css" },
+    { id: id("css", "mode-selectors"), claim: "every contract Shape/Surface mode selector is present in the installed stylesheet", authority: "delivered-css" },
+    { id: id("css", "consumer-order"), claim: "the package stylesheet precedes the consumer's own CSS in the built bundle", authority: "delivered-css" },
+    ...(input.runtime
+      ? [
+          { id: id("runtime", "server"), claim: "the built consumer is served on loopback for the runtime scenarios", authority: "ccv-scenario" as const },
+          { id: id("runtime", "foundation-active"), claim: "the package stylesheet's :root custom properties are active in the browser", authority: "ccv-scenario" as const },
+          { id: id("runtime", "focus-visible"), claim: `keyboard focus on the representative control (${REPRESENTATIVE_CONTROL.label}) shows a visible focus indicator`, authority: "ccv-scenario" as const },
+          { id: id("runtime", "react-package-scenario"), claim: "the existing package smoke browser scenario completes against the installed consumer", authority: "ccv-scenario" as const },
+        ]
+      : []),
     { id: id("lifecycle", "ignore-scripts-install"), claim: "the tarball installs with --ignore-scripts", authority: "ccv-scenario" },
     { id: id("lifecycle", "ignore-scripts-import"), claim: "without install scripts, the package root imports with the contract runtime exports", authority: "ccv-scenario" },
     { id: id("lifecycle", "ignore-scripts-typecheck"), claim: "without install scripts, the consumer type-checks", authority: "ccv-scenario" },
@@ -155,7 +188,8 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
     writeFileSync(join(dir, "tsconfig.json"), CONSUMER_TSCONFIG);
     writeFileSync(join(dir, "vite.config.ts"), VITE_CONFIG);
     writeFileSync(join(dir, "index.html"), INDEX_HTML);
-    writeFileSync(join(dir, "src", "main.tsx"), mainTsx(e.css.stylesheetSpecifier));
+    writeFileSync(join(dir, "src", "main.tsx"), runtimeMainTsx(e.css.stylesheetSpecifier));
+    writeFileSync(join(dir, "src", "consumer.css"), CONSUMER_CSS);
     writeFileSync(join(dir, "src", "ccv-surface.ts"), harnessSource);
     writeFileSync(join(dir, PROBE_PATH), probeSource);
   };
@@ -572,6 +606,61 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
       authority: "delivered-css",
       evidence: [evidence("css", "dist/assets/*.css", buildClass !== "ok" ? "build did not complete" : `${delivered.length} of ${e.css.declaredCustomProperties.length} contract custom-property declarations found in the bundled CSS (delivery only; token correctness is CCV-4)`)],
     });
+
+    // ── CCV-4: static delivery of the INSTALLED stylesheet ──────────────
+    const stylesheetTarget = (manifest.exports as Record<string, unknown> | undefined)?.["./styles.css"];
+    const stylesheetPath = join(installedDir, typeof stylesheetTarget === "string" ? stylesheetTarget : "dist/styles.css");
+    const installedCss = existsSync(stylesheetPath) ? readFileSync(stylesheetPath, "utf8") : "";
+    const installedJs = existsSync(join(distDir, "index.js")) ? readFileSync(join(distDir, "index.js"), "utf8") : "";
+    const cssVerdict = verifyStaticCss({ cssTexts: [installedCss], scriptSources: [installedJs], expected: e.css });
+    for (const check of staticCssChecks({ id, label: pkg, verdict: cssVerdict, expected: e.css, aliases: resolveAliasChains([installedCss]) })) add(check);
+    const firstPackageDecl = e.css.declaredCustomProperties.map((name) => bundledCss.indexOf(`${name}:`)).filter((index) => index >= 0).sort((a, b) => a - b)[0] ?? -1;
+    const markerIndex = bundledCss.indexOf(`${CONSUMER_CSS_MARKER}:`);
+    const orderOk = firstPackageDecl >= 0 && markerIndex > firstPackageDecl;
+    add({
+      checkId: id("css", "consumer-order"),
+      status: buildClass !== "ok" ? "unknown" : orderOk ? "pass" : "fail",
+      ...(buildClass === "environment" ? { failureCode: "ENVIRONMENT_ERROR" as const } : buildClass === "ok" && !orderOk ? { failureCode: "CSS_DECLARATION_MISSING" as const } : {}),
+      claim: "the package stylesheet precedes the consumer's own CSS in the built bundle",
+      authority: "delivered-css",
+      evidence: [evidence("css", "dist/assets/*.css", buildClass !== "ok" ? "build did not complete" : `first package declaration at offset ${firstPackageDecl}; consumer marker ${CONSUMER_CSS_MARKER} at offset ${markerIndex} (src/consumer.css is imported after ${e.css.stylesheetSpecifier})`)],
+    });
+
+    // ── CCV-4: representative runtime (opt-in) ───────────────────────────
+    const runtimeJudgements = new Map<string, ReturnType<typeof judgeFoundationActive>>();
+    if (input.runtime && buildClass === "ok") {
+      const hooks = input.runtime;
+      const server = await (hooks.startServer ?? defaultStartServer)({ command: bin(consumer, "vite"), args: (port) => ["preview", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], cwd: consumer, env, readyTimeoutMs: limits.probeMs, phase: "vite-preview" });
+      add(toCheck(id("runtime", "server"), "the built consumer is served on loopback for the runtime scenarios", "ccv-scenario", server.ok ? { status: "pass", detail: "vite preview on a random 127.0.0.1 port (process group killed after the run)" } : environmentJudgement(server.reason)));
+      if (server.ok) {
+        const launchOptions: LaunchOptions = { env, timeout: 60_000 };
+        try {
+          const common = await (hooks.commonChecks ?? runCommonChecks)({ url: `${server.origin}/`, controlLabel: REPRESENTATIVE_CONTROL.label, rootDeclared: rootDeclaredCustomProperties([installedCss]), launchOptions });
+          add(toCheck(id("runtime", "foundation-active"), "the package stylesheet's :root custom properties are active in the browser", "ccv-scenario", judgeFoundationActive(common.foundation)));
+          add(toCheck(id("runtime", "focus-visible"), `keyboard focus on the representative control (${REPRESENTATIVE_CONTROL.label}) shows a visible focus indicator`, "ccv-scenario", judgeFocusVisible(common.focus)));
+          const recorded: RecordedAssertion[] = [];
+          let scenarioError: string | undefined;
+          try {
+            await (hooks.browserChecks ?? runReactPackageBrowserChecks)(server.origin, (name, ok, detail) => recorded.push({ name, ok, detail }), launchOptions);
+          } catch (error) {
+            scenarioError = redact(error instanceof Error ? error.message.split("\n")[0] : String(error));
+          }
+          for (const check of recordedChecks(id, "smoke", recorded)) add(check);
+          const failed = recorded.filter((entry) => !entry.ok).length;
+          add(toCheck(id("runtime", "react-package-scenario"), "the existing package smoke browser scenario completes against the installed consumer", "ccv-scenario", scenarioError ? (recorded.length === 0 ? environmentJudgement(scenarioError) : { status: "fail", failureCode: "INTERACTION_FAILED", detail: `scenario aborted after ${recorded.length} assertion(s): ${scenarioError}` }) : failed > 0 ? { status: "fail", failureCode: "INTERACTION_FAILED", detail: `${failed} of ${recorded.length} recorded assertion(s) failed` } : { status: "pass", detail: `${recorded.length} recorded assertion(s) passed (same scenario and assertion names as smoke:react-package)` }));
+        } catch (error) {
+          stop(`browser unavailable: ${redact(error instanceof Error ? error.message.split("\n")[0] : String(error))}`, true);
+        } finally {
+          await server.stop();
+        }
+      }
+    }
+    if (input.runtime && buildClass !== "ok") {
+      const notRun = buildClass === "environment" ? environmentJudgement("the consumer build did not complete (environment)") : { status: "unknown" as const, detail: "not evaluated: the consumer build failed (see build:vite)" };
+      for (const entry of planned.filter((candidate) => candidate.id.includes(":runtime:"))) add(toCheck(entry.id, entry.claim, entry.authority, notRun));
+    }
+    const runtimeOff = input.runtime ? (buildClass === "ok" ? "the runtime layer did not reach this property" : "the consumer build did not complete, so no runtime ran") : "runtime not requested (run with --runtime for browser proof)";
+    for (const prop of cssVerdict.runtimeSupplyCandidates) add(runtimeSuppliedCheck(id, pkg, prop, runtimeJudgements.get(prop), runtimeOff));
 
     // ── --ignore-scripts consumer ────────────────────────────────────────
     writeConsumer(consumerIgnore, tarballPath, harness.source, probeSource);

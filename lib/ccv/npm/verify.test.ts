@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { gzipSync } from "node:zlib";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { deriveNpmContract } from "@/lib/ccv/derive-npm-contract";
+import { syntheticCssFor } from "@/lib/ccv/css/synthetic";
 import { SURFACE_HARNESS_PATH } from "@/lib/ccv/npm/consumer";
 import { readTarGz } from "@/lib/ccv/npm/tarball";
 import { verifyNpmLocalTarball, type VerifyNpmInput } from "@/lib/ccv/npm/verify";
@@ -39,9 +40,9 @@ function packageFiles(mutate?: (files: PackageFiles, manifest: Record<string, an
   const files: PackageFiles = new Map([
     ["README.md", "# readme\n"],
     ["LICENSE", "MIT\n"],
-    ["dist/index.js", `${e.exports.values.map((name) => `const ${name} = "${name}";`).join("\n")}\nexport { ${e.exports.values.join(", ")} };\n`],
+    ["dist/index.js", `${e.exports.values.map((name) => `const ${name} = "${name}";`).join("\n")}\n${syntheticCssFor(e.css).script}\nexport { ${e.exports.values.join(", ")} };\n`],
     ["dist/index.d.ts", `${e.exports.values.map((name) => `export declare const ${name}: unknown;`).join("\n")}\n${e.exports.types.map((name) => `export type ${name} = unknown;`).join("\n")}\n`],
-    ["dist/styles.css", `:root { ${e.css.declaredCustomProperties.slice(0, 3).map((name) => `${name}: 1px;`).join(" ")} }\n`],
+    ["dist/styles.css", syntheticCssFor(e.css).css],
   ]);
   mutate?.(files, manifest);
   files.set("package.json", `${JSON.stringify(manifest, null, 2)}\n`);
@@ -112,7 +113,8 @@ function fakeRunner(options: FakeOptions = {}, seen: CommandSpec[] = []): Comman
     if (spec.phase === "vite-build" || spec.phase === "vite-build-ignore-scripts") {
       if (options.viteFails) return { ...ok(spec), exitCode: 1, stderrTail: "[vite]: Rollup failed to resolve import" };
       const css = readFileSync(join(spec.cwd, "node_modules", ...contract.subject.split("/"), "dist", "styles.css"), "utf8");
-      write(join(spec.cwd, "dist", "assets", "index.css"), css.replace(/\s+/g, ""));
+      const own = existsSync(join(spec.cwd, "src", "consumer.css")) ? readFileSync(join(spec.cwd, "src", "consumer.css"), "utf8") : "";
+      write(join(spec.cwd, "dist", "assets", "index.css"), `${css}${own}`.replace(/\s+/g, ""));
       return ok(spec);
     }
     throw new Error(`unexpected command ${spec.phase}`);
@@ -280,5 +282,54 @@ describe("CCV-3 verifier — environment failures stay UNKNOWN", () => {
     const kept = await verify({}, { keep: true });
     expect(kept.kept).toBe(true);
     expect(existsSync(kept.workspaceRoot)).toBe(true);
+  });
+});
+
+describe("CCV-4 npm — static stylesheet delivery and representative runtime (fake browser evidence)", () => {
+  const focus = { reached: true, tabPresses: 1, matchesFocusVisible: true, outlineStyle: "solid", outlineWidth: "2px", outlineColor: "rgb(1, 2, 3)", boxShadow: "none" };
+  const server = { startServer: async () => ({ ok: true as const, origin: "http://127.0.0.1:1", stop: async () => undefined }) };
+  const commonChecks = (async (options: { rootDeclared: readonly string[] }) => ({ foundation: { checked: options.rootDeclared.length, empty: [] }, focus })) as never;
+
+  it("static CSS checks run on the INSTALLED stylesheet; the package stylesheet precedes consumer CSS in the bundle", async () => {
+    const { result } = await verify();
+    for (const suffix of [":css:declarations", ":css:contract-surface", ":css:alias-chains", ":css:mode-selectors", ":css:consumer-order", ":css-fallback:--color-neutral-900"]) expect(check(result, suffix).status, suffix).toBe("pass");
+    expect(result.checks.some((c) => c.checkId.includes(":runtime:"))).toBe(false);
+  });
+
+  it("mutation: a declaration missing from the installed stylesheet → CSS_DECLARATION_MISSING", async () => {
+    const e = contract.expectations;
+    const used = e.css.usedCustomProperties.find((name) => e.css.declaredCustomProperties.includes(name) && !e.css.fallbackBackedUses.includes(name))!;
+    const { result } = await verify({ mutatePackage: (files) => files.set("dist/styles.css", files.get("dist/styles.css")!.replace(`  ${used}: 1px;\n`, "")) });
+    expect(failures(result)).toEqual(expect.arrayContaining(["css:declarations=CSS_DECLARATION_MISSING"]));
+  });
+
+  it("runtime: recorded smoke assertions become checks with the same names; Foundation and focus judged", async () => {
+    const browserChecks = async (_origin: string, assert: (name: string, ok: boolean, detail?: string) => void) => {
+      assert("Shape pill: computed behavior", true, "radius=9999px");
+      assert("Dialog: Escape closes it and focus returns to the trigger", true);
+    };
+    const { result, exitCode } = await verify({}, { runtime: { ...server, browserChecks, commonChecks } });
+    expect(failures(result)).toEqual([]);
+    expect(exitCode).toBe(0);
+    for (const suffix of [":runtime:server", ":runtime:foundation-active", ":runtime:focus-visible", ":runtime:smoke-shape-pill", ":runtime:react-package-scenario"]) expect(check(result, suffix).status, suffix).toBe("pass");
+  });
+
+  it("runtime mutation: a failed Surface assertion → CSS_RUNTIME_UNRESOLVED and the scenario fails", async () => {
+    const browserChecks = async (_origin: string, assert: (name: string, ok: boolean, detail?: string) => void) => assert("Surface glass: computed behavior", false, "backdrop=none");
+    const { result } = await verify({}, { runtime: { ...server, browserChecks, commonChecks } });
+    expect(failures(result)).toEqual(["runtime:smoke-surface-glass=CSS_RUNTIME_UNRESOLVED", "runtime:react-package-scenario=INTERACTION_FAILED"]);
+  });
+
+  it("a browser that cannot launch is UNKNOWN / ENVIRONMENT_ERROR; a failed build leaves runtime unknown without an environment code", async () => {
+    const browserChecks = async () => {
+      throw new Error("browserType.launch: Executable doesn't exist");
+    };
+    const crashed = await verify({}, { runtime: { ...server, browserChecks, commonChecks } });
+    expect(check(crashed.result, ":runtime:react-package-scenario")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
+    expect(crashed.exitCode).toBe(2);
+    const noBuild = await verify({ viteFails: true }, { runtime: { ...server, browserChecks, commonChecks } });
+    const runtimeChecks = noBuild.result.checks.filter((c) => c.checkId.includes(":runtime:"));
+    expect(runtimeChecks.length).toBe(4);
+    expect(runtimeChecks.every((c) => c.status === "unknown" && c.failureCode === undefined)).toBe(true);
   });
 });
