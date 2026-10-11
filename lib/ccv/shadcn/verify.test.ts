@@ -7,6 +7,9 @@ import type { CommandOutcome, CommandRunner, CommandSpec } from "@/lib/ccv/runne
 import { WORKSPACE_PREFIX } from "@/lib/ccv/runner/workspace";
 import { EXPORTS_HARNESS_PATH } from "@/lib/ccv/shadcn/exports-harness";
 import { verifyShadcnLocalCanonical, type VerifyShadcnInput } from "@/lib/ccv/shadcn/verify";
+import type { Fetcher, FetchOutcome } from "@/lib/ccv/public/fetcher";
+import { buildExpectedRegistryPayload } from "@/lib/ccv/public/registry-provenance";
+import { provenanceVerdict } from "@/lib/ccv/public/verdict";
 import { serializeCcvResult } from "@/lib/ccv/serialize";
 import type { CcvCheck, CcvResult, ShadcnConsumerContract } from "@/lib/ccv/types";
 import { validateCcvResult } from "@/lib/ccv/validate";
@@ -39,6 +42,10 @@ type FakeOptions = {
   timeoutPhase?: string;
   failPhase?: { phase: string; stderr: string };
   echoSecret?: string;
+  /** CCV-5: serves `https://…/r/<name>.json` to the fake installer. Without it a public template throws, so no test can touch the network. */
+  publicFetcher?: Fetcher;
+  /** Every `@skrewww` registry template the fake installer was configured with. */
+  templateLog?: string[];
 };
 
 const ok = (spec: CommandSpec, stdout = ""): CommandOutcome => ({ phase: spec.phase, exitCode: 0, signal: null, timedOut: false, stdoutTail: stdout, stderrTail: "", durationMs: 1 });
@@ -76,7 +83,17 @@ function fakeRunner(options: FakeOptions = {}, seen: CommandSpec[] = []): Comman
         const name = queue.shift()!;
         if (seenItems.has(name)) continue;
         seenItems.add(name);
-        const item = (await (await fetch(template.replace("{name}", name))).json()) as ShadcnRegistryItem;
+        options.templateLog?.push(template);
+        const url = template.replace("{name}", name);
+        let item: ShadcnRegistryItem;
+        if (url.startsWith("https://")) {
+          if (!options.publicFetcher) throw new Error(`test would reach the real network: ${url}`);
+          const out = await options.publicFetcher(url);
+          if (out.kind === "network-error" || out.status !== 200) return { phase: spec.phase, exitCode: 1, signal: null, timedOut: false, stdoutTail: "", stderrTail: out.kind === "network-error" ? `Request to ${url} failed, reason: getaddrinfo ENOTFOUND skrewww.com` : `HTTP ${out.status}`, durationMs: 1 };
+          item = JSON.parse(new TextDecoder().decode(out.bytes)) as ShadcnRegistryItem;
+        } else {
+          item = (await (await fetch(url)).json()) as ShadcnRegistryItem;
+        }
         for (const file of item.files) {
           const path = file.target.slice(2);
           const content = transform(path, file.content);
@@ -395,4 +412,104 @@ describe("CCV-4 — installed CSS delivery and representative runtime (fake brow
     expect(check(noServer.result, ":runtime:server")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
     expect(validateCcvResult(noServer.result)).toEqual({ ok: true });
   });
+});
+
+describe("CCV-5 PUBLIC_REGISTRY verifier (injected public fetcher, fake installer; no network)", () => {
+  const ORIGIN = "https://skrewww.com";
+  const keepCF = (_path: string, content: string) => content;
+  const expectedPayload = () => buildExpectedRegistryPayload(items);
+
+  /** Serves the public registry; `override(stem, text)` can tamper with or hide a file. */
+  const publicFetcher = (override: (stem: string, text: string) => FetchOutcome | undefined = () => undefined, calls: string[] = []): Fetcher => async (url) => {
+    calls.push(url);
+    if (url === "https://ui.shadcn.com/r/registries.json") return { kind: "response", status: 200, bytes: new TextEncoder().encode(JSON.stringify([{ name: "@skrewww", url: `${ORIGIN}/r/{name}.json` }])), finalUrl: url };
+    const stem = url.replace(`${ORIGIN}/r/`, "").replace(/\.json$/, "");
+    const text = expectedPayload().files.get(stem);
+    if (text === undefined) return { kind: "response", status: 404, bytes: new Uint8Array(), finalUrl: url };
+    const replaced = override(stem, text);
+    if (replaced) return replaced.kind === "response" ? { ...replaced, finalUrl: url } : replaced;
+    return { kind: "response", status: 200, bytes: new TextEncoder().encode(text), finalUrl: url };
+  };
+  const unreachable: Fetcher = async () => ({ kind: "network-error", message: "ENOTFOUND skrewww.com" });
+  const asPublic = (fetcher: Fetcher, extra: Partial<NonNullable<VerifyShadcnInput["public"]>> = {}): Partial<VerifyShadcnInput> => ({ public: { origin: ORIGIN, fetcher, checkDirectory: false, ...extra } });
+  const state = (result: CcvResult) => provenanceVerdict(result).state;
+
+  it("PASS: byte-identical public payload, installed from the live URL; expected identity is HEAD's generator output (no local server)", async () => {
+    const templates: string[] = [];
+    const { result, exitCode, workspaceRoot } = await verify(["button"], fakeRunner({ transform: keepCF, publicFetcher: publicFetcher(), templateLog: templates }), { ...asPublic(publicFetcher()), keep: true });
+    expect(validateCcvResult(result)).toEqual({ ok: true });
+    expect(failures(result)).toEqual([]);
+    expect(result.mode).toBe("PUBLIC_REGISTRY");
+    expect(exitCode).toBe(0);
+    expect(state(result)).toBe("PASS");
+    // the consumer was configured with the PUBLIC template, never a loopback server
+    expect(templates.length).toBeGreaterThan(0);
+    expect(templates.every((template) => template === `${ORIGIN}/r/{name}.json`)).toBe(true);
+    expect(readFileSync(join(workspaceRoot, "consumer", "components.json"), "utf8")).not.toMatch(/127\.0\.0\.1/);
+    expect(result.checks.some((c) => c.checkId.endsWith(":registry:local-canonical"))).toBe(false);
+    expect(check(result, ":registry-closure:resolved").status).toBe("not-applicable");
+    expect(check(result, ":registry-public:index").status).toBe("pass");
+    expect(check(result, ":registry-public:payload-identity").status).toBe("pass");
+    expect(result.source.integrity).toBe(check(result, ":registry-public:payload-identity").expected); // observed identity == expected identity
+  }, 60_000);
+
+  it("the known installer transform (F1) keeps its UPSTREAM_TRANSFORM classification while provenance PASSES", async () => {
+    const { result, exitCode } = await verify(["button"], fakeRunner({ publicFetcher: publicFetcher() }), asPublic(publicFetcher()));
+    expect(failures(result)).toEqual(["shadcn:button:file:components/ui/Button.tsx=UPSTREAM_TRANSFORM"]);
+    expect(state(result)).toBe("PASS");
+    expect(exitCode).toBe(3);
+  }, 60_000);
+
+  it("FAIL: a tampered public item → provenance FAIL on that item and on the payload; the installed bytes disagree with the expected bytes too", async () => {
+    const tamper = (stem: string, text: string): FetchOutcome | undefined => (stem === "button" ? { kind: "response", status: 200, bytes: new TextEncoder().encode(text.replace("Button", "Buttoon")), finalUrl: "" } : undefined);
+    const { result, exitCode } = await verify(["button"], fakeRunner({ transform: keepCF, publicFetcher: publicFetcher(tamper) }), asPublic(publicFetcher(tamper)));
+    expect(failures(result)).toEqual(expect.arrayContaining(["shadcn:button:registry-public:item/button=PROVENANCE_MISMATCH", "shadcn:button:registry-public:payload-identity=PROVENANCE_MISMATCH"]));
+    expect(state(result)).toBe("FAIL");
+    expect(exitCode).toBe(3);
+  }, 60_000);
+
+  it("UNKNOWN (ENVIRONMENT_ERROR): the public registry is unreachable — provenance and install are unknown, never a pass or a contract failure (exit 2)", async () => {
+    const { result, exitCode } = await verify(["button"], fakeRunner({ publicFetcher: unreachable }), asPublic(unreachable));
+    expect(check(result, ":registry-public:index")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
+    expect(check(result, ":registry-public:payload-identity")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
+    expect(check(result, ":install:shadcn-add")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
+    expect(result.summary.fail).toBe(0);
+    expect(state(result)).toBe("UNKNOWN");
+    expect(exitCode).toBe(2);
+  }, 60_000);
+
+  it("UNKNOWN (PROVENANCE_MISSING): the expected identity is not established (uncommitted generator inputs) — a successful install is NOT provenance", async () => {
+    const problems = ["uncommitted: M lib/component-registry.ts"];
+    const { result, exitCode } = await verify(["button"], fakeRunner({ transform: keepCF, publicFetcher: publicFetcher() }), asPublic(publicFetcher(), { identityProblems: problems }));
+    expect(check(result, ":install:shadcn-add").status).toBe("pass");
+    expect(check(result, ":registry-public:payload-identity")).toMatchObject({ status: "unknown", failureCode: "PROVENANCE_MISSING" });
+    expect(failures(result)).toEqual([]);
+    expect(state(result)).toBe("UNKNOWN");
+    expect(exitCode).toBe(2);
+  }, 60_000);
+
+  it("checks shadcn's official directory when asked (default): a different @skrewww url is a failure of the public surface", async () => {
+    const good = await verify(["button"], fakeRunner({ transform: keepCF, publicFetcher: publicFetcher() }), asPublic(publicFetcher(), { checkDirectory: true }));
+    expect(check(good.result, ":registry-public:directory").status).toBe("pass");
+    const wrong: Fetcher = async (url) => (url === "https://ui.shadcn.com/r/registries.json" ? { kind: "response", status: 200, bytes: new TextEncoder().encode(JSON.stringify([{ name: "@skrewww", url: "https://old.example/r/{name}.json" }])), finalUrl: url } : publicFetcher()(url));
+    const bad = await verify(["button"], fakeRunner({ transform: keepCF, publicFetcher: publicFetcher() }), asPublic(wrong, { checkDirectory: true }));
+    expect(check(bad.result, ":registry-public:directory")).toMatchObject({ status: "fail", failureCode: "INSTALL_FAILED" });
+    expect(state(bad.result)).toBe("PASS"); // the directory is a surface check, not provenance
+  }, 60_000);
+
+  it("is deterministic: two public verifications of the same payload have identical stable sections", async () => {
+    const first = await verify(["button"], fakeRunner({ publicFetcher: publicFetcher() }), asPublic(publicFetcher()));
+    const second = await verify(["button"], fakeRunner({ publicFetcher: publicFetcher() }), asPublic(publicFetcher()));
+    expect(stable(first.result)).toBe(stable(second.result));
+    expect(stable(first.result)).not.toMatch(/ccv-verify-test-|skrewww-ccv-|127\.0\.0\.1:\d/);
+  }, 120_000);
+
+  it("a LOCAL_CANONICAL run still never touches the public registry or reports provenance", async () => {
+    const calls: string[] = [];
+    const { result } = await verify(["button"], fakeRunner({ transform: keepCF }));
+    expect(result.mode).toBe("LOCAL_CANONICAL");
+    expect(state(result)).toBe("NOT_EVALUATED");
+    expect(calls).toEqual([]);
+    expect(result.checks.some((c) => c.checkId.includes(":registry-public:"))).toBe(false);
+  }, 60_000);
 });

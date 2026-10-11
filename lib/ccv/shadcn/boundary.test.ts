@@ -57,15 +57,17 @@ describe("npm run ccv:shadcn — usage errors exit 1 before anything runs", () =
   const tsx = join(root, "node_modules", ".bin", "tsx");
   const run = (...args: string[]) => spawnSync(tsx, ["scripts/ccv-shadcn.ts", ...args], { cwd: root, encoding: "utf8" });
 
-  it("rejects public and npm modes, unknown items, bad flags and in-repo output paths", () => {
-    expect(run("--mode", "PUBLIC_REGISTRY").status).toBe(1);
+  it("rejects modes of the other distribution and unknown modes, unknown items, bad flags and in-repo output paths (no run starts, no network)", () => {
+    // PUBLIC_REGISTRY is a real mode since CCV-5; selecting it starts a public run, so it is covered by the injected-fetcher tests, never here.
     expect(run("--mode", "PUBLIC_NPM").status).toBe(1);
+    expect(run("--mode", "PUBLIC_NPM").stderr).toMatch(/belongs to the npm-package distribution/);
+    expect(run("--mode", "NOPE").stderr).toMatch(/unknown mode/);
+    expect(run("--expected-sha", "0".repeat(40)).stderr).toMatch(/PUBLIC_REGISTRY only/);
     expect(run("--item", "no-such-item").status).toBe(1);
     expect(run("--install", "parallel").status).toBe(1);
     expect(run("--bogus").status).toBe(1);
     expect(run("--item").status).toBe(1);
     expect(run("--out", "lib").status).toBe(1);
-    expect(run("--mode", "PUBLIC_REGISTRY").stderr).toMatch(/CCV-5/);
     expect(run("--compare", "only-one.json").status).toBe(1);
   }, 120_000);
 

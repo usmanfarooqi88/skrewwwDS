@@ -321,7 +321,9 @@ export function validateCcvResult(input: unknown): CcvValidation {
       if (status === "fail" && check.failureCode === undefined) p.add(`${path}.failureCode`, "a fail requires a failure code");
       if ((status === "pass" || status === "not-applicable") && check.failureCode !== undefined) p.add(`${path}.failureCode`, `a ${String(status)} cannot carry a failure code`);
       if (status === "fail" && check.failureCode === "ENVIRONMENT_ERROR") p.add(`${path}.failureCode`, "an environment error is not a contract failure; record the check as unknown");
-      if (status === "unknown" && check.failureCode !== undefined && check.failureCode !== "ENVIRONMENT_ERROR") p.add(`${path}.failureCode`, "an unknown may only carry ENVIRONMENT_ERROR");
+      // CCV-5: an unknown may say WHY it is unknown — the environment stopped the observation (ENVIRONMENT_ERROR) or the evidence that would establish
+      // provenance is absent (PROVENANCE_MISSING). Both are "not evaluated", never a pass; no other code may hide behind unknown.
+      if (status === "unknown" && check.failureCode !== undefined && check.failureCode !== "ENVIRONMENT_ERROR" && check.failureCode !== "PROVENANCE_MISSING") p.add(`${path}.failureCode`, "an unknown may only carry ENVIRONMENT_ERROR or PROVENANCE_MISSING");
       if (!Array.isArray(check.evidence)) p.add(`${path}.evidence`, "must be a list");
       else {
         check.evidence.forEach((entry: unknown, evidenceIndex: number) => validateEvidence(entry, `${path}.evidence[${evidenceIndex}]`, p));

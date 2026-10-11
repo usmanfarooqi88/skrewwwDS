@@ -1,17 +1,22 @@
 /**
- * CCV-3 — npm installed-package verifier (LOCAL_TARBALL only).
+ * CCV-3 / CCV-5 — npm installed-package verifier.
  *
- *   npm run ccv:npm                                  build → real tarball → fresh Vite consumer → verify
+ *   --mode LOCAL_TARBALL   (default) build → real tarball → fresh Vite consumer → verify
+ *   --mode PUBLIC_NPM      the PUBLISHED package: `--package-version <v>` is resolved through public npm (never the
+ *                          workspace, a link or a local tarball), checked against the release tag `react-v<v>`, the
+ *                          registry gitHead / dist-tags / signatures / integrity and a rebuild at the tag commit, then
+ *                          installed from the registry and verified. Read-only network; nothing is published.
+ *
+ *   npm run ccv:npm                                  LOCAL_TARBALL full run
+ *   npm run ccv:npm -- --mode PUBLIC_NPM --package-version <v> [--runtime]
  *   npm run ccv:npm -- --runtime                     CCV-4: also run the representative browser runtime (real Chromium)
  *   npm run ccv:npm -- --keep                        keep the workspace for inspection (path printed)
  *   npm run ccv:npm -- --out <dir>                   result directory: ccv-out/… (default, gitignored) or outside the repo
  *   npm run ccv:npm -- --no-write                    print the summary only
  *   npm run ccv:npm -- --compare <a.json> <b.json> [--across-commits]   offline comparison of saved results
  *
- * Nothing is published and public npm is never queried for the package
- * (PUBLIC_NPM is CCV-5). The consumer tools are pinned exactly. Exit: 0 all
- * contract checks pass · 1 usage error · 2 environment/tooling failure (no
- * trustworthy verdict) · 3 the verifier completed and found contract failures.
+ * The consumer tools are pinned exactly. Exit: 0 all contract checks pass · 1 usage error · 2 environment/tooling
+ * failure or provenance not established (no trustworthy verdict) · 3 the verifier completed and found contract failures.
  */
 import { join, relative } from "node:path";
 import { readGitInfo } from "../lib/audit/collect-repo-facts";
@@ -20,7 +25,12 @@ import { verifyNpmLocalTarball } from "../lib/ccv/npm/verify";
 import { compareCommand, describeComparison, resolveResultDir, resultStem, writeRunArtifact } from "../lib/ccv/runner/artifacts";
 import { runCommand } from "../lib/ccv/runner/process";
 import { humanSummary } from "../lib/ccv/runner/result";
-import { buildReactPackage } from "./build-react-package";
+import { httpFetcher } from "../lib/ccv/public/fetcher";
+import { execGitReader } from "../lib/ccv/public/git-reader";
+import { selectMode } from "../lib/ccv/public/modes";
+import { deriveReleaseIdentity } from "../lib/ccv/public/release-identity";
+import { provenanceLines } from "../lib/ccv/public/verdict";
+import { NPM_PUBLIC_REGISTRY_ORIGIN } from "../lib/ccv/derive-npm-contract";
 
 const args = process.argv.slice(2);
 if (args[0] === "--compare") {
@@ -30,10 +40,10 @@ if (args[0] === "--compare") {
   process.exit(outcome.code);
 }
 const usage = () => {
-  process.stderr.write("usage: npm run ccv:npm -- [--mode LOCAL_TARBALL] [--runtime] [--keep] [--out <dir>] [--no-write] | --compare <a.json> <b.json> [--across-commits]\n");
+  process.stderr.write("usage: npm run ccv:npm -- [--mode LOCAL_TARBALL|PUBLIC_NPM] [--package-version <v>] [--runtime] [--keep] [--out <dir>] [--no-write] | --compare <a.json> <b.json> [--across-commits]\n");
   process.exit(1);
 };
-const VALUE_FLAGS = ["--mode", "--out"];
+const VALUE_FLAGS = ["--mode", "--out", "--package-version"];
 args.forEach((arg, index) => {
   if (VALUE_FLAGS.includes(arg) && (args[index + 1] === undefined || args[index + 1].startsWith("--"))) usage();
   if (arg.startsWith("--") && !VALUE_FLAGS.includes(arg) && !["--keep", "--no-write", "--runtime"].includes(arg)) usage();
@@ -43,9 +53,14 @@ const valueOf = (flag: string) => {
   const index = args.indexOf(flag);
   return index >= 0 ? args[index + 1] : undefined;
 };
-const mode = valueOf("--mode") ?? "LOCAL_TARBALL";
-if (mode !== "LOCAL_TARBALL") {
-  process.stderr.write(`mode ${mode} is not available in this slice: only LOCAL_TARBALL (PUBLIC_NPM is CCV-5; shadcn modes are ccv:shadcn)\n`);
+const selection = selectMode("npm-package", valueOf("--mode"));
+if (!selection.ok) {
+  process.stderr.write(`${selection.message}\n`);
+  process.exit(1);
+}
+const isPublic = selection.public;
+if (!isPublic && valueOf("--package-version") !== undefined) {
+  process.stderr.write("--package-version applies to PUBLIC_NPM only (LOCAL_TARBALL builds the checked-out source)\n");
   process.exit(1);
 }
 const repoRoot = process.cwd();
@@ -63,14 +78,19 @@ const runtime = args.includes("--runtime");
 
 async function main(): Promise<void> {
   const git = readGitInfo(repoRoot);
-  const contract = deriveNpmContract({ gitSha: git.sha, mode: "LOCAL_TARBALL" });
-  process.stdout.write(`CCV npm LOCAL_TARBALL${runtime ? " + runtime" : ""} — ${contract.subject}@${contract.expectations.package.version}, expected commit ${git.sha}${git.workingTreeDirty ? " (working tree dirty)" : ""}\n`);
+  const contract = deriveNpmContract({ gitSha: git.sha, mode: isPublic ? "PUBLIC_NPM" : "LOCAL_TARBALL" });
+  const version = valueOf("--package-version") ?? contract.expectations.package.version;
+  const release = isPublic ? deriveReleaseIdentity({ packageName: contract.subject, version, git: execGitReader(repoRoot) }) : undefined;
+  process.stdout.write(`CCV npm ${selection.ok ? selection.mode : ""}${runtime ? " + runtime" : ""} — ${contract.subject}@${version}, expected ${release ? `release ${release.tag} → ${release.tagCommit ?? "(tag not in this checkout)"}` : `commit ${git.sha}`}${git.workingTreeDirty ? " (working tree dirty)" : ""}\n`);
+  // The local build module is loaded ONLY for LOCAL_TARBALL: a public run can never build or pack the working tree by accident.
+  const buildPackage = isPublic ? undefined : (await import("./build-react-package")).buildReactPackage;
   const output = await verifyNpmLocalTarball({
     repoRoot,
     gitSha: git.sha,
     contract,
     packageDir: join(repoRoot, "packages", "react"),
-    buildPackage: buildReactPackage,
+    ...(buildPackage ? { buildPackage } : {}),
+    ...(isPublic && release ? { public: { version, registryOrigin: NPM_PUBLIC_REGISTRY_ORIGIN, release, fetcher: httpFetcher } } : {}),
     run: runCommand,
     parentEnv: process.env,
     keep: args.includes("--keep"),
@@ -78,9 +98,10 @@ async function main(): Promise<void> {
     log: (line) => process.stdout.write(`${line}\n`),
   });
   for (const line of humanSummary(output.result)) process.stdout.write(`${line}\n`);
+  for (const line of provenanceLines(output.result)) process.stdout.write(`${line}\n`);
   if (output.kept) process.stdout.write(`Workspace kept: ${output.workspaceRoot}\n`);
   if (outDir) {
-    const written = writeRunArtifact(outDir, resultStem(["npm", output.result.mode, contract.subject, git.sha, ...(runtime ? ["runtime"] : [])]), output.result);
+    const written = writeRunArtifact(outDir, resultStem(["npm", output.result.mode, contract.subject, ...(isPublic ? [version] : []), output.result.source.expectedGitSha, ...(runtime ? ["runtime"] : [])]), output.result);
     if (written.previous) for (const line of describeComparison(written.previous.comparison, written.previous.name)) process.stdout.write(`${line}\n`);
     process.stdout.write(`Result: ${relative(repoRoot, written.file) || written.file}\n`);
   }

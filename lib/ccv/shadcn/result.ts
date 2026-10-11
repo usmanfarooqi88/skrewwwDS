@@ -1,5 +1,5 @@
 import { assembleResult as assembleAny, type AssembleInput } from "@/lib/ccv/runner/result";
-import type { CcvResult } from "@/lib/ccv/types";
+import type { CcvMode, CcvResult } from "@/lib/ccv/types";
 
 /**
  * CCV-2 — shadcn result helpers. The implementation is shared with every
@@ -18,6 +18,7 @@ export {
   type StableComparison,
 } from "@/lib/ccv/runner/result";
 
-export function assembleResult(input: Omit<AssembleInput, "distribution" | "mode">): CcvResult {
-  return assembleAny({ ...input, distribution: "shadcn-registry", mode: "LOCAL_CANONICAL" });
+/** The mode defaults to LOCAL_CANONICAL; PUBLIC_REGISTRY (CCV-5) is passed explicitly by the verifier. */
+export function assembleResult(input: Omit<AssembleInput, "distribution" | "mode"> & { mode?: CcvMode }): CcvResult {
+  return assembleAny({ ...input, distribution: "shadcn-registry", mode: input.mode ?? "LOCAL_CANONICAL" });
 }

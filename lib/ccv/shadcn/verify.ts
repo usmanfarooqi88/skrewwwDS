@@ -17,6 +17,8 @@ import { assembleResult, evidence, exitCodeFor, listEvidence, truncate } from "@
 import { classifyDiagnostics, parseTscOutput } from "@/lib/ccv/shadcn/tsc-diagnostics";
 import type { CcvAuthority, CcvCheck, CcvResult, ShadcnConsumerContract } from "@/lib/ccv/types";
 import type { ShadcnRegistryItem } from "@/lib/shadcn-registry-generator";
+import type { Fetcher } from "@/lib/ccv/public/fetcher";
+import { buildExpectedRegistryPayload, directoryCheck, observePublicRegistry, observedPayloadIdentity, registryProvenanceChecks } from "@/lib/ccv/public/registry-provenance";
 import type { LaunchOptions } from "@playwright/test";
 import { resolveAliasChains, rootDeclaredCustomProperties } from "@/lib/ccv/css/alias-chains";
 import { environmentJudgement, recordedChecks, runtimeSuppliedCheck, staticCssChecks, toCheck, type IdFn } from "@/lib/ccv/css/checks";
@@ -68,7 +70,21 @@ export type VerifyShadcnInput = {
   platform?: string;
   /** CCV-4 representative runtime (real Chromium). Absent = static CSS only; runtime-supply checks stay `unknown`. */
   runtime?: ShadcnRuntimeHooks;
+  /** CCV-5: when present the run is PUBLIC_REGISTRY — the consumer installs from the live public registry, and its payload is compared with what `items` (the expected commit's generator output) serialize to. */
+  public?: PublicRegistrySource;
 };
+
+export type PublicRegistrySource = {
+  /** e.g. https://skrewww.com — the consumer's `@skrewww` template is `<origin>/r/{name}.json`. */
+  origin: string;
+  fetcher: Fetcher;
+  /** Non-empty = the expected identity could not be established (e.g. uncommitted generator inputs): provenance stays UNKNOWN. */
+  identityProblems?: readonly string[];
+  /** Also check that shadcn's official directory resolves `@skrewww` to this origin. Default true. */
+  checkDirectory?: boolean;
+};
+
+type RegistryHandle = Pick<LocalRegistry, "origin" | "template" | "host" | "requests" | "close">;
 
 export type ShadcnRuntimeHooks = {
   startServer?: ServerStarter;
@@ -133,9 +149,9 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
   const workspace: Workspace = createWorkspace(input.repoRoot, input.workspaceBase);
   const env = buildChildEnv(input.parentEnv, workspace);
   const forwarded = Object.keys(env).filter((name) => input.parentEnv[name] === env[name] && !name.startsWith("npm_config_"));
-  let registry: LocalRegistry | undefined;
+  let registry: RegistryHandle | undefined;
   let installOrder: string[] = [];
-  const redact = (text: string) => redactEvidence(text, { parent: input.parentEnv, workspaceRoot: workspace.root, registryOrigin: registry?.origin });
+  const redact = (text: string) => redactEvidence(text, { parent: input.parentEnv, workspaceRoot: workspace.root, registryOrigin: input.public ? undefined : registry?.origin });
   const tail = (outcome: CommandOutcome, lines = 12) => truncate(redact(`${outcome.stderrTail}\n${outcome.stdoutTail}`).trim().split(/\r?\n/).slice(-lines).join(" ⏎ "));
 
   const step = async (spec: Omit<CommandSpec, "env" | "timeoutMs"> & { limitMs: number }): Promise<CommandOutcome> => {
@@ -168,6 +184,12 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
       [id("css", "foundation"), "the Foundation stylesheet is installed with the contract declarations", "", "delivered-css"],
       [id("css", "foundation-order"), "the consumer imports Foundation exactly once, before its own CSS", "", "delivered-css"],
     ];
+    if (input.public) {
+      const expectedNames = buildExpectedRegistryPayload(input.items).itemNames;
+      for (const key of ["expected-identity", "index", "item-set", ...expectedNames.map((name) => `item/${name}`), "payload-identity", ...(input.public.checkDirectory === false ? [] : ["directory"])]) {
+        pending.push([id("registry-public", key), `public registry provenance: ${key}`, "", "generator"]);
+      }
+    }
     for (const [checkId, claim, , authority] of pending) {
       if (checks.some((check) => check.checkId === checkId)) continue;
       add({ checkId, status, ...(failureCode ? { failureCode } : {}), claim, authority, evidence: ev });
@@ -177,6 +199,7 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
   const environmentTools: Record<string, string> = { "create-next-app": pins.createNextApp, shadcn: pins.shadcn };
   let npmVersion: string | undefined;
   let cleanupNote: { removed: boolean; kept: boolean; error?: string } = { removed: false, kept: false };
+  let publicIdentity: string | undefined;
 
   try {
     // ── workspace and tools ──────────────────────────────────────────────
@@ -215,15 +238,25 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
       return finish();
     }
 
-    // ── local canonical registry ─────────────────────────────────────────
-    registry = await startLocalRegistry(input.items);
-    add({
-      checkId: id("registry", "local-canonical"),
-      status: "pass",
-      claim: "the registry payload is the canonical generator output served on loopback",
-      authority: "generator",
-      evidence: [evidence("registry-payload", "host", `${registry.host} (ephemeral port); ${input.items.length} items from buildDistributedRegistryItems(); nothing written to public/r; no production registry contacted`)],
-    });
+    // ── registry: local canonical (LOCAL_CANONICAL) or the live public registry (PUBLIC_REGISTRY) ──
+    if (input.public) {
+      const origin = input.public.origin.replace(/\/$/, "");
+      registry = { origin, template: `${origin}/r/{name}.json`, host: new URL(origin).host, requests: () => [], close: async () => undefined };
+      const expectedPayload = buildExpectedRegistryPayload(input.items);
+      const observed = await observePublicRegistry(origin, expectedPayload, input.public.fetcher);
+      publicIdentity = observedPayloadIdentity(observed, expectedPayload.files.size);
+      for (const check of registryProvenanceChecks({ id, origin, expectedGitSha: input.gitSha, expected: expectedPayload, observed, identityProblems: input.public.identityProblems })) add(check);
+      if (input.public.checkDirectory !== false) add(await directoryCheck(id, origin, input.public.fetcher));
+    } else {
+      registry = await startLocalRegistry(input.items);
+      add({
+        checkId: id("registry", "local-canonical"),
+        status: "pass",
+        claim: "the registry payload is the canonical generator output served on loopback",
+        authority: "generator",
+        evidence: [evidence("registry-payload", "host", `${registry.host} (ephemeral port); ${input.items.length} items from buildDistributedRegistryItems(); nothing written to public/r; no production registry contacted`)],
+      });
+    }
 
     // ── scaffold ─────────────────────────────────────────────────────────
     const scaffold = async () => step({ phase: "scaffold", command: "npx", args: ["--yes", `create-next-app@${pins.createNextApp}`, workspace.consumer, ...SCAFFOLD_FLAGS], cwd: workspace.root, limitMs: limits.scaffoldMs });
@@ -263,7 +296,7 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
       evidence: [
         evidence("file", "tailwind", tailwind ? "Tailwind detected" : "no tailwind dependency or config"),
         evidence("file", "pre-existing", preExisting.length ? preExisting.join(", ") : "no expected install path exists before the install"),
-        evidence("file", "components.json", "hand-written (shadcn init requires Tailwind); @skrewww registry → local loopback registry"),
+        evidence("file", "components.json", `hand-written (shadcn init requires Tailwind); @skrewww registry → ${input.public ? "the live public registry" : "local loopback registry"}`),
       ],
     });
     if (!clean) {
@@ -289,7 +322,7 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
       checkId: id("install", "shadcn-add"),
       status: installClass === "ok" ? "pass" : installClass === "environment" ? "unknown" : "fail",
       ...(installClass === "ok" ? {} : { failureCode: installClass === "environment" ? ("ENVIRONMENT_ERROR" as const) : ("INSTALL_FAILED" as const) }),
-      claim: "the pinned shadcn CLI installs every subject from the local canonical registry",
+      claim: `the pinned shadcn CLI installs every subject from the ${input.public ? "live public" : "local canonical"} registry`,
       authority: "generator",
       evidence: [
         evidence("command", "shadcn add", `shadcn@${pins.shadcn} add --yes · ${strategy === "single" ? "one invocation" : "one invocation per subject"} · ${input.subjects.length} subject(s) in generator order`),
@@ -399,10 +432,13 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
     });
 
     // ── registry closure ─────────────────────────────────────────────────
+    if (input.public) {
+      add({ checkId: id("registry-closure", "resolved"), status: "not-applicable", claim: "the installer resolves exactly the derived registry-dependency closure", authority: "generator", evidence: [evidence("registry-payload", "closure", "PUBLIC_REGISTRY has no request log for the public origin; closure is covered by the per-file, file-set and import checks (an unexpected extra item would add files, a missing one would remove them)")] });
+    }
     const closure = evaluateRegistryClosure(registry.requests(), expectation.closureItems, distributed);
     const foundationItems = Array.from(new Set(expectation.files.filter((file) => file.kinds.includes("foundation")).flatMap((file) => file.items))).sort();
     const closureOk = closure.missing.length === 0 && closure.extra.length === 0 && closure.unknown.length === 0;
-    add({
+    if (!input.public) add({
       checkId: id("registry-closure", "resolved"),
       status: closureOk ? "pass" : "fail",
       ...(closureOk ? {} : { failureCode: closure.missing.length > 0 ? ("INSTALL_FAILED" as const) : ("MANIFEST_MISMATCH" as const) }),
@@ -641,8 +677,10 @@ export async function verifyShadcnLocalCanonical(input: VerifyShadcnInput): Prom
       evidence: [evidence("command", "cleanup", cleanupNote.kept ? "kept on request (--keep)" : cleanupNote.removed ? "workspace removed" : `removal failed: ${redact(cleanupNote.error ?? "")}`)],
     });
     const result = assembleResult({
+      mode: input.public ? "PUBLIC_REGISTRY" : "LOCAL_CANONICAL",
       subject: input.subjectLabel,
       gitSha: input.gitSha,
+      ...(publicIdentity ? { integrity: publicIdentity } : {}),
       environment: { node: input.nodeVersion ?? process.version, platform: input.platform ?? `${process.platform}-${process.arch}`, ...(npmVersion ? { packageManager: `npm@${npmVersion}` } : {}), tools: environmentTools },
       checks,
       volatile: { startedAt: new Date(started).toISOString(), durationMs: now() - started },

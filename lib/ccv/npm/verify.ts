@@ -38,6 +38,10 @@ import { verifyStaticCss } from "@/lib/ccv/css/static-delivery";
 import { startServer as defaultStartServer, type ServerStarter } from "@/lib/ccv/runner/server";
 import { REPRESENTATIVE_CONTROL } from "@/lib/consumer-scenarios/common-runtime";
 import { runReactPackageBrowserChecks } from "@/lib/consumer-scenarios/react-package-scenario";
+import type { Fetcher } from "@/lib/ccv/public/fetcher";
+import { consumedPublicArtifactCheck, npmMetadataChecks, npmTarballChecks, observePackument, observeRegistryKeys, rebuildCheck, sha1Hex, sri512, type NpmVersionMeta } from "@/lib/ccv/public/npm-provenance";
+import { rebuildAtCommit } from "@/lib/ccv/public/rebuild";
+import type { ReleaseIdentity } from "@/lib/ccv/public/release-identity";
 import type { LaunchOptions } from "@playwright/test";
 import type { CcvFailureCode } from "@/lib/ccv/failure-codes";
 import type { CcvAuthority, CcvCheck, CcvResult, NpmConsumerContract } from "@/lib/ccv/types";
@@ -67,8 +71,10 @@ export type VerifyNpmInput = {
   contract: NpmConsumerContract;
   /** Repository directory of the package (`packages/react`). */
   packageDir: string;
-  /** Builds the candidate from canonical source (the CLI passes the existing `buildReactPackage`). */
-  buildPackage: () => Promise<void>;
+  /** LOCAL_TARBALL only: builds the candidate from canonical source (the CLI passes the existing `buildReactPackage`). Never called in PUBLIC_NPM. */
+  buildPackage?: () => Promise<void>;
+  /** CCV-5: when present the run is PUBLIC_NPM — the exact published version is downloaded and installed from the public registry. */
+  public?: PublicNpmSource;
   run: CommandRunner;
   parentEnv: ParentEnv;
   keep?: boolean;
@@ -83,6 +89,15 @@ export type VerifyNpmInput = {
   platform?: string;
   /** CCV-4 representative runtime (real Chromium). Absent = static CSS only; runtime-supply checks stay `unknown`. */
   runtime?: NpmRuntimeHooks;
+};
+
+export type PublicNpmSource = {
+  /** The exact published version to verify (e.g. 0.1.0-beta.2). */
+  version: string;
+  registryOrigin: string;
+  /** Expected identity, derived from repository state (version → release tag → tag commit → dist-tag rule). */
+  release: ReleaseIdentity;
+  fetcher: Fetcher;
 };
 
 export type NpmRuntimeHooks = {
@@ -158,6 +173,20 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
     { id: id("lifecycle", "ignore-scripts-typecheck"), claim: "without install scripts, the consumer type-checks", authority: "ccv-scenario" },
     { id: id("lifecycle", "ignore-scripts-build"), claim: "without install scripts, the consumer production build succeeds", authority: "ccv-scenario" },
   ];
+  if (input.public) {
+    const claims: Array<[string, string, CcvAuthority]> = [
+      ["expected-release", "the expected release is derived from the repository (version → release tag → commit)", "release-tag"],
+      ["registry-version", `${pkg}@${input.public.version} is published on the public registry`, "npm-registry-metadata"],
+      ["git-head", "the registry's gitHead equals the release tag's commit", "npm-registry-metadata"],
+      ["dist-tags", "the version sits under its own dist-tag and a prerelease has not been promoted to latest", "npm-registry-metadata"],
+      ["signatures", "the registry signature over the version and its integrity verifies", "npm-registry-metadata"],
+      ["source-identity", "no package source changed between the release tag and the commit the contract is derived from", "release-tag"],
+      ["integrity", "the public tarball has exactly the integrity and shasum the registry lists", "npm-registry-metadata"],
+      ["rebuild", "rebuilding the package at the release commit reproduces the public tarball", "release-tag"],
+      ["consumed-public-artifact", "the consumer installed the package from the public registry (not a tarball, link, workspace or local copy)", "npm-registry-metadata"],
+    ];
+    for (const [key, claim, authority] of claims) planned.push({ id: id("provenance", key), claim, authority });
+  }
   let pendingReason: { text: string; environment: boolean } = { text: "not reached", environment: true };
 
   const workspace = createWorkspace(input.repoRoot, input.workspaceBase);
@@ -174,6 +203,7 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
   const environmentTools: Record<string, string> = {};
   let npmVersion: string | undefined;
   let integrity: string | undefined;
+  let publicMetaForResult: NpmVersionMeta | undefined;
   const stop = (text: string, environment: boolean) => {
     pendingReason = { text, environment };
   };
@@ -184,7 +214,7 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
 
   const writeConsumer = (dir: string, tarball: string, harnessSource: string, probeSource: string) => {
     mkdirSync(join(dir, "src"), { recursive: true });
-    writeFileSync(join(dir, "package.json"), consumerPackageJson(pkg, tarball, vitePins));
+    writeFileSync(join(dir, "package.json"), consumerPackageJson(pkg, input.public ? input.public.version : `file:${tarball}`, vitePins));
     writeFileSync(join(dir, "tsconfig.json"), CONSUMER_TSCONFIG);
     writeFileSync(join(dir, "vite.config.ts"), VITE_CONFIG);
     writeFileSync(join(dir, "index.html"), INDEX_HTML);
@@ -234,7 +264,10 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
     }
 
     // ── candidate build and real tarball ─────────────────────────────────
-    try {
+    if (input.public) {
+      add({ checkId: id("artifact", "build"), status: "not-applicable", claim: planned[0].claim, authority: "package-build-entry", evidence: [evidence("command", "build", "PUBLIC_NPM verifies the published artifact; nothing is built from the working tree (the release rebuild in provenance:rebuild is a separate, commit-pinned comparison)")] });
+    } else try {
+      if (!input.buildPackage) throw new Error("LOCAL_TARBALL requires buildPackage");
       await input.buildPackage();
       add({ checkId: id("artifact", "build"), status: "pass", claim: planned[0].claim, authority: "package-build-entry", evidence: [evidence("command", "build", `buildReactPackage() at ${input.gitSha}; version ${e.package.version} (unchanged)`)] });
     } catch (error) {
@@ -243,7 +276,7 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
       return finish();
     }
     mkdirSync(packDir, { recursive: true });
-    const pack = await step({ phase: "npm-pack", command: "npm", args: ["pack", "--pack-destination", packDir, "--json"], cwd: input.packageDir, limitMs: limits.probeMs });
+    const pack = await step({ phase: "npm-pack", command: "npm", args: input.public ? ["pack", `${pkg}@${input.public.version}`, "--pack-destination", packDir, "--json"] : ["pack", "--pack-destination", packDir, "--json"], cwd: input.public ? workspace.root : input.packageDir, limitMs: limits.probeMs });
     const packClass = classifyOutcome(pack);
     let packed: { filename: string; files: Array<{ path: string }>; integrity?: string; name?: string; version?: string } | undefined;
     try {
@@ -292,6 +325,18 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
       evidence: packIssues.length === 0 ? [evidence("file", "pack-rules", `required: ${e.package.files.required.join(", ")}; allowed: ${[...e.package.files.allowedExact, ...e.package.files.allowedPrefixes.map((prefix) => `${prefix}*`)].join(", ")}`)] : packIssues.map((issue) => evidence("file", issue.area, issue.message)),
     });
     const packedHashes = hashFiles(packedFiles);
+    let publicMeta: NpmVersionMeta | undefined;
+    if (input.public) {
+      const pub = input.public;
+      const [packument, keys] = await Promise.all([observePackument(pub.registryOrigin, pkg, pub.fetcher), observeRegistryKeys(pub.registryOrigin, pub.fetcher)]);
+      const metadata = npmMetadataChecks({ id, pkg, origin: pub.registryOrigin, release: pub.release, packument, keys });
+      publicMeta = metadata.meta;
+      publicMetaForResult = metadata.meta;
+      for (const check of metadata.checks) add(check);
+      for (const check of npmTarballChecks({ id, pkg, version: pub.version, meta: metadata.meta, tarball: { integrity: sri512(archive), shasum: sha1Hex(archive), sha256: sha256OfBytes(archive), bytes: archive.length } })) add(check);
+      const rebuilt = pub.release.tagCommit ? await rebuildAtCommit({ repoRoot: input.repoRoot, commit: pub.release.tagCommit, workDir: workspace.root, step, limits: { cloneMs: limits.probeMs, buildMs: limits.buildMs } }) : undefined;
+      add(rebuildCheck({ id, pkg, version: pub.version, tagCommit: pub.release.tagCommit, publicIntegrity: sri512(archive), publicFiles: new Map(Array.from(packedHashes, ([path, hash]) => [path, hash.sha256] as const)), rebuilt }));
+    }
 
     // ── consumer + real install ──────────────────────────────────────────
     const harness = generateSurfaceHarness(pkg, e.exports.values, e.exports.types);
@@ -316,7 +361,23 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
       stop("the tarball did not install", environment);
       return finish();
     }
-    add({ checkId: id("install", "tarball"), status: "pass", claim: planned[3].claim, authority: "package-manifest", evidence: [evidence("command", "npm install", `npm install --no-audit --no-fund of file:${packed.filename}; installed as a real copy in node_modules/${pkg}`)] });
+    add({ checkId: id("install", "tarball"), status: "pass", claim: planned[3].claim, authority: "package-manifest", evidence: [evidence("command", "npm install", `npm install --no-audit --no-fund of ${input.public ? `${pkg}@${input.public.version} from the public registry` : `file:${packed.filename}`}; installed as a real copy in node_modules/${pkg}`)] });
+    if (input.public) {
+      const pub = input.public;
+      const registryStep = await step({ phase: "npm-config-registry", command: "npm", args: ["config", "get", "registry"], cwd: consumer, limitMs: limits.probeMs });
+      const lock = readJson<{ packages?: Record<string, { resolved?: string; integrity?: string; link?: boolean }> }>(join(consumer, "package-lock.json"));
+      add(consumedPublicArtifactCheck({
+        id, pkg, version: pub.version, registryOrigin: pub.registryOrigin,
+        dependencySpec: String(readJson<{ dependencies?: Record<string, string> }>(join(consumer, "package.json"))?.dependencies?.[pkg] ?? ""),
+        configuredRegistry: classifyOutcome(registryStep) === "ok" ? registryStep.stdoutTail.trim() : undefined,
+        lockEntry: lock?.packages?.[`node_modules/${pkg}`],
+        installedIsLink: isLink,
+        installedVersion: readJson<{ version?: string }>(join(installedDir, "package.json"))?.version,
+        expectedTarball: publicMeta?.dist?.tarball,
+        expectedIntegrity: publicMeta?.dist?.integrity,
+        consumerHasNpmrc: existsSync(join(consumer, ".npmrc")),
+      }));
+    }
 
     for (const name of ["vite", "@vitejs/plugin-react", "typescript", "react", "react-dom", "@types/react", "@types/react-dom"]) {
       const version = readJson<{ version?: string }>(join(consumer, "node_modules", ...name.split("/"), "package.json"))?.version;
@@ -716,6 +777,11 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
   }
   return finish();
 
+  function publicObservedGitHead(): string | undefined {
+    const head = publicMetaForResult?.gitHead;
+    return head && /^[0-9a-f]{40}$/.test(head) ? head : undefined;
+  }
+
   function finish(): VerifyNpmOutput {
     for (const entry of planned) {
       if (checks.some((check) => check.checkId === entry.id)) continue;
@@ -739,10 +805,12 @@ export async function verifyNpmLocalTarball(input: VerifyNpmInput): Promise<Veri
     });
     const result = assembleResult({
       distribution: "npm-package",
-      mode: "LOCAL_TARBALL",
+      mode: input.public ? "PUBLIC_NPM" : "LOCAL_TARBALL",
       subject: pkg,
-      gitSha: input.gitSha,
-      packageVersion: e.package.version,
+      // PUBLIC_NPM: the expected identity is the release commit derived from the repository; if the release tag is absent the verifying checkout is recorded and every provenance check says so.
+      gitSha: input.public?.release.tagCommit ?? input.gitSha,
+      ...(input.public && publicObservedGitHead() ? { observedGitSha: publicObservedGitHead() } : {}),
+      packageVersion: input.public ? input.public.version : e.package.version,
       integrity,
       environment: { node: input.nodeVersion ?? process.version, platform: input.platform ?? `${process.platform}-${process.arch}`, ...(npmVersion ? { packageManager: `npm@${npmVersion}` } : {}), tools: environmentTools },
       checks,

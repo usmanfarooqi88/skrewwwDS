@@ -22,14 +22,15 @@ export type VitePins = Record<keyof typeof CCV_VITE_CONSUMER_PINS, string>;
 export const SURFACE_HARNESS_PATH = "src/ccv-surface.ts";
 export const PROBE_PATH = "ccv-probe.mjs";
 
-export function consumerPackageJson(packageName: string, tarballPath: string, pins: VitePins = CCV_VITE_CONSUMER_PINS): string {
+/** `dependencySpec` is `file:<tarball>` for LOCAL_TARBALL and the exact published version for PUBLIC_NPM. */
+export function consumerPackageJson(packageName: string, dependencySpec: string, pins: VitePins = CCV_VITE_CONSUMER_PINS): string {
   return `${JSON.stringify(
     {
       name: "skrewww-ccv-npm-consumer",
       private: true,
       version: "0.0.0",
       type: "module",
-      dependencies: { react: pins.react, "react-dom": pins["react-dom"], [packageName]: `file:${tarballPath}` },
+      dependencies: { react: pins.react, "react-dom": pins["react-dom"], [packageName]: dependencySpec },
       devDependencies: {
         vite: pins.vite,
         "@vitejs/plugin-react": pins["@vitejs/plugin-react"],

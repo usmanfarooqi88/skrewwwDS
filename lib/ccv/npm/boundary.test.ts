@@ -47,10 +47,14 @@ describe("CCV-3 boundaries", () => {
 describe("npm run ccv:npm — usage errors exit 1 before anything runs", () => {
   const tsx = join(root, "node_modules", ".bin", "tsx");
   const run = (...args: string[]) => spawnSync(tsx, ["scripts/ccv-npm.ts", ...args], { cwd: root, encoding: "utf8" });
-  it("rejects PUBLIC_NPM and other modes, bad flags and in-repo output paths", () => {
-    expect(run("--mode", "PUBLIC_NPM").status).toBe(1);
-    expect(run("--mode", "PUBLIC_NPM").stderr).toMatch(/CCV-5/);
+  it("rejects modes of the other distribution and unknown modes, bad flags and in-repo output paths (no run starts, no network)", () => {
+    // PUBLIC_NPM is a real mode since CCV-5; selecting it starts a public run, so it is covered by the injected-fetcher tests, never here.
+    const wrong = run("--mode", "PUBLIC_REGISTRY");
+    expect(wrong.status).toBe(1);
+    expect(wrong.stderr).toMatch(/belongs to the shadcn-registry distribution/);
     expect(run("--mode", "LOCAL_CANONICAL").status).toBe(1);
+    expect(run("--mode", "NOPE").stderr).toMatch(/unknown mode/);
+    expect(run("--package-version", "0.1.0-beta.2").stderr).toMatch(/PUBLIC_NPM only/);
     expect(run("--bogus").status).toBe(1);
     expect(run("--out", "lib").status).toBe(1);
     expect(run("--compare", "only-one.json").status).toBe(1);

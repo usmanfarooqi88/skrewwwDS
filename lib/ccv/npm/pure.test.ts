@@ -133,7 +133,7 @@ describe("CCV-3 lifecycle classification", () => {
 describe("CCV-3 consumer, harness and probe generation", () => {
   it("pins every consumer tool exactly and installs the tarball by file path", () => {
     for (const version of Object.values(CCV_VITE_CONSUMER_PINS)) expect(version).toMatch(/^\d+\.\d+\.\d+$/);
-    const pkg = JSON.parse(consumerPackageJson("@skrewww/react", "/w/pack/skrewww-react-1.0.0.tgz"));
+    const pkg = JSON.parse(consumerPackageJson("@skrewww/react", "file:/w/pack/skrewww-react-1.0.0.tgz"));
     expect(pkg.dependencies["@skrewww/react"]).toBe("file:/w/pack/skrewww-react-1.0.0.tgz");
     expect(JSON.stringify(pkg)).not.toMatch(/"[\^~]|latest|\*/);
   });

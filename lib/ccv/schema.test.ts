@@ -180,7 +180,12 @@ describe("CCV-1 result and evidence validation", () => {
     expect(resultProblems(makeResult([{ ...passCheck, failureCode: "UPSTREAM_TRANSFORM" }]))).toMatch(/cannot carry a failure code/); // F1 can never be a pass
     expect(resultProblems(makeResult([{ ...failCheck, failureCode: "ENVIRONMENT_ERROR" }]))).toMatch(/not a contract failure/);
     expect(resultProblems(makeResult([{ ...failCheck, failureCode: "NOT_A_CODE" as never }]))).toMatch(/unknown failure code/);
-    expect(resultProblems(makeResult([{ ...passCheck, status: "unknown", failureCode: "FILE_MISSING" }]))).toMatch(/only carry ENVIRONMENT_ERROR/);
+    expect(resultProblems(makeResult([{ ...passCheck, status: "unknown", failureCode: "FILE_MISSING" }]))).toMatch(/only carry ENVIRONMENT_ERROR or PROVENANCE_MISSING/);
+    // CCV-5: an unknown may say why — the environment stopped the observation, or the provenance evidence is absent. Never a pass, never another code.
+    expect(validateCcvResult(makeResult([{ ...passCheck, status: "unknown", failureCode: "PROVENANCE_MISSING" }]))).toEqual({ ok: true });
+    expect(validateCcvResult(makeResult([{ ...passCheck, status: "unknown", failureCode: "ENVIRONMENT_ERROR" }]))).toEqual({ ok: true });
+    expect(resultProblems(makeResult([{ ...passCheck, status: "unknown", failureCode: "PROVENANCE_MISMATCH" }]))).toMatch(/only carry ENVIRONMENT_ERROR or PROVENANCE_MISSING/);
+    expect(resultProblems(makeResult([{ ...passCheck, failureCode: "PROVENANCE_MISSING" }]))).toMatch(/a pass cannot carry a failure code/);
     expect(validateCcvResult(makeResult([failCheck]))).toEqual({ ok: true }); // an upstream transform is a recordable, observable finding
   });
 

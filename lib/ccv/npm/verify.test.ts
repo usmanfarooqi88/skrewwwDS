@@ -1,10 +1,15 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { generateKeyPairSync, sign } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { deriveNpmContract } from "@/lib/ccv/derive-npm-contract";
 import { syntheticCssFor } from "@/lib/ccv/css/synthetic";
+import type { Fetcher, FetchOutcome } from "@/lib/ccv/public/fetcher";
+import { sha1Hex, sri512 } from "@/lib/ccv/public/npm-provenance";
+import { provenanceVerdict } from "@/lib/ccv/public/verdict";
+import type { ReleaseIdentity } from "@/lib/ccv/public/release-identity";
 import { SURFACE_HARNESS_PATH } from "@/lib/ccv/npm/consumer";
 import { readTarGz } from "@/lib/ccv/npm/tarball";
 import { verifyNpmLocalTarball, type VerifyNpmInput } from "@/lib/ccv/npm/verify";
@@ -72,6 +77,10 @@ type FakeOptions = {
   viteFails?: boolean;
   timeoutPhase?: string;
   buildThrows?: boolean;
+  /** CCV-5 public-mode knobs */
+  publicLock?: { resolved?: string; integrity?: string; link?: boolean };
+  configRegistry?: string;
+  rebuildDiffers?: boolean;
 };
 
 const ok = (spec: CommandSpec, stdout = ""): CommandOutcome => ({ phase: spec.phase, exitCode: 0, signal: null, timedOut: false, stdoutTail: stdout, stderrTail: "", durationMs: 1 });
@@ -80,7 +89,10 @@ const write = (path: string, content: string | Buffer) => {
   writeFileSync(path, content);
 };
 
+const PUBLIC_TARBALL_URL = (version: string) => `https://registry.npmjs.org/@skrewww/react/-/react-${version}.tgz`;
+
 function fakeRunner(options: FakeOptions = {}, seen: CommandSpec[] = []): CommandRunner {
+  let lastTarball = "";
   return async (spec) => {
     seen.push(spec);
     if (options.timeoutPhase === spec.phase) return { phase: spec.phase, exitCode: null, signal: "SIGTERM", timedOut: true, stdoutTail: "", stderrTail: "", durationMs: spec.timeoutMs };
@@ -90,19 +102,32 @@ function fakeRunner(options: FakeOptions = {}, seen: CommandSpec[] = []): Comman
       const files = packageFiles(options.mutatePackage);
       const filename = "skrewww-react-0.1.0-beta.2.tgz";
       write(join(destination, filename), tgz(files));
-      return ok(spec, JSON.stringify([{ name: contract.subject, version: contract.expectations.package.version, filename, integrity: "sha512-ZmFrZQ==", files: Array.from(files.keys()).map((path) => ({ path })) }]));
+      lastTarball = join(destination, filename);
+      return ok(spec, JSON.stringify([{ name: contract.subject, version: contract.expectations.package.version, filename, integrity: sri512(readFileSync(lastTarball)), files: Array.from(files.keys()).map((path) => ({ path })) }]));
     }
     if (spec.phase === "npm-install" || spec.phase === "npm-install-ignore-scripts") {
       const ignoreScripts = spec.args.includes("--ignore-scripts");
       const pkg = JSON.parse(readFileSync(join(spec.cwd, "package.json"), "utf8"));
-      const tarball = String(pkg.dependencies[contract.subject]).replace(/^file:/, "");
+      const dependencySpec = String(pkg.dependencies[contract.subject]);
+      const tarball = dependencySpec.startsWith("file:") ? dependencySpec.replace(/^file:/, "") : lastTarball; // PUBLIC_NPM installs by registry spec: the fake "registry" serves the tarball its `npm pack` fetched
       const installedDir = join(spec.cwd, "node_modules", ...contract.subject.split("/"));
       for (const [path, data] of Array.from(readTarGz(readFileSync(tarball)).files)) write(join(installedDir, path.replace(/^package\//, "")), data);
       const installedManifest = JSON.parse(readFileSync(join(installedDir, "package.json"), "utf8"));
       for (const name of Object.keys(installedManifest.dependencies ?? {})) write(join(spec.cwd, "node_modules", ...name.split("/"), "package.json"), JSON.stringify({ name, version: "2.1.10" }));
       for (const name of ["react", "react-dom", "vite", "typescript"]) write(join(spec.cwd, "node_modules", name, "package.json"), JSON.stringify({ name, version: pkg.dependencies[name] ?? pkg.devDependencies[name] }));
-      write(join(spec.cwd, "package-lock.json"), JSON.stringify({ packages: { "": {}, [`node_modules/${contract.subject}`]: {}, ...Object.fromEntries(Object.keys(installedManifest.dependencies ?? {}).map((name) => [`node_modules/${name}`, {}])) } }));
+      write(join(spec.cwd, "package-lock.json"), JSON.stringify({ packages: { "": {}, [`node_modules/${contract.subject}`]: dependencySpec.startsWith("file:") ? {} : { resolved: options.publicLock?.resolved ?? PUBLIC_TARBALL_URL(dependencySpec), integrity: options.publicLock?.integrity ?? sri512(readFileSync(tarball)), ...(options.publicLock?.link ? { link: true } : {}) }, ...Object.fromEntries(Object.keys(installedManifest.dependencies ?? {}).map((name) => [`node_modules/${name}`, {}])) } }));
       options.afterInstall?.(installedDir, spec.cwd, ignoreScripts);
+      return ok(spec);
+    }
+    if (spec.phase === "npm-config-registry") return ok(spec, `${options.configRegistry ?? "https://registry.npmjs.org/"}\n`);
+    if (spec.phase === "rebuild-clone") {
+      mkdirSync(spec.args[spec.args.length - 1], { recursive: true });
+      return ok(spec);
+    }
+    if (spec.phase === "rebuild-checkout" || spec.phase === "rebuild-build") return ok(spec);
+    if (spec.phase === "rebuild-pack") {
+      const destination = spec.args[spec.args.indexOf("--pack-destination") + 1];
+      write(join(destination, "skrewww-react-0.1.0-beta.2.tgz"), tgz(packageFiles(options.rebuildDiffers ? (files) => files.set("dist/index.js", `${files.get("dist/index.js")}\n// tampered`) : undefined)));
       return ok(spec);
     }
     if (spec.phase === "node-probe" || spec.phase === "node-probe-ignore-scripts") return runCommand({ ...spec, command: process.execPath });
@@ -332,4 +357,129 @@ describe("CCV-4 npm — static stylesheet delivery and representative runtime (f
     expect(runtimeChecks.length).toBe(4);
     expect(runtimeChecks.every((c) => c.status === "unknown" && c.failureCode === undefined)).toBe(true);
   });
+});
+
+describe("CCV-5 PUBLIC_NPM verifier (injected registry, fake npm; no network, no build)", () => {
+  const TAG_COMMIT = "6ea9e0d0a5c0980f88153e998ff5667acc3aab93";
+  const keypair = generateKeyPairSync("ec", { namedCurve: "P-256" });
+
+  const publicBundle = (over: { gitHead?: string | null; integrity?: string; signed?: boolean; distTags?: Record<string, string>; unavailable?: boolean; noKeys?: boolean } = {}) => {
+    const version = contract.expectations.package.version;
+    const tarballBytes = tgz(packageFiles());
+    const integrity = over.integrity ?? sri512(tarballBytes);
+    const sig = sign("sha256", Buffer.from(`${contract.subject}@${version}:${integrity}`), keypair.privateKey).toString("base64");
+    const packument = {
+      versions: { [version]: { version, ...(over.gitHead === null ? {} : { gitHead: over.gitHead ?? TAG_COMMIT }), dist: { integrity, shasum: sha1Hex(tarballBytes), tarball: PUBLIC_TARBALL_URL(version), signatures: over.signed === false ? [] : [{ keyid: "SHA256:test-key", sig }] } } },
+      "dist-tags": over.distTags ?? { beta: version, latest: "0.1.0-beta.1" },
+    };
+    const keys = { keys: [{ keyid: "SHA256:test-key", key: keypair.publicKey.export({ type: "spki", format: "der" }).toString("base64") }] };
+    const fetched: string[] = [];
+    const fetcher: Fetcher = async (url) => {
+      fetched.push(url);
+      if (over.unavailable) return { kind: "network-error", message: "ENOTFOUND registry.npmjs.org" } satisfies FetchOutcome;
+      const body = url.endsWith("/-/npm/v1/keys") ? (over.noKeys ? undefined : keys) : url.endsWith("/@skrewww%2freact") ? packument : undefined;
+      if (!body) return { kind: "response", status: over.noKeys && url.endsWith("/keys") ? 503 : 404, bytes: new Uint8Array(), finalUrl: url };
+      return { kind: "response", status: 200, bytes: new TextEncoder().encode(JSON.stringify(body)), finalUrl: url } satisfies FetchOutcome;
+    };
+    return { version, fetcher, fetched, integrity };
+  };
+  const release = (over: Partial<ReleaseIdentity> = {}): ReleaseIdentity => ({ packageName: contract.subject, version: contract.expectations.package.version, tag: `react-v${contract.expectations.package.version}`, tagCommit: TAG_COMMIT, tagObjectType: "tag", tagCarriesSignature: true, expectedDistTag: "beta", changedSinceTag: [], metadataChangedSinceTag: [], ...over });
+  const publicVerify = (bundleOver: Parameters<typeof publicBundle>[0] = {}, options: FakeOptions = {}, releaseOver: Partial<ReleaseIdentity> = {}, seen: CommandSpec[] = []) => {
+    const bundle = publicBundle(bundleOver);
+    let buildCalls = 0;
+    const promise = verify(options, { buildPackage: async () => { buildCalls += 1; }, public: { version: bundle.version, registryOrigin: "https://registry.npmjs.org", release: release(releaseOver), fetcher: bundle.fetcher } }, seen);
+    return { promise, bundle, buildCalls: () => buildCalls };
+  };
+  const state = (result: CcvResult) => provenanceVerdict(result).state;
+
+  it("PASS: public tarball == registry listing == rebuild at the release commit; gitHead == tag; signature verifies; consumed from the registry", async () => {
+    const seen: CommandSpec[] = [];
+    const run = publicVerify({}, {}, {}, seen);
+    const { result, exitCode } = await run.promise;
+    expect(validateCcvResult(result)).toEqual({ ok: true });
+    expect(failures(result)).toEqual([]);
+    expect(result.summary.unknown).toBe(0);
+    expect(exitCode).toBe(0);
+    expect(result.mode).toBe("PUBLIC_NPM");
+    expect(state(result)).toBe("PASS");
+    expect(result.checks.filter((c) => c.checkId.includes(":provenance:")).map((c) => c.checkId.split(":").pop())).toEqual(expect.arrayContaining(["expected-release", "registry-version", "git-head", "dist-tags", "signatures", "source-identity", "integrity", "rebuild", "consumed-public-artifact"]));
+    // expected identity = the release tag commit; observed = the registry gitHead; integrity = the registry's
+    expect(result.source).toMatchObject({ expectedGitSha: TAG_COMMIT, observedGitSha: TAG_COMMIT, packageVersion: run.bundle.version, integrity: run.bundle.integrity });
+    expect(check(result, ":artifact:build").status).toBe("not-applicable");
+  }, 60_000);
+
+  it("never builds or packs the working tree, and installs the exact registry spec, not a file: tarball", async () => {
+    const seen: CommandSpec[] = [];
+    const run = publicVerify({}, {}, {}, seen);
+    await run.promise;
+    expect(run.buildCalls()).toBe(0);
+    const pack = seen.find((spec) => spec.phase === "npm-pack")!;
+    expect(pack.args).toContain(`${contract.subject}@${run.bundle.version}`);
+    expect(pack.cwd).not.toBe(base); // not the repository package directory
+    const installs = seen.filter((spec) => spec.phase === "npm-install" || spec.phase === "npm-install-ignore-scripts");
+    expect(installs).toHaveLength(2);
+    expect(run.bundle.fetched.some((url) => url.includes("%2freact"))).toBe(true);
+  }, 60_000);
+
+  it("FAIL: the registry's gitHead is not the release tag's commit", async () => {
+    const { result, exitCode } = await publicVerify({ gitHead: "b".repeat(40) }).promise;
+    expect(failures(result)).toEqual(["provenance:git-head=PROVENANCE_MISMATCH"]);
+    expect(state(result)).toBe("FAIL");
+    expect(exitCode).toBe(3);
+  }, 60_000);
+
+  it("UNKNOWN: the registry exposes no gitHead — installs and runs fine, provenance is NOT a pass (exit 2)", async () => {
+    const { result, exitCode } = await publicVerify({ gitHead: null }).promise;
+    expect(failures(result)).toEqual([]);
+    expect(check(result, ":provenance:git-head")).toMatchObject({ status: "unknown", failureCode: "PROVENANCE_MISSING" });
+    expect(check(result, ":install:tarball").status).toBe("pass");
+    expect(state(result)).toBe("UNKNOWN");
+    expect(exitCode).toBe(2);
+  }, 60_000);
+
+  it("UNKNOWN: the release tag is not in the checkout — no expected identity, no provenance pass, no rebuild", async () => {
+    const { result, exitCode } = await publicVerify({}, {}, { tagCommit: undefined }).promise;
+    for (const key of ["expected-release", "git-head", "source-identity", "rebuild"]) expect(check(result, `:provenance:${key}`)).toMatchObject({ status: "unknown", failureCode: "PROVENANCE_MISSING" });
+    expect(state(result)).toBe("UNKNOWN");
+    expect(exitCode).toBe(2);
+  }, 60_000);
+
+  it("UNKNOWN (ENVIRONMENT_ERROR): the public registry is unreachable — classified explicitly, never a pass", async () => {
+    const { result, exitCode } = await publicVerify({ unavailable: true }).promise;
+    expect(check(result, ":provenance:registry-version")).toMatchObject({ status: "unknown", failureCode: "ENVIRONMENT_ERROR" });
+    expect(check(result, ":provenance:consumed-public-artifact").status).not.toBe("pass");
+    expect(state(result)).toBe("UNKNOWN");
+    expect(exitCode).toBe(2);
+  }, 60_000);
+
+  it("FAIL: the public tarball is not what the registry lists (integrity), and a rebuild at the release commit does not reproduce it", async () => {
+    const integrity = await publicVerify({ integrity: sri512(new Uint8Array([9])) }).promise;
+    expect(failures(integrity.result)).toEqual(expect.arrayContaining(["provenance:integrity=PROVENANCE_MISMATCH"]));
+    const rebuild = await publicVerify({}, { rebuildDiffers: true }).promise;
+    expect(failures(rebuild.result)).toEqual(["provenance:rebuild=PROVENANCE_MISMATCH"]);
+    expect(check(rebuild.result, ":provenance:rebuild").evidence.map((entry) => entry.observed).join(" ")).toMatch(/dist\/index\.js/);
+  }, 120_000);
+
+  it.each([
+    ["a lockfile that resolved to a local file", { publicLock: { resolved: "file:../pack/skrewww-react-0.1.0-beta.2.tgz" } }],
+    ["an npm link", { publicLock: { link: true } }],
+    ["a non-public registry configuration", { configRegistry: "http://127.0.0.1:4873/" }],
+  ])("accidental local artifact usage is caught: %s → consumed-public-artifact FAIL", async (_label, options) => {
+    const { result, exitCode } = await publicVerify({}, options as FakeOptions).promise;
+    expect(check(result, ":provenance:consumed-public-artifact")).toMatchObject({ status: "fail", failureCode: "PROVENANCE_MISMATCH" });
+    expect(state(result)).toBe("FAIL");
+    expect(exitCode).toBe(3);
+  }, 60_000);
+
+  it("FAIL: the prerelease was promoted to latest", async () => {
+    const version = contract.expectations.package.version;
+    const { result } = await publicVerify({ distTags: { beta: version, latest: version } }).promise;
+    expect(failures(result)).toEqual(["provenance:dist-tags=PROVENANCE_MISMATCH"]);
+  }, 60_000);
+
+  it("is deterministic: two public verifications of the same artifact have identical stable sections", async () => {
+    const first = await publicVerify().promise;
+    const second = await publicVerify().promise;
+    expect(compareStableResults(first.result, second.result).identical).toBe(true);
+  }, 120_000);
 });

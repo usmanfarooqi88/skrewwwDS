@@ -42,6 +42,7 @@ export type AssembleInput = {
   packageVersion?: string;
   integrity?: string;
   gitSha: string;
+  observedGitSha?: string;
   environment: CcvResult["environment"];
   checks: CcvCheck[];
   volatile?: CcvResult["volatile"];
@@ -56,6 +57,7 @@ export function assembleResult(input: AssembleInput): CcvResult {
     environment: input.environment,
     source: {
       expectedGitSha: input.gitSha,
+      ...(input.observedGitSha ? { observedGitSha: input.observedGitSha } : {}),
       ...(input.packageVersion ? { packageVersion: input.packageVersion } : {}),
       ...(input.integrity ? { integrity: input.integrity } : {}),
     },
@@ -101,11 +103,18 @@ export function exitCodeFor(result: CcvResult): 0 | 2 | 3 {
   return 0;
 }
 
+/** Exit 2 means "no trustworthy verdict"; say whether that is the environment or a claim that could not be established. */
+function incompleteReason(result: CcvResult): string {
+  const unknowns = result.checks.filter((check) => check.status === "unknown");
+  const onlyProvenance = unknowns.length > 0 && unknowns.every((check) => check.failureCode === "PROVENANCE_MISSING");
+  return onlyProvenance ? "INCOMPLETE — provenance could not be established (the environment worked; no contract check failed)" : "INCOMPLETE — environment/tooling failure, no trustworthy verdict";
+}
+
 export function humanSummary(result: CcvResult): string[] {
   const counts = countResult(result);
   const code = exitCodeFor(result);
   const lines = [
-    `CCV verifier: ${code === 2 ? "INCOMPLETE — environment/tooling failure, no trustworthy verdict" : "completed"}`,
+    `CCV verifier: ${code === 2 ? incompleteReason(result) : "completed"}`,
     `Contract result: ${code === 0 ? "PASS" : code === 3 ? "FAIL" : "UNKNOWN"}`,
     `Distribution: ${result.distribution} · mode ${result.mode} · subject ${result.subject} · expected commit ${result.source.expectedGitSha}`,
     `Checks: pass ${result.summary.pass} · fail ${result.summary.fail} · unknown ${result.summary.unknown} · not-applicable ${result.summary.notApplicable}`,

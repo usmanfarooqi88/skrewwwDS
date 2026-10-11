@@ -1,5 +1,12 @@
 /**
- * CCV-2 — shadcn installed-result verifier (LOCAL_CANONICAL only).
+ * CCV-2 / CCV-5 — shadcn installed-result verifier.
+ *
+ *   --mode LOCAL_CANONICAL   (default) the generator output served on loopback
+ *   --mode PUBLIC_REGISTRY   the LIVE https://skrewww.com/r registry: every public file is compared byte-for-byte with
+ *                            what the generator emits at the expected commit (HEAD; the generator inputs must be
+ *                            committed), then the pinned shadcn CLI installs from the live URL. Read-only network.
+ *   --expected-sha <sha>     PUBLIC_REGISTRY only: assert the expected commit; it must equal HEAD (the contracts and
+ *                            expected bytes are derived from this checkout)
  *
  *   npm run ccv:shadcn                              full distribution in ONE clean consumer
  *   npm run ccv:shadcn -- --item button             one item (its registry closure is installed too); repeatable
@@ -22,6 +29,12 @@
  * completed and found contract failures.
  */
 import { relative } from "node:path";
+import { httpFetcher } from "../lib/ccv/public/fetcher";
+import { execGitReader } from "../lib/ccv/public/git-reader";
+import { selectMode } from "../lib/ccv/public/modes";
+import { deriveRegistryExpectedIdentity } from "../lib/ccv/public/release-identity";
+import { provenanceLines } from "../lib/ccv/public/verdict";
+import { SKREWWW_SHADCN_REGISTRY_HOMEPAGE } from "../lib/shadcn-registry-generator";
 import { readGitInfo } from "../lib/audit/collect-repo-facts";
 import { deriveAllShadcnContracts } from "../lib/ccv/derive-shadcn-contract";
 import { runCommand } from "../lib/ccv/runner/process";
@@ -40,19 +53,24 @@ if (args[0] === "--compare") {
   process.exit(outcome.code);
 }
 const usage = () => {
-  process.stderr.write("usage: npm run ccv:shadcn -- [--mode LOCAL_CANONICAL] [--item <name>]... [--install single|sequential] [--runtime] [--keep] [--out <dir>] [--no-write]\n");
+  process.stderr.write("usage: npm run ccv:shadcn -- [--mode LOCAL_CANONICAL|PUBLIC_REGISTRY] [--expected-sha <sha>] [--item <name>]... [--install single|sequential] [--runtime] [--keep] [--out <dir>] [--no-write]\n");
   process.exit(1);
 };
 const values = (flag: string) => args.flatMap((arg, index) => (arg === flag ? [args[index + 1]] : []));
-const VALUE_FLAGS = ["--mode", "--item", "--install", "--out"];
+const VALUE_FLAGS = ["--mode", "--item", "--install", "--out", "--expected-sha"];
 args.forEach((arg, index) => {
   if (VALUE_FLAGS.includes(arg) && (args[index + 1] === undefined || args[index + 1].startsWith("--"))) usage();
   if (arg.startsWith("--") && !VALUE_FLAGS.includes(arg) && !["--keep", "--no-write", "--runtime"].includes(arg)) usage();
   if (!arg.startsWith("--") && !VALUE_FLAGS.includes(args[index - 1] ?? "")) usage();
 });
-const mode = values("--mode")[0] ?? "LOCAL_CANONICAL";
-if (mode !== "LOCAL_CANONICAL") {
-  process.stderr.write(`mode ${mode} is not available in this slice: only LOCAL_CANONICAL (PUBLIC_REGISTRY is CCV-5; npm modes are CCV-3/CCV-5)\n`);
+const selection = selectMode("shadcn-registry", values("--mode")[0]);
+if (!selection.ok) {
+  process.stderr.write(`${selection.message}\n`);
+  process.exit(1);
+}
+const isPublic = selection.public;
+if (!isPublic && values("--expected-sha").length > 0) {
+  process.stderr.write("--expected-sha applies to PUBLIC_REGISTRY only\n");
   process.exit(1);
 }
 const strategy = (values("--install")[0] ?? "single") as InstallStrategy;
@@ -83,8 +101,19 @@ const runtime = args.includes("--runtime");
 
 async function main(): Promise<void> {
   const git = readGitInfo(repoRoot);
-  const contracts = deriveAllShadcnContracts({ gitSha: git.sha, items });
-  process.stdout.write(`CCV shadcn LOCAL_CANONICAL${runtime ? " + runtime" : ""} — ${subjects.length} subject(s), expected commit ${git.sha}${git.workingTreeDirty ? " (working tree dirty)" : ""}\n`);
+  const contracts = deriveAllShadcnContracts({ gitSha: git.sha, items, mode: selection.ok && isPublic ? "PUBLIC_REGISTRY" : "LOCAL_CANONICAL" });
+  let identityProblems: string[] | undefined;
+  if (isPublic) {
+    const expectedSha = values("--expected-sha")[0];
+    if (expectedSha !== undefined && expectedSha !== git.sha) {
+      process.stderr.write(`--expected-sha ${expectedSha} is not the checked-out commit ${git.sha}; check out the commit to verify (contracts and expected bytes are derived from this checkout)\n`);
+      process.exit(1);
+    }
+    const identity = deriveRegistryExpectedIdentity(execGitReader(repoRoot));
+    identityProblems = identity ? identity.dirtyGeneratorInputs.map((line) => `uncommitted: ${line}`) : ["git could not resolve HEAD"];
+    if (identityProblems.length > 0) process.stderr.write(`warning: the expected identity is not established (${identityProblems.length} uncommitted generator input(s)); provenance will be UNKNOWN\n`);
+  }
+  process.stdout.write(`CCV shadcn ${selection.ok ? selection.mode : ""}${runtime ? " + runtime" : ""} — ${subjects.length} subject(s), expected commit ${git.sha}${git.workingTreeDirty ? " (working tree dirty)" : ""}\n`);
   const output = await verifyShadcnLocalCanonical({
     repoRoot,
     gitSha: git.sha,
@@ -97,9 +126,11 @@ async function main(): Promise<void> {
     keep: args.includes("--keep"),
     installStrategy: strategy,
     ...(runtime ? { runtime: {} } : {}),
+    ...(isPublic ? { public: { origin: SKREWWW_SHADCN_REGISTRY_HOMEPAGE, fetcher: httpFetcher, identityProblems } } : {}),
     log: (line) => process.stdout.write(`${line}\n`),
   });
   for (const line of humanSummary(output.result)) process.stdout.write(`${line}\n`);
+  for (const line of provenanceLines(output.result)) process.stdout.write(`${line}\n`);
   if (output.kept) process.stdout.write(`Workspace kept: ${output.workspaceRoot}\n`);
   if (outDir) {
     const written = writeRunArtifact(outDir, resultStem(["shadcn", output.result.mode, subjectLabel, git.sha, ...(runtime ? ["runtime"] : [])]), output.result);
