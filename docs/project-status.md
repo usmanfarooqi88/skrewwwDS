@@ -5858,6 +5858,7 @@ here instead.
 | Agent Kit AK-4 Recipes / Feature Kits | ✅ Complete |
 | Agent Kit AK-5 Evaluations | ✅ Complete |
 | Agent Kit AK-6 Public Beta | ✅ Complete |
+| Adaptive Context & Decision Efficiency | PLANNED / GATED — AC-0 audit first; no ADOPT / EXPERIMENT decision yet — [sequence and gates](architecture/agent-kit-adaptive-context-roadmap.md) |
 | OS-0 Open Source Readiness | ✅ Complete (READY FOR OS-1) |
 | OS-1 Security Gate (Next.js upgrade) | ✅ Complete (PASSED — 0 critical/high/moderate/low, full and production scope) |
 | OS-1 Remote CI Gate | ✅ Complete (PASSED — GitHub Actions green on final pre-launch SHA) |
