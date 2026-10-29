@@ -148,7 +148,7 @@ export default function AgentKitPage() {
       <Section id="getting-started" title="Getting started">
         <p className="font-medium text-ink-700">1. Configure the Skrewww registry (if installing components)</p>
         <p>
-          Skrewww is listed in the official shadcn community registry directory, so{" "}
+          The <Code>@skrewww</Code> registry is indexed in the shadcn registry directory, so{" "}
           <Code>npx shadcn@latest add @skrewww/button</Code> resolves <Code>@skrewww</Code>{" "}
           without setup and records it in <Code>components.json</Code>. To declare it
           explicitly, add the namespaced registry to your project&rsquo;s{" "}
@@ -230,7 +230,17 @@ export default function AgentKitPage() {
             shadcn-compatible registry
           </a>{" "}
           — the same install mechanism as any shadcn/ui registry, namespaced as{" "}
-          <Code>@skrewww</Code>. This is a separate, independent surface from Agent Kit&rsquo;s
+          <Code>@skrewww</Code>. Skrewww is also listed in the community-curated{" "}
+          <a
+            href="https://github.com/birobirobiro/awesome-shadcn-ui/pull/626"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-brand-600 underline underline-offset-2"
+          >
+            Awesome shadcn/ui
+          </a>{" "}
+          ecosystem directory. That is a community list entry, not an endorsement by shadcn. This
+          is a separate, independent surface from Agent Kit&rsquo;s
           own <Code>/agent/*</Code> knowledge contracts (see &ldquo;How it works&rdquo;) — one
           answers &ldquo;how do I install this,&rdquo; the other answers &ldquo;what is this and
           how should I use it.&rdquo;

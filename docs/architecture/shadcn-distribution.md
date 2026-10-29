@@ -566,9 +566,12 @@ work without peer installs, no component API or registry schema change.
 - No per-component migration of the 315 declarations
 - No upstream shadcn PR / npm publish (OSS-2 remains separate)
 
-## shadcn community registry directory listing — 2026-09-30
+## shadcn registry directory listing — 2026-09-30
 
-Skrewww is listed in the official shadcn community registry directory.
+The `@skrewww` registry is indexed in the shadcn registry directory (shadcn's own
+index of community-submitted registries). This is a directory entry, not an
+endorsement by shadcn. A separate, community-curated list entry exists in
+Awesome shadcn/ui (birobirobiro/awesome-shadcn-ui#626, merged 2026-10-16).
 
 - **Upstream history.** The original submission,
   [shadcn-ui/ui#11991](https://github.com/shadcn-ui/ui/pull/11991), was

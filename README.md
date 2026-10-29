@@ -20,8 +20,8 @@ Stable — see [Implemented React components](#implemented-react-components).
 
 Install a component from the `@skrewww` registry with the real [shadcn](https://ui.shadcn.com) CLI.
 
-Skrewww is listed in the official
-[shadcn community registry directory](https://ui.shadcn.com/docs/directory?q=skrewww),
+The `@skrewww` registry is indexed in the
+[shadcn registry directory](https://ui.shadcn.com/docs/directory?q=skrewww),
 so the CLI resolves `@skrewww` with no `components.json` setup:
 
 ```bash
@@ -88,10 +88,10 @@ security vulnerability, do not open a public issue — see
 
 Volatile counts and roadmap live in [`docs/project-status.md`](docs/project-status.md) (derived from the canonical registry).
 
-- **Implemented React components:** count derived from `/registry.json` (`metadata.implementedComponentCount`, `hasImplementation: true`); individual entries remain Beta until promoted
+- **Implemented React components:** count derived from `/registry.json` (`metadata.implementedComponentCount`, `hasImplementation: true`); each entry carries its own Stable or Beta status in the registry
 - **Figma-documented components:** count derived from `content/` documentation inventory (includes documentation-only entries)
 - **WCAG 2.2 AA (target)** accessibility baseline
-- **Design system version:** `1.0.0` (platform/docs release)
+- **Documentation platform release:** `1.0.0`. This identifies the docs site only. Components, `@skrewww/react`, Agent Kit and Guard are versioned separately, and the packages and Agent Kit are in beta (see [`docs/architecture/versioning.md`](docs/architecture/versioning.md))
 - **Node.js:** `>=22.13.0 <23 || >=24 <25` (see `engines`; `.nvmrc` for local Node 24)
 
 ## Agent Kit (Beta)
@@ -199,11 +199,15 @@ Stable-v1 Gradient contract: [`docs/architecture/gradient-foundation.md`](docs/a
 **Currently implemented — shadcn-compatible registry distribution.** A
 **supported subset** of components can be installed into a consumer project
 with `npx shadcn@latest add @skrewww/<component>` — see
-[Quick Start](#quick-start) above for a tested command. Skrewww is listed in
-the official shadcn community registry directory
+[Quick Start](#quick-start) above for a tested command. The `@skrewww`
+registry is indexed in the shadcn registry directory
 ([shadcn-ui/ui#12059](https://github.com/shadcn-ui/ui/pull/12059), merged
 2026-09-30), so current CLI versions resolve `@skrewww` without a manual
-`components.json` entry. Manifests are generated from the
+`components.json` entry. Separately, Skrewww is listed in the community-curated
+[Awesome shadcn/ui](https://github.com/birobirobiro/awesome-shadcn-ui) list
+([awesome-shadcn-ui#626](https://github.com/birobirobiro/awesome-shadcn-ui/pull/626),
+merged 2026-10-16). These are a directory index entry and a community list
+entry; neither is an endorsement by shadcn. Manifests are generated from the
 canonical registry (`lib/component-registry.ts`) via `npm run
 generate:registry` and served as static files under `/r/{name}.json`; this
 is a separate path from the `/registry.json` metadata feed below.

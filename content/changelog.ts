@@ -86,9 +86,9 @@ export const changelogEntries: ChangelogEntry[] = [
     id: "2026-09-shadcn-directory-listing",
     date: "2026-09-30",
     displayDate: "September 2026",
-    title: "Listed in the shadcn community registry directory",
+    title: "Indexed in the shadcn registry directory",
     summary:
-      "Skrewww is listed in the official shadcn community registry directory, so the shadcn CLI resolves the @skrewww namespace without any components.json setup.",
+      "The @skrewww registry is indexed in the shadcn registry directory, so the shadcn CLI resolves the @skrewww namespace without any components.json setup. This is a directory entry, not an endorsement by shadcn.",
     items: [
       {
         type: "new",
