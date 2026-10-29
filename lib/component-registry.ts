@@ -351,6 +351,14 @@ export const componentRegistry: ComponentRegistryEntry[] = [
         title: "How do Button icons get their color?",
         body: "Button sets CSS color only. Primary and Danger use surface-content semantics: inverse/light on Flat and Gradient, dark on Glass. Secondary uses primary text color on every surface. Compatible icons inherit that color through SVG currentColor — Phosphor defaults fill to currentColor; stroke icons should use stroke=currentColor. Button does not set fill, stroke, or icon-specific paint, and it does not rewrite icon artwork. Any compatible icon inherits the same foreground automatically. Icon-only actions use this same Button with an aria-label; there is no separate Icon Button implementation.",
       },
+      {
+        title: "What is the difference between Button and Link?",
+        body: "Use Button for actions such as submitting, confirming, or starting a process. A prominent navigational CTA may use Button with href, which renders with link semantics. Use Link for inline or lower-emphasis navigation where the control should read as part of the surrounding content.",
+      },
+      {
+        title: "Which Button variant should I use?",
+        body: "Use Primary for the single most important action in a view, Secondary for alternative or less-prominent actions, and Danger for destructive actions that require clear confirmation.",
+      },
     ],
     apiProps: [
       {
@@ -1267,6 +1275,16 @@ export function WithDeltaExample() {
     hasImplementation: true,
     hasPreview: true,
     indexing: "index",
+    comparisons: [
+      {
+        title: "When should I use Text Input instead of Textarea?",
+        body: "Use Text Input for short, single-line values such as names, email addresses, codes, or general form fields. Use Textarea when users need to enter content that can span multiple lines, such as descriptions, comments, or messages.",
+      },
+      {
+        title: "When should I use Text Input instead of Search Field?",
+        body: "Use Text Input for general form data. Use Search Field when the input's primary purpose is searching or filtering content and the search-specific leading icon and optional clear action are appropriate.",
+      },
+    ],
     apiProps: [
       {
         name: "label",
