@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/Drawer";
 import { HeaderNavLink } from "@/components/HeaderNavLink";
 import { ResourcesMenu } from "@/components/ResourcesMenu";
+import { trackResourceClick } from "@/lib/resource-analytics";
 import {
   getActiveGlobalNavArea,
   globalNavItems,
@@ -167,7 +168,10 @@ function MobileGlobalLinks({
             target={link.external ? "_blank" : undefined}
             rel={link.external ? "noopener noreferrer" : undefined}
             aria-current={!link.external && pathname === link.href ? "page" : undefined}
-            onClick={onNavigate}
+            onClick={() => {
+              trackResourceClick(link, "mobile_resources");
+              onNavigate();
+            }}
             className={linkClass(!link.external && pathname === link.href)}
           >
             {link.label}

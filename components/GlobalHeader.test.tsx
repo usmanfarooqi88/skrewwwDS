@@ -2,6 +2,10 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GlobalHeader } from "@/components/GlobalHeader";
+import { trackGAEvent } from "@/lib/ga";
+import { resourceLinks } from "@/lib/global-nav";
+
+vi.mock("@/lib/ga", () => ({ trackGAEvent: vi.fn() }));
 
 let mockPathname = "/";
 vi.mock("next/navigation", () => ({
@@ -11,6 +15,29 @@ vi.mock("next/navigation", () => ({
 describe("GlobalHeader", () => {
   afterEach(() => {
     mockPathname = "/";
+    vi.clearAllMocks();
+  });
+
+  it.each(resourceLinks)("tracks only mobile Figma resources and closes the drawer for $label", async (link) => {
+    const user = userEvent.setup();
+    render(<GlobalHeader />);
+    const trigger = screen.getByRole("button", { name: "Open navigation menu" });
+    await user.click(trigger);
+    const dialog = screen.getByRole("dialog", { name: "Navigation" });
+    const item = within(dialog).getByRole("link", { name: link.label });
+    expect(item).toHaveAttribute("href", link.href);
+    await user.click(item);
+    const event = link.label === "Figma Free" ? "free_figma_click" : link.label === "Figma Pro" ? "pro_gumroad_click" : null;
+    if (event) {
+      expect(trackGAEvent).toHaveBeenCalledExactlyOnceWith(event, {
+        cta_location: "mobile_resources",
+        destination: link.href,
+      });
+    } else {
+      expect(trackGAEvent).not.toHaveBeenCalled();
+    }
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
   });
 
   it("renders the locked desktop IA followed by canonical social shortcuts", () => {

@@ -4,6 +4,7 @@ import { CaretDown } from "@phosphor-icons/react";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/Menu";
 import { resourceLinks } from "@/lib/global-nav";
 import { cn } from "@/lib/cn";
+import { trackResourceClick } from "@/lib/resource-analytics";
 
 /**
  * The locked NAV-1 Resources menu — Guard, Changelog, GitHub, Figma Free,
@@ -42,7 +43,10 @@ export function ResourcesMenu({ isActive, onNavigate }: { isActive: boolean; onN
       <MenuContent aria-label="Resources">
         {resourceLinks.map((link) =>
           link.external ? (
-            <MenuItem key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" onSelect={onNavigate}>
+            <MenuItem key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" onSelect={() => {
+              trackResourceClick(link, "header_resources");
+              onNavigate?.();
+            }}>
               {link.label}
             </MenuItem>
           ) : (

@@ -1,9 +1,35 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ResourcesMenu } from "@/components/ResourcesMenu";
+import { trackGAEvent } from "@/lib/ga";
+import { resourceLinks } from "@/lib/global-nav";
+
+vi.mock("@/lib/ga", () => ({ trackGAEvent: vi.fn() }));
+afterEach(() => vi.clearAllMocks());
 
 describe("ResourcesMenu", () => {
+  it.each(resourceLinks)("tracks only Figma resources and preserves close/navigation for $label", async (link) => {
+    const user = userEvent.setup();
+    const onNavigate = vi.fn();
+    render(<ResourcesMenu isActive={false} onNavigate={onNavigate} />);
+    await user.click(screen.getByRole("button", { name: "Resources" }));
+    const item = screen.getByRole("menuitem", { name: link.label });
+    expect(item).toHaveAttribute("href", link.href);
+    await user.click(item);
+    const event = link.label === "Figma Free" ? "free_figma_click" : link.label === "Figma Pro" ? "pro_gumroad_click" : null;
+    if (event) {
+      expect(trackGAEvent).toHaveBeenCalledExactlyOnceWith(event, {
+        cta_location: "header_resources",
+        destination: link.href,
+      });
+    } else {
+      expect(trackGAEvent).not.toHaveBeenCalled();
+    }
+    expect(onNavigate).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
+
   it("lists Guard, Changelog, GitHub, Figma Free, Figma Pro in that order, opened via the trigger", async () => {
     const user = userEvent.setup();
     render(<ResourcesMenu isActive={false} />);

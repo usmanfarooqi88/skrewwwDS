@@ -8,12 +8,9 @@ import { readStoredAnalyticsConsent } from "@/lib/consent";
  * providers are independent and this module never touches @vercel/analytics.
  *
  * Only add an entry here once the CTA it tracks is actually shipped. As of
- * this writing, `free_figma_click` and `pro_gumroad_click` are wired to the
- * two outbound links in components/HomeHeroCtas.tsx — the only outbound
- * Figma/Gumroad CTAs in the site. There is currently no GitHub CTA anywhere
- * in the shipped UI (confirmed by repo-wide search), so a `github_click`
- * entry is intentionally not defined yet — add it here, the same way, once
- * a real GitHub link ships.
+ * this writing, `free_figma_click` and `pro_gumroad_click` track the homepage
+ * hero, desktop Resources menu, and mobile global drawer Figma/Gumroad CTAs.
+ * Other navigation and social links do not fire these business events.
  */
 export type GAEventName = "free_figma_click" | "pro_gumroad_click";
 
