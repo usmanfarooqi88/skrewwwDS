@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as registry from "@/lib/component-registry";
 import robots from "@/app/robots";
 import { getImplementedRegistryEntries } from "@/lib/component-registry";
 import { getSitemapUrls } from "@/lib/sitemap-data";
@@ -24,6 +25,68 @@ function sourceFiles(dir: string): string[] {
 }
 
 describe("SEO-1B — structured data scope", () => {
+  it("category dates use the newest relevant React or documentation date, excluding industry components", () => {
+    const template = registry.getRegistryEntry("button")!;
+    const entries = [
+      { ...template, reactLastUpdated: "2026-08-01", documentationLastUpdated: "2026-07-01" },
+      { ...template, reactLastUpdated: "2026-06-01", documentationLastUpdated: "2026-09-01" },
+      { ...template, industry: "Banking" as const, documentationLastUpdated: "2026-12-01" },
+      { ...template, category: "Forms", documentationLastUpdated: "2026-11-01" },
+    ];
+    const spy = vi.spyOn(registry, "getImplementedRegistryEntries").mockReturnValue(entries);
+    try {
+      expect(categoryPageJsonLd("Actions")[1].dateModified).toBe("2026-09-01");
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it("industry dates use the newest relevant React or documentation date", () => {
+    const template = registry.getRegistryEntry("banking-account-card")!;
+    const entries = [
+      { ...template, reactLastUpdated: "2026-10-01", documentationLastUpdated: "2026-07-01" },
+      { ...template, reactLastUpdated: "2026-06-01", documentationLastUpdated: "2026-09-01" },
+      { ...template, industry: undefined, documentationLastUpdated: "2026-12-01" },
+    ];
+    const spy = vi.spyOn(registry, "getImplementedRegistryEntries").mockReturnValue(entries);
+    try {
+      expect(industryPageJsonLd("Banking")[1].dateModified).toBe("2026-10-01");
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it("omits dates for empty groups and preserves all other structured-data fields", () => {
+    const beforeCategory = categoryPageJsonLd("Actions");
+    const beforeIndustry = industryPageJsonLd("Banking");
+    const beforeSite = siteStructuredData();
+    const beforeComponent = componentPageJsonLd("button");
+    const spy = vi.spyOn(registry, "getMaxRegistryContentDate").mockReturnValue(undefined);
+    try {
+      for (const [before, after] of [
+        [beforeCategory, categoryPageJsonLd("Actions")],
+        [beforeIndustry, industryPageJsonLd("Banking")],
+      ]) {
+        expect(before[1]).toHaveProperty("dateModified");
+        expect(after[1]).not.toHaveProperty("dateModified");
+        const expectedPage = { ...before[1] };
+        delete expectedPage.dateModified;
+        expect(after).toEqual([before[0], expectedPage]);
+      }
+      expect(siteStructuredData()).toEqual(beforeSite);
+      expect(componentPageJsonLd("button")).toEqual(beforeComponent);
+    } finally {
+      spy.mockRestore();
+    }
+    const emptySpy = vi.spyOn(registry, "getImplementedRegistryEntries").mockReturnValue([]);
+    try {
+      expect(categoryPageJsonLd("Actions")[1]).not.toHaveProperty("dateModified");
+      expect(industryPageJsonLd("Banking")[1]).not.toHaveProperty("dateModified");
+    } finally {
+      emptySpy.mockRestore();
+    }
+  });
+
   it("site-level entities are rendered by the homepage, not the root layout", () => {
     expect(read("app/layout.tsx")).not.toMatch(/JsonLd|siteStructuredData/);
     const home = read("app/page.tsx");
@@ -89,6 +152,11 @@ describe("SEO-1B — structured data scope", () => {
         url: siteConfig.origin,
         logo: "https://skrewww.com/logo.svg",
       });
+      expect(organizations[0].sameAs).toEqual([
+        siteConfig.repositoryUrl,
+        siteConfig.linkedinUrl,
+        siteConfig.instagramUrl,
+      ]);
       const logo = new URL(String(organizations[0].logo));
       expect(logo.origin).toBe("https://skrewww.com");
       expect(existsSync(join(root, "public", logo.pathname))).toBe(true);

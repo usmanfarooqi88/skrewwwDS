@@ -1,4 +1,4 @@
-import { getRegistryEntry, getImplementedRegistryEntries } from "@/lib/component-registry";
+import { getRegistryEntry, getImplementedRegistryEntries, getMaxRegistryContentDate } from "@/lib/component-registry";
 import { getComponentBySlug } from "@/lib/data";
 import { getCategoryPageHref } from "@/lib/category-content";
 import type { CategoryName } from "@/lib/category-content";
@@ -20,7 +20,7 @@ export function organizationJsonLd(): JsonLd {
     logo: "https://skrewww.com/logo.svg",
     name: siteConfig.organizationName,
     url: siteConfig.origin,
-    ...(siteConfig.repositoryUrl ? { sameAs: [siteConfig.repositoryUrl] } : {}),
+    sameAs: [siteConfig.repositoryUrl, siteConfig.linkedinUrl, siteConfig.instagramUrl],
   };
 }
 
@@ -42,7 +42,8 @@ export function softwareApplicationJsonLd(): JsonLd {
     name: siteConfig.name,
     applicationCategory: "DesignApplication",
     operatingSystem: "Web",
-    softwareVersion: siteConfig.designSystemVersion,
+    // No `softwareVersion`: the platform release (siteConfig.designSystemVersion) is a documentation-site
+    // identifier, and presenting it as the product version would contradict the beta packages.
     description: siteConfig.description,
     url: siteConfig.origin,
   };
@@ -174,6 +175,7 @@ export function categoryPageJsonLd(category: CategoryName): JsonLd[] {
   const implemented = getImplementedRegistryEntries().filter(
     (entry) => entry.category === category && !entry.industry,
   );
+  const dateModified = getMaxRegistryContentDate(implemented);
 
   return [
     breadcrumbJsonLd([
@@ -187,7 +189,7 @@ export function categoryPageJsonLd(category: CategoryName): JsonLd[] {
       name: `${category} components — ${siteConfig.shortName}`,
       description: `${implemented.length} implemented React component(s) documented in the ${category} category.`,
       url: pageUrl,
-      dateModified: siteConfig.lastUpdated,
+      ...(dateModified ? { dateModified } : {}),
       isPartOf: websiteJsonLd(),
     },
   ];
@@ -196,6 +198,7 @@ export function categoryPageJsonLd(category: CategoryName): JsonLd[] {
 export function industryPageJsonLd(industry: IndustryName): JsonLd[] {
   const pageUrl = absoluteUrl(getIndustryPageHref(industry));
   const implemented = getImplementedRegistryEntries().filter((entry) => entry.industry === industry);
+  const dateModified = getMaxRegistryContentDate(implemented);
 
   return [
     breadcrumbJsonLd([
@@ -209,7 +212,7 @@ export function industryPageJsonLd(industry: IndustryName): JsonLd[] {
       name: `${industry} components — ${siteConfig.shortName}`,
       description: `${implemented.length} implemented React component(s) documented in the ${industry} industry.`,
       url: pageUrl,
-      dateModified: siteConfig.lastUpdated,
+      ...(dateModified ? { dateModified } : {}),
       isPartOf: websiteJsonLd(),
     },
   ];

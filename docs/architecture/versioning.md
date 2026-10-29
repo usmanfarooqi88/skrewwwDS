@@ -7,7 +7,7 @@ Skrewww uses several version identifiers. They serve different purposes and **do
 | Identifier | Location | Meaning |
 |------------|----------|---------|
 | **Package version** | `package.json` `version` | npm package / documentation site release tag (currently `1.0.0`). |
-| **Design system version** | `lib/site-config.ts` `designSystemVersion` | Overall platform maturity surfaced in metadata, LLM indexes, and JSON-LD. |
+| **Design system version** | `lib/site-config.ts` `designSystemVersion` | The documentation platform release (`1.0.0`), surfaced in `/registry.json` metadata, the llms index and the homepage ("Docs v1.0.0"). It identifies the docs site; it is **not** a package or product version and says nothing about component, `@skrewww/react`, Agent Kit or Guard maturity, which are versioned separately (the packages and Agent Kit are beta). It is deliberately not emitted as JSON-LD `softwareVersion`. |
 | **Documentation version** | `lib/site-config.ts` `documentationVersion` | Documentation site content generation baseline. |
 | **GitHub release tag** | `v1.0.0` on GitHub Releases | Same platform/docs release family as package version — not a per-component or Agent Kit version. |
 | **Registry schema version** | `lib/registry-public.ts` `metadata.schemaVersion` | Shape of `/registry.json` (currently `1.4.0`). Breaking registry field semantics or shape bump this. |
@@ -17,7 +17,7 @@ Skrewww uses several version identifiers. They serve different purposes and **do
 | **Agent Kit product version** | `lib/agent-kit/beta-version.ts` `AGENT_KIT_PRODUCT_VERSION` | Maturity of the Agent Kit integration layer (currently `0.1.0-beta.1`). Independent of platform `1.0.0` and of any component version. See [`agent-kit.md`](agent-kit.md). |
 | **Agent contract schema** | `lib/agent-kit/contract-schema.ts` `CANONICAL_AGENT_CONTRACT_SCHEMA_VERSION` | Shape of `/agent/contracts/*.json` (currently `1.0.0`). Not the Agent Kit product version. |
 | **Core version** | Each `ComponentRegistryEntry.coreVersion` (optional) | Minimum `@skrewww/core` version a component's tokens require — real only once that package exists and is versioned; see the Distribution Model section in `skrewww-claude-project-instructions.md` for the SemVer policy (a token custom-property rename/deletion is a `@skrewww/core` major bump). Currently unpopulated everywhere — the package doesn't exist yet. |
-| **Component status** | `ComponentRegistryEntry.status` | `beta` = production-usable with possible API/visual change; `documented` = Figma-only; `stable` reserved for future promotion. |
+| **Component status** | `ComponentRegistryEntry.status` | `beta` = production-usable with possible API/visual change; `documented` = Figma-only; `stable` = promoted past the Stable-v1 bar below (some entries are Stable today; the live Stable/Beta split comes from `getImplementedMaturityCounts()`, never a hardcoded number). |
 | **lastUpdated** | `lib/site-config.ts` `lastUpdated` | Fixed source-controlled editorial date for site-wide metadata — **never auto-set from build time**. |
 | **reactLastUpdated** | Per registry entry | Fixed date when the React implementation last materially changed. |
 

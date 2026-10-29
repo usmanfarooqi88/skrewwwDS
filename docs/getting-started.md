@@ -420,10 +420,11 @@ The current supported `/r` items are whatever the live catalog lists —
 subset of components; do not hardcode the count). Other implemented
 components are **not** part of the current install surface.
 
-Skrewww is listed in the official shadcn community registry directory
+The `@skrewww` registry is indexed in the shadcn registry directory
 (added by [shadcn-ui/ui#12059](https://github.com/shadcn-ui/ui/pull/12059),
 merged 2026-09-30), so current shadcn CLI versions resolve `@skrewww` with no
-`components.json` entry. Details and the verified consumer flow:
+`components.json` entry. This is a directory entry, not an endorsement by shadcn;
+Skrewww is separately listed in the community-curated Awesome shadcn/ui list. Details and the verified consumer flow:
 [`docs/architecture/shadcn-distribution.md`](architecture/shadcn-distribution.md).
 
 ### How generation works

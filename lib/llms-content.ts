@@ -89,7 +89,7 @@ export function buildLlmsTxt(): string {
     `4. Industry Systems — ${industries.join("/")} pilot shipped (${implemented.filter((entry) => entry.industry).length} components); additional industries planned via the CLI preset model, composing Layer 2 rather than forking it.`,
     "",
     "## Current status",
-    `- Design system version: ${siteConfig.designSystemVersion}`,
+    `- Documentation platform release: ${siteConfig.designSystemVersion} (versioned separately from components and packages; @skrewww/react, Agent Kit and Guard are in beta)`,
     `- Implemented React components: ${implemented.length} (${stableCount} Stable, ${betaCount} Beta)`,
     `- Accessibility baseline: ${siteConfig.accessibilityBaseline}`,
     `- Last updated: ${siteConfig.lastUpdated}`,
