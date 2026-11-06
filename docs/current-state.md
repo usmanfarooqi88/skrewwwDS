@@ -1,7 +1,7 @@
 # Skrewww — Current State
 
-**Last updated:** 2026-11-01
-**HEAD:** 9cafd9637 (`main`) plus this file's own commit (a commit cannot record its own hash)
+**Last updated:** 2026-11-06
+**HEAD:** 0e6f49f1b (`main`) plus this file's own commit (a commit cannot record its own hash)
 
 Fast orientation layer only. Detailed history lives in [project status](project-status.md) (canonical, not duplicated here).
 Items tagged *(owner-reported)* come from the owner's instructions and are not recorded in the repo docs.
@@ -11,7 +11,8 @@ Items tagged *(owner-reported)* come from the owner's instructions and are not r
 **AC-0 — Adaptive Context Audit** (read-only gate). Refresh the AK-0 findings for the adaptive-context use case:
 current per-field coverage for all contract slugs, edge classification, baseline retrieval cases, false-negative risks,
 and an evidence-backed decision record. No schema edits, telemetry or ADOPT/EXPERIMENT labels at this stage.
-No AC-0 audit document exists yet (`docs/audits/` has none).
+AC-0 remains OPEN. The report `docs/architecture/ac-0-audit-report.md` (`db0a3f05f`), its Addenda A1 and A2 (`0e6f49f1b`) and the Gate 1 note `docs/architecture/ac-0-gate-1-banking-edges.md` (`94a2c230c`) are committed.
+Still open: owner review of the 8 proposed retrieval cases; confirmation of the 5 dangling `relatedComponents` classifications; case #6 (Icon Button) unresolved. AC-1 is NOT authorized.
 Source: [roadmap](architecture/agent-kit-adaptive-context-roadmap.md) AC-0; project-status Phase roadmap row "Adaptive Context & Decision Efficiency".
 
 ## Next 3 after that
@@ -30,6 +31,7 @@ Beyond AC-3: AC-4 (usage-aware hot cache) and AC-5 (low-risk decision layer) are
 - **`app/compare/` production verification** *(owner-reported)* — `app/compare/`, `components/compare/`, `lib/comparison.ts`, `lib/comparison.test.ts` and `docs/audits/compare-research-2026-10-17.md` are untracked and uncommitted. The work is not recorded in project-status, and no production verification is recorded.
 - **`evals/agent-kit/runs/ak5-v4-05e7525-claude-code-sonnet5-safe/`** — untracked (31 files, 168 KB). v1–v3 are committed evidence, so needs a review-and-commit decision; do not gitignore `runs/`.
 - **`skills/skrewww-design-system.md`** — untracked; decide together with `docs/community/` (publishing-prep pair).
+- **Banking install-edge absence** — intent unconfirmed; working hypothesis: a side effect of the three `banking-*` components being undistributed. Needs an owner statement.
 
 ## Recently completed (last 7 days)
 
@@ -62,3 +64,6 @@ From `git log` and GitHub; none are recorded in project-status yet.
 - **F1: shadcn CLI drops the `@skrewww-component` origin marker on install** — recorded, not fixed. 67 known `UPSTREAM_TRANSFORM` verifier failures (55 marker removals plus 12 leading-comment removals).
 - **CCV deferrals** — `react-package.yml` path filter lacks `lib/consumer-scenarios/**`; `smoke:consumer` pins shadcn 4.16.2 vs CCV 4.21.1 (both CCV-7).
 - **Make Kit (MK-2E) limitations** — Make-environment focus-escape and generated-demo link limitations.
+- **Button guidance conflict** *(observation only)* — `content/actions.ts:11` `whenNotToUse` says "use Icon Button"; `lib/component-registry.ts:352` says there is no separate Icon Button implementation.
+- **Commit `a821f6b0d` message vs diff** *(observation only)* — the message describes calendar changes that are not in its diff or at HEAD.
+- **Stale comment** *(observation only)* — `agent/recipes/loading-and-inline-feedback.ts:9` says Skeleton and Alert are not shadcn-distributed; the registry lists files for both.
